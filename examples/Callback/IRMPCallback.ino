@@ -1,6 +1,7 @@
 /*
- *  SimpleReceiver.cpp
+ *  Callback.cpp
  *
+ *  Uses a callback function which is called every time a complete IR command was received.
  *  Receives IR protocol data at pin 4. You can change this at line 113 in irmpconfig.h
  *
  *  *****************************************************************************************************************************
@@ -46,11 +47,12 @@
 
 #include <irmp.h>
 
+void printReceivedIRData();
 void initTimer2(void);
 
 void setup() {
 // initialize the digital pin as an output.
-//    pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(115200);
     while (!Serial)
         ; //delay for Leonardo
@@ -59,6 +61,7 @@ void setup() {
     //Enable auto resume and pass it the address of your extra buffer
     irmp_init();
     initTimer2();
+    irmp_register_complete_callback_function(&printReceivedIRData);
 
     Serial.println(F("Ready to receive IR signals"));
 }
@@ -66,29 +69,43 @@ void setup() {
 IRMP_DATA irmp_data[1];
 
 void loop() {
-    if (irmp_get_data(&irmp_data[0])) {
-        Serial.print(F("P="));
-        /*
-         * To see full ASCII protocol names, you must modify irmpconfig.h line 227.
-         * Use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE and the instructions above to access it.
-         */
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(1000);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(1000);
+}
+
+/*
+ * Here we know, that data is available.
+ * Since this function is executed in Interrupt handler context, make it short and do not use delay() etc.
+ * In order to enable other interrupts you can call sei() (enable interrupt again) after getting data.
+ */
+void printReceivedIRData() {
+    irmp_get_data(&irmp_data[0]);
+    sei();
+    // enable interrupts
+
+    Serial.print(F("P="));
+    /*
+     * To see full ASCII protocol names, you must modify irmpconfig.h line 227.
+     * Use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE and the instructions above to access it.
+     */
 #if IRMP_PROTOCOL_NAMES == 1
-        const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
-        Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
-        Serial.print(F(" "));
+    const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
+    Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
+    Serial.print(F(" "));
 #else
-        Serial.print(F("0x"));
-        Serial.print(irmp_data[0].protocol, HEX);
+    Serial.print(F("0x"));
+    Serial.print(irmp_data[0].protocol, HEX);
 #endif
-        Serial.print(F(" A=0x"));
-        Serial.print(irmp_data[0].address, HEX);
-        Serial.print(F(" C=0x"));
-        Serial.print(irmp_data[0].command, HEX);
-        if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
-            Serial.print(F(" R"));
-        }
-        Serial.println();
+    Serial.print(F(" A=0x"));
+    Serial.print(irmp_data[0].address, HEX);
+    Serial.print(F(" C=0x"));
+    Serial.print(irmp_data[0].command, HEX);
+    if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
+        Serial.print(F(" R"));
     }
+    Serial.println();
 }
 
 void initTimer2(void) {

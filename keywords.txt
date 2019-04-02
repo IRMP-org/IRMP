@@ -15,7 +15,7 @@ irmp_protocol_names KEYWORD1
 irmp_init	KEYWORD2
 irmp_get_data	KEYWORD2
 irmp_ISR	KEYWORD2
-irmp_set_callback_ptr	KEYWORD2
+irmp_register_complete_callback_function	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

@@ -28,7 +28,7 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #ifndef F_INTERRUPTS
-#  define F_INTERRUPTS                          15000   // interrupts per second, min: 10000, max: 20000, typ: 15000
+#  define F_INTERRUPTS                          20000   // interrupts per second, min: 10000, max: 20000, typ: 15000
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -48,10 +48,10 @@
  */
 
 // typical protocols, disable here!             Enable  Remarks                 F_INTERRUPTS            Program Space
-#define IRMP_SUPPORT_SIRCS_PROTOCOL             1       // Sony SIRCS           >= 10000                 ~150 bytes
+#define IRMP_SUPPORT_SIRCS_PROTOCOL             0       // Sony SIRCS           >= 10000                 ~150 bytes
 #define IRMP_SUPPORT_NEC_PROTOCOL               1       // NEC + APPLE          >= 10000                 ~300 bytes
-#define IRMP_SUPPORT_SAMSUNG_PROTOCOL           1       // Samsung + Samsg32    >= 10000                 ~300 bytes
-#define IRMP_SUPPORT_KASEIKYO_PROTOCOL          1       // Kaseikyo             >= 10000                 ~250 bytes
+#define IRMP_SUPPORT_SAMSUNG_PROTOCOL           0       // Samsung + Samsg32    >= 10000                 ~300 bytes
+#define IRMP_SUPPORT_KASEIKYO_PROTOCOL          0       // Kaseikyo             >= 10000                 ~250 bytes
 
 // more protocols, enable here!                 Enable  Remarks                 F_INTERRUPTS            Program Space
 #define IRMP_SUPPORT_JVC_PROTOCOL               0       // JVC                  >= 10000                 ~150 bytes
@@ -100,7 +100,7 @@
 #define IRMP_SUPPORT_SAMSUNGAH_PROTOCOL         0       // SAMSUNG AH           >= 10000                 ~250 bytes
 #define IRMP_SUPPORT_IRMP16_PROTOCOL            0       // IRMP specific        >= 15000                 ~250 bytes
 #define IRMP_SUPPORT_GREE_PROTOCOL              0       // GREE CLIMATE         >= 10000                 ~250 bytes
-#define IRMP_SUPPORT_RCII_PROTOCOL              1       // RCII T+A             >= 15000                 ~250 bytes
+#define IRMP_SUPPORT_RCII_PROTOCOL              0       // RCII T+A             >= 15000                 ~250 bytes
 
 #define IRMP_SUPPORT_RADIO1_PROTOCOL            0       // RADIO, e.g. TEVION   >= 10000                 ~250 bytes (experimental)
 
@@ -242,6 +242,18 @@
  */
 #ifndef IRMP_USE_IDLE_CALL
 #  define IRMP_USE_IDLE_CALL                    0       // 1: use idle calls. 0: do not. default is 0
+#endif
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
+ * Use Callback if complete data was received
+ *---------------------------------------------------------------------------------------------------------------------------------------------------
+ */
+#ifndef IRMP_USE_COMPLETE_CALLBACK
+#    if defined(ARDUINO)
+#      define IRMP_USE_COMPLETE_CALLBACK       1       // 1: use callback. 0: do not. default is 1 for Arduino
+#    else
+#      define IRMP_USE_COMPLETE_CALLBACK       0       // 1: use callback. 0: do not. default is 0
+#    endif
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------

@@ -99,6 +99,10 @@
 void irmp_idle(void);                   // the user has to provide an implementation of the irmp_idle() function and link it
 #endif
 
+#if IRMP_USE_COMPLETE_CALLBACK == 1
+void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(void));
+#endif
+
 #if IRMP_SUPPORT_TECHNICS_PROTOCOL == 1
 #  undef IRMP_SUPPORT_MATSUSHITA_PROTOCOL
 #  define IRMP_SUPPORT_MATSUSHITA_PROTOCOL      1

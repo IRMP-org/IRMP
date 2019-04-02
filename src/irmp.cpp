@@ -630,6 +630,13 @@ static int                                      verbose;
 static void                                     (*irmp_callback_ptr) (uint_fast8_t);
 #endif // IRMP_USE_CALLBACK == 1
 
+#if IRMP_USE_COMPLETE_CALLBACK == 1
+static void (*CompleteCallbackFunction)(void);
+void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(void)){
+    CompleteCallbackFunction = aCompleteCallbackFunction;
+}
+#endif
+
 #define PARITY_CHECK_OK                         1
 #define PARITY_CHECK_FAILED                     0
 
@@ -5347,6 +5354,13 @@ irmp_ISR (void)
     TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
 #endif
 
+#if IRMP_USE_COMPLETE_CALLBACK == 1
+    if (CompleteCallbackFunction != NULL && irmp_ir_detected)
+    {
+        CompleteCallbackFunction();
+    }
+#endif
+
 #if (defined(_CHIBIOS_RT_) || defined(_CHIBIOS_NIL_)) && IRMP_USE_EVENT == 1
     if (IRMP_EVENT_THREAD_PTR != NULL && irmp_ir_detected)
         chEvtSignalI(IRMP_EVENT_THREAD_PTR,IRMP_EVENT_BIT);
@@ -5366,6 +5380,7 @@ irmp_ISR (void)
 
     return (irmp_ir_detected);
 }
+
 
 #ifdef ANALYZE
 
