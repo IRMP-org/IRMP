@@ -2,7 +2,7 @@
  *  Callback.cpp
  *
  *  Uses a callback function which is called every time a complete IR command was received.
- *  Receives IR protocol data at pin 4. You can change this at line 113 in irmpconfig.h
+ *  Receives IR protocol data at pin 3. You can change this at line 113 in irmpconfig.h
  *
  *  *****************************************************************************************************************************
  *  To access the library files from your sketch, you have to first use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE.
@@ -11,8 +11,6 @@
  *  If you did not yet store the example as your own sketch, then with Ctrl+K you are instantly in the right library folder.
  *  *****************************************************************************************************************************
  *
- *  For this example you need to install "TimerOne" library with *Sketch -> Include Library -> Manage Librarys...*.
- *  Use "TimerOne" as filter string.
  *
  *  The following IR protocols are enabled by default:
  *      Sony SIRCS
@@ -47,6 +45,8 @@
 
 #include <irmp.h>
 
+//#define SIZE_TEST
+
 void printReceivedIRData();
 void initTimer2(void);
 
@@ -69,10 +69,12 @@ void setup() {
 IRMP_DATA irmp_data[1];
 
 void loop() {
+#ifndef SIZE_TEST
     digitalWrite(LED_BUILTIN, HIGH);
     delay(1000);
     digitalWrite(LED_BUILTIN, LOW);
     delay(1000);
+#endif
 }
 
 /*
@@ -82,10 +84,11 @@ void loop() {
  */
 void printReceivedIRData() {
     irmp_get_data(&irmp_data[0]);
-    sei();
     // enable interrupts
-
+    sei();
+#ifndef SIZE_TEST
     Serial.print(F("P="));
+
     /*
      * To see full ASCII protocol names, you must modify irmpconfig.h line 227.
      * Use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE and the instructions above to access it.
@@ -98,13 +101,16 @@ void printReceivedIRData() {
     Serial.print(F("0x"));
     Serial.print(irmp_data[0].protocol, HEX);
 #endif
+#endif
     Serial.print(F(" A=0x"));
     Serial.print(irmp_data[0].address, HEX);
     Serial.print(F(" C=0x"));
     Serial.print(irmp_data[0].command, HEX);
+#ifndef SIZE_TEST
     if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
         Serial.print(F(" R"));
     }
+#endif
     Serial.println();
 }
 
@@ -117,5 +123,8 @@ void initTimer2(void) {
 }
 
 ISR(TIMER2_COMPA_vect) {
+    digitalWrite(LED_BUILTIN, HIGH);
     irmp_ISR();
+    digitalWrite(LED_BUILTIN, LOW);
+
 }

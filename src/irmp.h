@@ -274,6 +274,8 @@ extern "C"
 extern void                             irmp_init (void);
 extern uint_fast8_t                     irmp_get_data (IRMP_DATA *);
 extern uint_fast8_t                     irmp_ISR (void);
+extern void                             irmp_handle_PCI_interrupt(void);
+extern void irmp_print();
 
 #if IRMP_PROTOCOL_NAMES == 1
 extern const char * const               irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM;

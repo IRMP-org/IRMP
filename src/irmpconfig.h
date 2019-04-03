@@ -48,10 +48,10 @@
  */
 
 // typical protocols, disable here!             Enable  Remarks                 F_INTERRUPTS            Program Space
-#define IRMP_SUPPORT_SIRCS_PROTOCOL             0       // Sony SIRCS           >= 10000                 ~150 bytes
+#define IRMP_SUPPORT_SIRCS_PROTOCOL             1       // Sony SIRCS           >= 10000                 ~150 bytes
 #define IRMP_SUPPORT_NEC_PROTOCOL               1       // NEC + APPLE          >= 10000                 ~300 bytes
-#define IRMP_SUPPORT_SAMSUNG_PROTOCOL           0       // Samsung + Samsg32    >= 10000                 ~300 bytes
-#define IRMP_SUPPORT_KASEIKYO_PROTOCOL          0       // Kaseikyo             >= 10000                 ~250 bytes
+#define IRMP_SUPPORT_SAMSUNG_PROTOCOL           1       // Samsung + Samsg32    >= 10000                 ~300 bytes
+#define IRMP_SUPPORT_KASEIKYO_PROTOCOL          1       // Kaseikyo             >= 10000                 ~250 bytes
 
 // more protocols, enable here!                 Enable  Remarks                 F_INTERRUPTS            Program Space
 #define IRMP_SUPPORT_JVC_PROTOCOL               0       // JVC                  >= 10000                 ~150 bytes
@@ -60,7 +60,7 @@
 #define IRMP_SUPPORT_MATSUSHITA_PROTOCOL        0       // Matsushita           >= 10000                  ~50 bytes
 #define IRMP_SUPPORT_DENON_PROTOCOL             0       // DENON, Sharp         >= 10000                 ~250 bytes
 #define IRMP_SUPPORT_RC5_PROTOCOL               0       // RC5                  >= 10000                 ~250 bytes
-#define IRMP_SUPPORT_RC6_PROTOCOL               0       // RC6 & RC6A           >= 10000                 ~250 bytes
+#define IRMP_SUPPORT_RC6_PROTOCOL               1       // RC6 & RC6A           >= 10000                 ~250 bytes
 #define IRMP_SUPPORT_IR60_PROTOCOL              0       // IR60 (SDA2008)       >= 10000                 ~300 bytes
 #define IRMP_SUPPORT_GRUNDIG_PROTOCOL           0       // Grundig              >= 10000                 ~300 bytes
 #define IRMP_SUPPORT_SIEMENS_PROTOCOL           0       // Siemens Gigaset      >= 15000                 ~550 bytes
@@ -108,9 +108,9 @@
  * Change hardware pin here for ATMEL ATMega/ATTiny/XMega
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#if defined (ATMEL_AVR) || defined (__AVR_XMEGA__)                      // use PD4 / Arduino Pin 4 as IR input on AVR
+#if defined (ATMEL_AVR) || defined (__AVR_XMEGA__)                      // use PD4 / Arduino Pin 3 as IR input on AVR
 #  define IRMP_PORT_LETTER                      D
-#  define IRMP_BIT_NUMBER                       4
+#  define IRMP_BIT_NUMBER                       3
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change hardware pin here for PIC C18 or XC8 compiler
@@ -249,13 +249,27 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #ifndef IRMP_USE_COMPLETE_CALLBACK
-#    if defined(ARDUINO)
-#      define IRMP_USE_COMPLETE_CALLBACK       1       // 1: use callback. 0: do not. default is 1 for Arduino
-#    else
-#      define IRMP_USE_COMPLETE_CALLBACK       0       // 1: use callback. 0: do not. default is 0
-#    endif
+#  if defined(ARDUINO)
+#    define IRMP_USE_COMPLETE_CALLBACK       1       // 1: use callback. 0: do not. default is 1 for Arduino // 20 bytes just for enabling
+#  else
+#    define IRMP_USE_COMPLETE_CALLBACK       0       // 1: use callback. 0: do not. default is 0
+#  endif
 #endif
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
+ * Enable PinChangeInterrupt add on for irmp_ISR()
+ *---------------------------------------------------------------------------------------------------------------------------------------------------
+ */
+#if defined(ARDUINO)
+#  ifndef IRMP_ENABLE_PIN_CHANGE_INTERRUPT
+#    define IRMP_ENABLE_PIN_CHANGE_INTERRUPT 1       // 1: enable PCI add on. 0: do not. default is 0
+#  endif
+#endif
+
+#if (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
+#  undef F_INTERRUPTS
+#  define F_INTERRUPTS                          15625   // 15625 interrupts per second gives 64 us period
+#endif
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Use ChibiOS Events to signal that valid IR data was received
  *---------------------------------------------------------------------------------------------------------------------------------------------------

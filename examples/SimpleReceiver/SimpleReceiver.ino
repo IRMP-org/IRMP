@@ -1,7 +1,7 @@
 /*
  *  SimpleReceiver.cpp
  *
- *  Receives IR protocol data at pin 4. You can change this at line 113 in irmpconfig.h
+ *  Receives IR protocol data at pin 3. You can change this at line 113 in irmpconfig.h
  *
  *  *****************************************************************************************************************************
  *  To access the library files from your sketch, you have to first use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE.
@@ -10,8 +10,6 @@
  *  If you did not yet store the example as your own sketch, then with Ctrl+K you are instantly in the right library folder.
  *  *****************************************************************************************************************************
  *
- *  For this example you need to install "TimerOne" library with *Sketch -> Include Library -> Manage Librarys...*.
- *  Use "TimerOne" as filter string.
  *
  *  The following IR protocols are enabled by default:
  *      Sony SIRCS
@@ -48,6 +46,8 @@
 
 void initTimer2(void);
 
+//#define SIZE_TEST
+
 void setup() {
 // initialize the digital pin as an output.
 //    pinMode(LED_BUILTIN, OUTPUT);
@@ -67,26 +67,31 @@ IRMP_DATA irmp_data[1];
 
 void loop() {
     if (irmp_get_data(&irmp_data[0])) {
-        Serial.print(F("P="));
-        /*
-         * To see full ASCII protocol names, you must modify irmpconfig.h line 227.
-         * Use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE and the instructions above to access it.
-         */
+#ifndef SIZE_TEST
+    Serial.print(F("P="));
+
+    /*
+     * To see full ASCII protocol names, you must modify irmpconfig.h line 227.
+     * Use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE and the instructions above to access it.
+     */
 #if IRMP_PROTOCOL_NAMES == 1
-        const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
-        Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
-        Serial.print(F(" "));
+    const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
+    Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
+    Serial.print(F(" "));
 #else
-        Serial.print(F("0x"));
-        Serial.print(irmp_data[0].protocol, HEX);
+    Serial.print(F("0x"));
+    Serial.print(irmp_data[0].protocol, HEX);
 #endif
-        Serial.print(F(" A=0x"));
-        Serial.print(irmp_data[0].address, HEX);
-        Serial.print(F(" C=0x"));
-        Serial.print(irmp_data[0].command, HEX);
-        if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
-            Serial.print(F(" R"));
-        }
+#endif
+    Serial.print(F(" A=0x"));
+    Serial.print(irmp_data[0].address, HEX);
+    Serial.print(F(" C=0x"));
+    Serial.print(irmp_data[0].command, HEX);
+#ifndef SIZE_TEST
+    if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
+        Serial.print(F(" R"));
+    }
+#endif
         Serial.println();
     }
 }

@@ -62,6 +62,9 @@
 #  include "c_types.h"
 #  define uint_fast8_t uint8_t
 #  define uint_fast16_t uint16_t
+#elif defined(ARDUINO)
+#  include "Arduino.h"
+#  define ATMEL_AVR                                                                 // ATMEL AVR
 #elif defined(TEENSYDUINO) && (defined(__MK20DX256__) || defined(__MK20DX128__))    // Teensy 3.x (tested on Teensy 3.1 in Arduino 1.6.5 / Teensyduino 1.2.5)
 #  include <core_pins.h>
 #  define TEENSY_ARM_CORTEX_M4
