@@ -16,7 +16,7 @@
 #include "irmpsystem.h"
 
 #ifndef IRMP_USE_AS_LIB
-#  include "irmpconfig.h"
+#  include "irmpconfigMain15.h"
 #endif
 
 #if defined (__AVR_XMEGA__)

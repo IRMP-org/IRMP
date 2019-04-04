@@ -1,8 +1,7 @@
 /*
- *  Callback.cpp
+ *  Interrupt.cpp
  *
- *  Uses a callback function which is called every time a complete IR command was received.
- *  Receives IR protocol data at pin 3. You can change this at line 113 in irmpconfig.h
+ *  Receives IR protocol data at pin 3.
  *
  *  *****************************************************************************************************************************
  *  To access the library files from your sketch, you have to first use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE.
@@ -17,7 +16,13 @@
  *      NEC + APPLE
  *      Samsung + Samsg32
  *      Kaseikyo
- *  To disable one of them or to enable other protocols, you must modify the library file irmpconfig.h at line 50ff.
+ *
+ *      Plus 11 other main protocols by including irmpMain15.h instead of irmp.h
+ *      JVC, NEC16, NEC42, Matsushita, DENON, Sharp, RC5, RC6 & RC6A, IR60 (SDA2008) Grundig, Siemens Gigaset, Nokia
+ *
+ *  To disable one of them or to enable other protocols, you must specify this around line 62 after the "#include <irmp.h>" and before "#include <irmp.cpp.h>".
+ *  If you get warnings just ignore them. You can avoid them, if you modify the library file irmpconfig.h directly to specify the protocols.
+ *  The exact names of the modifiers can be found in the library file irmpconfig.h at line 50ff.
  *
  *  Copyright (C) 2019  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
@@ -43,12 +48,38 @@
 
 #define VERSION_EXAMPLE "1.0"
 
-#include <irmp.h>
+/*
+ * Set library modifiers first to set input pin etc.
+ */
+#define IRMP_INPUT_PIN 3
+
+#define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some FLASH
+#define IRMP_USE_COMPLETE_CALLBACK       1 // Enable callback functionality
+#define IRMP_ENABLE_PIN_CHANGE_INTERRUPT 1 // Enable interrupt functionality
 
 //#define SIZE_TEST
+#ifdef SIZE_TEST
+#include <irmpNone.h>
+#define IRMP_SUPPORT_NEC_PROTOCOL        1
+#else
+#include <irmpMain15.h>  // This enables 15 main protocols
+// this protocols is incompatible to NEC in interrupt mode, since it is the same as NEC but has longer data sections
+#define IRMP_SUPPORT_NEC42_PROTOCOL      0
+#endif
+
+/*
+ * After setting the modifiers we can include the code and compile it.
+ */
+#include <irmp.c.h>
+
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
 
 void printReceivedIRData();
-void initTimer2(void);
+void initPCIInterrupt();
+
+// local modifiers
+//#define IRMP_USE_ARDUINO_ATTACH_INTERRUPT
 
 void setup() {
 // initialize the digital pin as an output.
@@ -60,10 +91,14 @@ void setup() {
     Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
     //Enable auto resume and pass it the address of your extra buffer
     irmp_init();
-    initTimer2();
+#ifdef IRMP_USE_ARDUINO_ATTACH_INTERRUPT
+    attachInterrupt(digitalPinToInterrupt(IRMP_BIT_NUMBER), irmp_PCI_ISR, CHANGE);
+#else
+    initPCIInterrupt();
+#endif
     irmp_register_complete_callback_function(&printReceivedIRData);
 
-    Serial.println(F("Ready to receive IR signals"));
+    Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
 }
 
 IRMP_DATA irmp_data[1];
@@ -112,19 +147,4 @@ void printReceivedIRData() {
     }
 #endif
     Serial.println();
-}
-
-void initTimer2(void) {
-    TCCR2A = _BV(WGM21); // CTC mode
-    TCCR2B = _BV(CS21);  // prescale by 8
-    OCR2A = ((F_CPU / 8) / F_INTERRUPTS) - 1; // 132 for 15000 interrupts per second
-    TCNT2 = 0;
-    TIMSK2 = _BV(OCIE2A); // enable interrupt
-}
-
-ISR(TIMER2_COMPA_vect) {
-    digitalWrite(LED_BUILTIN, HIGH);
-    irmp_ISR();
-    digitalWrite(LED_BUILTIN, LOW);
-
 }

@@ -611,31 +611,31 @@
 #  define ANALYZE_PRINTF(...)                   { if (verbose)              { printf (__VA_ARGS__); } }
 #  define ANALYZE_ONLY_NORMAL_PRINTF(...)       { if (! silent && !verbose) { printf (__VA_ARGS__); } }
 #  define ANALYZE_NEWLINE()                     { if (verbose)              { putchar ('\n');       } }
-static int silent;
-static int time_counter;
-static int verbose;
+static int                                      silent;
+static int                                      time_counter;
+static int                                      verbose;
 
 /*******************************                not every PIC compiler knows variadic macros :-(
- #else
- #  define ANALYZE_PUTCHAR(a)
- #  define ANALYZE_ONLY_NORMAL_PUTCHAR(a)
- #  define ANALYZE_PRINTF(...)
- #  define ANALYZE_ONLY_NORMAL_PRINTF(...)
- #  endif
- #  define ANALYZE_NEWLINE()
- *********************************/
+#else
+#  define ANALYZE_PUTCHAR(a)
+#  define ANALYZE_ONLY_NORMAL_PUTCHAR(a)
+#  define ANALYZE_PRINTF(...)
+#  define ANALYZE_ONLY_NORMAL_PRINTF(...)
+#  endif
+#  define ANALYZE_NEWLINE()
+*********************************/
 #endif
 
 #if IRMP_USE_CALLBACK == 1
-static void (*irmp_callback_ptr) (uint_fast8_t);
+static void                                     (*irmp_callback_ptr) (uint_fast8_t);
 #endif // IRMP_USE_CALLBACK == 1
 
 #if IRMP_USE_COMPLETE_CALLBACK == 1
-static void (*CompleteCallbackFunction)(void);
+static void (*irmp_complete_callback_function)(void);
 void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(void)) {
-    CompleteCallbackFunction = aCompleteCallbackFunction;
+    irmp_complete_callback_function = aCompleteCallbackFunction;
 }
-#endif
+#endif // IRMP_USE_COMPLETE_CALLBACK == 1
 
 #define PARITY_CHECK_OK                         1
 #define PARITY_CHECK_FAILED                     0
@@ -645,63 +645,63 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #if defined(UNIX_OR_WINDOWS) || IRMP_PROTOCOL_NAMES == 1
-static const char proto_unknown[] PROGMEM = "UNKNOWN";
-static const char proto_sircs[] PROGMEM = "SIRCS";
-static const char proto_nec[] PROGMEM = "NEC";
-static const char proto_samsung[] PROGMEM = "SAMSUNG";
-static const char proto_matsushita[] PROGMEM = "MATSUSH";
-static const char proto_kaseikyo[] PROGMEM = "KASEIKYO";
-static const char proto_recs80[] PROGMEM = "RECS80";
-static const char proto_rc5[] PROGMEM = "RC5";
-static const char proto_denon[] PROGMEM = "DENON";
-static const char proto_rc6[] PROGMEM = "RC6";
-static const char proto_samsung32[] PROGMEM = "SAMSG32";
-static const char proto_apple[] PROGMEM = "APPLE";
-static const char proto_recs80ext[] PROGMEM = "RECS80EX";
-static const char proto_nubert[] PROGMEM = "NUBERT";
-static const char proto_bang_olufsen[] PROGMEM = "BANG OLU";
-static const char proto_grundig[] PROGMEM = "GRUNDIG";
-static const char proto_nokia[] PROGMEM = "NOKIA";
-static const char proto_siemens[] PROGMEM = "SIEMENS";
-static const char proto_fdc[] PROGMEM = "FDC";
-static const char proto_rccar[] PROGMEM = "RCCAR";
-static const char proto_jvc[] PROGMEM = "JVC";
-static const char proto_rc6a[] PROGMEM = "RC6A";
-static const char proto_nikon[] PROGMEM = "NIKON";
-static const char proto_ruwido[] PROGMEM = "RUWIDO";
-static const char proto_ir60[] PROGMEM = "IR60";
-static const char proto_kathrein[] PROGMEM = "KATHREIN";
-static const char proto_netbox[] PROGMEM = "NETBOX";
-static const char proto_nec16[] PROGMEM = "NEC16";
-static const char proto_nec42[] PROGMEM = "NEC42";
-static const char proto_lego[] PROGMEM = "LEGO";
-static const char proto_thomson[] PROGMEM = "THOMSON";
-static const char proto_bose[] PROGMEM = "BOSE";
-static const char proto_a1tvbox[] PROGMEM = "A1TVBOX";
-static const char proto_ortek[] PROGMEM = "ORTEK";
-static const char proto_telefunken[] PROGMEM = "TELEFUNKEN";
-static const char proto_roomba[] PROGMEM = "ROOMBA";
-static const char proto_rcmm32[] PROGMEM = "RCMM32";
-static const char proto_rcmm24[] PROGMEM = "RCMM24";
-static const char proto_rcmm12[] PROGMEM = "RCMM12";
-static const char proto_speaker[] PROGMEM = "SPEAKER";
-static const char proto_lgair[] PROGMEM = "LGAIR";
-static const char proto_samsung48[] PROGMEM = "SAMSG48";
-static const char proto_merlin[] PROGMEM = "MERLIN";
-static const char proto_pentax[] PROGMEM = "PENTAX";
-static const char proto_fan[] PROGMEM = "FAN";
-static const char proto_s100[] PROGMEM = "S100";
-static const char proto_acp24[] PROGMEM = "ACP24";
-static const char proto_technics[] PROGMEM = "TECHNICS";
-static const char proto_panasonic[] PROGMEM = "PANASONIC";
-static const char proto_mitsu_heavy[] PROGMEM = "MITSU_HEAVY";
-static const char proto_vincent[] PROGMEM = "VINCENT";
-static const char proto_samsungah[] PROGMEM = "SAMSUNGAH";
-static const char proto_irmp16[] PROGMEM = "IRMP16";
-static const char proto_gree[] PROGMEM = "GREE";
-static const char proto_rcii[] PROGMEM = "RCII";
+static const char proto_unknown[]       PROGMEM = "UNKNOWN";
+static const char proto_sircs[]         PROGMEM = "SIRCS";
+static const char proto_nec[]           PROGMEM = "NEC";
+static const char proto_samsung[]       PROGMEM = "SAMSUNG";
+static const char proto_matsushita[]    PROGMEM = "MATSUSH";
+static const char proto_kaseikyo[]      PROGMEM = "KASEIKYO";
+static const char proto_recs80[]        PROGMEM = "RECS80";
+static const char proto_rc5[]           PROGMEM = "RC5";
+static const char proto_denon[]         PROGMEM = "DENON";
+static const char proto_rc6[]           PROGMEM = "RC6";
+static const char proto_samsung32[]     PROGMEM = "SAMSG32";
+static const char proto_apple[]         PROGMEM = "APPLE";
+static const char proto_recs80ext[]     PROGMEM = "RECS80EX";
+static const char proto_nubert[]        PROGMEM = "NUBERT";
+static const char proto_bang_olufsen[]  PROGMEM = "BANG OLU";
+static const char proto_grundig[]       PROGMEM = "GRUNDIG";
+static const char proto_nokia[]         PROGMEM = "NOKIA";
+static const char proto_siemens[]       PROGMEM = "SIEMENS";
+static const char proto_fdc[]           PROGMEM = "FDC";
+static const char proto_rccar[]         PROGMEM = "RCCAR";
+static const char proto_jvc[]           PROGMEM = "JVC";
+static const char proto_rc6a[]          PROGMEM = "RC6A";
+static const char proto_nikon[]         PROGMEM = "NIKON";
+static const char proto_ruwido[]        PROGMEM = "RUWIDO";
+static const char proto_ir60[]          PROGMEM = "IR60";
+static const char proto_kathrein[]      PROGMEM = "KATHREIN";
+static const char proto_netbox[]        PROGMEM = "NETBOX";
+static const char proto_nec16[]         PROGMEM = "NEC16";
+static const char proto_nec42[]         PROGMEM = "NEC42";
+static const char proto_lego[]          PROGMEM = "LEGO";
+static const char proto_thomson[]       PROGMEM = "THOMSON";
+static const char proto_bose[]          PROGMEM = "BOSE";
+static const char proto_a1tvbox[]       PROGMEM = "A1TVBOX";
+static const char proto_ortek[]         PROGMEM = "ORTEK";
+static const char proto_telefunken[]    PROGMEM = "TELEFUNKEN";
+static const char proto_roomba[]        PROGMEM = "ROOMBA";
+static const char proto_rcmm32[]        PROGMEM = "RCMM32";
+static const char proto_rcmm24[]        PROGMEM = "RCMM24";
+static const char proto_rcmm12[]        PROGMEM = "RCMM12";
+static const char proto_speaker[]       PROGMEM = "SPEAKER";
+static const char proto_lgair[]         PROGMEM = "LGAIR";
+static const char proto_samsung48[]     PROGMEM = "SAMSG48";
+static const char proto_merlin[]        PROGMEM = "MERLIN";
+static const char proto_pentax[]        PROGMEM = "PENTAX";
+static const char proto_fan[]           PROGMEM = "FAN";
+static const char proto_s100[]          PROGMEM = "S100";
+static const char proto_acp24[]         PROGMEM = "ACP24";
+static const char proto_technics[]      PROGMEM = "TECHNICS";
+static const char proto_panasonic[]     PROGMEM = "PANASONIC";
+static const char proto_mitsu_heavy[]   PROGMEM = "MITSU_HEAVY";
+static const char proto_vincent[]       PROGMEM = "VINCENT";
+static const char proto_samsungah[]     PROGMEM = "SAMSUNGAH";
+static const char proto_irmp16[]        PROGMEM = "IRMP16";
+static const char proto_gree[]          PROGMEM = "GREE";
+static const char proto_rcii[]          PROGMEM = "RCII";
 
-static const char proto_radio1[] PROGMEM = "RADIO1";
+static const char proto_radio1[]        PROGMEM = "RADIO1";
 
 const char * const
 irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM =
@@ -893,7 +893,7 @@ irmp_uart_init (void)
     USART_InitTypeDef USART_InitStructure;
 
     // Clock enable vom TX Pin
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);// UART3 an PB10
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE); // UART3 an PB10
 
     // Clock enable der UART
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
@@ -922,7 +922,7 @@ irmp_uart_init (void)
     USART_Cmd(STM32_UART_COM, ENABLE);
 
 #elif defined(ARDUINO)
-    // we use the Arduino Serial Imlementation
+    // we use the Arduino Serial Implementation
     // you have to call Serial.begin(SER_BAUD); in Arduino setup() function
 
 #elif defined (__AVR_XMEGA__)
@@ -932,9 +932,9 @@ irmp_uart_init (void)
     USARTC1.BAUDCTRLB = 0;
     USARTC1.BAUDCTRLA = F_CPU / 153600 - 1;
     USARTC1.CTRLA = USART_RXCINTLVL_HI_gc;                                                          // high INT level (receive)
-    USARTC1.CTRLB = USART_TXEN_bm | USART_RXEN_bm;// activated RX and TX
-    USARTC1.CTRLC = USART_CHSIZE_8BIT_gc;// 8 Bit
-    PORTC.DIR |= (1<<7);// TXD is output
+    USARTC1.CTRLB = USART_TXEN_bm | USART_RXEN_bm;                                                  // activated RX and TX
+    USARTC1.CTRLC = USART_CHSIZE_8BIT_gc;                                                           // 8 Bit
+    PORTC.DIR |= (1<<7);                                                                            // TXD is output
     PORTC.DIR &= ~(1<<6);
 
 #elif defined (_CHIBIOS_HAL_)
@@ -992,7 +992,7 @@ irmp_uart_putc (unsigned char ch)
 
 #elif defined(_CHIBIOS_HAL_)
     // use the SD interface from HAL, log to IRMP_LOGGING_SD which is defined in irmpconfig.h
-    sdWriteI(&IRMP_LOGGING_SD,&ch,1);// we are called from interrupt context, so use the ...I version of the function
+    sdWriteI(&IRMP_LOGGING_SD,&ch,1);      // we are called from interrupt context, so use the ...I version of the function
 
 #else
 #if (IRMP_EXT_LOGGING == 0)
@@ -1038,13 +1038,13 @@ irmp_uart_putc (unsigned char ch)
 static void
 irmp_log (uint_fast8_t val)
 {
-    static uint8_t buf[DATALEN];                                   // logging buffer
-    static uint_fast16_t buf_idx;// index
-    static uint_fast8_t startcycles;// current number of start-zeros
-    static uint_fast16_t cnt;// counts sequenced highbits - to detect end
-    static uint_fast8_t last_val = 1;
+    static uint8_t          buf[DATALEN];                                   // logging buffer
+    static uint_fast16_t    buf_idx;                                        // index
+    static uint_fast8_t     startcycles;                                    // current number of start-zeros
+    static uint_fast16_t    cnt;                                            // counts sequenced highbits - to detect end
+    static uint_fast8_t     last_val = 1;
 
-    if (! val && (startcycles < STARTCYCLES) && !buf_idx)// prevent that single random zeros init logging
+    if (! val && (startcycles < STARTCYCLES) && !buf_idx)                   // prevent that single random zeros init logging
     {
         startcycles++;
     }
@@ -1052,7 +1052,7 @@ irmp_log (uint_fast8_t val)
     {
         startcycles = 0;
 
-        if (! val || buf_idx != 0)                                  // start or continue logging on "0", "1" cannot init logging
+        if (! val || buf_idx != 0)                                          // start or continue logging on "0", "1" cannot init logging
         {
             if (last_val == val)
             {
@@ -1060,11 +1060,11 @@ irmp_log (uint_fast8_t val)
 
                 if (val && cnt > ENDBITS)                                   // if high received then look at log-stop condition
                 {                                                           // if stop condition is true, output on uart
-                    uint_fast8_t i8;
-                    uint_fast16_t i;
-                    uint_fast16_t j;
-                    uint_fast8_t v = '1';
-                    uint_fast16_t d;
+                    uint_fast8_t     i8;
+                    uint_fast16_t    i;
+                    uint_fast16_t    j;
+                    uint_fast8_t     v = '1';
+                    uint_fast16_t    d;
 
                     for (i8 = 0; i8 < STARTCYCLES; i8++)
                     {
@@ -1106,9 +1106,9 @@ irmp_log (uint_fast8_t val)
             {
                 if (cnt >= 0xff)
                 {
-                    buf[buf_idx++] = 0xff;
-                    buf[buf_idx++] = (cnt & 0xff);
-                    buf[buf_idx] = (cnt >> 8);
+                    buf[buf_idx++]  = 0xff;
+                    buf[buf_idx++]  = (cnt & 0xff);
+                    buf[buf_idx]    = (cnt >> 8);
                 }
                 else
                 {
@@ -1127,91 +1127,95 @@ irmp_log (uint_fast8_t val)
 #define irmp_log(val)
 #endif //IRMP_LOGGING
 
-typedef struct {
-    uint_fast8_t protocol;                                                // ir protocol
-    uint_fast8_t pulse_1_len_min;                                         // minimum length of pulse with bit value 1
-    uint_fast8_t pulse_1_len_max;                                         // maximum length of pulse with bit value 1
-    uint_fast8_t pause_1_len_min;                                         // minimum length of pause with bit value 1
-    uint_fast8_t pause_1_len_max;                                         // maximum length of pause with bit value 1
-    uint_fast8_t pulse_0_len_min;                                         // minimum length of pulse with bit value 0
-    uint_fast8_t pulse_0_len_max;                                         // maximum length of pulse with bit value 0
-    uint_fast8_t pause_0_len_min;                                         // minimum length of pause with bit value 0
-    uint_fast8_t pause_0_len_max;                                         // maximum length of pause with bit value 0
-    uint_fast8_t address_offset;                                          // address offset
-    uint_fast8_t address_end;                                             // end of address
-    uint_fast8_t command_offset;                                          // command offset
-    uint_fast8_t command_end;                                             // end of command
-    uint_fast8_t complete_len;                                            // complete length of frame
-    uint_fast8_t stop_bit;                                                // flag: frame has stop bit
-    uint_fast8_t lsb_first;                                               // flag: LSB first
-    uint_fast8_t flags;                                                   // some flags
+typedef struct
+{
+    uint_fast8_t    protocol;                                                // ir protocol
+    uint_fast8_t    pulse_1_len_min;                                         // minimum length of pulse with bit value 1
+    uint_fast8_t    pulse_1_len_max;                                         // maximum length of pulse with bit value 1
+    uint_fast8_t    pause_1_len_min;                                         // minimum length of pause with bit value 1
+    uint_fast8_t    pause_1_len_max;                                         // maximum length of pause with bit value 1
+    uint_fast8_t    pulse_0_len_min;                                         // minimum length of pulse with bit value 0
+    uint_fast8_t    pulse_0_len_max;                                         // maximum length of pulse with bit value 0
+    uint_fast8_t    pause_0_len_min;                                         // minimum length of pause with bit value 0
+    uint_fast8_t    pause_0_len_max;                                         // maximum length of pause with bit value 0
+    uint_fast8_t    address_offset;                                          // address offset
+    uint_fast8_t    address_end;                                             // end of address
+    uint_fast8_t    command_offset;                                          // command offset
+    uint_fast8_t    command_end;                                             // end of command
+    uint_fast8_t    complete_len;                                            // complete length of frame
+    uint_fast8_t    stop_bit;                                                // flag: frame has stop bit
+    uint_fast8_t    lsb_first;                                               // flag: LSB first
+    uint_fast8_t    flags;                                                   // some flags
 } IRMP_PARAMETER;
 
 #if IRMP_SUPPORT_SIRCS_PROTOCOL == 1
 
-static const PROGMEM IRMP_PARAMETER sircs_param = {
-IRMP_SIRCS_PROTOCOL,                                                // protocol:        ir protocol
-        SIRCS_1_PULSE_LEN_MIN,                                          // pulse_1_len_min: minimum length of pulse with bit value 1
-        SIRCS_1_PULSE_LEN_MAX,                                          // pulse_1_len_max: maximum length of pulse with bit value 1
-        SIRCS_PAUSE_LEN_MIN,  // pause_1_len_min: minimum length of pause with bit value 1
-        SIRCS_PAUSE_LEN_MAX,  // pause_1_len_max: maximum length of pause with bit value 1
-        SIRCS_0_PULSE_LEN_MIN,  // pulse_0_len_min: minimum length of pulse with bit value 0
-        SIRCS_0_PULSE_LEN_MAX,  // pulse_0_len_max: maximum length of pulse with bit value 0
-        SIRCS_PAUSE_LEN_MIN,  // pause_0_len_min: minimum length of pause with bit value 0
-        SIRCS_PAUSE_LEN_MAX,  // pause_0_len_max: maximum length of pause with bit value 0
-        SIRCS_ADDRESS_OFFSET, // address_offset:  address offset
-        SIRCS_ADDRESS_OFFSET + SIRCS_ADDRESS_LEN, // address_end:     end of address
-        SIRCS_COMMAND_OFFSET, // command_offset:  command offset
-        SIRCS_COMMAND_OFFSET + SIRCS_COMMAND_LEN, // command_end:     end of command
-        SIRCS_COMPLETE_DATA_LEN, // complete_len:    complete length of frame
-        SIRCS_STOP_BIT,       // stop_bit:        flag: frame has stop bit
-        SIRCS_LSB,            // lsb_first:       flag: LSB first
-        SIRCS_FLAGS           // flags:           some flags
-        };
+static const PROGMEM IRMP_PARAMETER sircs_param =
+{
+    IRMP_SIRCS_PROTOCOL,                                                // protocol:        ir protocol
+    SIRCS_1_PULSE_LEN_MIN,                                              // pulse_1_len_min: minimum length of pulse with bit value 1
+    SIRCS_1_PULSE_LEN_MAX,                                              // pulse_1_len_max: maximum length of pulse with bit value 1
+    SIRCS_PAUSE_LEN_MIN,                                                // pause_1_len_min: minimum length of pause with bit value 1
+    SIRCS_PAUSE_LEN_MAX,                                                // pause_1_len_max: maximum length of pause with bit value 1
+    SIRCS_0_PULSE_LEN_MIN,                                              // pulse_0_len_min: minimum length of pulse with bit value 0
+    SIRCS_0_PULSE_LEN_MAX,                                              // pulse_0_len_max: maximum length of pulse with bit value 0
+    SIRCS_PAUSE_LEN_MIN,                                                // pause_0_len_min: minimum length of pause with bit value 0
+    SIRCS_PAUSE_LEN_MAX,                                                // pause_0_len_max: maximum length of pause with bit value 0
+    SIRCS_ADDRESS_OFFSET,                                               // address_offset:  address offset
+    SIRCS_ADDRESS_OFFSET + SIRCS_ADDRESS_LEN,                           // address_end:     end of address
+    SIRCS_COMMAND_OFFSET,                                               // command_offset:  command offset
+    SIRCS_COMMAND_OFFSET + SIRCS_COMMAND_LEN,                           // command_end:     end of command
+    SIRCS_COMPLETE_DATA_LEN,                                            // complete_len:    complete length of frame
+    SIRCS_STOP_BIT,                                                     // stop_bit:        flag: frame has stop bit
+    SIRCS_LSB,                                                          // lsb_first:       flag: LSB first
+    SIRCS_FLAGS                                                         // flags:           some flags
+};
 
 #endif
 
 #if IRMP_SUPPORT_NEC_PROTOCOL == 1
 
-static const PROGMEM IRMP_PARAMETER nec_param = {
-IRMP_NEC_PROTOCOL,                                                  // protocol:        ir protocol
-        NEC_PULSE_LEN_MIN,                                              // pulse_1_len_min: minimum length of pulse with bit value 1
-        NEC_PULSE_LEN_MAX,                                              // pulse_1_len_max: maximum length of pulse with bit value 1
-        NEC_1_PAUSE_LEN_MIN,                                            // pause_1_len_min: minimum length of pause with bit value 1
-        NEC_1_PAUSE_LEN_MAX,                                            // pause_1_len_max: maximum length of pause with bit value 1
-        NEC_PULSE_LEN_MIN,                                              // pulse_0_len_min: minimum length of pulse with bit value 0
-        NEC_PULSE_LEN_MAX,                                              // pulse_0_len_max: maximum length of pulse with bit value 0
-        NEC_0_PAUSE_LEN_MIN,                                            // pause_0_len_min: minimum length of pause with bit value 0
-        NEC_0_PAUSE_LEN_MAX,                                            // pause_0_len_max: maximum length of pause with bit value 0
-        NEC_ADDRESS_OFFSET,                                                  // address_offset:  address offset
-        NEC_ADDRESS_OFFSET + NEC_ADDRESS_LEN,                                                  // address_end:     end of address
-        NEC_COMMAND_OFFSET,                                                  // command_offset:  command offset
-        NEC_COMMAND_OFFSET + NEC_COMMAND_LEN,                                                  // command_end:     end of command
-        NEC_COMPLETE_DATA_LEN,                                                  // complete_len:    complete length of frame
-        NEC_STOP_BIT,     // stop_bit:        flag: frame has stop bit
-        NEC_LSB,          // lsb_first:       flag: LSB first
-        NEC_FLAGS         // flags:           some flags
-        };
+static const PROGMEM IRMP_PARAMETER nec_param =
+{
+    IRMP_NEC_PROTOCOL,                                                  // protocol:        ir protocol
+    NEC_PULSE_LEN_MIN,                                                  // pulse_1_len_min: minimum length of pulse with bit value 1
+    NEC_PULSE_LEN_MAX,                                                  // pulse_1_len_max: maximum length of pulse with bit value 1
+    NEC_1_PAUSE_LEN_MIN,                                                // pause_1_len_min: minimum length of pause with bit value 1
+    NEC_1_PAUSE_LEN_MAX,                                                // pause_1_len_max: maximum length of pause with bit value 1
+    NEC_PULSE_LEN_MIN,                                                  // pulse_0_len_min: minimum length of pulse with bit value 0
+    NEC_PULSE_LEN_MAX,                                                  // pulse_0_len_max: maximum length of pulse with bit value 0
+    NEC_0_PAUSE_LEN_MIN,                                                // pause_0_len_min: minimum length of pause with bit value 0
+    NEC_0_PAUSE_LEN_MAX,                                                // pause_0_len_max: maximum length of pause with bit value 0
+    NEC_ADDRESS_OFFSET,                                                 // address_offset:  address offset
+    NEC_ADDRESS_OFFSET + NEC_ADDRESS_LEN,                               // address_end:     end of address
+    NEC_COMMAND_OFFSET,                                                 // command_offset:  command offset
+    NEC_COMMAND_OFFSET + NEC_COMMAND_LEN,                               // command_end:     end of command
+    NEC_COMPLETE_DATA_LEN,                                              // complete_len:    complete length of frame
+    NEC_STOP_BIT,                                                       // stop_bit:        flag: frame has stop bit
+    NEC_LSB,                                                            // lsb_first:       flag: LSB first
+    NEC_FLAGS                                                           // flags:           some flags
+};
 
-static const PROGMEM IRMP_PARAMETER nec_rep_param = {
-IRMP_NEC_PROTOCOL,                                                  // protocol:        ir protocol
-        NEC_PULSE_LEN_MIN,                                              // pulse_1_len_min: minimum length of pulse with bit value 1
-        NEC_PULSE_LEN_MAX,                                              // pulse_1_len_max: maximum length of pulse with bit value 1
-        NEC_1_PAUSE_LEN_MIN,                                            // pause_1_len_min: minimum length of pause with bit value 1
-        NEC_1_PAUSE_LEN_MAX,                                            // pause_1_len_max: maximum length of pause with bit value 1
-        NEC_PULSE_LEN_MIN,                                              // pulse_0_len_min: minimum length of pulse with bit value 0
-        NEC_PULSE_LEN_MAX,                                              // pulse_0_len_max: maximum length of pulse with bit value 0
-        NEC_0_PAUSE_LEN_MIN,                                            // pause_0_len_min: minimum length of pause with bit value 0
-        NEC_0_PAUSE_LEN_MAX,                                            // pause_0_len_max: maximum length of pause with bit value 0
-        0,                // address_offset:  address offset
-        0,                // address_end:     end of address
-        0,                // command_offset:  command offset
-        0,                // command_end:     end of command
-        0,                // complete_len:    complete length of frame
-        NEC_STOP_BIT,     // stop_bit:        flag: frame has stop bit
-        NEC_LSB,          // lsb_first:       flag: LSB first
-        NEC_FLAGS         // flags:           some flags
-        };
+static const PROGMEM IRMP_PARAMETER nec_rep_param =
+{
+    IRMP_NEC_PROTOCOL,                                                  // protocol:        ir protocol
+    NEC_PULSE_LEN_MIN,                                                  // pulse_1_len_min: minimum length of pulse with bit value 1
+    NEC_PULSE_LEN_MAX,                                                  // pulse_1_len_max: maximum length of pulse with bit value 1
+    NEC_1_PAUSE_LEN_MIN,                                                // pause_1_len_min: minimum length of pause with bit value 1
+    NEC_1_PAUSE_LEN_MAX,                                                // pause_1_len_max: maximum length of pause with bit value 1
+    NEC_PULSE_LEN_MIN,                                                  // pulse_0_len_min: minimum length of pulse with bit value 0
+    NEC_PULSE_LEN_MAX,                                                  // pulse_0_len_max: maximum length of pulse with bit value 0
+    NEC_0_PAUSE_LEN_MIN,                                                // pause_0_len_min: minimum length of pause with bit value 0
+    NEC_0_PAUSE_LEN_MAX,                                                // pause_0_len_max: maximum length of pause with bit value 0
+    0,                                                                  // address_offset:  address offset
+    0,                                                                  // address_end:     end of address
+    0,                                                                  // command_offset:  command offset
+    0,                                                                  // command_end:     end of command
+    0,                                                                  // complete_len:    complete length of frame
+    NEC_STOP_BIT,                                                       // stop_bit:        flag: frame has stop bit
+    NEC_LSB,                                                            // lsb_first:       flag: LSB first
+    NEC_FLAGS                                                           // flags:           some flags
+};
 
 #endif
 
@@ -1220,22 +1224,22 @@ IRMP_NEC_PROTOCOL,                                                  // protocol:
 static const PROGMEM IRMP_PARAMETER nec42_param =
 {
     IRMP_NEC42_PROTOCOL,                                                // protocol:        ir protocol
-    NEC_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    NEC_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    NEC_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    NEC_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    NEC_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    NEC_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    NEC_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    NEC_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    NEC42_ADDRESS_OFFSET,// address_offset:  address offset
-    NEC42_ADDRESS_OFFSET + NEC42_ADDRESS_LEN,// address_end:     end of address
-    NEC42_COMMAND_OFFSET,// command_offset:  command offset
-    NEC42_COMMAND_OFFSET + NEC42_COMMAND_LEN,// command_end:     end of command
-    NEC42_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    NEC_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    NEC_LSB,// lsb_first:       flag: LSB first
-    NEC_FLAGS// flags:           some flags
+    NEC_PULSE_LEN_MIN,                                                  // pulse_1_len_min: minimum length of pulse with bit value 1
+    NEC_PULSE_LEN_MAX,                                                  // pulse_1_len_max: maximum length of pulse with bit value 1
+    NEC_1_PAUSE_LEN_MIN,                                                // pause_1_len_min: minimum length of pause with bit value 1
+    NEC_1_PAUSE_LEN_MAX,                                                // pause_1_len_max: maximum length of pause with bit value 1
+    NEC_PULSE_LEN_MIN,                                                  // pulse_0_len_min: minimum length of pulse with bit value 0
+    NEC_PULSE_LEN_MAX,                                                  // pulse_0_len_max: maximum length of pulse with bit value 0
+    NEC_0_PAUSE_LEN_MIN,                                                // pause_0_len_min: minimum length of pause with bit value 0
+    NEC_0_PAUSE_LEN_MAX,                                                // pause_0_len_max: maximum length of pause with bit value 0
+    NEC42_ADDRESS_OFFSET,                                               // address_offset:  address offset
+    NEC42_ADDRESS_OFFSET + NEC42_ADDRESS_LEN,                           // address_end:     end of address
+    NEC42_COMMAND_OFFSET,                                               // command_offset:  command offset
+    NEC42_COMMAND_OFFSET + NEC42_COMMAND_LEN,                           // command_end:     end of command
+    NEC42_COMPLETE_DATA_LEN,                                            // complete_len:    complete length of frame
+    NEC_STOP_BIT,                                                       // stop_bit:        flag: frame has stop bit
+    NEC_LSB,                                                            // lsb_first:       flag: LSB first
+    NEC_FLAGS                                                           // flags:           some flags
 };
 
 #endif
@@ -1245,47 +1249,48 @@ static const PROGMEM IRMP_PARAMETER nec42_param =
 static const PROGMEM IRMP_PARAMETER lgair_param =
 {
     IRMP_LGAIR_PROTOCOL,                                                // protocol:        ir protocol
-    NEC_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    NEC_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    NEC_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    NEC_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    NEC_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    NEC_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    NEC_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    NEC_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    LGAIR_ADDRESS_OFFSET,// address_offset:  address offset
-    LGAIR_ADDRESS_OFFSET + LGAIR_ADDRESS_LEN,// address_end:     end of address
-    LGAIR_COMMAND_OFFSET,// command_offset:  command offset
-    LGAIR_COMMAND_OFFSET + LGAIR_COMMAND_LEN,// command_end:     end of command
-    LGAIR_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    NEC_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    NEC_LSB,// lsb_first:       flag: LSB first
-    NEC_FLAGS// flags:           some flags
+    NEC_PULSE_LEN_MIN,                                                  // pulse_1_len_min: minimum length of pulse with bit value 1
+    NEC_PULSE_LEN_MAX,                                                  // pulse_1_len_max: maximum length of pulse with bit value 1
+    NEC_1_PAUSE_LEN_MIN,                                                // pause_1_len_min: minimum length of pause with bit value 1
+    NEC_1_PAUSE_LEN_MAX,                                                // pause_1_len_max: maximum length of pause with bit value 1
+    NEC_PULSE_LEN_MIN,                                                  // pulse_0_len_min: minimum length of pulse with bit value 0
+    NEC_PULSE_LEN_MAX,                                                  // pulse_0_len_max: maximum length of pulse with bit value 0
+    NEC_0_PAUSE_LEN_MIN,                                                // pause_0_len_min: minimum length of pause with bit value 0
+    NEC_0_PAUSE_LEN_MAX,                                                // pause_0_len_max: maximum length of pause with bit value 0
+    LGAIR_ADDRESS_OFFSET,                                               // address_offset:  address offset
+    LGAIR_ADDRESS_OFFSET + LGAIR_ADDRESS_LEN,                           // address_end:     end of address
+    LGAIR_COMMAND_OFFSET,                                               // command_offset:  command offset
+    LGAIR_COMMAND_OFFSET + LGAIR_COMMAND_LEN,                           // command_end:     end of command
+    LGAIR_COMPLETE_DATA_LEN,                                            // complete_len:    complete length of frame
+    NEC_STOP_BIT,                                                       // stop_bit:        flag: frame has stop bit
+    NEC_LSB,                                                            // lsb_first:       flag: LSB first
+    NEC_FLAGS                                                           // flags:           some flags
 };
 
 #endif
 
 #if IRMP_SUPPORT_SAMSUNG_PROTOCOL == 1
 
-static const PROGMEM IRMP_PARAMETER samsung_param = {
-IRMP_SAMSUNG_PROTOCOL,                                              // protocol:        ir protocol
-        SAMSUNG_PULSE_LEN_MIN,                                          // pulse_1_len_min: minimum length of pulse with bit value 1
-        SAMSUNG_PULSE_LEN_MAX,                                          // pulse_1_len_max: maximum length of pulse with bit value 1
-        SAMSUNG_1_PAUSE_LEN_MIN,                                        // pause_1_len_min: minimum length of pause with bit value 1
-        SAMSUNG_1_PAUSE_LEN_MAX,                                        // pause_1_len_max: maximum length of pause with bit value 1
-        SAMSUNG_PULSE_LEN_MIN,                                          // pulse_0_len_min: minimum length of pulse with bit value 0
-        SAMSUNG_PULSE_LEN_MAX,                                          // pulse_0_len_max: maximum length of pulse with bit value 0
-        SAMSUNG_0_PAUSE_LEN_MIN,                                        // pause_0_len_min: minimum length of pause with bit value 0
-        SAMSUNG_0_PAUSE_LEN_MAX,                                        // pause_0_len_max: maximum length of pause with bit value 0
-        SAMSUNG_ADDRESS_OFFSET,                                              // address_offset:  address offset
-        SAMSUNG_ADDRESS_OFFSET + SAMSUNG_ADDRESS_LEN,                                             // address_end:     end of address
-        SAMSUNG_COMMAND_OFFSET,                                              // command_offset:  command offset
-        SAMSUNG_COMMAND_OFFSET + SAMSUNG_COMMAND_LEN,                                             // command_end:     end of command
-        SAMSUNG_COMPLETE_DATA_LEN,                                              // complete_len:    complete length of frame
-        SAMSUNG_STOP_BIT,     // stop_bit:        flag: frame has stop bit
-        SAMSUNG_LSB,          // lsb_first:       flag: LSB first
-        SAMSUNG_FLAGS         // flags:           some flags
-        };
+static const PROGMEM IRMP_PARAMETER samsung_param =
+{
+    IRMP_SAMSUNG_PROTOCOL,                                              // protocol:        ir protocol
+    SAMSUNG_PULSE_LEN_MIN,                                              // pulse_1_len_min: minimum length of pulse with bit value 1
+    SAMSUNG_PULSE_LEN_MAX,                                              // pulse_1_len_max: maximum length of pulse with bit value 1
+    SAMSUNG_1_PAUSE_LEN_MIN,                                            // pause_1_len_min: minimum length of pause with bit value 1
+    SAMSUNG_1_PAUSE_LEN_MAX,                                            // pause_1_len_max: maximum length of pause with bit value 1
+    SAMSUNG_PULSE_LEN_MIN,                                              // pulse_0_len_min: minimum length of pulse with bit value 0
+    SAMSUNG_PULSE_LEN_MAX,                                              // pulse_0_len_max: maximum length of pulse with bit value 0
+    SAMSUNG_0_PAUSE_LEN_MIN,                                            // pause_0_len_min: minimum length of pause with bit value 0
+    SAMSUNG_0_PAUSE_LEN_MAX,                                            // pause_0_len_max: maximum length of pause with bit value 0
+    SAMSUNG_ADDRESS_OFFSET,                                             // address_offset:  address offset
+    SAMSUNG_ADDRESS_OFFSET + SAMSUNG_ADDRESS_LEN,                       // address_end:     end of address
+    SAMSUNG_COMMAND_OFFSET,                                             // command_offset:  command offset
+    SAMSUNG_COMMAND_OFFSET + SAMSUNG_COMMAND_LEN,                       // command_end:     end of command
+    SAMSUNG_COMPLETE_DATA_LEN,                                          // complete_len:    complete length of frame
+    SAMSUNG_STOP_BIT,                                                   // stop_bit:        flag: frame has stop bit
+    SAMSUNG_LSB,                                                        // lsb_first:       flag: LSB first
+    SAMSUNG_FLAGS                                                       // flags:           some flags
+};
 
 #endif
 
@@ -1294,22 +1299,22 @@ IRMP_SAMSUNG_PROTOCOL,                                              // protocol:
 static const PROGMEM IRMP_PARAMETER samsungah_param =
 {
     IRMP_SAMSUNGAH_PROTOCOL,                                            // protocol:        ir protocol
-    SAMSUNGAH_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    SAMSUNGAH_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    SAMSUNGAH_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    SAMSUNGAH_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    SAMSUNGAH_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    SAMSUNGAH_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    SAMSUNGAH_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    SAMSUNGAH_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    SAMSUNGAH_ADDRESS_OFFSET,// address_offset:  address offset
-    SAMSUNGAH_ADDRESS_OFFSET + SAMSUNGAH_ADDRESS_LEN,// address_end:     end of address
-    SAMSUNGAH_COMMAND_OFFSET,// command_offset:  command offset
-    SAMSUNGAH_COMMAND_OFFSET + SAMSUNGAH_COMMAND_LEN,// command_end:     end of command
-    SAMSUNGAH_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    SAMSUNGAH_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    SAMSUNGAH_LSB,// lsb_first:       flag: LSB first
-    SAMSUNGAH_FLAGS// flags:           some flags
+    SAMSUNGAH_PULSE_LEN_MIN,                                            // pulse_1_len_min: minimum length of pulse with bit value 1
+    SAMSUNGAH_PULSE_LEN_MAX,                                            // pulse_1_len_max: maximum length of pulse with bit value 1
+    SAMSUNGAH_1_PAUSE_LEN_MIN,                                          // pause_1_len_min: minimum length of pause with bit value 1
+    SAMSUNGAH_1_PAUSE_LEN_MAX,                                          // pause_1_len_max: maximum length of pause with bit value 1
+    SAMSUNGAH_PULSE_LEN_MIN,                                            // pulse_0_len_min: minimum length of pulse with bit value 0
+    SAMSUNGAH_PULSE_LEN_MAX,                                            // pulse_0_len_max: maximum length of pulse with bit value 0
+    SAMSUNGAH_0_PAUSE_LEN_MIN,                                          // pause_0_len_min: minimum length of pause with bit value 0
+    SAMSUNGAH_0_PAUSE_LEN_MAX,                                          // pause_0_len_max: maximum length of pause with bit value 0
+    SAMSUNGAH_ADDRESS_OFFSET,                                           // address_offset:  address offset
+    SAMSUNGAH_ADDRESS_OFFSET + SAMSUNGAH_ADDRESS_LEN,                   // address_end:     end of address
+    SAMSUNGAH_COMMAND_OFFSET,                                           // command_offset:  command offset
+    SAMSUNGAH_COMMAND_OFFSET + SAMSUNGAH_COMMAND_LEN,                   // command_end:     end of command
+    SAMSUNGAH_COMPLETE_DATA_LEN,                                        // complete_len:    complete length of frame
+    SAMSUNGAH_STOP_BIT,                                                 // stop_bit:        flag: frame has stop bit
+    SAMSUNGAH_LSB,                                                      // lsb_first:       flag: LSB first
+    SAMSUNGAH_FLAGS                                                     // flags:           some flags
 };
 
 #endif
@@ -1319,22 +1324,22 @@ static const PROGMEM IRMP_PARAMETER samsungah_param =
 static const PROGMEM IRMP_PARAMETER telefunken_param =
 {
     IRMP_TELEFUNKEN_PROTOCOL,                                           // protocol:        ir protocol
-    TELEFUNKEN_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    TELEFUNKEN_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    TELEFUNKEN_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    TELEFUNKEN_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    TELEFUNKEN_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    TELEFUNKEN_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    TELEFUNKEN_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    TELEFUNKEN_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    TELEFUNKEN_ADDRESS_OFFSET,// address_offset:  address offset
-    TELEFUNKEN_ADDRESS_OFFSET + TELEFUNKEN_ADDRESS_LEN,// address_end:     end of address
-    TELEFUNKEN_COMMAND_OFFSET,// command_offset:  command offset
-    TELEFUNKEN_COMMAND_OFFSET + TELEFUNKEN_COMMAND_LEN,// command_end:     end of command
-    TELEFUNKEN_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    TELEFUNKEN_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    TELEFUNKEN_LSB,// lsb_first:       flag: LSB first
-    TELEFUNKEN_FLAGS// flags:           some flags
+    TELEFUNKEN_PULSE_LEN_MIN,                                           // pulse_1_len_min: minimum length of pulse with bit value 1
+    TELEFUNKEN_PULSE_LEN_MAX,                                           // pulse_1_len_max: maximum length of pulse with bit value 1
+    TELEFUNKEN_1_PAUSE_LEN_MIN,                                         // pause_1_len_min: minimum length of pause with bit value 1
+    TELEFUNKEN_1_PAUSE_LEN_MAX,                                         // pause_1_len_max: maximum length of pause with bit value 1
+    TELEFUNKEN_PULSE_LEN_MIN,                                           // pulse_0_len_min: minimum length of pulse with bit value 0
+    TELEFUNKEN_PULSE_LEN_MAX,                                           // pulse_0_len_max: maximum length of pulse with bit value 0
+    TELEFUNKEN_0_PAUSE_LEN_MIN,                                         // pause_0_len_min: minimum length of pause with bit value 0
+    TELEFUNKEN_0_PAUSE_LEN_MAX,                                         // pause_0_len_max: maximum length of pause with bit value 0
+    TELEFUNKEN_ADDRESS_OFFSET,                                          // address_offset:  address offset
+    TELEFUNKEN_ADDRESS_OFFSET + TELEFUNKEN_ADDRESS_LEN,                 // address_end:     end of address
+    TELEFUNKEN_COMMAND_OFFSET,                                          // command_offset:  command offset
+    TELEFUNKEN_COMMAND_OFFSET + TELEFUNKEN_COMMAND_LEN,                 // command_end:     end of command
+    TELEFUNKEN_COMPLETE_DATA_LEN,                                       // complete_len:    complete length of frame
+    TELEFUNKEN_STOP_BIT,                                                // stop_bit:        flag: frame has stop bit
+    TELEFUNKEN_LSB,                                                     // lsb_first:       flag: LSB first
+    TELEFUNKEN_FLAGS                                                    // flags:           some flags
 };
 
 #endif
@@ -1344,47 +1349,48 @@ static const PROGMEM IRMP_PARAMETER telefunken_param =
 static const PROGMEM IRMP_PARAMETER matsushita_param =
 {
     IRMP_MATSUSHITA_PROTOCOL,                                           // protocol:        ir protocol
-    MATSUSHITA_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    MATSUSHITA_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    MATSUSHITA_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    MATSUSHITA_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    MATSUSHITA_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    MATSUSHITA_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    MATSUSHITA_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    MATSUSHITA_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    MATSUSHITA_ADDRESS_OFFSET,// address_offset:  address offset
-    MATSUSHITA_ADDRESS_OFFSET + MATSUSHITA_ADDRESS_LEN,// address_end:     end of address
-    MATSUSHITA_COMMAND_OFFSET,// command_offset:  command offset
-    MATSUSHITA_COMMAND_OFFSET + MATSUSHITA_COMMAND_LEN,// command_end:     end of command
-    MATSUSHITA_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    MATSUSHITA_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    MATSUSHITA_LSB,// lsb_first:       flag: LSB first
-    MATSUSHITA_FLAGS// flags:           some flags
+    MATSUSHITA_PULSE_LEN_MIN,                                           // pulse_1_len_min: minimum length of pulse with bit value 1
+    MATSUSHITA_PULSE_LEN_MAX,                                           // pulse_1_len_max: maximum length of pulse with bit value 1
+    MATSUSHITA_1_PAUSE_LEN_MIN,                                         // pause_1_len_min: minimum length of pause with bit value 1
+    MATSUSHITA_1_PAUSE_LEN_MAX,                                         // pause_1_len_max: maximum length of pause with bit value 1
+    MATSUSHITA_PULSE_LEN_MIN,                                           // pulse_0_len_min: minimum length of pulse with bit value 0
+    MATSUSHITA_PULSE_LEN_MAX,                                           // pulse_0_len_max: maximum length of pulse with bit value 0
+    MATSUSHITA_0_PAUSE_LEN_MIN,                                         // pause_0_len_min: minimum length of pause with bit value 0
+    MATSUSHITA_0_PAUSE_LEN_MAX,                                         // pause_0_len_max: maximum length of pause with bit value 0
+    MATSUSHITA_ADDRESS_OFFSET,                                          // address_offset:  address offset
+    MATSUSHITA_ADDRESS_OFFSET + MATSUSHITA_ADDRESS_LEN,                 // address_end:     end of address
+    MATSUSHITA_COMMAND_OFFSET,                                          // command_offset:  command offset
+    MATSUSHITA_COMMAND_OFFSET + MATSUSHITA_COMMAND_LEN,                 // command_end:     end of command
+    MATSUSHITA_COMPLETE_DATA_LEN,                                       // complete_len:    complete length of frame
+    MATSUSHITA_STOP_BIT,                                                // stop_bit:        flag: frame has stop bit
+    MATSUSHITA_LSB,                                                     // lsb_first:       flag: LSB first
+    MATSUSHITA_FLAGS                                                    // flags:           some flags
 };
 
 #endif
 
 #if IRMP_SUPPORT_KASEIKYO_PROTOCOL == 1
 
-static const PROGMEM IRMP_PARAMETER kaseikyo_param = {
-IRMP_KASEIKYO_PROTOCOL,                                             // protocol:        ir protocol
-        KASEIKYO_PULSE_LEN_MIN,                                         // pulse_1_len_min: minimum length of pulse with bit value 1
-        KASEIKYO_PULSE_LEN_MAX,                                         // pulse_1_len_max: maximum length of pulse with bit value 1
-        KASEIKYO_1_PAUSE_LEN_MIN,                                       // pause_1_len_min: minimum length of pause with bit value 1
-        KASEIKYO_1_PAUSE_LEN_MAX,                                       // pause_1_len_max: maximum length of pause with bit value 1
-        KASEIKYO_PULSE_LEN_MIN,                                         // pulse_0_len_min: minimum length of pulse with bit value 0
-        KASEIKYO_PULSE_LEN_MAX,                                         // pulse_0_len_max: maximum length of pulse with bit value 0
-        KASEIKYO_0_PAUSE_LEN_MIN,                                       // pause_0_len_min: minimum length of pause with bit value 0
-        KASEIKYO_0_PAUSE_LEN_MAX,                                       // pause_0_len_max: maximum length of pause with bit value 0
-        KASEIKYO_ADDRESS_OFFSET,                                             // address_offset:  address offset
-        KASEIKYO_ADDRESS_OFFSET + KASEIKYO_ADDRESS_LEN,                                           // address_end:     end of address
-        KASEIKYO_COMMAND_OFFSET,                                             // command_offset:  command offset
-        KASEIKYO_COMMAND_OFFSET + KASEIKYO_COMMAND_LEN,                                           // command_end:     end of command
-        KASEIKYO_COMPLETE_DATA_LEN,                                             // complete_len:    complete length of frame
-        KASEIKYO_STOP_BIT,         // stop_bit:        flag: frame has stop bit
-        KASEIKYO_LSB,              // lsb_first:       flag: LSB first
-        KASEIKYO_FLAGS             // flags:           some flags
-        };
+static const PROGMEM IRMP_PARAMETER kaseikyo_param =
+{
+    IRMP_KASEIKYO_PROTOCOL,                                             // protocol:        ir protocol
+    KASEIKYO_PULSE_LEN_MIN,                                             // pulse_1_len_min: minimum length of pulse with bit value 1
+    KASEIKYO_PULSE_LEN_MAX,                                             // pulse_1_len_max: maximum length of pulse with bit value 1
+    KASEIKYO_1_PAUSE_LEN_MIN,                                           // pause_1_len_min: minimum length of pause with bit value 1
+    KASEIKYO_1_PAUSE_LEN_MAX,                                           // pause_1_len_max: maximum length of pause with bit value 1
+    KASEIKYO_PULSE_LEN_MIN,                                             // pulse_0_len_min: minimum length of pulse with bit value 0
+    KASEIKYO_PULSE_LEN_MAX,                                             // pulse_0_len_max: maximum length of pulse with bit value 0
+    KASEIKYO_0_PAUSE_LEN_MIN,                                           // pause_0_len_min: minimum length of pause with bit value 0
+    KASEIKYO_0_PAUSE_LEN_MAX,                                           // pause_0_len_max: maximum length of pause with bit value 0
+    KASEIKYO_ADDRESS_OFFSET,                                            // address_offset:  address offset
+    KASEIKYO_ADDRESS_OFFSET + KASEIKYO_ADDRESS_LEN,                     // address_end:     end of address
+    KASEIKYO_COMMAND_OFFSET,                                            // command_offset:  command offset
+    KASEIKYO_COMMAND_OFFSET + KASEIKYO_COMMAND_LEN,                     // command_end:     end of command
+    KASEIKYO_COMPLETE_DATA_LEN,                                         // complete_len:    complete length of frame
+    KASEIKYO_STOP_BIT,                                                  // stop_bit:        flag: frame has stop bit
+    KASEIKYO_LSB,                                                       // lsb_first:       flag: LSB first
+    KASEIKYO_FLAGS                                                      // flags:           some flags
+};
 
 #endif
 
@@ -1393,22 +1399,22 @@ IRMP_KASEIKYO_PROTOCOL,                                             // protocol:
 static const PROGMEM IRMP_PARAMETER panasonic_param =
 {
     IRMP_PANASONIC_PROTOCOL,                                            // protocol:        ir protocol
-    PANASONIC_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    PANASONIC_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    PANASONIC_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    PANASONIC_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    PANASONIC_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    PANASONIC_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    PANASONIC_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    PANASONIC_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    PANASONIC_ADDRESS_OFFSET,// address_offset:  address offset
-    PANASONIC_ADDRESS_OFFSET + PANASONIC_ADDRESS_LEN,// address_end:     end of address
-    PANASONIC_COMMAND_OFFSET,// command_offset:  command offset
-    PANASONIC_COMMAND_OFFSET + PANASONIC_COMMAND_LEN,// command_end:     end of command
-    PANASONIC_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    PANASONIC_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    PANASONIC_LSB,// lsb_first:       flag: LSB first
-    PANASONIC_FLAGS// flags:           some flags
+    PANASONIC_PULSE_LEN_MIN,                                            // pulse_1_len_min: minimum length of pulse with bit value 1
+    PANASONIC_PULSE_LEN_MAX,                                            // pulse_1_len_max: maximum length of pulse with bit value 1
+    PANASONIC_1_PAUSE_LEN_MIN,                                          // pause_1_len_min: minimum length of pause with bit value 1
+    PANASONIC_1_PAUSE_LEN_MAX,                                          // pause_1_len_max: maximum length of pause with bit value 1
+    PANASONIC_PULSE_LEN_MIN,                                            // pulse_0_len_min: minimum length of pulse with bit value 0
+    PANASONIC_PULSE_LEN_MAX,                                            // pulse_0_len_max: maximum length of pulse with bit value 0
+    PANASONIC_0_PAUSE_LEN_MIN,                                          // pause_0_len_min: minimum length of pause with bit value 0
+    PANASONIC_0_PAUSE_LEN_MAX,                                          // pause_0_len_max: maximum length of pause with bit value 0
+    PANASONIC_ADDRESS_OFFSET,                                           // address_offset:  address offset
+    PANASONIC_ADDRESS_OFFSET + PANASONIC_ADDRESS_LEN,                   // address_end:     end of address
+    PANASONIC_COMMAND_OFFSET,                                           // command_offset:  command offset
+    PANASONIC_COMMAND_OFFSET + PANASONIC_COMMAND_LEN,                   // command_end:     end of command
+    PANASONIC_COMPLETE_DATA_LEN,                                        // complete_len:    complete length of frame
+    PANASONIC_STOP_BIT,                                                 // stop_bit:        flag: frame has stop bit
+    PANASONIC_LSB,                                                      // lsb_first:       flag: LSB first
+    PANASONIC_FLAGS                                                     // flags:           some flags
 };
 
 #endif
@@ -1418,22 +1424,22 @@ static const PROGMEM IRMP_PARAMETER panasonic_param =
 static const PROGMEM IRMP_PARAMETER mitsu_heavy_param =
 {
     IRMP_MITSU_HEAVY_PROTOCOL,                                          // protocol:        ir protocol
-    MITSU_HEAVY_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    MITSU_HEAVY_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    MITSU_HEAVY_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    MITSU_HEAVY_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    MITSU_HEAVY_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    MITSU_HEAVY_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    MITSU_HEAVY_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    MITSU_HEAVY_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    MITSU_HEAVY_ADDRESS_OFFSET,// address_offset:  address offset
-    MITSU_HEAVY_ADDRESS_OFFSET + MITSU_HEAVY_ADDRESS_LEN,// address_end:     end of address
-    MITSU_HEAVY_COMMAND_OFFSET,// command_offset:  command offset
-    MITSU_HEAVY_COMMAND_OFFSET + MITSU_HEAVY_COMMAND_LEN,// command_end:     end of command
-    MITSU_HEAVY_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    MITSU_HEAVY_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    MITSU_HEAVY_LSB,// lsb_first:       flag: LSB first
-    MITSU_HEAVY_FLAGS// flags:           some flags
+    MITSU_HEAVY_PULSE_LEN_MIN,                                          // pulse_1_len_min: minimum length of pulse with bit value 1
+    MITSU_HEAVY_PULSE_LEN_MAX,                                          // pulse_1_len_max: maximum length of pulse with bit value 1
+    MITSU_HEAVY_1_PAUSE_LEN_MIN,                                        // pause_1_len_min: minimum length of pause with bit value 1
+    MITSU_HEAVY_1_PAUSE_LEN_MAX,                                        // pause_1_len_max: maximum length of pause with bit value 1
+    MITSU_HEAVY_PULSE_LEN_MIN,                                          // pulse_0_len_min: minimum length of pulse with bit value 0
+    MITSU_HEAVY_PULSE_LEN_MAX,                                          // pulse_0_len_max: maximum length of pulse with bit value 0
+    MITSU_HEAVY_0_PAUSE_LEN_MIN,                                        // pause_0_len_min: minimum length of pause with bit value 0
+    MITSU_HEAVY_0_PAUSE_LEN_MAX,                                        // pause_0_len_max: maximum length of pause with bit value 0
+    MITSU_HEAVY_ADDRESS_OFFSET,                                         // address_offset:  address offset
+    MITSU_HEAVY_ADDRESS_OFFSET + MITSU_HEAVY_ADDRESS_LEN,               // address_end:     end of address
+    MITSU_HEAVY_COMMAND_OFFSET,                                         // command_offset:  command offset
+    MITSU_HEAVY_COMMAND_OFFSET + MITSU_HEAVY_COMMAND_LEN,               // command_end:     end of command
+    MITSU_HEAVY_COMPLETE_DATA_LEN,                                      // complete_len:    complete length of frame
+    MITSU_HEAVY_STOP_BIT,                                               // stop_bit:        flag: frame has stop bit
+    MITSU_HEAVY_LSB,                                                    // lsb_first:       flag: LSB first
+    MITSU_HEAVY_FLAGS                                                   // flags:           some flags
 };
 
 #endif
@@ -1443,22 +1449,22 @@ static const PROGMEM IRMP_PARAMETER mitsu_heavy_param =
 static const PROGMEM IRMP_PARAMETER vincent_param =
 {
     IRMP_VINCENT_PROTOCOL,                                              // protocol:        ir protocol
-    VINCENT_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    VINCENT_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    VINCENT_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    VINCENT_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    VINCENT_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    VINCENT_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    VINCENT_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    VINCENT_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    VINCENT_ADDRESS_OFFSET,// address_offset:  address offset
-    VINCENT_ADDRESS_OFFSET + VINCENT_ADDRESS_LEN,// address_end:     end of address
-    VINCENT_COMMAND_OFFSET,// command_offset:  command offset
-    VINCENT_COMMAND_OFFSET + VINCENT_COMMAND_LEN,// command_end:     end of command
-    VINCENT_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    VINCENT_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    VINCENT_LSB,// lsb_first:       flag: LSB first
-    VINCENT_FLAGS// flags:           some flags
+    VINCENT_PULSE_LEN_MIN,                                              // pulse_1_len_min: minimum length of pulse with bit value 1
+    VINCENT_PULSE_LEN_MAX,                                              // pulse_1_len_max: maximum length of pulse with bit value 1
+    VINCENT_1_PAUSE_LEN_MIN,                                            // pause_1_len_min: minimum length of pause with bit value 1
+    VINCENT_1_PAUSE_LEN_MAX,                                            // pause_1_len_max: maximum length of pause with bit value 1
+    VINCENT_PULSE_LEN_MIN,                                              // pulse_0_len_min: minimum length of pulse with bit value 0
+    VINCENT_PULSE_LEN_MAX,                                              // pulse_0_len_max: maximum length of pulse with bit value 0
+    VINCENT_0_PAUSE_LEN_MIN,                                            // pause_0_len_min: minimum length of pause with bit value 0
+    VINCENT_0_PAUSE_LEN_MAX,                                            // pause_0_len_max: maximum length of pause with bit value 0
+    VINCENT_ADDRESS_OFFSET,                                             // address_offset:  address offset
+    VINCENT_ADDRESS_OFFSET + VINCENT_ADDRESS_LEN,                       // address_end:     end of address
+    VINCENT_COMMAND_OFFSET,                                             // command_offset:  command offset
+    VINCENT_COMMAND_OFFSET + VINCENT_COMMAND_LEN,                       // command_end:     end of command
+    VINCENT_COMPLETE_DATA_LEN,                                          // complete_len:    complete length of frame
+    VINCENT_STOP_BIT,                                                   // stop_bit:        flag: frame has stop bit
+    VINCENT_LSB,                                                        // lsb_first:       flag: LSB first
+    VINCENT_FLAGS                                                       // flags:           some flags
 };
 
 #endif
@@ -1468,22 +1474,22 @@ static const PROGMEM IRMP_PARAMETER vincent_param =
 static const PROGMEM IRMP_PARAMETER recs80_param =
 {
     IRMP_RECS80_PROTOCOL,                                               // protocol:        ir protocol
-    RECS80_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    RECS80_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    RECS80_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    RECS80_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    RECS80_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    RECS80_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    RECS80_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    RECS80_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    RECS80_ADDRESS_OFFSET,// address_offset:  address offset
-    RECS80_ADDRESS_OFFSET + RECS80_ADDRESS_LEN,// address_end:     end of address
-    RECS80_COMMAND_OFFSET,// command_offset:  command offset
-    RECS80_COMMAND_OFFSET + RECS80_COMMAND_LEN,// command_end:     end of command
-    RECS80_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    RECS80_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    RECS80_LSB,// lsb_first:       flag: LSB first
-    RECS80_FLAGS// flags:           some flags
+    RECS80_PULSE_LEN_MIN,                                               // pulse_1_len_min: minimum length of pulse with bit value 1
+    RECS80_PULSE_LEN_MAX,                                               // pulse_1_len_max: maximum length of pulse with bit value 1
+    RECS80_1_PAUSE_LEN_MIN,                                             // pause_1_len_min: minimum length of pause with bit value 1
+    RECS80_1_PAUSE_LEN_MAX,                                             // pause_1_len_max: maximum length of pause with bit value 1
+    RECS80_PULSE_LEN_MIN,                                               // pulse_0_len_min: minimum length of pulse with bit value 0
+    RECS80_PULSE_LEN_MAX,                                               // pulse_0_len_max: maximum length of pulse with bit value 0
+    RECS80_0_PAUSE_LEN_MIN,                                             // pause_0_len_min: minimum length of pause with bit value 0
+    RECS80_0_PAUSE_LEN_MAX,                                             // pause_0_len_max: maximum length of pause with bit value 0
+    RECS80_ADDRESS_OFFSET,                                              // address_offset:  address offset
+    RECS80_ADDRESS_OFFSET + RECS80_ADDRESS_LEN,                         // address_end:     end of address
+    RECS80_COMMAND_OFFSET,                                              // command_offset:  command offset
+    RECS80_COMMAND_OFFSET + RECS80_COMMAND_LEN,                         // command_end:     end of command
+    RECS80_COMPLETE_DATA_LEN,                                           // complete_len:    complete length of frame
+    RECS80_STOP_BIT,                                                    // stop_bit:        flag: frame has stop bit
+    RECS80_LSB,                                                         // lsb_first:       flag: LSB first
+    RECS80_FLAGS                                                        // flags:           some flags
 };
 
 #endif
@@ -1493,22 +1499,22 @@ static const PROGMEM IRMP_PARAMETER recs80_param =
 static const PROGMEM IRMP_PARAMETER rc5_param =
 {
     IRMP_RC5_PROTOCOL,                                                  // protocol:        ir protocol
-    RC5_BIT_LEN_MIN,// pulse_1_len_min: here: minimum length of short pulse
-    RC5_BIT_LEN_MAX,// pulse_1_len_max: here: maximum length of short pulse
-    RC5_BIT_LEN_MIN,// pause_1_len_min: here: minimum length of short pause
-    RC5_BIT_LEN_MAX,// pause_1_len_max: here: maximum length of short pause
-    0,// pulse_0_len_min: here: not used
-    0,// pulse_0_len_max: here: not used
-    0,// pause_0_len_min: here: not used
-    0,// pause_0_len_max: here: not used
-    RC5_ADDRESS_OFFSET,// address_offset:  address offset
-    RC5_ADDRESS_OFFSET + RC5_ADDRESS_LEN,// address_end:     end of address
-    RC5_COMMAND_OFFSET,// command_offset:  command offset
-    RC5_COMMAND_OFFSET + RC5_COMMAND_LEN,// command_end:     end of command
-    RC5_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    RC5_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    RC5_LSB,// lsb_first:       flag: LSB first
-    RC5_FLAGS// flags:           some flags
+    RC5_BIT_LEN_MIN,                                                    // pulse_1_len_min: here: minimum length of short pulse
+    RC5_BIT_LEN_MAX,                                                    // pulse_1_len_max: here: maximum length of short pulse
+    RC5_BIT_LEN_MIN,                                                    // pause_1_len_min: here: minimum length of short pause
+    RC5_BIT_LEN_MAX,                                                    // pause_1_len_max: here: maximum length of short pause
+    0,                                                                  // pulse_0_len_min: here: not used
+    0,                                                                  // pulse_0_len_max: here: not used
+    0,                                                                  // pause_0_len_min: here: not used
+    0,                                                                  // pause_0_len_max: here: not used
+    RC5_ADDRESS_OFFSET,                                                 // address_offset:  address offset
+    RC5_ADDRESS_OFFSET + RC5_ADDRESS_LEN,                               // address_end:     end of address
+    RC5_COMMAND_OFFSET,                                                 // command_offset:  command offset
+    RC5_COMMAND_OFFSET + RC5_COMMAND_LEN,                               // command_end:     end of command
+    RC5_COMPLETE_DATA_LEN,                                              // complete_len:    complete length of frame
+    RC5_STOP_BIT,                                                       // stop_bit:        flag: frame has stop bit
+    RC5_LSB,                                                            // lsb_first:       flag: LSB first
+    RC5_FLAGS                                                           // flags:           some flags
 };
 
 #endif
@@ -1518,22 +1524,22 @@ static const PROGMEM IRMP_PARAMETER rc5_param =
 static const PROGMEM IRMP_PARAMETER rcii_param =
 {
     IRMP_RCII_PROTOCOL,                                                 // protocol:        ir protocol
-    RCII_BIT_LEN_MIN,// pulse_1_len_min: here: minimum length of short pulse
-    RCII_BIT_LEN_MAX,// pulse_1_len_max: here: maximum length of short pulse
-    RCII_BIT_LEN_MIN,// pause_1_len_min: here: minimum length of short pause
-    RCII_BIT_LEN_MAX,// pause_1_len_max: here: maximum length of short pause
-    RCII_BIT_LEN_MIN,// pulse_0_len_min: here: not used
-    RCII_BIT_LEN_MAX,// pulse_0_len_max: here: not used
-    RCII_BIT_LEN_MIN,// pause_0_len_min: here: not used
-    RCII_BIT_LEN_MAX,// pause_0_len_max: here: not used
-    RCII_ADDRESS_OFFSET,// address_offset:  address offset
-    RCII_ADDRESS_OFFSET + RCII_ADDRESS_LEN,// address_end:     end of address
-    RCII_COMMAND_OFFSET,// command_offset:  command offset
-    RCII_COMMAND_OFFSET + RCII_COMMAND_LEN,// command_end:     end of command
-    RCII_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    RCII_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    RCII_LSB,// lsb_first:       flag: LSB first
-    RCII_FLAGS// flags:           some flags
+    RCII_BIT_LEN_MIN,                                                   // pulse_1_len_min: here: minimum length of short pulse
+    RCII_BIT_LEN_MAX,                                                   // pulse_1_len_max: here: maximum length of short pulse
+    RCII_BIT_LEN_MIN,                                                   // pause_1_len_min: here: minimum length of short pause
+    RCII_BIT_LEN_MAX,                                                   // pause_1_len_max: here: maximum length of short pause
+    RCII_BIT_LEN_MIN,                                                                  // pulse_0_len_min: here: not used
+    RCII_BIT_LEN_MAX,                                                                  // pulse_0_len_max: here: not used
+    RCII_BIT_LEN_MIN,                                                                  // pause_0_len_min: here: not used
+    RCII_BIT_LEN_MAX,                                                                  // pause_0_len_max: here: not used
+    RCII_ADDRESS_OFFSET,                                                // address_offset:  address offset
+    RCII_ADDRESS_OFFSET + RCII_ADDRESS_LEN,                             // address_end:     end of address
+    RCII_COMMAND_OFFSET,                                                // command_offset:  command offset
+    RCII_COMMAND_OFFSET + RCII_COMMAND_LEN,                             // command_end:     end of command
+    RCII_COMPLETE_DATA_LEN,                                             // complete_len:    complete length of frame
+    RCII_STOP_BIT,                                                      // stop_bit:        flag: frame has stop bit
+    RCII_LSB,                                                           // lsb_first:       flag: LSB first
+    RCII_FLAGS                                                          // flags:           some flags
 };
 
 #endif
@@ -1543,22 +1549,22 @@ static const PROGMEM IRMP_PARAMETER rcii_param =
 static const PROGMEM IRMP_PARAMETER s100_param =
 {
     IRMP_S100_PROTOCOL,                                                 // protocol:        ir protocol
-    S100_BIT_LEN_MIN,// pulse_1_len_min: here: minimum length of short pulse
-    S100_BIT_LEN_MAX,// pulse_1_len_max: here: maximum length of short pulse
-    S100_BIT_LEN_MIN,// pause_1_len_min: here: minimum length of short pause
-    S100_BIT_LEN_MAX,// pause_1_len_max: here: maximum length of short pause
-    0,// pulse_0_len_min: here: not used
-    0,// pulse_0_len_max: here: not used
-    0,// pause_0_len_min: here: not used
-    0,// pause_0_len_max: here: not used
-    S100_ADDRESS_OFFSET,// address_offset:  address offset
-    S100_ADDRESS_OFFSET + S100_ADDRESS_LEN,// address_end:     end of address
-    S100_COMMAND_OFFSET,// command_offset:  command offset
-    S100_COMMAND_OFFSET + S100_COMMAND_LEN,// command_end:     end of command
-    S100_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    S100_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    S100_LSB,// lsb_first:       flag: LSB first
-    S100_FLAGS// flags:           some flags
+    S100_BIT_LEN_MIN,                                                   // pulse_1_len_min: here: minimum length of short pulse
+    S100_BIT_LEN_MAX,                                                   // pulse_1_len_max: here: maximum length of short pulse
+    S100_BIT_LEN_MIN,                                                   // pause_1_len_min: here: minimum length of short pause
+    S100_BIT_LEN_MAX,                                                   // pause_1_len_max: here: maximum length of short pause
+    0,                                                                  // pulse_0_len_min: here: not used
+    0,                                                                  // pulse_0_len_max: here: not used
+    0,                                                                  // pause_0_len_min: here: not used
+    0,                                                                  // pause_0_len_max: here: not used
+    S100_ADDRESS_OFFSET,                                                // address_offset:  address offset
+    S100_ADDRESS_OFFSET + S100_ADDRESS_LEN,                             // address_end:     end of address
+    S100_COMMAND_OFFSET,                                                // command_offset:  command offset
+    S100_COMMAND_OFFSET + S100_COMMAND_LEN,                             // command_end:     end of command
+    S100_COMPLETE_DATA_LEN,                                             // complete_len:    complete length of frame
+    S100_STOP_BIT,                                                      // stop_bit:        flag: frame has stop bit
+    S100_LSB,                                                           // lsb_first:       flag: LSB first
+    S100_FLAGS                                                          // flags:           some flags
 };
 
 #endif
@@ -1568,48 +1574,49 @@ static const PROGMEM IRMP_PARAMETER s100_param =
 static const PROGMEM IRMP_PARAMETER denon_param =
 {
     IRMP_DENON_PROTOCOL,                                                // protocol:        ir protocol
-    DENON_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    DENON_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    DENON_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    DENON_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    DENON_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    DENON_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    DENON_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    DENON_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    DENON_ADDRESS_OFFSET,// address_offset:  address offset
-    DENON_ADDRESS_OFFSET + DENON_ADDRESS_LEN,// address_end:     end of address
-    DENON_COMMAND_OFFSET,// command_offset:  command offset
-    DENON_COMMAND_OFFSET + DENON_COMMAND_LEN,// command_end:     end of command
-    DENON_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    DENON_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    DENON_LSB,// lsb_first:       flag: LSB first
-    DENON_FLAGS// flags:           some flags
+    DENON_PULSE_LEN_MIN,                                                // pulse_1_len_min: minimum length of pulse with bit value 1
+    DENON_PULSE_LEN_MAX,                                                // pulse_1_len_max: maximum length of pulse with bit value 1
+    DENON_1_PAUSE_LEN_MIN,                                              // pause_1_len_min: minimum length of pause with bit value 1
+    DENON_1_PAUSE_LEN_MAX,                                              // pause_1_len_max: maximum length of pause with bit value 1
+    DENON_PULSE_LEN_MIN,                                                // pulse_0_len_min: minimum length of pulse with bit value 0
+    DENON_PULSE_LEN_MAX,                                                // pulse_0_len_max: maximum length of pulse with bit value 0
+    DENON_0_PAUSE_LEN_MIN,                                              // pause_0_len_min: minimum length of pause with bit value 0
+    DENON_0_PAUSE_LEN_MAX,                                              // pause_0_len_max: maximum length of pause with bit value 0
+    DENON_ADDRESS_OFFSET,                                               // address_offset:  address offset
+    DENON_ADDRESS_OFFSET + DENON_ADDRESS_LEN,                           // address_end:     end of address
+    DENON_COMMAND_OFFSET,                                               // command_offset:  command offset
+    DENON_COMMAND_OFFSET + DENON_COMMAND_LEN,                           // command_end:     end of command
+    DENON_COMPLETE_DATA_LEN,                                            // complete_len:    complete length of frame
+    DENON_STOP_BIT,                                                     // stop_bit:        flag: frame has stop bit
+    DENON_LSB,                                                          // lsb_first:       flag: LSB first
+    DENON_FLAGS                                                         // flags:           some flags
 };
 
 #endif
 
 #if IRMP_SUPPORT_RC6_PROTOCOL == 1
 
-static const PROGMEM IRMP_PARAMETER rc6_param = {
-IRMP_RC6_PROTOCOL,                                                  // protocol:        ir protocol
+static const PROGMEM IRMP_PARAMETER rc6_param =
+{
+    IRMP_RC6_PROTOCOL,                                                  // protocol:        ir protocol
 
-        RC6_BIT_PULSE_LEN_MIN,                                               // pulse_1_len_min: here: minimum length of short pulse
-        RC6_BIT_PULSE_LEN_MAX,                                               // pulse_1_len_max: here: maximum length of short pulse
-        RC6_BIT_PAUSE_LEN_MIN,                                               // pause_1_len_min: here: minimum length of short pause
-        RC6_BIT_PAUSE_LEN_MAX,                                               // pause_1_len_max: here: maximum length of short pause
-        0,                    // pulse_0_len_min: here: not used
-        0,                    // pulse_0_len_max: here: not used
-        0,                    // pause_0_len_min: here: not used
-        0,                    // pause_0_len_max: here: not used
-        RC6_ADDRESS_OFFSET,   // address_offset:  address offset
-        RC6_ADDRESS_OFFSET + RC6_ADDRESS_LEN,   // address_end:     end of address
-        RC6_COMMAND_OFFSET,   // command_offset:  command offset
-        RC6_COMMAND_OFFSET + RC6_COMMAND_LEN,   // command_end:     end of command
-        RC6_COMPLETE_DATA_LEN_SHORT,   // complete_len:    complete length of frame
-        RC6_STOP_BIT,         // stop_bit:        flag: frame has stop bit
-        RC6_LSB,              // lsb_first:       flag: LSB first
-        RC6_FLAGS             // flags:           some flags
-        };
+    RC6_BIT_PULSE_LEN_MIN,                                              // pulse_1_len_min: here: minimum length of short pulse
+    RC6_BIT_PULSE_LEN_MAX,                                              // pulse_1_len_max: here: maximum length of short pulse
+    RC6_BIT_PAUSE_LEN_MIN,                                              // pause_1_len_min: here: minimum length of short pause
+    RC6_BIT_PAUSE_LEN_MAX,                                              // pause_1_len_max: here: maximum length of short pause
+    0,                                                                  // pulse_0_len_min: here: not used
+    0,                                                                  // pulse_0_len_max: here: not used
+    0,                                                                  // pause_0_len_min: here: not used
+    0,                                                                  // pause_0_len_max: here: not used
+    RC6_ADDRESS_OFFSET,                                                 // address_offset:  address offset
+    RC6_ADDRESS_OFFSET + RC6_ADDRESS_LEN,                               // address_end:     end of address
+    RC6_COMMAND_OFFSET,                                                 // command_offset:  command offset
+    RC6_COMMAND_OFFSET + RC6_COMMAND_LEN,                               // command_end:     end of command
+    RC6_COMPLETE_DATA_LEN_SHORT,                                        // complete_len:    complete length of frame
+    RC6_STOP_BIT,                                                       // stop_bit:        flag: frame has stop bit
+    RC6_LSB,                                                            // lsb_first:       flag: LSB first
+    RC6_FLAGS                                                           // flags:           some flags
+};
 
 #endif
 
@@ -1618,22 +1625,22 @@ IRMP_RC6_PROTOCOL,                                                  // protocol:
 static const PROGMEM IRMP_PARAMETER recs80ext_param =
 {
     IRMP_RECS80EXT_PROTOCOL,                                            // protocol:        ir protocol
-    RECS80EXT_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    RECS80EXT_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    RECS80EXT_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    RECS80EXT_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    RECS80EXT_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    RECS80EXT_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    RECS80EXT_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    RECS80EXT_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    RECS80EXT_ADDRESS_OFFSET,// address_offset:  address offset
-    RECS80EXT_ADDRESS_OFFSET + RECS80EXT_ADDRESS_LEN,// address_end:     end of address
-    RECS80EXT_COMMAND_OFFSET,// command_offset:  command offset
-    RECS80EXT_COMMAND_OFFSET + RECS80EXT_COMMAND_LEN,// command_end:     end of command
-    RECS80EXT_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    RECS80EXT_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    RECS80EXT_LSB,// lsb_first:       flag: LSB first
-    RECS80EXT_FLAGS// flags:           some flags
+    RECS80EXT_PULSE_LEN_MIN,                                            // pulse_1_len_min: minimum length of pulse with bit value 1
+    RECS80EXT_PULSE_LEN_MAX,                                            // pulse_1_len_max: maximum length of pulse with bit value 1
+    RECS80EXT_1_PAUSE_LEN_MIN,                                          // pause_1_len_min: minimum length of pause with bit value 1
+    RECS80EXT_1_PAUSE_LEN_MAX,                                          // pause_1_len_max: maximum length of pause with bit value 1
+    RECS80EXT_PULSE_LEN_MIN,                                            // pulse_0_len_min: minimum length of pulse with bit value 0
+    RECS80EXT_PULSE_LEN_MAX,                                            // pulse_0_len_max: maximum length of pulse with bit value 0
+    RECS80EXT_0_PAUSE_LEN_MIN,                                          // pause_0_len_min: minimum length of pause with bit value 0
+    RECS80EXT_0_PAUSE_LEN_MAX,                                          // pause_0_len_max: maximum length of pause with bit value 0
+    RECS80EXT_ADDRESS_OFFSET,                                           // address_offset:  address offset
+    RECS80EXT_ADDRESS_OFFSET + RECS80EXT_ADDRESS_LEN,                   // address_end:     end of address
+    RECS80EXT_COMMAND_OFFSET,                                           // command_offset:  command offset
+    RECS80EXT_COMMAND_OFFSET + RECS80EXT_COMMAND_LEN,                   // command_end:     end of command
+    RECS80EXT_COMPLETE_DATA_LEN,                                        // complete_len:    complete length of frame
+    RECS80EXT_STOP_BIT,                                                 // stop_bit:        flag: frame has stop bit
+    RECS80EXT_LSB,                                                      // lsb_first:       flag: LSB first
+    RECS80EXT_FLAGS                                                     // flags:           some flags
 };
 
 #endif
@@ -1643,22 +1650,22 @@ static const PROGMEM IRMP_PARAMETER recs80ext_param =
 static const PROGMEM IRMP_PARAMETER nubert_param =
 {
     IRMP_NUBERT_PROTOCOL,                                               // protocol:        ir protocol
-    NUBERT_1_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    NUBERT_1_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    NUBERT_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    NUBERT_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    NUBERT_0_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    NUBERT_0_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    NUBERT_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    NUBERT_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    NUBERT_ADDRESS_OFFSET,// address_offset:  address offset
-    NUBERT_ADDRESS_OFFSET + NUBERT_ADDRESS_LEN,// address_end:     end of address
-    NUBERT_COMMAND_OFFSET,// command_offset:  command offset
-    NUBERT_COMMAND_OFFSET + NUBERT_COMMAND_LEN,// command_end:     end of command
-    NUBERT_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    NUBERT_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    NUBERT_LSB,// lsb_first:       flag: LSB first
-    NUBERT_FLAGS// flags:           some flags
+    NUBERT_1_PULSE_LEN_MIN,                                             // pulse_1_len_min: minimum length of pulse with bit value 1
+    NUBERT_1_PULSE_LEN_MAX,                                             // pulse_1_len_max: maximum length of pulse with bit value 1
+    NUBERT_1_PAUSE_LEN_MIN,                                             // pause_1_len_min: minimum length of pause with bit value 1
+    NUBERT_1_PAUSE_LEN_MAX,                                             // pause_1_len_max: maximum length of pause with bit value 1
+    NUBERT_0_PULSE_LEN_MIN,                                             // pulse_0_len_min: minimum length of pulse with bit value 0
+    NUBERT_0_PULSE_LEN_MAX,                                             // pulse_0_len_max: maximum length of pulse with bit value 0
+    NUBERT_0_PAUSE_LEN_MIN,                                             // pause_0_len_min: minimum length of pause with bit value 0
+    NUBERT_0_PAUSE_LEN_MAX,                                             // pause_0_len_max: maximum length of pause with bit value 0
+    NUBERT_ADDRESS_OFFSET,                                              // address_offset:  address offset
+    NUBERT_ADDRESS_OFFSET + NUBERT_ADDRESS_LEN,                         // address_end:     end of address
+    NUBERT_COMMAND_OFFSET,                                              // command_offset:  command offset
+    NUBERT_COMMAND_OFFSET + NUBERT_COMMAND_LEN,                         // command_end:     end of command
+    NUBERT_COMPLETE_DATA_LEN,                                           // complete_len:    complete length of frame
+    NUBERT_STOP_BIT,                                                    // stop_bit:        flag: frame has stop bit
+    NUBERT_LSB,                                                         // lsb_first:       flag: LSB first
+    NUBERT_FLAGS                                                        // flags:           some flags
 };
 
 #endif
@@ -1668,22 +1675,22 @@ static const PROGMEM IRMP_PARAMETER nubert_param =
 static const PROGMEM IRMP_PARAMETER fan_param =
 {
     IRMP_FAN_PROTOCOL,                                                  // protocol:        ir protocol
-    FAN_1_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    FAN_1_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    FAN_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    FAN_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    FAN_0_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    FAN_0_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    FAN_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    FAN_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    FAN_ADDRESS_OFFSET,// address_offset:  address offset
-    FAN_ADDRESS_OFFSET + FAN_ADDRESS_LEN,// address_end:     end of address
-    FAN_COMMAND_OFFSET,// command_offset:  command offset
-    FAN_COMMAND_OFFSET + FAN_COMMAND_LEN,// command_end:     end of command
-    FAN_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    FAN_STOP_BIT,// stop_bit:        flag: frame has NO stop bit
-    FAN_LSB,// lsb_first:       flag: LSB first
-    FAN_FLAGS// flags:           some flags
+    FAN_1_PULSE_LEN_MIN,                                                // pulse_1_len_min: minimum length of pulse with bit value 1
+    FAN_1_PULSE_LEN_MAX,                                                // pulse_1_len_max: maximum length of pulse with bit value 1
+    FAN_1_PAUSE_LEN_MIN,                                                // pause_1_len_min: minimum length of pause with bit value 1
+    FAN_1_PAUSE_LEN_MAX,                                                // pause_1_len_max: maximum length of pause with bit value 1
+    FAN_0_PULSE_LEN_MIN,                                                // pulse_0_len_min: minimum length of pulse with bit value 0
+    FAN_0_PULSE_LEN_MAX,                                                // pulse_0_len_max: maximum length of pulse with bit value 0
+    FAN_0_PAUSE_LEN_MIN,                                                // pause_0_len_min: minimum length of pause with bit value 0
+    FAN_0_PAUSE_LEN_MAX,                                                // pause_0_len_max: maximum length of pause with bit value 0
+    FAN_ADDRESS_OFFSET,                                                 // address_offset:  address offset
+    FAN_ADDRESS_OFFSET + FAN_ADDRESS_LEN,                               // address_end:     end of address
+    FAN_COMMAND_OFFSET,                                                 // command_offset:  command offset
+    FAN_COMMAND_OFFSET + FAN_COMMAND_LEN,                               // command_end:     end of command
+    FAN_COMPLETE_DATA_LEN,                                              // complete_len:    complete length of frame
+    FAN_STOP_BIT,                                                       // stop_bit:        flag: frame has NO stop bit
+    FAN_LSB,                                                            // lsb_first:       flag: LSB first
+    FAN_FLAGS                                                           // flags:           some flags
 };
 
 #endif
@@ -1693,22 +1700,22 @@ static const PROGMEM IRMP_PARAMETER fan_param =
 static const PROGMEM IRMP_PARAMETER speaker_param =
 {
     IRMP_SPEAKER_PROTOCOL,                                              // protocol:        ir protocol
-    SPEAKER_1_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    SPEAKER_1_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    SPEAKER_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    SPEAKER_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    SPEAKER_0_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    SPEAKER_0_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    SPEAKER_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    SPEAKER_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    SPEAKER_ADDRESS_OFFSET,// address_offset:  address offset
-    SPEAKER_ADDRESS_OFFSET + SPEAKER_ADDRESS_LEN,// address_end:     end of address
-    SPEAKER_COMMAND_OFFSET,// command_offset:  command offset
-    SPEAKER_COMMAND_OFFSET + SPEAKER_COMMAND_LEN,// command_end:     end of command
-    SPEAKER_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    SPEAKER_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    SPEAKER_LSB,// lsb_first:       flag: LSB first
-    SPEAKER_FLAGS// flags:           some flags
+    SPEAKER_1_PULSE_LEN_MIN,                                            // pulse_1_len_min: minimum length of pulse with bit value 1
+    SPEAKER_1_PULSE_LEN_MAX,                                            // pulse_1_len_max: maximum length of pulse with bit value 1
+    SPEAKER_1_PAUSE_LEN_MIN,                                            // pause_1_len_min: minimum length of pause with bit value 1
+    SPEAKER_1_PAUSE_LEN_MAX,                                            // pause_1_len_max: maximum length of pause with bit value 1
+    SPEAKER_0_PULSE_LEN_MIN,                                            // pulse_0_len_min: minimum length of pulse with bit value 0
+    SPEAKER_0_PULSE_LEN_MAX,                                            // pulse_0_len_max: maximum length of pulse with bit value 0
+    SPEAKER_0_PAUSE_LEN_MIN,                                            // pause_0_len_min: minimum length of pause with bit value 0
+    SPEAKER_0_PAUSE_LEN_MAX,                                            // pause_0_len_max: maximum length of pause with bit value 0
+    SPEAKER_ADDRESS_OFFSET,                                             // address_offset:  address offset
+    SPEAKER_ADDRESS_OFFSET + SPEAKER_ADDRESS_LEN,                       // address_end:     end of address
+    SPEAKER_COMMAND_OFFSET,                                             // command_offset:  command offset
+    SPEAKER_COMMAND_OFFSET + SPEAKER_COMMAND_LEN,                       // command_end:     end of command
+    SPEAKER_COMPLETE_DATA_LEN,                                          // complete_len:    complete length of frame
+    SPEAKER_STOP_BIT,                                                   // stop_bit:        flag: frame has stop bit
+    SPEAKER_LSB,                                                        // lsb_first:       flag: LSB first
+    SPEAKER_FLAGS                                                       // flags:           some flags
 };
 
 #endif
@@ -1718,22 +1725,22 @@ static const PROGMEM IRMP_PARAMETER speaker_param =
 static const PROGMEM IRMP_PARAMETER bang_olufsen_param =
 {
     IRMP_BANG_OLUFSEN_PROTOCOL,                                         // protocol:        ir protocol
-    BANG_OLUFSEN_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    BANG_OLUFSEN_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    BANG_OLUFSEN_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    BANG_OLUFSEN_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    BANG_OLUFSEN_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    BANG_OLUFSEN_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    BANG_OLUFSEN_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    BANG_OLUFSEN_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    BANG_OLUFSEN_ADDRESS_OFFSET,// address_offset:  address offset
-    BANG_OLUFSEN_ADDRESS_OFFSET + BANG_OLUFSEN_ADDRESS_LEN,// address_end:     end of address
-    BANG_OLUFSEN_COMMAND_OFFSET,// command_offset:  command offset
-    BANG_OLUFSEN_COMMAND_OFFSET + BANG_OLUFSEN_COMMAND_LEN,// command_end:     end of command
-    BANG_OLUFSEN_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    BANG_OLUFSEN_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    BANG_OLUFSEN_LSB,// lsb_first:       flag: LSB first
-    BANG_OLUFSEN_FLAGS// flags:           some flags
+    BANG_OLUFSEN_PULSE_LEN_MIN,                                         // pulse_1_len_min: minimum length of pulse with bit value 1
+    BANG_OLUFSEN_PULSE_LEN_MAX,                                         // pulse_1_len_max: maximum length of pulse with bit value 1
+    BANG_OLUFSEN_1_PAUSE_LEN_MIN,                                       // pause_1_len_min: minimum length of pause with bit value 1
+    BANG_OLUFSEN_1_PAUSE_LEN_MAX,                                       // pause_1_len_max: maximum length of pause with bit value 1
+    BANG_OLUFSEN_PULSE_LEN_MIN,                                         // pulse_0_len_min: minimum length of pulse with bit value 0
+    BANG_OLUFSEN_PULSE_LEN_MAX,                                         // pulse_0_len_max: maximum length of pulse with bit value 0
+    BANG_OLUFSEN_0_PAUSE_LEN_MIN,                                       // pause_0_len_min: minimum length of pause with bit value 0
+    BANG_OLUFSEN_0_PAUSE_LEN_MAX,                                       // pause_0_len_max: maximum length of pause with bit value 0
+    BANG_OLUFSEN_ADDRESS_OFFSET,                                        // address_offset:  address offset
+    BANG_OLUFSEN_ADDRESS_OFFSET + BANG_OLUFSEN_ADDRESS_LEN,             // address_end:     end of address
+    BANG_OLUFSEN_COMMAND_OFFSET,                                        // command_offset:  command offset
+    BANG_OLUFSEN_COMMAND_OFFSET + BANG_OLUFSEN_COMMAND_LEN,             // command_end:     end of command
+    BANG_OLUFSEN_COMPLETE_DATA_LEN,                                     // complete_len:    complete length of frame
+    BANG_OLUFSEN_STOP_BIT,                                              // stop_bit:        flag: frame has stop bit
+    BANG_OLUFSEN_LSB,                                                   // lsb_first:       flag: LSB first
+    BANG_OLUFSEN_FLAGS                                                  // flags:           some flags
 };
 
 #endif
@@ -1746,22 +1753,22 @@ static const PROGMEM IRMP_PARAMETER grundig_param =
 {
     IRMP_GRUNDIG_PROTOCOL,                                              // protocol:        ir protocol
 
-    GRUNDIG_NOKIA_IR60_BIT_LEN_MIN,// pulse_1_len_min: here: minimum length of short pulse
-    GRUNDIG_NOKIA_IR60_BIT_LEN_MAX,// pulse_1_len_max: here: maximum length of short pulse
-    GRUNDIG_NOKIA_IR60_BIT_LEN_MIN,// pause_1_len_min: here: minimum length of short pause
-    GRUNDIG_NOKIA_IR60_BIT_LEN_MAX,// pause_1_len_max: here: maximum length of short pause
-    0,// pulse_0_len_min: here: not used
-    0,// pulse_0_len_max: here: not used
-    0,// pause_0_len_min: here: not used
-    0,// pause_0_len_max: here: not used
-    GRUNDIG_ADDRESS_OFFSET,// address_offset:  address offset
-    GRUNDIG_ADDRESS_OFFSET + GRUNDIG_ADDRESS_LEN,// address_end:     end of address
-    GRUNDIG_COMMAND_OFFSET,// command_offset:  command offset
-    GRUNDIG_COMMAND_OFFSET + GRUNDIG_COMMAND_LEN + 1,// command_end:     end of command (USE 1 bit MORE to STORE NOKIA DATA!)
-    NOKIA_COMPLETE_DATA_LEN,// complete_len:    complete length of frame, here: NOKIA instead of GRUNDIG!
-    GRUNDIG_NOKIA_IR60_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    GRUNDIG_NOKIA_IR60_LSB,// lsb_first:       flag: LSB first
-    GRUNDIG_NOKIA_IR60_FLAGS// flags:           some flags
+    GRUNDIG_NOKIA_IR60_BIT_LEN_MIN,                                     // pulse_1_len_min: here: minimum length of short pulse
+    GRUNDIG_NOKIA_IR60_BIT_LEN_MAX,                                     // pulse_1_len_max: here: maximum length of short pulse
+    GRUNDIG_NOKIA_IR60_BIT_LEN_MIN,                                     // pause_1_len_min: here: minimum length of short pause
+    GRUNDIG_NOKIA_IR60_BIT_LEN_MAX,                                     // pause_1_len_max: here: maximum length of short pause
+    0,                                                                  // pulse_0_len_min: here: not used
+    0,                                                                  // pulse_0_len_max: here: not used
+    0,                                                                  // pause_0_len_min: here: not used
+    0,                                                                  // pause_0_len_max: here: not used
+    GRUNDIG_ADDRESS_OFFSET,                                             // address_offset:  address offset
+    GRUNDIG_ADDRESS_OFFSET + GRUNDIG_ADDRESS_LEN,                       // address_end:     end of address
+    GRUNDIG_COMMAND_OFFSET,                                             // command_offset:  command offset
+    GRUNDIG_COMMAND_OFFSET + GRUNDIG_COMMAND_LEN + 1,                   // command_end:     end of command (USE 1 bit MORE to STORE NOKIA DATA!)
+    NOKIA_COMPLETE_DATA_LEN,                                            // complete_len:    complete length of frame, here: NOKIA instead of GRUNDIG!
+    GRUNDIG_NOKIA_IR60_STOP_BIT,                                        // stop_bit:        flag: frame has stop bit
+    GRUNDIG_NOKIA_IR60_LSB,                                             // lsb_first:       flag: LSB first
+    GRUNDIG_NOKIA_IR60_FLAGS                                            // flags:           some flags
 };
 
 #endif
@@ -1771,22 +1778,22 @@ static const PROGMEM IRMP_PARAMETER grundig_param =
 static const PROGMEM IRMP_PARAMETER ruwido_param =
 {
     IRMP_RUWIDO_PROTOCOL,                                               // protocol:        ir protocol
-    SIEMENS_OR_RUWIDO_BIT_PULSE_LEN_MIN,// pulse_1_len_min: here: minimum length of short pulse
-    SIEMENS_OR_RUWIDO_BIT_PULSE_LEN_MAX,// pulse_1_len_max: here: maximum length of short pulse
-    SIEMENS_OR_RUWIDO_BIT_PAUSE_LEN_MIN,// pause_1_len_min: here: minimum length of short pause
-    SIEMENS_OR_RUWIDO_BIT_PAUSE_LEN_MAX,// pause_1_len_max: here: maximum length of short pause
-    0,// pulse_0_len_min: here: not used
-    0,// pulse_0_len_max: here: not used
-    0,// pause_0_len_min: here: not used
-    0,// pause_0_len_max: here: not used
-    RUWIDO_ADDRESS_OFFSET,// address_offset:  address offset
-    RUWIDO_ADDRESS_OFFSET + RUWIDO_ADDRESS_LEN,// address_end:     end of address
-    RUWIDO_COMMAND_OFFSET,// command_offset:  command offset
-    RUWIDO_COMMAND_OFFSET + RUWIDO_COMMAND_LEN,// command_end:     end of command
-    SIEMENS_COMPLETE_DATA_LEN,// complete_len:    complete length of frame, here: SIEMENS instead of RUWIDO!
-    SIEMENS_OR_RUWIDO_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    SIEMENS_OR_RUWIDO_LSB,// lsb_first:       flag: LSB first
-    SIEMENS_OR_RUWIDO_FLAGS// flags:           some flags
+    SIEMENS_OR_RUWIDO_BIT_PULSE_LEN_MIN,                                // pulse_1_len_min: here: minimum length of short pulse
+    SIEMENS_OR_RUWIDO_BIT_PULSE_LEN_MAX,                                // pulse_1_len_max: here: maximum length of short pulse
+    SIEMENS_OR_RUWIDO_BIT_PAUSE_LEN_MIN,                                // pause_1_len_min: here: minimum length of short pause
+    SIEMENS_OR_RUWIDO_BIT_PAUSE_LEN_MAX,                                // pause_1_len_max: here: maximum length of short pause
+    0,                                                                  // pulse_0_len_min: here: not used
+    0,                                                                  // pulse_0_len_max: here: not used
+    0,                                                                  // pause_0_len_min: here: not used
+    0,                                                                  // pause_0_len_max: here: not used
+    RUWIDO_ADDRESS_OFFSET,                                              // address_offset:  address offset
+    RUWIDO_ADDRESS_OFFSET + RUWIDO_ADDRESS_LEN,                         // address_end:     end of address
+    RUWIDO_COMMAND_OFFSET,                                              // command_offset:  command offset
+    RUWIDO_COMMAND_OFFSET + RUWIDO_COMMAND_LEN,                         // command_end:     end of command
+    SIEMENS_COMPLETE_DATA_LEN,                                          // complete_len:    complete length of frame, here: SIEMENS instead of RUWIDO!
+    SIEMENS_OR_RUWIDO_STOP_BIT,                                         // stop_bit:        flag: frame has stop bit
+    SIEMENS_OR_RUWIDO_LSB,                                              // lsb_first:       flag: LSB first
+    SIEMENS_OR_RUWIDO_FLAGS                                             // flags:           some flags
 };
 
 #endif
@@ -1796,22 +1803,22 @@ static const PROGMEM IRMP_PARAMETER ruwido_param =
 static const PROGMEM IRMP_PARAMETER fdc_param =
 {
     IRMP_FDC_PROTOCOL,                                                  // protocol:        ir protocol
-    FDC_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    FDC_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    FDC_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    FDC_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    FDC_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    FDC_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    FDC_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    FDC_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    FDC_ADDRESS_OFFSET,// address_offset:  address offset
-    FDC_ADDRESS_OFFSET + FDC_ADDRESS_LEN,// address_end:     end of address
-    FDC_COMMAND_OFFSET,// command_offset:  command offset
-    FDC_COMMAND_OFFSET + FDC_COMMAND_LEN,// command_end:     end of command
-    FDC_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    FDC_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    FDC_LSB,// lsb_first:       flag: LSB first
-    FDC_FLAGS// flags:           some flags
+    FDC_PULSE_LEN_MIN,                                                  // pulse_1_len_min: minimum length of pulse with bit value 1
+    FDC_PULSE_LEN_MAX,                                                  // pulse_1_len_max: maximum length of pulse with bit value 1
+    FDC_1_PAUSE_LEN_MIN,                                                // pause_1_len_min: minimum length of pause with bit value 1
+    FDC_1_PAUSE_LEN_MAX,                                                // pause_1_len_max: maximum length of pause with bit value 1
+    FDC_PULSE_LEN_MIN,                                                  // pulse_0_len_min: minimum length of pulse with bit value 0
+    FDC_PULSE_LEN_MAX,                                                  // pulse_0_len_max: maximum length of pulse with bit value 0
+    FDC_0_PAUSE_LEN_MIN,                                                // pause_0_len_min: minimum length of pause with bit value 0
+    FDC_0_PAUSE_LEN_MAX,                                                // pause_0_len_max: maximum length of pause with bit value 0
+    FDC_ADDRESS_OFFSET,                                                 // address_offset:  address offset
+    FDC_ADDRESS_OFFSET + FDC_ADDRESS_LEN,                               // address_end:     end of address
+    FDC_COMMAND_OFFSET,                                                 // command_offset:  command offset
+    FDC_COMMAND_OFFSET + FDC_COMMAND_LEN,                               // command_end:     end of command
+    FDC_COMPLETE_DATA_LEN,                                              // complete_len:    complete length of frame
+    FDC_STOP_BIT,                                                       // stop_bit:        flag: frame has stop bit
+    FDC_LSB,                                                            // lsb_first:       flag: LSB first
+    FDC_FLAGS                                                           // flags:           some flags
 };
 
 #endif
@@ -1821,22 +1828,22 @@ static const PROGMEM IRMP_PARAMETER fdc_param =
 static const PROGMEM IRMP_PARAMETER rccar_param =
 {
     IRMP_RCCAR_PROTOCOL,                                                // protocol:        ir protocol
-    RCCAR_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    RCCAR_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    RCCAR_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    RCCAR_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    RCCAR_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    RCCAR_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    RCCAR_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    RCCAR_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    RCCAR_ADDRESS_OFFSET,// address_offset:  address offset
-    RCCAR_ADDRESS_OFFSET + RCCAR_ADDRESS_LEN,// address_end:     end of address
-    RCCAR_COMMAND_OFFSET,// command_offset:  command offset
-    RCCAR_COMMAND_OFFSET + RCCAR_COMMAND_LEN,// command_end:     end of command
-    RCCAR_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    RCCAR_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    RCCAR_LSB,// lsb_first:       flag: LSB first
-    RCCAR_FLAGS// flags:           some flags
+    RCCAR_PULSE_LEN_MIN,                                                // pulse_1_len_min: minimum length of pulse with bit value 1
+    RCCAR_PULSE_LEN_MAX,                                                // pulse_1_len_max: maximum length of pulse with bit value 1
+    RCCAR_1_PAUSE_LEN_MIN,                                              // pause_1_len_min: minimum length of pause with bit value 1
+    RCCAR_1_PAUSE_LEN_MAX,                                              // pause_1_len_max: maximum length of pause with bit value 1
+    RCCAR_PULSE_LEN_MIN,                                                // pulse_0_len_min: minimum length of pulse with bit value 0
+    RCCAR_PULSE_LEN_MAX,                                                // pulse_0_len_max: maximum length of pulse with bit value 0
+    RCCAR_0_PAUSE_LEN_MIN,                                              // pause_0_len_min: minimum length of pause with bit value 0
+    RCCAR_0_PAUSE_LEN_MAX,                                              // pause_0_len_max: maximum length of pause with bit value 0
+    RCCAR_ADDRESS_OFFSET,                                               // address_offset:  address offset
+    RCCAR_ADDRESS_OFFSET + RCCAR_ADDRESS_LEN,                           // address_end:     end of address
+    RCCAR_COMMAND_OFFSET,                                               // command_offset:  command offset
+    RCCAR_COMMAND_OFFSET + RCCAR_COMMAND_LEN,                           // command_end:     end of command
+    RCCAR_COMPLETE_DATA_LEN,                                            // complete_len:    complete length of frame
+    RCCAR_STOP_BIT,                                                     // stop_bit:        flag: frame has stop bit
+    RCCAR_LSB,                                                          // lsb_first:       flag: LSB first
+    RCCAR_FLAGS                                                         // flags:           some flags
 };
 
 #endif
@@ -1846,22 +1853,22 @@ static const PROGMEM IRMP_PARAMETER rccar_param =
 static const PROGMEM IRMP_PARAMETER nikon_param =
 {
     IRMP_NIKON_PROTOCOL,                                                // protocol:        ir protocol
-    NIKON_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    NIKON_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    NIKON_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    NIKON_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    NIKON_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    NIKON_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    NIKON_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    NIKON_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    NIKON_ADDRESS_OFFSET,// address_offset:  address offset
-    NIKON_ADDRESS_OFFSET + NIKON_ADDRESS_LEN,// address_end:     end of address
-    NIKON_COMMAND_OFFSET,// command_offset:  command offset
-    NIKON_COMMAND_OFFSET + NIKON_COMMAND_LEN,// command_end:     end of command
-    NIKON_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    NIKON_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    NIKON_LSB,// lsb_first:       flag: LSB first
-    NIKON_FLAGS// flags:           some flags
+    NIKON_PULSE_LEN_MIN,                                                // pulse_1_len_min: minimum length of pulse with bit value 1
+    NIKON_PULSE_LEN_MAX,                                                // pulse_1_len_max: maximum length of pulse with bit value 1
+    NIKON_1_PAUSE_LEN_MIN,                                              // pause_1_len_min: minimum length of pause with bit value 1
+    NIKON_1_PAUSE_LEN_MAX,                                              // pause_1_len_max: maximum length of pause with bit value 1
+    NIKON_PULSE_LEN_MIN,                                                // pulse_0_len_min: minimum length of pulse with bit value 0
+    NIKON_PULSE_LEN_MAX,                                                // pulse_0_len_max: maximum length of pulse with bit value 0
+    NIKON_0_PAUSE_LEN_MIN,                                              // pause_0_len_min: minimum length of pause with bit value 0
+    NIKON_0_PAUSE_LEN_MAX,                                              // pause_0_len_max: maximum length of pause with bit value 0
+    NIKON_ADDRESS_OFFSET,                                               // address_offset:  address offset
+    NIKON_ADDRESS_OFFSET + NIKON_ADDRESS_LEN,                           // address_end:     end of address
+    NIKON_COMMAND_OFFSET,                                               // command_offset:  command offset
+    NIKON_COMMAND_OFFSET + NIKON_COMMAND_LEN,                           // command_end:     end of command
+    NIKON_COMPLETE_DATA_LEN,                                            // complete_len:    complete length of frame
+    NIKON_STOP_BIT,                                                     // stop_bit:        flag: frame has stop bit
+    NIKON_LSB,                                                          // lsb_first:       flag: LSB first
+    NIKON_FLAGS                                                         // flags:           some flags
 };
 
 #endif
@@ -1871,22 +1878,22 @@ static const PROGMEM IRMP_PARAMETER nikon_param =
 static const PROGMEM IRMP_PARAMETER kathrein_param =
 {
     IRMP_KATHREIN_PROTOCOL,                                             // protocol:        ir protocol
-    KATHREIN_1_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    KATHREIN_1_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    KATHREIN_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    KATHREIN_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    KATHREIN_0_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    KATHREIN_0_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    KATHREIN_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    KATHREIN_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    KATHREIN_ADDRESS_OFFSET,// address_offset:  address offset
-    KATHREIN_ADDRESS_OFFSET + KATHREIN_ADDRESS_LEN,// address_end:     end of address
-    KATHREIN_COMMAND_OFFSET,// command_offset:  command offset
-    KATHREIN_COMMAND_OFFSET + KATHREIN_COMMAND_LEN,// command_end:     end of command
-    KATHREIN_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    KATHREIN_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    KATHREIN_LSB,// lsb_first:       flag: LSB first
-    KATHREIN_FLAGS// flags:           some flags
+    KATHREIN_1_PULSE_LEN_MIN,                                           // pulse_1_len_min: minimum length of pulse with bit value 1
+    KATHREIN_1_PULSE_LEN_MAX,                                           // pulse_1_len_max: maximum length of pulse with bit value 1
+    KATHREIN_1_PAUSE_LEN_MIN,                                           // pause_1_len_min: minimum length of pause with bit value 1
+    KATHREIN_1_PAUSE_LEN_MAX,                                           // pause_1_len_max: maximum length of pause with bit value 1
+    KATHREIN_0_PULSE_LEN_MIN,                                           // pulse_0_len_min: minimum length of pulse with bit value 0
+    KATHREIN_0_PULSE_LEN_MAX,                                           // pulse_0_len_max: maximum length of pulse with bit value 0
+    KATHREIN_0_PAUSE_LEN_MIN,                                           // pause_0_len_min: minimum length of pause with bit value 0
+    KATHREIN_0_PAUSE_LEN_MAX,                                           // pause_0_len_max: maximum length of pause with bit value 0
+    KATHREIN_ADDRESS_OFFSET,                                            // address_offset:  address offset
+    KATHREIN_ADDRESS_OFFSET + KATHREIN_ADDRESS_LEN,                     // address_end:     end of address
+    KATHREIN_COMMAND_OFFSET,                                            // command_offset:  command offset
+    KATHREIN_COMMAND_OFFSET + KATHREIN_COMMAND_LEN,                     // command_end:     end of command
+    KATHREIN_COMPLETE_DATA_LEN,                                         // complete_len:    complete length of frame
+    KATHREIN_STOP_BIT,                                                  // stop_bit:        flag: frame has stop bit
+    KATHREIN_LSB,                                                       // lsb_first:       flag: LSB first
+    KATHREIN_FLAGS                                                      // flags:           some flags
 };
 
 #endif
@@ -1896,22 +1903,22 @@ static const PROGMEM IRMP_PARAMETER kathrein_param =
 static const PROGMEM IRMP_PARAMETER netbox_param =
 {
     IRMP_NETBOX_PROTOCOL,                                               // protocol:        ir protocol
-    NETBOX_PULSE_LEN,// pulse_1_len_min: minimum length of pulse with bit value 1, here: exact value
-    NETBOX_PULSE_REST_LEN,// pulse_1_len_max: maximum length of pulse with bit value 1, here: rest value
-    NETBOX_PAUSE_LEN,// pause_1_len_min: minimum length of pause with bit value 1, here: exact value
-    NETBOX_PAUSE_REST_LEN,// pause_1_len_max: maximum length of pause with bit value 1, here: rest value
-    NETBOX_PULSE_LEN,// pulse_0_len_min: minimum length of pulse with bit value 0, here: exact value
-    NETBOX_PULSE_REST_LEN,// pulse_0_len_max: maximum length of pulse with bit value 0, here: rest value
-    NETBOX_PAUSE_LEN,// pause_0_len_min: minimum length of pause with bit value 0, here: exact value
-    NETBOX_PAUSE_REST_LEN,// pause_0_len_max: maximum length of pause with bit value 0, here: rest value
-    NETBOX_ADDRESS_OFFSET,// address_offset:  address offset
-    NETBOX_ADDRESS_OFFSET + NETBOX_ADDRESS_LEN,// address_end:     end of address
-    NETBOX_COMMAND_OFFSET,// command_offset:  command offset
-    NETBOX_COMMAND_OFFSET + NETBOX_COMMAND_LEN,// command_end:     end of command
-    NETBOX_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    NETBOX_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    NETBOX_LSB,// lsb_first:       flag: LSB first
-    NETBOX_FLAGS// flags:           some flags
+    NETBOX_PULSE_LEN,                                                   // pulse_1_len_min: minimum length of pulse with bit value 1, here: exact value
+    NETBOX_PULSE_REST_LEN,                                              // pulse_1_len_max: maximum length of pulse with bit value 1, here: rest value
+    NETBOX_PAUSE_LEN,                                                   // pause_1_len_min: minimum length of pause with bit value 1, here: exact value
+    NETBOX_PAUSE_REST_LEN,                                              // pause_1_len_max: maximum length of pause with bit value 1, here: rest value
+    NETBOX_PULSE_LEN,                                                   // pulse_0_len_min: minimum length of pulse with bit value 0, here: exact value
+    NETBOX_PULSE_REST_LEN,                                              // pulse_0_len_max: maximum length of pulse with bit value 0, here: rest value
+    NETBOX_PAUSE_LEN,                                                   // pause_0_len_min: minimum length of pause with bit value 0, here: exact value
+    NETBOX_PAUSE_REST_LEN,                                              // pause_0_len_max: maximum length of pause with bit value 0, here: rest value
+    NETBOX_ADDRESS_OFFSET,                                              // address_offset:  address offset
+    NETBOX_ADDRESS_OFFSET + NETBOX_ADDRESS_LEN,                         // address_end:     end of address
+    NETBOX_COMMAND_OFFSET,                                              // command_offset:  command offset
+    NETBOX_COMMAND_OFFSET + NETBOX_COMMAND_LEN,                         // command_end:     end of command
+    NETBOX_COMPLETE_DATA_LEN,                                           // complete_len:    complete length of frame
+    NETBOX_STOP_BIT,                                                    // stop_bit:        flag: frame has stop bit
+    NETBOX_LSB,                                                         // lsb_first:       flag: LSB first
+    NETBOX_FLAGS                                                        // flags:           some flags
 };
 
 #endif
@@ -1921,22 +1928,22 @@ static const PROGMEM IRMP_PARAMETER netbox_param =
 static const PROGMEM IRMP_PARAMETER lego_param =
 {
     IRMP_LEGO_PROTOCOL,                                                 // protocol:        ir protocol
-    LEGO_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    LEGO_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    LEGO_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    LEGO_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    LEGO_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    LEGO_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    LEGO_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    LEGO_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    LEGO_ADDRESS_OFFSET,// address_offset:  address offset
-    LEGO_ADDRESS_OFFSET + LEGO_ADDRESS_LEN,// address_end:     end of address
-    LEGO_COMMAND_OFFSET,// command_offset:  command offset
-    LEGO_COMMAND_OFFSET + LEGO_COMMAND_LEN,// command_end:     end of command
-    LEGO_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    LEGO_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    LEGO_LSB,// lsb_first:       flag: LSB first
-    LEGO_FLAGS// flags:           some flags
+    LEGO_PULSE_LEN_MIN,                                                 // pulse_1_len_min: minimum length of pulse with bit value 1
+    LEGO_PULSE_LEN_MAX,                                                 // pulse_1_len_max: maximum length of pulse with bit value 1
+    LEGO_1_PAUSE_LEN_MIN,                                               // pause_1_len_min: minimum length of pause with bit value 1
+    LEGO_1_PAUSE_LEN_MAX,                                               // pause_1_len_max: maximum length of pause with bit value 1
+    LEGO_PULSE_LEN_MIN,                                                 // pulse_0_len_min: minimum length of pulse with bit value 0
+    LEGO_PULSE_LEN_MAX,                                                 // pulse_0_len_max: maximum length of pulse with bit value 0
+    LEGO_0_PAUSE_LEN_MIN,                                               // pause_0_len_min: minimum length of pause with bit value 0
+    LEGO_0_PAUSE_LEN_MAX,                                               // pause_0_len_max: maximum length of pause with bit value 0
+    LEGO_ADDRESS_OFFSET,                                                // address_offset:  address offset
+    LEGO_ADDRESS_OFFSET + LEGO_ADDRESS_LEN,                             // address_end:     end of address
+    LEGO_COMMAND_OFFSET,                                                // command_offset:  command offset
+    LEGO_COMMAND_OFFSET + LEGO_COMMAND_LEN,                             // command_end:     end of command
+    LEGO_COMPLETE_DATA_LEN,                                             // complete_len:    complete length of frame
+    LEGO_STOP_BIT,                                                      // stop_bit:        flag: frame has stop bit
+    LEGO_LSB,                                                           // lsb_first:       flag: LSB first
+    LEGO_FLAGS                                                          // flags:           some flags
 };
 
 #endif
@@ -1946,22 +1953,22 @@ static const PROGMEM IRMP_PARAMETER lego_param =
 static const PROGMEM IRMP_PARAMETER irmp16_param =
 {
     IRMP_IRMP16_PROTOCOL,                                               // protocol:        ir protocol
-    IRMP16_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    IRMP16_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    IRMP16_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    IRMP16_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    IRMP16_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    IRMP16_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    IRMP16_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    IRMP16_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    IRMP16_ADDRESS_OFFSET,// address_offset:  address offset
-    IRMP16_ADDRESS_OFFSET + IRMP16_ADDRESS_LEN,// address_end:     end of address
-    IRMP16_COMMAND_OFFSET,// command_offset:  command offset
-    IRMP16_COMMAND_OFFSET + IRMP16_COMMAND_LEN,// command_end:     end of command
-    IRMP16_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    IRMP16_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    IRMP16_LSB,// lsb_first:       flag: LSB first
-    IRMP16_FLAGS// flags:           some flags
+    IRMP16_PULSE_LEN_MIN,                                               // pulse_1_len_min: minimum length of pulse with bit value 1
+    IRMP16_PULSE_LEN_MAX,                                               // pulse_1_len_max: maximum length of pulse with bit value 1
+    IRMP16_1_PAUSE_LEN_MIN,                                             // pause_1_len_min: minimum length of pause with bit value 1
+    IRMP16_1_PAUSE_LEN_MAX,                                             // pause_1_len_max: maximum length of pause with bit value 1
+    IRMP16_PULSE_LEN_MIN,                                               // pulse_0_len_min: minimum length of pulse with bit value 0
+    IRMP16_PULSE_LEN_MAX,                                               // pulse_0_len_max: maximum length of pulse with bit value 0
+    IRMP16_0_PAUSE_LEN_MIN,                                             // pause_0_len_min: minimum length of pause with bit value 0
+    IRMP16_0_PAUSE_LEN_MAX,                                             // pause_0_len_max: maximum length of pause with bit value 0
+    IRMP16_ADDRESS_OFFSET,                                              // address_offset:  address offset
+    IRMP16_ADDRESS_OFFSET + IRMP16_ADDRESS_LEN,                         // address_end:     end of address
+    IRMP16_COMMAND_OFFSET,                                              // command_offset:  command offset
+    IRMP16_COMMAND_OFFSET + IRMP16_COMMAND_LEN,                         // command_end:     end of command
+    IRMP16_COMPLETE_DATA_LEN,                                           // complete_len:    complete length of frame
+    IRMP16_STOP_BIT,                                                    // stop_bit:        flag: frame has stop bit
+    IRMP16_LSB,                                                         // lsb_first:       flag: LSB first
+    IRMP16_FLAGS                                                        // flags:           some flags
 };
 
 #endif
@@ -1971,22 +1978,22 @@ static const PROGMEM IRMP_PARAMETER irmp16_param =
 static const PROGMEM IRMP_PARAMETER gree_param =
 {
     IRMP_GREE_PROTOCOL,                                               // protocol:        ir protocol
-    GREE_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    GREE_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    GREE_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    GREE_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    GREE_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    GREE_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    GREE_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    GREE_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    GREE_ADDRESS_OFFSET,// address_offset:  address offset
-    GREE_ADDRESS_OFFSET + GREE_ADDRESS_LEN,// address_end:     end of address
-    GREE_COMMAND_OFFSET,// command_offset:  command offset
-    GREE_COMMAND_OFFSET + GREE_COMMAND_LEN,// command_end:     end of command
-    GREE_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    GREE_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    GREE_LSB,// lsb_first:       flag: LSB first
-    GREE_FLAGS// flags:           some flags
+    GREE_PULSE_LEN_MIN,                                               // pulse_1_len_min: minimum length of pulse with bit value 1
+    GREE_PULSE_LEN_MAX,                                               // pulse_1_len_max: maximum length of pulse with bit value 1
+    GREE_1_PAUSE_LEN_MIN,                                             // pause_1_len_min: minimum length of pause with bit value 1
+    GREE_1_PAUSE_LEN_MAX,                                             // pause_1_len_max: maximum length of pause with bit value 1
+    GREE_PULSE_LEN_MIN,                                               // pulse_0_len_min: minimum length of pulse with bit value 0
+    GREE_PULSE_LEN_MAX,                                               // pulse_0_len_max: maximum length of pulse with bit value 0
+    GREE_0_PAUSE_LEN_MIN,                                             // pause_0_len_min: minimum length of pause with bit value 0
+    GREE_0_PAUSE_LEN_MAX,                                             // pause_0_len_max: maximum length of pause with bit value 0
+    GREE_ADDRESS_OFFSET,                                              // address_offset:  address offset
+    GREE_ADDRESS_OFFSET + GREE_ADDRESS_LEN,                         // address_end:     end of address
+    GREE_COMMAND_OFFSET,                                              // command_offset:  command offset
+    GREE_COMMAND_OFFSET + GREE_COMMAND_LEN,                         // command_end:     end of command
+    GREE_COMPLETE_DATA_LEN,                                           // complete_len:    complete length of frame
+    GREE_STOP_BIT,                                                    // stop_bit:        flag: frame has stop bit
+    GREE_LSB,                                                         // lsb_first:       flag: LSB first
+    GREE_FLAGS                                                        // flags:           some flags
 };
 
 #endif
@@ -1996,22 +2003,22 @@ static const PROGMEM IRMP_PARAMETER gree_param =
 static const PROGMEM IRMP_PARAMETER thomson_param =
 {
     IRMP_THOMSON_PROTOCOL,                                              // protocol:        ir protocol
-    THOMSON_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    THOMSON_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    THOMSON_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    THOMSON_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    THOMSON_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    THOMSON_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    THOMSON_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    THOMSON_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    THOMSON_ADDRESS_OFFSET,// address_offset:  address offset
-    THOMSON_ADDRESS_OFFSET + THOMSON_ADDRESS_LEN,// address_end:     end of address
-    THOMSON_COMMAND_OFFSET,// command_offset:  command offset
-    THOMSON_COMMAND_OFFSET + THOMSON_COMMAND_LEN,// command_end:     end of command
-    THOMSON_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    THOMSON_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    THOMSON_LSB,// lsb_first:       flag: LSB first
-    THOMSON_FLAGS// flags:           some flags
+    THOMSON_PULSE_LEN_MIN,                                              // pulse_1_len_min: minimum length of pulse with bit value 1
+    THOMSON_PULSE_LEN_MAX,                                              // pulse_1_len_max: maximum length of pulse with bit value 1
+    THOMSON_1_PAUSE_LEN_MIN,                                            // pause_1_len_min: minimum length of pause with bit value 1
+    THOMSON_1_PAUSE_LEN_MAX,                                            // pause_1_len_max: maximum length of pause with bit value 1
+    THOMSON_PULSE_LEN_MIN,                                              // pulse_0_len_min: minimum length of pulse with bit value 0
+    THOMSON_PULSE_LEN_MAX,                                              // pulse_0_len_max: maximum length of pulse with bit value 0
+    THOMSON_0_PAUSE_LEN_MIN,                                            // pause_0_len_min: minimum length of pause with bit value 0
+    THOMSON_0_PAUSE_LEN_MAX,                                            // pause_0_len_max: maximum length of pause with bit value 0
+    THOMSON_ADDRESS_OFFSET,                                             // address_offset:  address offset
+    THOMSON_ADDRESS_OFFSET + THOMSON_ADDRESS_LEN,                       // address_end:     end of address
+    THOMSON_COMMAND_OFFSET,                                             // command_offset:  command offset
+    THOMSON_COMMAND_OFFSET + THOMSON_COMMAND_LEN,                       // command_end:     end of command
+    THOMSON_COMPLETE_DATA_LEN,                                          // complete_len:    complete length of frame
+    THOMSON_STOP_BIT,                                                   // stop_bit:        flag: frame has stop bit
+    THOMSON_LSB,                                                        // lsb_first:       flag: LSB first
+    THOMSON_FLAGS                                                       // flags:           some flags
 };
 
 #endif
@@ -2021,22 +2028,22 @@ static const PROGMEM IRMP_PARAMETER thomson_param =
 static const PROGMEM IRMP_PARAMETER bose_param =
 {
     IRMP_BOSE_PROTOCOL,                                                 // protocol:        ir protocol
-    BOSE_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    BOSE_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    BOSE_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    BOSE_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    BOSE_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    BOSE_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    BOSE_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    BOSE_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    BOSE_ADDRESS_OFFSET,// address_offset:  address offset
-    BOSE_ADDRESS_OFFSET + BOSE_ADDRESS_LEN,// address_end:     end of address
-    BOSE_COMMAND_OFFSET,// command_offset:  command offset
-    BOSE_COMMAND_OFFSET + BOSE_COMMAND_LEN,// command_end:     end of command
-    BOSE_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    BOSE_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    BOSE_LSB,// lsb_first:       flag: LSB first
-    BOSE_FLAGS// flags:           some flags
+    BOSE_PULSE_LEN_MIN,                                                 // pulse_1_len_min: minimum length of pulse with bit value 1
+    BOSE_PULSE_LEN_MAX,                                                 // pulse_1_len_max: maximum length of pulse with bit value 1
+    BOSE_1_PAUSE_LEN_MIN,                                               // pause_1_len_min: minimum length of pause with bit value 1
+    BOSE_1_PAUSE_LEN_MAX,                                               // pause_1_len_max: maximum length of pause with bit value 1
+    BOSE_PULSE_LEN_MIN,                                                 // pulse_0_len_min: minimum length of pulse with bit value 0
+    BOSE_PULSE_LEN_MAX,                                                 // pulse_0_len_max: maximum length of pulse with bit value 0
+    BOSE_0_PAUSE_LEN_MIN,                                               // pause_0_len_min: minimum length of pause with bit value 0
+    BOSE_0_PAUSE_LEN_MAX,                                               // pause_0_len_max: maximum length of pause with bit value 0
+    BOSE_ADDRESS_OFFSET,                                                // address_offset:  address offset
+    BOSE_ADDRESS_OFFSET + BOSE_ADDRESS_LEN,                             // address_end:     end of address
+    BOSE_COMMAND_OFFSET,                                                // command_offset:  command offset
+    BOSE_COMMAND_OFFSET + BOSE_COMMAND_LEN,                             // command_end:     end of command
+    BOSE_COMPLETE_DATA_LEN,                                             // complete_len:    complete length of frame
+    BOSE_STOP_BIT,                                                      // stop_bit:        flag: frame has stop bit
+    BOSE_LSB,                                                           // lsb_first:       flag: LSB first
+    BOSE_FLAGS                                                          // flags:           some flags
 };
 
 #endif
@@ -2047,22 +2054,22 @@ static const PROGMEM IRMP_PARAMETER a1tvbox_param =
 {
     IRMP_A1TVBOX_PROTOCOL,                                              // protocol:        ir protocol
 
-    A1TVBOX_BIT_PULSE_LEN_MIN,// pulse_1_len_min: here: minimum length of short pulse
-    A1TVBOX_BIT_PULSE_LEN_MAX,// pulse_1_len_max: here: maximum length of short pulse
-    A1TVBOX_BIT_PAUSE_LEN_MIN,// pause_1_len_min: here: minimum length of short pause
-    A1TVBOX_BIT_PAUSE_LEN_MAX,// pause_1_len_max: here: maximum length of short pause
-    0,// pulse_0_len_min: here: not used
-    0,// pulse_0_len_max: here: not used
-    0,// pause_0_len_min: here: not used
-    0,// pause_0_len_max: here: not used
-    A1TVBOX_ADDRESS_OFFSET,// address_offset:  address offset
-    A1TVBOX_ADDRESS_OFFSET + A1TVBOX_ADDRESS_LEN,// address_end:     end of address
-    A1TVBOX_COMMAND_OFFSET,// command_offset:  command offset
-    A1TVBOX_COMMAND_OFFSET + A1TVBOX_COMMAND_LEN,// command_end:     end of command
-    A1TVBOX_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    A1TVBOX_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    A1TVBOX_LSB,// lsb_first:       flag: LSB first
-    A1TVBOX_FLAGS// flags:           some flags
+    A1TVBOX_BIT_PULSE_LEN_MIN,                                          // pulse_1_len_min: here: minimum length of short pulse
+    A1TVBOX_BIT_PULSE_LEN_MAX,                                          // pulse_1_len_max: here: maximum length of short pulse
+    A1TVBOX_BIT_PAUSE_LEN_MIN,                                          // pause_1_len_min: here: minimum length of short pause
+    A1TVBOX_BIT_PAUSE_LEN_MAX,                                          // pause_1_len_max: here: maximum length of short pause
+    0,                                                                  // pulse_0_len_min: here: not used
+    0,                                                                  // pulse_0_len_max: here: not used
+    0,                                                                  // pause_0_len_min: here: not used
+    0,                                                                  // pause_0_len_max: here: not used
+    A1TVBOX_ADDRESS_OFFSET,                                             // address_offset:  address offset
+    A1TVBOX_ADDRESS_OFFSET + A1TVBOX_ADDRESS_LEN,                       // address_end:     end of address
+    A1TVBOX_COMMAND_OFFSET,                                             // command_offset:  command offset
+    A1TVBOX_COMMAND_OFFSET + A1TVBOX_COMMAND_LEN,                       // command_end:     end of command
+    A1TVBOX_COMPLETE_DATA_LEN,                                          // complete_len:    complete length of frame
+    A1TVBOX_STOP_BIT,                                                   // stop_bit:        flag: frame has stop bit
+    A1TVBOX_LSB,                                                        // lsb_first:       flag: LSB first
+    A1TVBOX_FLAGS                                                       // flags:           some flags
 };
 
 #endif
@@ -2073,22 +2080,22 @@ static const PROGMEM IRMP_PARAMETER merlin_param =
 {
     IRMP_MERLIN_PROTOCOL,                                               // protocol:        ir protocol
 
-    MERLIN_BIT_PULSE_LEN_MIN,// pulse_1_len_min: here: minimum length of short pulse
-    MERLIN_BIT_PULSE_LEN_MAX,// pulse_1_len_max: here: maximum length of short pulse
-    MERLIN_BIT_PAUSE_LEN_MIN,// pause_1_len_min: here: minimum length of short pause
-    MERLIN_BIT_PAUSE_LEN_MAX,// pause_1_len_max: here: maximum length of short pause
-    0,// pulse_0_len_min: here: not used
-    0,// pulse_0_len_max: here: not used
-    0,// pause_0_len_min: here: not used
-    0,// pause_0_len_max: here: not used
-    MERLIN_ADDRESS_OFFSET,// address_offset:  address offset
-    MERLIN_ADDRESS_OFFSET + MERLIN_ADDRESS_LEN,// address_end:     end of address
-    MERLIN_COMMAND_OFFSET,// command_offset:  command offset
-    MERLIN_COMMAND_OFFSET + MERLIN_COMMAND_LEN,// command_end:     end of command
-    MERLIN_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    MERLIN_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    MERLIN_LSB,// lsb_first:       flag: LSB first
-    MERLIN_FLAGS// flags:           some flags
+    MERLIN_BIT_PULSE_LEN_MIN,                                           // pulse_1_len_min: here: minimum length of short pulse
+    MERLIN_BIT_PULSE_LEN_MAX,                                           // pulse_1_len_max: here: maximum length of short pulse
+    MERLIN_BIT_PAUSE_LEN_MIN,                                           // pause_1_len_min: here: minimum length of short pause
+    MERLIN_BIT_PAUSE_LEN_MAX,                                           // pause_1_len_max: here: maximum length of short pause
+    0,                                                                  // pulse_0_len_min: here: not used
+    0,                                                                  // pulse_0_len_max: here: not used
+    0,                                                                  // pause_0_len_min: here: not used
+    0,                                                                  // pause_0_len_max: here: not used
+    MERLIN_ADDRESS_OFFSET,                                              // address_offset:  address offset
+    MERLIN_ADDRESS_OFFSET + MERLIN_ADDRESS_LEN,                         // address_end:     end of address
+    MERLIN_COMMAND_OFFSET,                                              // command_offset:  command offset
+    MERLIN_COMMAND_OFFSET + MERLIN_COMMAND_LEN,                         // command_end:     end of command
+    MERLIN_COMPLETE_DATA_LEN,                                           // complete_len:    complete length of frame
+    MERLIN_STOP_BIT,                                                    // stop_bit:        flag: frame has stop bit
+    MERLIN_LSB,                                                         // lsb_first:       flag: LSB first
+    MERLIN_FLAGS                                                        // flags:           some flags
 };
 
 #endif
@@ -2099,22 +2106,22 @@ static const PROGMEM IRMP_PARAMETER ortek_param =
 {
     IRMP_ORTEK_PROTOCOL,                                                // protocol:        ir protocol
 
-    ORTEK_BIT_PULSE_LEN_MIN,// pulse_1_len_min: here: minimum length of short pulse
-    ORTEK_BIT_PULSE_LEN_MAX,// pulse_1_len_max: here: maximum length of short pulse
-    ORTEK_BIT_PAUSE_LEN_MIN,// pause_1_len_min: here: minimum length of short pause
-    ORTEK_BIT_PAUSE_LEN_MAX,// pause_1_len_max: here: maximum length of short pause
-    0,// pulse_0_len_min: here: not used
-    0,// pulse_0_len_max: here: not used
-    0,// pause_0_len_min: here: not used
-    0,// pause_0_len_max: here: not used
-    ORTEK_ADDRESS_OFFSET,// address_offset:  address offset
-    ORTEK_ADDRESS_OFFSET + ORTEK_ADDRESS_LEN,// address_end:     end of address
-    ORTEK_COMMAND_OFFSET,// command_offset:  command offset
-    ORTEK_COMMAND_OFFSET + ORTEK_COMMAND_LEN,// command_end:     end of command
-    ORTEK_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    ORTEK_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    ORTEK_LSB,// lsb_first:       flag: LSB first
-    ORTEK_FLAGS// flags:           some flags
+    ORTEK_BIT_PULSE_LEN_MIN,                                            // pulse_1_len_min: here: minimum length of short pulse
+    ORTEK_BIT_PULSE_LEN_MAX,                                            // pulse_1_len_max: here: maximum length of short pulse
+    ORTEK_BIT_PAUSE_LEN_MIN,                                            // pause_1_len_min: here: minimum length of short pause
+    ORTEK_BIT_PAUSE_LEN_MAX,                                            // pause_1_len_max: here: maximum length of short pause
+    0,                                                                  // pulse_0_len_min: here: not used
+    0,                                                                  // pulse_0_len_max: here: not used
+    0,                                                                  // pause_0_len_min: here: not used
+    0,                                                                  // pause_0_len_max: here: not used
+    ORTEK_ADDRESS_OFFSET,                                               // address_offset:  address offset
+    ORTEK_ADDRESS_OFFSET + ORTEK_ADDRESS_LEN,                           // address_end:     end of address
+    ORTEK_COMMAND_OFFSET,                                               // command_offset:  command offset
+    ORTEK_COMMAND_OFFSET + ORTEK_COMMAND_LEN,                           // command_end:     end of command
+    ORTEK_COMPLETE_DATA_LEN,                                            // complete_len:    complete length of frame
+    ORTEK_STOP_BIT,                                                     // stop_bit:        flag: frame has stop bit
+    ORTEK_LSB,                                                          // lsb_first:       flag: LSB first
+    ORTEK_FLAGS                                                         // flags:           some flags
 };
 
 #endif
@@ -2124,22 +2131,22 @@ static const PROGMEM IRMP_PARAMETER ortek_param =
 static const PROGMEM IRMP_PARAMETER roomba_param =
 {
     IRMP_ROOMBA_PROTOCOL,                                               // protocol:        ir protocol
-    ROOMBA_1_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    ROOMBA_1_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    ROOMBA_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    ROOMBA_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    ROOMBA_0_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    ROOMBA_0_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    ROOMBA_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    ROOMBA_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    ROOMBA_ADDRESS_OFFSET,// address_offset:  address offset
-    ROOMBA_ADDRESS_OFFSET + ROOMBA_ADDRESS_LEN,// address_end:     end of address
-    ROOMBA_COMMAND_OFFSET,// command_offset:  command offset
-    ROOMBA_COMMAND_OFFSET + ROOMBA_COMMAND_LEN,// command_end:     end of command
-    ROOMBA_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    ROOMBA_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    ROOMBA_LSB,// lsb_first:       flag: LSB first
-    ROOMBA_FLAGS// flags:           some flags
+    ROOMBA_1_PULSE_LEN_MIN,                                             // pulse_1_len_min: minimum length of pulse with bit value 1
+    ROOMBA_1_PULSE_LEN_MAX,                                             // pulse_1_len_max: maximum length of pulse with bit value 1
+    ROOMBA_1_PAUSE_LEN_MIN,                                             // pause_1_len_min: minimum length of pause with bit value 1
+    ROOMBA_1_PAUSE_LEN_MAX,                                             // pause_1_len_max: maximum length of pause with bit value 1
+    ROOMBA_0_PULSE_LEN_MIN,                                             // pulse_0_len_min: minimum length of pulse with bit value 0
+    ROOMBA_0_PULSE_LEN_MAX,                                             // pulse_0_len_max: maximum length of pulse with bit value 0
+    ROOMBA_0_PAUSE_LEN_MIN,                                             // pause_0_len_min: minimum length of pause with bit value 0
+    ROOMBA_0_PAUSE_LEN_MAX,                                             // pause_0_len_max: maximum length of pause with bit value 0
+    ROOMBA_ADDRESS_OFFSET,                                              // address_offset:  address offset
+    ROOMBA_ADDRESS_OFFSET + ROOMBA_ADDRESS_LEN,                         // address_end:     end of address
+    ROOMBA_COMMAND_OFFSET,                                              // command_offset:  command offset
+    ROOMBA_COMMAND_OFFSET + ROOMBA_COMMAND_LEN,                         // command_end:     end of command
+    ROOMBA_COMPLETE_DATA_LEN,                                           // complete_len:    complete length of frame
+    ROOMBA_STOP_BIT,                                                    // stop_bit:        flag: frame has stop bit
+    ROOMBA_LSB,                                                         // lsb_first:       flag: LSB first
+    ROOMBA_FLAGS                                                        // flags:           some flags
 };
 
 #endif
@@ -2150,22 +2157,22 @@ static const PROGMEM IRMP_PARAMETER rcmm_param =
 {
     IRMP_RCMM32_PROTOCOL,                                               // protocol:        ir protocol
 
-    RCMM32_BIT_PULSE_LEN_MIN,// pulse_1_len_min: here: minimum length of short pulse
-    RCMM32_BIT_PULSE_LEN_MAX,// pulse_1_len_max: here: maximum length of short pulse
-    0,// pause_1_len_min: here: minimum length of short pause
-    0,// pause_1_len_max: here: maximum length of short pause
-    RCMM32_BIT_PULSE_LEN_MIN,// pulse_0_len_min: here: not used
-    RCMM32_BIT_PULSE_LEN_MAX,// pulse_0_len_max: here: not used
-    0,// pause_0_len_min: here: not used
-    0,// pause_0_len_max: here: not used
-    RCMM32_ADDRESS_OFFSET,// address_offset:  address offset
-    RCMM32_ADDRESS_OFFSET + RCMM32_ADDRESS_LEN,// address_end:     end of address
-    RCMM32_COMMAND_OFFSET,// command_offset:  command offset
-    RCMM32_COMMAND_OFFSET + RCMM32_COMMAND_LEN,// command_end:     end of command
-    RCMM32_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    RCMM32_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    RCMM32_LSB,// lsb_first:       flag: LSB first
-    RCMM32_FLAGS// flags:           some flags
+    RCMM32_BIT_PULSE_LEN_MIN,                                           // pulse_1_len_min: here: minimum length of short pulse
+    RCMM32_BIT_PULSE_LEN_MAX,                                           // pulse_1_len_max: here: maximum length of short pulse
+    0,                                                                  // pause_1_len_min: here: minimum length of short pause
+    0,                                                                  // pause_1_len_max: here: maximum length of short pause
+    RCMM32_BIT_PULSE_LEN_MIN,                                           // pulse_0_len_min: here: not used
+    RCMM32_BIT_PULSE_LEN_MAX,                                           // pulse_0_len_max: here: not used
+    0,                                                                  // pause_0_len_min: here: not used
+    0,                                                                  // pause_0_len_max: here: not used
+    RCMM32_ADDRESS_OFFSET,                                              // address_offset:  address offset
+    RCMM32_ADDRESS_OFFSET + RCMM32_ADDRESS_LEN,                         // address_end:     end of address
+    RCMM32_COMMAND_OFFSET,                                              // command_offset:  command offset
+    RCMM32_COMMAND_OFFSET + RCMM32_COMMAND_LEN,                         // command_end:     end of command
+    RCMM32_COMPLETE_DATA_LEN,                                           // complete_len:    complete length of frame
+    RCMM32_STOP_BIT,                                                    // stop_bit:        flag: frame has stop bit
+    RCMM32_LSB,                                                         // lsb_first:       flag: LSB first
+    RCMM32_FLAGS                                                        // flags:           some flags
 };
 
 #endif
@@ -2175,22 +2182,22 @@ static const PROGMEM IRMP_PARAMETER rcmm_param =
 static const PROGMEM IRMP_PARAMETER pentax_param =
 {
     IRMP_PENTAX_PROTOCOL,                                               // protocol:        ir protocol
-    PENTAX_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    PENTAX_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    PENTAX_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    PENTAX_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    PENTAX_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    PENTAX_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    PENTAX_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    PENTAX_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    PENTAX_ADDRESS_OFFSET,// address_offset:  address offset
-    PENTAX_ADDRESS_OFFSET + PENTAX_ADDRESS_LEN,// address_end:     end of address
-    PENTAX_COMMAND_OFFSET,// command_offset:  command offset
-    PENTAX_COMMAND_OFFSET + PENTAX_COMMAND_LEN,// command_end:     end of command
-    PENTAX_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    PENTAX_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    PENTAX_LSB,// lsb_first:       flag: LSB first
-    PENTAX_FLAGS// flags:           some flags
+    PENTAX_PULSE_LEN_MIN,                                               // pulse_1_len_min: minimum length of pulse with bit value 1
+    PENTAX_PULSE_LEN_MAX,                                               // pulse_1_len_max: maximum length of pulse with bit value 1
+    PENTAX_1_PAUSE_LEN_MIN,                                             // pause_1_len_min: minimum length of pause with bit value 1
+    PENTAX_1_PAUSE_LEN_MAX,                                             // pause_1_len_max: maximum length of pause with bit value 1
+    PENTAX_PULSE_LEN_MIN,                                               // pulse_0_len_min: minimum length of pulse with bit value 0
+    PENTAX_PULSE_LEN_MAX,                                               // pulse_0_len_max: maximum length of pulse with bit value 0
+    PENTAX_0_PAUSE_LEN_MIN,                                             // pause_0_len_min: minimum length of pause with bit value 0
+    PENTAX_0_PAUSE_LEN_MAX,                                             // pause_0_len_max: maximum length of pause with bit value 0
+    PENTAX_ADDRESS_OFFSET,                                              // address_offset:  address offset
+    PENTAX_ADDRESS_OFFSET + PENTAX_ADDRESS_LEN,                         // address_end:     end of address
+    PENTAX_COMMAND_OFFSET,                                              // command_offset:  command offset
+    PENTAX_COMMAND_OFFSET + PENTAX_COMMAND_LEN,                         // command_end:     end of command
+    PENTAX_COMPLETE_DATA_LEN,                                           // complete_len:    complete length of frame
+    PENTAX_STOP_BIT,                                                    // stop_bit:        flag: frame has stop bit
+    PENTAX_LSB,                                                         // lsb_first:       flag: LSB first
+    PENTAX_FLAGS                                                        // flags:           some flags
 };
 
 #endif
@@ -2200,22 +2207,22 @@ static const PROGMEM IRMP_PARAMETER pentax_param =
 static const PROGMEM IRMP_PARAMETER acp24_param =
 {
     IRMP_ACP24_PROTOCOL,                                                // protocol:        ir protocol
-    ACP24_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    ACP24_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    ACP24_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    ACP24_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    ACP24_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    ACP24_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    ACP24_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    ACP24_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    ACP24_ADDRESS_OFFSET,// address_offset:  address offset
-    ACP24_ADDRESS_OFFSET + ACP24_ADDRESS_LEN,// address_end:     end of address
-    ACP24_COMMAND_OFFSET,// command_offset:  command offset
-    ACP24_COMMAND_OFFSET + ACP24_COMMAND_LEN,// command_end:     end of command
-    ACP24_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    ACP24_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    ACP24_LSB,// lsb_first:       flag: LSB first
-    ACP24_FLAGS// flags:           some flags
+    ACP24_PULSE_LEN_MIN,                                                // pulse_1_len_min: minimum length of pulse with bit value 1
+    ACP24_PULSE_LEN_MAX,                                                // pulse_1_len_max: maximum length of pulse with bit value 1
+    ACP24_1_PAUSE_LEN_MIN,                                              // pause_1_len_min: minimum length of pause with bit value 1
+    ACP24_1_PAUSE_LEN_MAX,                                              // pause_1_len_max: maximum length of pause with bit value 1
+    ACP24_PULSE_LEN_MIN,                                                // pulse_0_len_min: minimum length of pulse with bit value 0
+    ACP24_PULSE_LEN_MAX,                                                // pulse_0_len_max: maximum length of pulse with bit value 0
+    ACP24_0_PAUSE_LEN_MIN,                                              // pause_0_len_min: minimum length of pause with bit value 0
+    ACP24_0_PAUSE_LEN_MAX,                                              // pause_0_len_max: maximum length of pause with bit value 0
+    ACP24_ADDRESS_OFFSET,                                               // address_offset:  address offset
+    ACP24_ADDRESS_OFFSET + ACP24_ADDRESS_LEN,                           // address_end:     end of address
+    ACP24_COMMAND_OFFSET,                                               // command_offset:  command offset
+    ACP24_COMMAND_OFFSET + ACP24_COMMAND_LEN,                           // command_end:     end of command
+    ACP24_COMPLETE_DATA_LEN,                                            // complete_len:    complete length of frame
+    ACP24_STOP_BIT,                                                     // stop_bit:        flag: frame has stop bit
+    ACP24_LSB,                                                          // lsb_first:       flag: LSB first
+    ACP24_FLAGS                                                         // flags:           some flags
 };
 
 #endif
@@ -2226,50 +2233,51 @@ static const PROGMEM IRMP_PARAMETER radio1_param =
 {
     IRMP_RADIO1_PROTOCOL,                                               // protocol:        ir protocol
 
-    RADIO1_1_PULSE_LEN_MIN,// pulse_1_len_min: minimum length of pulse with bit value 1
-    RADIO1_1_PULSE_LEN_MAX,// pulse_1_len_max: maximum length of pulse with bit value 1
-    RADIO1_1_PAUSE_LEN_MIN,// pause_1_len_min: minimum length of pause with bit value 1
-    RADIO1_1_PAUSE_LEN_MAX,// pause_1_len_max: maximum length of pause with bit value 1
-    RADIO1_0_PULSE_LEN_MIN,// pulse_0_len_min: minimum length of pulse with bit value 0
-    RADIO1_0_PULSE_LEN_MAX,// pulse_0_len_max: maximum length of pulse with bit value 0
-    RADIO1_0_PAUSE_LEN_MIN,// pause_0_len_min: minimum length of pause with bit value 0
-    RADIO1_0_PAUSE_LEN_MAX,// pause_0_len_max: maximum length of pause with bit value 0
-    RADIO1_ADDRESS_OFFSET,// address_offset:  address offset
-    RADIO1_ADDRESS_OFFSET + RADIO1_ADDRESS_LEN,// address_end:     end of address
-    RADIO1_COMMAND_OFFSET,// command_offset:  command offset
-    RADIO1_COMMAND_OFFSET + RADIO1_COMMAND_LEN,// command_end:     end of command
-    RADIO1_COMPLETE_DATA_LEN,// complete_len:    complete length of frame
-    RADIO1_STOP_BIT,// stop_bit:        flag: frame has stop bit
-    RADIO1_LSB,// lsb_first:       flag: LSB first
-    RADIO1_FLAGS// flags:           some flags
+    RADIO1_1_PULSE_LEN_MIN,                                             // pulse_1_len_min: minimum length of pulse with bit value 1
+    RADIO1_1_PULSE_LEN_MAX,                                             // pulse_1_len_max: maximum length of pulse with bit value 1
+    RADIO1_1_PAUSE_LEN_MIN,                                             // pause_1_len_min: minimum length of pause with bit value 1
+    RADIO1_1_PAUSE_LEN_MAX,                                             // pause_1_len_max: maximum length of pause with bit value 1
+    RADIO1_0_PULSE_LEN_MIN,                                             // pulse_0_len_min: minimum length of pulse with bit value 0
+    RADIO1_0_PULSE_LEN_MAX,                                             // pulse_0_len_max: maximum length of pulse with bit value 0
+    RADIO1_0_PAUSE_LEN_MIN,                                             // pause_0_len_min: minimum length of pause with bit value 0
+    RADIO1_0_PAUSE_LEN_MAX,                                             // pause_0_len_max: maximum length of pause with bit value 0
+    RADIO1_ADDRESS_OFFSET,                                              // address_offset:  address offset
+    RADIO1_ADDRESS_OFFSET + RADIO1_ADDRESS_LEN,                         // address_end:     end of address
+    RADIO1_COMMAND_OFFSET,                                              // command_offset:  command offset
+    RADIO1_COMMAND_OFFSET + RADIO1_COMMAND_LEN,                         // command_end:     end of command
+    RADIO1_COMPLETE_DATA_LEN,                                           // complete_len:    complete length of frame
+    RADIO1_STOP_BIT,                                                    // stop_bit:        flag: frame has stop bit
+    RADIO1_LSB,                                                         // lsb_first:       flag: LSB first
+    RADIO1_FLAGS                                                        // flags:           some flags
 };
 
 #endif
 
-static uint_fast8_t irmp_bit;                   // current bit position
-static IRMP_PARAMETER irmp_param;
+static uint_fast8_t                             irmp_bit;                   // current bit position
+static IRMP_PARAMETER                           irmp_param;
 
 #if IRMP_SUPPORT_RC5_PROTOCOL == 1 && (IRMP_SUPPORT_FDC_PROTOCOL == 1 || IRMP_SUPPORT_RCCAR_PROTOCOL == 1)
-static IRMP_PARAMETER irmp_param2;
+static IRMP_PARAMETER                           irmp_param2;
 #endif
 
-static volatile uint_fast8_t irmp_ir_detected = FALSE;
-static volatile uint_fast8_t irmp_protocol;
-static volatile uint_fast16_t irmp_address;
-static volatile uint_fast16_t irmp_command;
-static volatile uint_fast16_t irmp_id;                // only used for SAMSUNG protocol
-static volatile uint_fast8_t irmp_flags;
+static volatile uint_fast8_t                    irmp_ir_detected = FALSE;
+static volatile uint_fast8_t                    irmp_protocol;
+static volatile uint_fast16_t                   irmp_address;
+static volatile uint_fast16_t                   irmp_command;
+static volatile uint_fast16_t                   irmp_id;                // only used for SAMSUNG protocol
+static volatile uint_fast8_t                    irmp_flags;
 // static volatile uint_fast8_t                 irmp_busy_flag;
 
 #if defined(__MBED__)
 // DigitalIn inputPin(IRMP_PIN, PullUp);                                // this requires mbed.h and source to be compiled as cpp
-gpio_t gpioIRin;// use low level c function instead
+gpio_t                                          gpioIRin;               // use low level c function instead
 #endif
+
 
 #ifdef ANALYZE
 #define input(x)                                (x)
-static uint_fast8_t IRMP_PIN;
-static uint_fast8_t radio;
+static uint_fast8_t                             IRMP_PIN;
+static uint_fast8_t                             radio;
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2278,12 +2286,13 @@ static uint_fast8_t radio;
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #ifndef ANALYZE
-void irmp_init(void) {
-    pinMode(12, OUTPUT);
+void
+irmp_init (void)
+{
 #if defined(PIC_CCS) || defined(PIC_C18)                                // PIC: do nothing
 #elif defined (ARM_STM32_HAL)                                           // STM32 with Hal Library: do nothing
 #elif defined (ARM_STM32)                                               // STM32
-    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitTypeDef     GPIO_InitStructure;
 
     /* GPIOx clock enable */
 #  if defined (ARM_STM32L1XX)
@@ -2317,14 +2326,14 @@ void irmp_init(void) {
 
 #elif defined(__SDCC_stm8)                                              // STM8
     IRMP_GPIO_STRUCT->DDR &= ~(1<<IRMP_BIT);                            // pin is input
-    IRMP_GPIO_STRUCT->CR1 |= (1<<IRMP_BIT);// activate pullup
+    IRMP_GPIO_STRUCT->CR1 |= (1<<IRMP_BIT);                             // activate pullup
 
 #elif defined (TEENSY_ARM_CORTEX_M4)                                    // TEENSY
     pinMode(IRMP_PIN, INPUT);
 
 #elif defined(__xtensa__)                                               // ESP8266
     pinMode(IRMP_BIT_NUMBER, INPUT);
-    // select pin function
+                                                                        // select pin function
 #  if (IRMP_BIT_NUMBER == 12)
     PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO12);
 //  doesn't work for me:
@@ -2342,8 +2351,12 @@ void irmp_init(void) {
     // ChibiOS HAL automatically initializes all pins according to the board config file, no need to repeat here
 
 #else                                                                   // AVR
-    IRMP_PORT &= ~(1 << IRMP_BIT);                                        // deactivate pullup
-    IRMP_DDR &= ~(1 << IRMP_BIT);                                         // set pin to input
+# ifdef IRMP_INPUT_PIN
+    pinModeFast(IRMP_INPUT_PIN, INPUT);                                 // set pin to input
+# else
+    IRMP_PORT &= ~(1 << IRMP_BIT);                                      // deactivate pullup
+    IRMP_DDR &= ~(1 << IRMP_BIT);                                       // set pin to input
+#  endif
 #endif
 
 #if IRMP_LOGGING == 1
@@ -2358,150 +2371,160 @@ void irmp_init(void) {
  *  @return    TRUE: successful, FALSE: failed
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-uint_fast8_t irmp_get_data(IRMP_DATA * irmp_data_p) {
-    uint_fast8_t rtc = FALSE;
+uint_fast8_t
+irmp_get_data (IRMP_DATA * irmp_data_p)
+{
+    uint_fast8_t   rtc = FALSE;
 
-    if (irmp_ir_detected) {
-        switch (irmp_protocol) {
+    if (irmp_ir_detected)
+    {
+        switch (irmp_protocol)
+        {
 #if IRMP_SUPPORT_SAMSUNG_PROTOCOL == 1
-        case IRMP_SAMSUNG_PROTOCOL:
-            if ((irmp_command >> 8) == (~irmp_command & 0x00FF)) {
-                irmp_command &= 0xff;
-                irmp_command |= irmp_id << 8;
-                rtc = TRUE;
-            }
-            break;
+            case IRMP_SAMSUNG_PROTOCOL:
+                if ((irmp_command >> 8) == (~irmp_command & 0x00FF))
+                {
+                    irmp_command &= 0xff;
+                    irmp_command |= irmp_id << 8;
+                    rtc = TRUE;
+                }
+                break;
 
 #if IRMP_SUPPORT_SAMSUNG48_PROTOCOL == 1
             case IRMP_SAMSUNG48_PROTOCOL:
-            irmp_command = (irmp_command & 0x00FF) | ((irmp_id & 0x00FF) << 8);
-            rtc = TRUE;
-            break;
+                irmp_command = (irmp_command & 0x00FF) | ((irmp_id & 0x00FF) << 8);
+                rtc = TRUE;
+                break;
 #endif
 #endif
 
 #if IRMP_SUPPORT_NEC_PROTOCOL == 1
-        case IRMP_NEC_PROTOCOL:
-            if ((irmp_command >> 8) == (~irmp_command & 0x00FF)) {
-                irmp_command &= 0xff;
-                rtc = TRUE;
-            } else if (irmp_address == 0x87EE) {
+            case IRMP_NEC_PROTOCOL:
+                if ((irmp_command >> 8) == (~irmp_command & 0x00FF))
+                {
+                    irmp_command &= 0xff;
+                    rtc = TRUE;
+                }
+                else if (irmp_address == 0x87EE)
+                {
 #ifdef ANALYZE
-                ANALYZE_PRINTF ("Switching to APPLE protocol\n");
+                    ANALYZE_PRINTF ("Switching to APPLE protocol\n");
 #endif // ANALYZE
-                irmp_protocol = IRMP_APPLE_PROTOCOL;
-                irmp_address = (irmp_command & 0xFF00) >> 8;
-                irmp_command &= 0x00FF;
-                rtc = TRUE;
-            }
-            break;
+                    irmp_protocol = IRMP_APPLE_PROTOCOL;
+                    irmp_address = (irmp_command & 0xFF00) >> 8;
+                    irmp_command &= 0x00FF;
+                    rtc = TRUE;
+                }
+                break;
 #endif
 
+
 #if IRMP_SUPPORT_NEC_PROTOCOL == 1
-        case IRMP_VINCENT_PROTOCOL:
-            if ((irmp_command >> 8) == (irmp_command & 0x00FF)) {
-                irmp_command &= 0xff;
-                rtc = TRUE;
-            }
-            break;
+            case IRMP_VINCENT_PROTOCOL:
+                if ((irmp_command >> 8) == (irmp_command & 0x00FF))
+                {
+                    irmp_command &= 0xff;
+                    rtc = TRUE;
+                }
+                break;
 #endif
 
 #if IRMP_SUPPORT_BOSE_PROTOCOL == 1
             case IRMP_BOSE_PROTOCOL:
-            if ((irmp_command >> 8) == (~irmp_command & 0x00FF))
-            {
-                irmp_command &= 0xff;
-                rtc = TRUE;
-            }
-            break;
+                if ((irmp_command >> 8) == (~irmp_command & 0x00FF))
+                {
+                    irmp_command &= 0xff;
+                    rtc = TRUE;
+                }
+                break;
 #endif
 #if IRMP_SUPPORT_SIEMENS_OR_RUWIDO_PROTOCOL == 1
             case IRMP_SIEMENS_PROTOCOL:
             case IRMP_RUWIDO_PROTOCOL:
-            if (((irmp_command >> 1) & 0x0001) == (~irmp_command & 0x0001))
-            {
-                irmp_command >>= 1;
-                rtc = TRUE;
-            }
-            break;
+                if (((irmp_command >> 1) & 0x0001) == (~irmp_command & 0x0001))
+                {
+                    irmp_command >>= 1;
+                    rtc = TRUE;
+                }
+                break;
 #endif
 #if IRMP_SUPPORT_KATHREIN_PROTOCOL == 1
             case IRMP_KATHREIN_PROTOCOL:
-            if (irmp_command != 0x0000)
-            {
-                rtc = TRUE;
-            }
-            break;
+                if (irmp_command != 0x0000)
+                {
+                    rtc = TRUE;
+                }
+                break;
 #endif
 #if IRMP_SUPPORT_RC5_PROTOCOL == 1
             case IRMP_RC5_PROTOCOL:
-            irmp_address &= ~0x20;                              // clear toggle bit
-            rtc = TRUE;
-            break;
+                irmp_address &= ~0x20;                              // clear toggle bit
+                rtc = TRUE;
+                break;
 #endif
 #if IRMP_SUPPORT_S100_PROTOCOL == 1
             case IRMP_S100_PROTOCOL:
-            irmp_address &= ~0x20;                              // clear toggle bit
-            rtc = TRUE;
-            break;
+                irmp_address &= ~0x20;                              // clear toggle bit
+                rtc = TRUE;
+                break;
 #endif
 #if IRMP_SUPPORT_IR60_PROTOCOL == 1
             case IRMP_IR60_PROTOCOL:
-            if (irmp_command != 0x007d)                         // 0x007d (== 62<<1 + 1) is start instruction frame
-            {
-                rtc = TRUE;
-            }
-            else
-            {
-#ifdef ANALYZE
-                ANALYZE_PRINTF("Info IR60: got start instruction frame\n");
-#endif // ANALYZE
-            }
-            break;
-#endif
-#if IRMP_SUPPORT_RCCAR_PROTOCOL == 1
-            case IRMP_RCCAR_PROTOCOL:
-            // frame in irmp_data:
-            // Bit 12 11 10 9  8  7  6  5  4  3  2  1  0
-            //     V  D7 D6 D5 D4 D3 D2 D1 D0 A1 A0 C1 C0   //         10 9  8  7  6  5  4  3  2  1  0
-            irmp_address = (irmp_command & 0x000C) >> 2;// addr:   0  0  0  0  0  0  0  0  0  A1 A0
-            irmp_command = ((irmp_command & 0x1000) >> 2) |// V-Bit:  V  0  0  0  0  0  0  0  0  0  0
-            ((irmp_command & 0x0003) << 8) |// C-Bits: 0  C1 C0 0  0  0  0  0  0  0  0
-            ((irmp_command & 0x0FF0) >> 4);// D-Bits:          D7 D6 D5 D4 D3 D2 D1 D0
-            rtc = TRUE;// Summe:  V  C1 C0 D7 D6 D5 D4 D3 D2 D1 D0
-            break;
-#endif
-
-#if IRMP_SUPPORT_NETBOX_PROTOCOL == 1                           // squeeze code to 8 bit, upper bit indicates release-key
-            case IRMP_NETBOX_PROTOCOL:
-            if (irmp_command & 0x1000)                      // last bit set?
-            {
-                if ((irmp_command & 0x1f) == 0x15)          // key pressed: 101 01 (LSB)
+                if (irmp_command != 0x007d)                         // 0x007d (== 62<<1 + 1) is start instruction frame
                 {
-                    irmp_command >>= 5;
-                    irmp_command &= 0x7F;
-                    rtc = TRUE;
-                }
-                else if ((irmp_command & 0x1f) == 0x10)     // key released: 000 01 (LSB)
-                {
-                    irmp_command >>= 5;
-                    irmp_command |= 0x80;
                     rtc = TRUE;
                 }
                 else
                 {
 #ifdef ANALYZE
-                    ANALYZE_PRINTF("error NETBOX: bit6/7 must be 0/1\n");
+                    ANALYZE_PRINTF("Info IR60: got start instruction frame\n");
 #endif // ANALYZE
                 }
-            }
-            else
-            {
+                break;
+#endif
+#if IRMP_SUPPORT_RCCAR_PROTOCOL == 1
+            case IRMP_RCCAR_PROTOCOL:
+                // frame in irmp_data:
+                // Bit 12 11 10 9  8  7  6  5  4  3  2  1  0
+                //     V  D7 D6 D5 D4 D3 D2 D1 D0 A1 A0 C1 C0   //         10 9  8  7  6  5  4  3  2  1  0
+                irmp_address = (irmp_command & 0x000C) >> 2;    // addr:   0  0  0  0  0  0  0  0  0  A1 A0
+                irmp_command = ((irmp_command & 0x1000) >> 2) | // V-Bit:  V  0  0  0  0  0  0  0  0  0  0
+                               ((irmp_command & 0x0003) << 8) | // C-Bits: 0  C1 C0 0  0  0  0  0  0  0  0
+                               ((irmp_command & 0x0FF0) >> 4);  // D-Bits:          D7 D6 D5 D4 D3 D2 D1 D0
+                rtc = TRUE;                                     // Summe:  V  C1 C0 D7 D6 D5 D4 D3 D2 D1 D0
+                break;
+#endif
+
+#if IRMP_SUPPORT_NETBOX_PROTOCOL == 1                           // squeeze code to 8 bit, upper bit indicates release-key
+            case IRMP_NETBOX_PROTOCOL:
+                if (irmp_command & 0x1000)                      // last bit set?
+                {
+                    if ((irmp_command & 0x1f) == 0x15)          // key pressed: 101 01 (LSB)
+                    {
+                        irmp_command >>= 5;
+                        irmp_command &= 0x7F;
+                        rtc = TRUE;
+                    }
+                    else if ((irmp_command & 0x1f) == 0x10)     // key released: 000 01 (LSB)
+                    {
+                        irmp_command >>= 5;
+                        irmp_command |= 0x80;
+                        rtc = TRUE;
+                    }
+                    else
+                    {
 #ifdef ANALYZE
-                ANALYZE_PRINTF("error NETBOX: last bit not set\n");
+                        ANALYZE_PRINTF("error NETBOX: bit6/7 must be 0/1\n");
 #endif // ANALYZE
-            }
-            break;
+                    }
+                }
+                else
+                {
+#ifdef ANALYZE
+                    ANALYZE_PRINTF("error NETBOX: last bit not set\n");
+#endif // ANALYZE
+                }
+                break;
 #endif
 #if IRMP_SUPPORT_LEGO_PROTOCOL == 1
             case IRMP_LEGO_PROTOCOL:
@@ -2524,24 +2547,28 @@ uint_fast8_t irmp_get_data(IRMP_DATA * irmp_data_p) {
             }
 #endif
 
-        default: {
-            rtc = TRUE;
-            break;
-        }
+            default:
+            {
+                rtc = TRUE;
+                break;
+            }
         }
 
-        if (rtc) {
+        if (rtc)
+        {
             irmp_data_p->protocol = irmp_protocol;
-            irmp_data_p->address = irmp_address;
-            irmp_data_p->command = irmp_command;
-            irmp_data_p->flags = irmp_flags;
-        } else {
+            irmp_data_p->address  = irmp_address;
+            irmp_data_p->command  = irmp_command;
+            irmp_data_p->flags    = irmp_flags;
+        }
+        else
+        {
             irmp_protocol = IRMP_UNKNOWN_PROTOCOL;
         }
 
-        irmp_command = 0;                    // don't reset irmp_protocol here, needed for detection of NEC & JVC repetition frames!
-        irmp_address = 0;
-        irmp_flags = 0;
+        irmp_command  = 0;                                      // don't reset irmp_protocol here, needed for detection of NEC & JVC repetition frames!
+        irmp_address  = 0;
+        irmp_flags    = 0;
 
         irmp_ir_detected = FALSE;
     }
@@ -2563,29 +2590,29 @@ static uint_fast16_t irmp_tmp_command;                                      // i
 
 #if (IRMP_SUPPORT_RC5_PROTOCOL == 1 && (IRMP_SUPPORT_FDC_PROTOCOL == 1 || IRMP_SUPPORT_RCCAR_PROTOCOL == 1)) || IRMP_SUPPORT_NEC42_PROTOCOL == 1
 static uint_fast16_t irmp_tmp_address2;                                     // ir address
-static uint_fast16_t irmp_tmp_command2;// ir command
+static uint_fast16_t irmp_tmp_command2;                                     // ir command
 #endif
 
 #if IRMP_SUPPORT_LGAIR_PROTOCOL == 1
 static uint_fast16_t irmp_lgair_address;                                    // ir address
-static uint_fast16_t irmp_lgair_command;// ir command
+static uint_fast16_t irmp_lgair_command;                                    // ir command
 #endif
 
 #if IRMP_SUPPORT_SAMSUNG_PROTOCOL == 1
 static uint_fast16_t irmp_tmp_id;                                           // ir id (only SAMSUNG)
 #endif
 #if IRMP_SUPPORT_KASEIKYO_PROTOCOL == 1
-static uint8_t xor_check[6];                                           // check kaseikyo "parity" bits
-static uint_fast8_t genre2;                                           // save genre2 bits here, later copied to MSB in flags
+static uint8_t      xor_check[6];                                           // check kaseikyo "parity" bits
+static uint_fast8_t genre2;                                                 // save genre2 bits here, later copied to MSB in flags
 #endif
 
 #if IRMP_SUPPORT_ORTEK_PROTOCOL == 1
-static uint_fast8_t parity;                                                // number of '1' of the first 14 bits, check if even.
+static uint_fast8_t  parity;                                                // number of '1' of the first 14 bits, check if even.
 #endif
 
 #if IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL == 1
-static uint_fast8_t check;                                                 // number of '1' of the first 14 bits, check if even.
-static uint_fast8_t mitsu_parity;// number of '1' of the first 14 bits, check if even.
+static uint_fast8_t  check;                                                 // number of '1' of the first 14 bits, check if even.
+static uint_fast8_t  mitsu_parity;                                          // number of '1' of the first 14 bits, check if even.
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2596,9 +2623,12 @@ static uint_fast8_t mitsu_parity;// number of '1' of the first 14 bits, check if
  */
 // verhindert, dass irmp_store_bit() inline compiliert wird:
 // static void irmp_store_bit (uint_fast8_t) __attribute__ ((noinline));
-static void irmp_store_bit(uint_fast8_t value) {
+
+static void
+irmp_store_bit (uint_fast8_t value)
+{
 #if IRMP_SUPPORT_ACP24_PROTOCOL == 1
-    if (irmp_param.protocol == IRMP_ACP24_PROTOCOL)                                             // squeeze 64 bits into 16 bits:
+    if (irmp_param.protocol == IRMP_ACP24_PROTOCOL)                                                 // squeeze 64 bits into 16 bits:
     {
         if (value)
         {
@@ -2614,22 +2644,22 @@ static void irmp_store_bit(uint_fast8_t value) {
 
             switch (irmp_bit)
             {
-                case 0: irmp_tmp_command |= (1<<15); break;                                        // N
-                case 2: irmp_tmp_command |= (1<<13); break;// V
-                case 3: irmp_tmp_command |= (1<<12); break;// V
-                case 4: irmp_tmp_command |= (1<<10); break;// M
-                case 5: irmp_tmp_command |= (1<< 9); break;// M
-                case 6: irmp_tmp_command |= (1<< 8); break;// M
-                case 20: irmp_tmp_command |= (1<< 6); break;// t
-                case 22: irmp_tmp_command |= (1<<11); break;// v
-                case 23: irmp_tmp_command |= (1<< 7); break;// m
-                case 24: irmp_tmp_command |= (1<<14); break;// A
-                case 26: irmp_tmp_command |= (1<< 5); break;// x
-                case 44: irmp_tmp_command |= (1<< 4); break;// y
-                case 66: irmp_tmp_command |= (1<< 3); break;// T
-                case 67: irmp_tmp_command |= (1<< 2); break;// T
-                case 68: irmp_tmp_command |= (1<< 1); break;// T
-                case 69: irmp_tmp_command |= (1<< 0); break;// T
+                case  0: irmp_tmp_command |= (1<<15); break;                                        // N
+                case  2: irmp_tmp_command |= (1<<13); break;                                        // V
+                case  3: irmp_tmp_command |= (1<<12); break;                                        // V
+                case  4: irmp_tmp_command |= (1<<10); break;                                        // M
+                case  5: irmp_tmp_command |= (1<< 9); break;                                        // M
+                case  6: irmp_tmp_command |= (1<< 8); break;                                        // M
+                case 20: irmp_tmp_command |= (1<< 6); break;                                        // t
+                case 22: irmp_tmp_command |= (1<<11); break;                                        // v
+                case 23: irmp_tmp_command |= (1<< 7); break;                                        // m
+                case 24: irmp_tmp_command |= (1<<14); break;                                        // A
+                case 26: irmp_tmp_command |= (1<< 5); break;                                        // x
+                case 44: irmp_tmp_command |= (1<< 4); break;                                        // y
+                case 66: irmp_tmp_command |= (1<< 3); break;                                        // T
+                case 67: irmp_tmp_command |= (1<< 2); break;                                        // T
+                case 68: irmp_tmp_command |= (1<< 1); break;                                        // T
+                case 69: irmp_tmp_command |= (1<< 0); break;                                        // T
             }
         }
     }
@@ -2648,7 +2678,7 @@ static void irmp_store_bit(uint_fast8_t value) {
         }
         else if (irmp_bit == 14)
         {
-            if (value)                                                                                // value == 1: even parity
+            if (value)                                                                                      // value == 1: even parity
             {
                 if (parity & 0x01)
                 {
@@ -2661,7 +2691,7 @@ static void irmp_store_bit(uint_fast8_t value) {
             }
             else
             {
-                if (parity & 0x01)                                                                     // value == 0: odd parity
+                if (parity & 0x01)                                                                          // value == 0: odd parity
                 {
                     parity = PARITY_CHECK_OK;
                 }
@@ -2686,15 +2716,22 @@ static void irmp_store_bit(uint_fast8_t value) {
     else
 #endif
 
-    if (irmp_bit >= irmp_param.address_offset && irmp_bit < irmp_param.address_end) {
-        if (irmp_param.lsb_first) {
+    if (irmp_bit >= irmp_param.address_offset && irmp_bit < irmp_param.address_end)
+    {
+        if (irmp_param.lsb_first)
+        {
             irmp_tmp_address |= (((uint_fast16_t) (value)) << (irmp_bit - irmp_param.address_offset));   // CV wants cast
-        } else {
+        }
+        else
+        {
             irmp_tmp_address <<= 1;
             irmp_tmp_address |= value;
         }
-    } else if (irmp_bit >= irmp_param.command_offset && irmp_bit < irmp_param.command_end) {
-        if (irmp_param.lsb_first) {
+    }
+    else if (irmp_bit >= irmp_param.command_offset && irmp_bit < irmp_param.command_end)
+    {
+        if (irmp_param.lsb_first)
+        {
 #if IRMP_SUPPORT_SAMSUNG48_PROTOCOL == 1
             if (irmp_param.protocol == IRMP_SAMSUNG48_PROTOCOL && irmp_bit >= 32)
             {
@@ -2705,7 +2742,9 @@ static void irmp_store_bit(uint_fast8_t value) {
             {
                 irmp_tmp_command |= (((uint_fast16_t) (value)) << (irmp_bit - irmp_param.command_offset));   // CV wants cast
             }
-        } else {
+        }
+        else
+        {
             irmp_tmp_command <<= 1;
             irmp_tmp_command |= value;
         }
@@ -2737,43 +2776,53 @@ static void irmp_store_bit(uint_fast8_t value) {
 #endif
 
 #if IRMP_SUPPORT_SAMSUNG_PROTOCOL == 1
-    if (irmp_param.protocol == IRMP_SAMSUNG_PROTOCOL && irmp_bit >= SAMSUNG_ID_OFFSET
-            && irmp_bit < SAMSUNG_ID_OFFSET + SAMSUNG_ID_LEN) {
-        irmp_tmp_id |= (((uint_fast16_t) (value)) << (irmp_bit - SAMSUNG_ID_OFFSET));                  // store with LSB first
-    } else
+    if (irmp_param.protocol == IRMP_SAMSUNG_PROTOCOL && irmp_bit >= SAMSUNG_ID_OFFSET && irmp_bit < SAMSUNG_ID_OFFSET + SAMSUNG_ID_LEN)
+    {
+        irmp_tmp_id |= (((uint_fast16_t) (value)) << (irmp_bit - SAMSUNG_ID_OFFSET));                    // store with LSB first
+    }
+    else
 #endif
 
 #if IRMP_SUPPORT_KASEIKYO_PROTOCOL == 1
-    if (irmp_param.protocol == IRMP_KASEIKYO_PROTOCOL) {
-        if (irmp_bit >= 20 && irmp_bit < 24) {
-            irmp_tmp_command |= (((uint_fast16_t) (value)) << (irmp_bit - 8)); // store 4 system bits (genre 1) in upper nibble with LSB first
-        } else if (irmp_bit >= 24 && irmp_bit < 28) {
-            genre2 |= (((uint_fast8_t) (value)) << (irmp_bit - 20)); // store 4 system bits (genre 2) in upper nibble with LSB first
+    if (irmp_param.protocol == IRMP_KASEIKYO_PROTOCOL)
+    {
+        if (irmp_bit >= 20 && irmp_bit < 24)
+        {
+            irmp_tmp_command |= (((uint_fast16_t) (value)) << (irmp_bit - 8));      // store 4 system bits (genre 1) in upper nibble with LSB first
+        }
+        else if (irmp_bit >= 24 && irmp_bit < 28)
+        {
+            genre2 |= (((uint_fast8_t) (value)) << (irmp_bit - 20));                // store 4 system bits (genre 2) in upper nibble with LSB first
         }
 
-        if (irmp_bit < KASEIKYO_COMPLETE_DATA_LEN) {
-            if (value) {
+        if (irmp_bit < KASEIKYO_COMPLETE_DATA_LEN)
+        {
+            if (value)
+            {
                 xor_check[irmp_bit / 8] |= 1 << (irmp_bit % 8);
-            } else {
+            }
+            else
+            {
                 xor_check[irmp_bit / 8] &= ~(1 << (irmp_bit % 8));
             }
         }
-    } else
+    }
+    else
 #endif
 
 #if IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL == 1
     if (irmp_param.protocol == IRMP_MITSU_HEAVY_PROTOCOL)                           // squeeze 64 bits into 16 bits:
     {
         if (irmp_bit == 72 )
-        {                                                    // irmp_tmp_address, irmp_tmp_command received: check parity & compress
+        {                                                                           // irmp_tmp_address, irmp_tmp_command received: check parity & compress
             mitsu_parity = PARITY_CHECK_OK;
 
-            check = irmp_tmp_address >> 8;// inverted upper byte == lower byte?
+            check = irmp_tmp_address >> 8;                                          // inverted upper byte == lower byte?
             check = ~ check;
 
             if (check == (irmp_tmp_address & 0xFF))
             {                                                                       // ok:
-                irmp_tmp_address <<= 8;// throw away upper byte
+                irmp_tmp_address <<= 8;                                             // throw away upper byte
             }
             else
             {
@@ -2784,7 +2833,7 @@ static void irmp_store_bit(uint_fast8_t value) {
             check = ~ check;
             if (check == (irmp_tmp_command & 0xFF))
             {                                                                       // ok:  pack together
-                irmp_tmp_address |= irmp_tmp_command & 0xFF;// byte 1, byte2 in irmp_tmp_address, irmp_tmp_command can be used for byte 3
+                irmp_tmp_address |= irmp_tmp_command & 0xFF;                        // byte 1, byte2 in irmp_tmp_address, irmp_tmp_command can be used for byte 3
             }
             else
             {
@@ -2806,14 +2855,6 @@ static void irmp_store_bit(uint_fast8_t value) {
     }
 
     irmp_bit++;
-//    if (irmp_bit == irmp_param.complete_len) {
-//        Serial.print("s=");
-//        Serial.println(value);
-//        irmp_print();
-//    } else {
-//        Serial.write('O');
-//        Serial.write(irmp_bit);
-//    }
 }
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2853,26 +2894,22 @@ irmp_store_bit2 (uint_fast8_t value)
  *  @details  ISR routine, called 10000 times per second
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-static uint_fast8_t irmp_start_bit_detected;                                // flag: start bit detected
-static uint_fast8_t irmp_pulse_time;                                        // count bit time for pulse
-static PAUSE_LEN irmp_pause_time;                                        // count bit time for pause
-static uint_fast16_t key_repetition_len;                                     // SIRCS repeats frame 2-5 times with 45 ms pause
+static uint_fast8_t irmp_start_bit_detected;                                    // flag: start bit detected
+static uint_fast8_t irmp_pulse_time;                                            // count bit time for pulse
+static PAUSE_LEN irmp_pause_time;                                               // count bit time for pause
+static uint_fast16_t key_repetition_len;                                        // SIRCS repeats frame 2-5 times with 45 ms pause
+static uint_fast8_t wait_for_space;                                             // flag: wait for data bit space
+static uint_fast8_t wait_for_start_space;                                       // flag: wait for start bit space
+static uint_fast8_t repetition_frame_number;
 
 /*
- * 4us idle, 45 us at start of each pulse
+ * 4us idle, 45 us at start of each pulse @16 Mhz ATMega 328p
  */
-uint_fast8_t
-irmp_ISR (void)
+uint_fast8_t irmp_ISR(void)
 {
-//    static uint_fast8_t     irmp_start_bit_detected;                                // flag: start bit detected
-    static uint_fast8_t     wait_for_space;                                         // flag: wait for data bit space
-    static uint_fast8_t     wait_for_start_space;                                   // flag: wait for start bit space
-//    static uint_fast8_t     irmp_pulse_time;                                        // count bit time for pulse
-//    static PAUSE_LEN        irmp_pause_time;                                        // count bit time for pause
-    static uint_fast16_t    last_irmp_address = 0xFFFF;                             // save last irmp address to recognize key repetition
-    static uint_fast16_t    last_irmp_command = 0xFFFF;                             // save last irmp command to recognize key repetition
-//    static uint_fast16_t    key_repetition_len;                                     // SIRCS repeats frame 2-5 times with 45 ms pause
-    static uint_fast8_t     repetition_frame_number;
+    static uint_fast16_t last_irmp_address = 0xFFFF;                           // save last irmp address to recognize key repetition
+    static uint_fast16_t last_irmp_command = 0xFFFF;                           // save last irmp command to recognize key repetition
+
 #if IRMP_SUPPORT_DENON_PROTOCOL == 1
     static uint_fast16_t    last_irmp_denon_command;                                // save last irmp command to recognize DENON frame repetition
     static uint_fast16_t    denon_repetition_len = 0xFFFF;                          // denon repetition len of 2nd auto generated frame
@@ -5331,8 +5368,8 @@ irmp_ISR (void)
 #endif
 
 #if IRMP_USE_COMPLETE_CALLBACK == 1
-    if (CompleteCallbackFunction != NULL && irmp_ir_detected) {
-        CompleteCallbackFunction();
+    if (irmp_complete_callback_function != NULL && irmp_ir_detected) {
+        irmp_complete_callback_function();
     }
 #endif
 
@@ -5351,25 +5388,60 @@ irmp_ISR (void)
     return (irmp_ir_detected);
 }
 
+#if defined(ARDUINO)
+void irmp_debug_print() {
+    Serial.print(" Ir");
+    Serial.print(irmp_ir_detected);
+    Serial.print(" St");
+    Serial.print(irmp_start_bit_detected);
+    Serial.print(" L");
+    Serial.print(irmp_param.complete_len);
+    Serial.print(" B");
+    Serial.print(irmp_bit);
+    Serial.print(" F");
+    Serial.print(irmp_flags);
+
+    Serial.print(" Pu");
+    Serial.print(irmp_pulse_time);
+    Serial.print(" Pa");
+    Serial.print(irmp_pause_time);
+    Serial.print(" K");
+    Serial.print(key_repetition_len);
+    Serial.print(" R");
+    Serial.print(repetition_frame_number);
+
+    Serial.print(" Ws");
+    Serial.print(wait_for_space);
+    Serial.print(" Wss");
+    Serial.print(wait_for_start_space);
+
+    Serial.print(" Sb");
+    Serial.print(irmp_param.stop_bit);
+
+    Serial.println();
+}
+#endif
+
 #if (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
 /*
  * Wrapper for irmp_ISR() in order to run it with Pin Change Interrupts.
  * needs additional 8-9us per call.
  * Ends up to 13us for signal going inactive and 19us for going active.
- * Tested for NEC, Kaseiko, Denon, RC6
+ * Tested for NEC, Kaseiko, Denon, RC6, but still experimental
  */
-void irmp_handle_PCI_interrupt(void) {
+//#define PCI_DEBUG
+void irmp_PCI_ISR(void) {
     static uint32_t irmp_last_change_micros;
 
     uint_fast8_t irmp_input = input(IRMP_PIN);
 
     // compute ticks after last change
     uint32_t tMicros = micros();
-    uint32_t tTicks = tMicros - irmp_last_change_micros; // values up to 10000
+    uint32_t tTicks = tMicros - irmp_last_change_micros;// values up to 10000
     irmp_last_change_micros = tMicros;
 #if (F_INTERRUPTS == 15625)
     // F_INTERRUPTS value of 31250 does not work (maybe 8 bit overflow?)
-    tTicks = (tTicks << 2) >> 8; // saves 1.3 us
+    tTicks = (tTicks << 2) >> 8;// saves 1.3 us
 #else
 #error "F_INTERRUPTS must be 15625 (to avoid a time consuming division)"
 #endif
@@ -5389,38 +5461,102 @@ void irmp_handle_PCI_interrupt(void) {
                 tTicks = 0xFFFF;
             }
             key_repetition_len = tTicks;
-//            Serial.write('Y');
-
         } else {
             irmp_pause_time += tTicks;
         }
     }
+
     irmp_ISR();
 
-    /*
-     * Simulate end for codes
-     * IRMP is waiting for stop bit, but detects it only at the next call, so do one additional call
-     */
-//    if (irmp_bit == irmp_param.complete_len && irmp_param.stop_bit == 1) {
-    if (irmp_bit == irmp_param.complete_len) {
-        irmp_ISR();
-    }
+    if(!irmp_ir_detected && irmp_input) {
+        /*
+         * Simulate end for protocols
+         * IRMP may be waiting for stop bit, but detects it only at the next call, so do one additional call.
+         * !!! ATTENTION !!! This will NOT work if we try to receive simultaneously two protocols which are only different in length like NEC16 and NEC42
+         */
+#ifdef PCI_DEBUG
+        Serial.write('x');
+        if(irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
+            Serial.print(irmp_start_bit_detected);
+        }
+#endif
+        if (irmp_start_bit_detected && irmp_bit == irmp_param.complete_len && irmp_param.stop_bit == 1) {
+            // call another time to detect a nec repeat
+#ifdef PCI_DEBUG
+            Serial.println('R');
+#endif
+            if(irmp_pulse_time > 0) {
+                irmp_pulse_time--;
+            }
+            irmp_ISR();
+        }
 
-    /*
-     * Simulate end for Manchester decoding
-     * If you do not need a biphase code you may comment this out to save 130 bytes of FLASH
-     */
-    if (((irmp_bit == irmp_param.complete_len - 1 && tTicks < irmp_param.pause_1_len_max)
-            || (irmp_bit == irmp_param.complete_len - 2 && tTicks > irmp_param.pause_1_len_max))
-            && (irmp_param.flags & IRMP_PARAM_FLAG_IS_MANCHESTER) && irmp_start_bit_detected && irmp_input) {
-        //
-        irmp_pause_time = 2 * irmp_param.pause_1_len_max;
-        irmp_ISR(); // Write last one (with value 0) or 2 (with last value 1) data bits and set wait for dummy stop bit
-        irmp_ISR(); // process dummy stop bit
-        irmp_ISR(); // reset stop bit and call callback
+        if (irmp_start_bit_detected && irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
+#ifdef PCI_DEBUG
+            Serial.println('E');
+            irmp_debug_print();
+#endif
+            irmp_ISR();
+#ifdef PCI_DEBUG
+            irmp_debug_print();
+            Serial.println();
+#endif
+        }
+
+#if (IRMP_SUPPORT_MANCHESTER == 1)
+        /*
+         * Simulate end for Manchester/biphase protocols - 130 bytes
+         */
+#ifdef PCI_DEBUG
+        Serial.println('M');
+#endif
+        if (((irmp_bit == irmp_param.complete_len - 1 && tTicks < irmp_param.pause_1_len_max)
+                        || (irmp_bit == irmp_param.complete_len - 2 && tTicks > irmp_param.pause_1_len_max))
+                && (irmp_param.flags & IRMP_PARAM_FLAG_IS_MANCHESTER) && irmp_start_bit_detected) {
+            irmp_pause_time = 2 * irmp_param.pause_1_len_max;
+            irmp_ISR();        // Write last one (with value 0) or 2 (with last value 1) data bits and set wait for dummy stop bit
+            irmp_ISR();// process dummy stop bit
+            irmp_ISR();// reset stop bit and call callback
+        }
+#endif
     }
 }
+
+#ifndef IRMP_USE_ARDUINO_ATTACH_INTERRUPT
+void initPCIInterrupt() {
+#if (IRMP_INPUT_PIN == 2)
+    // interrupt on any logical change
+    EICRA |= (1 << ISC00);
+    // clear interrupt bit
+    EIFR |= 1 << INTF0;
+    // enable interrupt on next change
+    EIMSK |= 1 << INT0;
+#elif (IRMP_INPUT_PIN == 3)
+    EICRA |= (1 << ISC10);
+    // clear interrupt bit
+    EIFR |= 1 << INTF1;
+    // enable interrupt on next change
+    EIMSK |= 1 << INT1;
+#else
+#error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1) IRMP_INPUT_PIN must be 2 or 3."
 #endif
+}
+
+/*
+ * The ISR for INT0 and INT1
+ */
+#if (IRMP_INPUT_PIN == 2)
+ISR(INT0_vect) {
+    irmp_PCI_ISR();
+}
+#elif (IRMP_INPUT_PIN == 3)
+ISR(INT1_vect) {
+    irmp_PCI_ISR();
+}
+#endif
+#endif // IRMP_USE_ARDUINO_ATTACH_INTERRUPT
+#endif // (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
+
 
 #ifdef ANALYZE
 
@@ -5445,16 +5581,16 @@ void irmp_handle_PCI_interrupt(void) {
 void
 print_spectrum (char * text, int * buf, int is_pulse)
 {
-    int i;
-    int j;
-    int min;
-    int max;
-    int max_value = 0;
-    int value;
-    int sum = 0;
-    int counter = 0;
-    double average = 0;
-    double tolerance;
+    int     i;
+    int     j;
+    int     min;
+    int     max;
+    int     max_value = 0;
+    int     value;
+    int     sum = 0;
+    int     counter = 0;
+    double  average = 0;
+    double  tolerance;
 
     puts ("-----------------------------------------------------------------------------");
     printf ("%s:\n", text);
@@ -5562,16 +5698,16 @@ get_fdc_key (uint_fast16_t cmd)
 {
     static uint8_t key_table[128] =
     {
-        // 0     1    2    3    4    5    6    7    8     9     A     B     C     D    E    F
-        0, '^', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 0xDF, '´', 0, '\b',
-        '\t', 'q', 'w', 'e', 'r', 't', 'z', 'u', 'i', 'o', 'p', 0xFC, '+', 0, 0, 'a',
-        's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 0xF6, 0xE4, '#', '\r', 0, '<', 'y', 'x',
-        'c', 'v', 'b', 'n', 'm', ',', '.', '-', 0, 0, 0, 0, 0, ' ', 0, 0,
+     // 0     1    2    3    4    5    6    7    8     9     A     B     C     D    E    F
+         0,   '^', '1', '2', '3', '4', '5', '6', '7',  '8',  '9',  '0',  0xDF, '´', 0,   '\b',
+        '\t', 'q', 'w', 'e', 'r', 't', 'z', 'u', 'i',  'o',  'p',  0xFC, '+',   0,   0,   'a',
+        's',  'd', 'f', 'g', 'h', 'j', 'k', 'l', 0xF6, 0xE4, '#',  '\r', 0,    '<', 'y', 'x',
+        'c',  'v', 'b', 'n', 'm', ',', '.', '-', 0,    0,    0,    0,    0,    ' ', 0,   0,
 
-        0, '°', '!', '"', '§', '$', '%', '&', '/', '(', ')', '=', '?', '`', 0, '\b',
-        '\t', 'Q', 'W', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P', 0xDC, '*', 0, 0, 'A',
-        'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 0xD6, 0xC4, '\'', '\r', 0, '>', 'Y', 'X',
-        'C', 'V', 'B', 'N', 'M', ';', ':', '_', 0, 0, 0, 0, 0, ' ', 0, 0
+         0,   '°', '!', '"', '§', '$', '%', '&', '/',  '(',  ')',  '=',  '?',  '`', 0,   '\b',
+        '\t', 'Q', 'W', 'E', 'R', 'T', 'Z', 'U', 'I',  'O',  'P',  0xDC, '*',  0,   0,   'A',
+        'S',  'D', 'F', 'G', 'H', 'J', 'K', 'L', 0xD6, 0xC4, '\'', '\r', 0,    '>', 'Y', 'X',
+        'C',  'V', 'B', 'N', 'M', ';', ':', '_', 0,    0,    0,    0,    0,    ' ', 0,   0
     };
     static uint_fast8_t state;
 
@@ -5579,30 +5715,30 @@ get_fdc_key (uint_fast16_t cmd)
 
     switch (cmd)
     {
-        case 0x002C: state |= STATE_LEFT_SHIFT; break;              // pressed left shift
-        case 0x00AC: state &= ~STATE_LEFT_SHIFT; break;// released left shift
-        case 0x0039: state |= STATE_RIGHT_SHIFT; break;// pressed right shift
-        case 0x00B9: state &= ~STATE_RIGHT_SHIFT; break;// released right shift
-        case 0x003A: state |= STATE_LEFT_CTRL; break;// pressed left ctrl
-        case 0x00BA: state &= ~STATE_LEFT_CTRL; break;// released left ctrl
-        case 0x003C: state |= STATE_LEFT_ALT; break;// pressed left alt
-        case 0x00BC: state &= ~STATE_LEFT_ALT; break;// released left alt
-        case 0x003E: state |= STATE_RIGHT_ALT; break;// pressed left alt
-        case 0x00BE: state &= ~STATE_RIGHT_ALT; break;// released left alt
+        case 0x002C: state |=  STATE_LEFT_SHIFT;    break;              // pressed left shift
+        case 0x00AC: state &= ~STATE_LEFT_SHIFT;    break;              // released left shift
+        case 0x0039: state |=  STATE_RIGHT_SHIFT;   break;              // pressed right shift
+        case 0x00B9: state &= ~STATE_RIGHT_SHIFT;   break;              // released right shift
+        case 0x003A: state |=  STATE_LEFT_CTRL;     break;              // pressed left ctrl
+        case 0x00BA: state &= ~STATE_LEFT_CTRL;     break;              // released left ctrl
+        case 0x003C: state |=  STATE_LEFT_ALT;      break;              // pressed left alt
+        case 0x00BC: state &= ~STATE_LEFT_ALT;      break;              // released left alt
+        case 0x003E: state |=  STATE_RIGHT_ALT;     break;              // pressed left alt
+        case 0x00BE: state &= ~STATE_RIGHT_ALT;     break;              // released left alt
 
-        case 0x006e: key = KEY_ESCAPE; break;
-        case 0x004b: key = KEY_INSERT; break;
-        case 0x004c: key = KEY_DELETE; break;
-        case 0x004f: key = KEY_LEFT; break;
-        case 0x0050: key = KEY_HOME; break;
-        case 0x0051: key = KEY_END; break;
-        case 0x0053: key = KEY_UP; break;
-        case 0x0054: key = KEY_DOWN; break;
-        case 0x0055: key = KEY_PAGE_UP; break;
-        case 0x0056: key = KEY_PAGE_DOWN; break;
-        case 0x0059: key = KEY_RIGHT; break;
-        case 0x0400: key = KEY_MOUSE_1; break;
-        case 0x0800: key = KEY_MOUSE_2; break;
+        case 0x006e: key = KEY_ESCAPE;              break;
+        case 0x004b: key = KEY_INSERT;              break;
+        case 0x004c: key = KEY_DELETE;              break;
+        case 0x004f: key = KEY_LEFT;                break;
+        case 0x0050: key = KEY_HOME;                break;
+        case 0x0051: key = KEY_END;                 break;
+        case 0x0053: key = KEY_UP;                  break;
+        case 0x0054: key = KEY_DOWN;                break;
+        case 0x0055: key = KEY_PAGE_UP;             break;
+        case 0x0056: key = KEY_PAGE_DOWN;           break;
+        case 0x0059: key = KEY_RIGHT;               break;
+        case 0x0400: key = KEY_MOUSE_1;             break;
+        case 0x0800: key = KEY_MOUSE_2;             break;
 
         default:
         {
@@ -5618,15 +5754,15 @@ get_fdc_key (uint_fast16_t cmd)
                     {
                         switch (cmd)
                         {
-                            case 0x0003: key = 0xB2; break; // upper 2
-                            case 0x0008: key = '{'; break;
-                            case 0x0009: key = '['; break;
-                            case 0x000A: key = ']'; break;
-                            case 0x000B: key = '}'; break;
-                            case 0x000C: key = '\\'; break;
-                            case 0x001C: key = '~'; break;
-                            case 0x002D: key = '|'; break;
-                            case 0x0034: key = 0xB5; break;// Mu
+                            case 0x0003: key = 0xB2;    break; // upper 2
+                            case 0x0008: key = '{';     break;
+                            case 0x0009: key = '[';     break;
+                            case 0x000A: key = ']';     break;
+                            case 0x000B: key = '}';     break;
+                            case 0x000C: key = '\\';    break;
+                            case 0x001C: key = '~';     break;
+                            case 0x002D: key = '|';     break;
+                            case 0x0034: key = 0xB5;    break; // Mu
                         }
                     }
                     else if (state & (STATE_LEFT_CTRL))
@@ -5658,13 +5794,13 @@ get_fdc_key (uint_fast16_t cmd)
     return (key);
 }
 
-static int analyze = FALSE;
-static int list = FALSE;
-static IRMP_DATA irmp_data;
-static int expected_protocol;
-static int expected_address;
-static int expected_command;
-static int do_check_expected_values;
+static int         analyze = FALSE;
+static int         list = FALSE;
+static IRMP_DATA   irmp_data;
+static int         expected_protocol;
+static int         expected_address;
+static int         expected_command;
+static int         do_check_expected_values;
 
 static void
 next_tick (void)
@@ -5686,7 +5822,7 @@ next_tick (void)
 
             if (irmp_data.protocol == IRMP_ACP24_PROTOCOL)
             {
-                uint16_t temp = (irmp_data.command & 0x000F) + 15;
+                uint16_t    temp = (irmp_data.command & 0x000F) + 15;
 
                 printf ("p=%2d (%s), a=0x%04x, c=0x%04x, f=0x%02x, temp=%d",
                         irmp_data.protocol, irmp_protocol_names[irmp_data.protocol], irmp_data.address, irmp_data.command, irmp_data.flags, temp);
@@ -5696,45 +5832,45 @@ next_tick (void)
                 if ((key >= 0x20 && key < 0x7F) || key >= 0xA0)
                 {
                     printf ("p=%2d (%s), a=0x%04x, c=0x%04x, f=0x%02x, asc=0x%02x, key='%c'",
-                            irmp_data.protocol, irmp_protocol_names[irmp_data.protocol], irmp_data.address, irmp_data.command, irmp_data.flags, key, key);
+                            irmp_data.protocol,  irmp_protocol_names[irmp_data.protocol], irmp_data.address, irmp_data.command, irmp_data.flags, key, key);
                 }
-                else if (key == '\r' || key == '\t' || key == KEY_ESCAPE || (key >= 0x80 && key <= 0x9F))           // function keys
+                else if (key == '\r' || key == '\t' || key == KEY_ESCAPE || (key >= 0x80 && key <= 0x9F))                 // function keys
                 {
                     char * p = (char *) NULL;
 
                     switch (key)
                     {
-                        case '\t' : p = "TAB"; break;
-                        case '\r' : p = "CR"; break;
-                        case KEY_ESCAPE : p = "ESCAPE"; break;
-                        case KEY_MENUE : p = "MENUE"; break;
-                        case KEY_BACK : p = "BACK"; break;
-                        case KEY_FORWARD : p = "FORWARD"; break;
-                        case KEY_ADDRESS : p = "ADDRESS"; break;
-                        case KEY_WINDOW : p = "WINDOW"; break;
-                        case KEY_1ST_PAGE : p = "1ST_PAGE"; break;
-                        case KEY_STOP : p = "STOP"; break;
-                        case KEY_MAIL : p = "MAIL"; break;
-                        case KEY_FAVORITES : p = "FAVORITES"; break;
-                        case KEY_NEW_PAGE : p = "NEW_PAGE"; break;
-                        case KEY_SETUP : p = "SETUP"; break;
-                        case KEY_FONT : p = "FONT"; break;
-                        case KEY_PRINT : p = "PRINT"; break;
-                        case KEY_ON_OFF : p = "ON_OFF"; break;
+                        case '\t'                : p = "TAB";           break;
+                        case '\r'                : p = "CR";            break;
+                        case KEY_ESCAPE          : p = "ESCAPE";        break;
+                        case KEY_MENUE           : p = "MENUE";         break;
+                        case KEY_BACK            : p = "BACK";          break;
+                        case KEY_FORWARD         : p = "FORWARD";       break;
+                        case KEY_ADDRESS         : p = "ADDRESS";       break;
+                        case KEY_WINDOW          : p = "WINDOW";        break;
+                        case KEY_1ST_PAGE        : p = "1ST_PAGE";      break;
+                        case KEY_STOP            : p = "STOP";          break;
+                        case KEY_MAIL            : p = "MAIL";          break;
+                        case KEY_FAVORITES       : p = "FAVORITES";     break;
+                        case KEY_NEW_PAGE        : p = "NEW_PAGE";      break;
+                        case KEY_SETUP           : p = "SETUP";         break;
+                        case KEY_FONT            : p = "FONT";          break;
+                        case KEY_PRINT           : p = "PRINT";         break;
+                        case KEY_ON_OFF          : p = "ON_OFF";        break;
 
-                        case KEY_INSERT : p = "INSERT"; break;
-                        case KEY_DELETE : p = "DELETE"; break;
-                        case KEY_LEFT : p = "LEFT"; break;
-                        case KEY_HOME : p = "HOME"; break;
-                        case KEY_END : p = "END"; break;
-                        case KEY_UP : p = "UP"; break;
-                        case KEY_DOWN : p = "DOWN"; break;
-                        case KEY_PAGE_UP : p = "PAGE_UP"; break;
-                        case KEY_PAGE_DOWN : p = "PAGE_DOWN"; break;
-                        case KEY_RIGHT : p = "RIGHT"; break;
-                        case KEY_MOUSE_1 : p = "KEY_MOUSE_1"; break;
-                        case KEY_MOUSE_2 : p = "KEY_MOUSE_2"; break;
-                        default : p = "<UNKNWON>"; break;
+                        case KEY_INSERT          : p = "INSERT";        break;
+                        case KEY_DELETE          : p = "DELETE";        break;
+                        case KEY_LEFT            : p = "LEFT";          break;
+                        case KEY_HOME            : p = "HOME";          break;
+                        case KEY_END             : p = "END";           break;
+                        case KEY_UP              : p = "UP";            break;
+                        case KEY_DOWN            : p = "DOWN";          break;
+                        case KEY_PAGE_UP         : p = "PAGE_UP";       break;
+                        case KEY_PAGE_DOWN       : p = "PAGE_DOWN";     break;
+                        case KEY_RIGHT           : p = "RIGHT";         break;
+                        case KEY_MOUSE_1         : p = "KEY_MOUSE_1";   break;
+                        case KEY_MOUSE_2         : p = "KEY_MOUSE_2";   break;
+                        default                  : p = "<UNKNWON>";     break;
                     }
 
                     printf ("p=%2d (%s), a=0x%04x, c=0x%04x, f=0x%02x, asc=0x%02x, key=%s",
@@ -5743,7 +5879,7 @@ next_tick (void)
                 else
                 {
                     printf ("p=%2d (%s), a=0x%04x, c=0x%04x, f=0x%02x, asc=0x%02x",
-                            irmp_data.protocol, irmp_protocol_names[irmp_data.protocol], irmp_data.address, irmp_data.command, irmp_data.flags, key);
+                            irmp_data.protocol,  irmp_protocol_names[irmp_data.protocol], irmp_data.address, irmp_data.command, irmp_data.flags, key);
                 }
             }
             else
@@ -5755,8 +5891,8 @@ next_tick (void)
             if (do_check_expected_values)
             {
                 if (irmp_data.protocol != expected_protocol ||
-                        irmp_data.address != expected_address ||
-                        irmp_data.command != expected_command)
+                    irmp_data.address  != expected_address  ||
+                    irmp_data.command  != expected_command)
                 {
                     printf ("\nerror 7: expected values differ: p=%2d (%s), a=0x%04x, c=0x%04x\n",
                             expected_protocol, irmp_protocol_names[expected_protocol], expected_address, expected_command);
@@ -5778,19 +5914,19 @@ next_tick (void)
 int
 main (int argc, char ** argv)
 {
-    int i;
-    int ch;
-    int last_ch = 0;
-    int pulse = 0;
-    int pause = 0;
+    int         i;
+    int         ch;
+    int         last_ch = 0;
+    int         pulse = 0;
+    int         pause = 0;
 
-    int start_pulses[256];
-    int start_pauses[256];
-    int pulses[256];
-    int pauses[256];
+    int         start_pulses[256];
+    int         start_pauses[256];
+    int         pulses[256];
+    int         pauses[256];
 
-    int first_pulse = TRUE;
-    int first_pause = TRUE;
+    int         first_pulse = TRUE;
+    int         first_pause = TRUE;
 
     if (argc == 2)
     {
@@ -5930,12 +6066,13 @@ main (int argc, char ** argv)
             }
             else
             {
-                char buf[1024];
-                char * p;
-                int idx = -1;
+                char            buf[1024];
+                char *          p;
+                int             idx = -1;
 
                 puts ("----------------------------------------------------------------------");
                 putchar (ch);
+
 
                 while ((ch = getchar()) != '\n' && ch != EOF)
                 {
