@@ -11,6 +11,11 @@ not all protocols can be enabled at the same time, since some of them are quite 
    http://www.mikrocontroller.net/articles/IRMP_-_english
 ### German
    http://www.mikrocontroller.net/articles/IRMP
+   
+# List of protocols
+- Sony SIRCS, NEC + APPLE, Samsung + Samsg32, Kaseikyo
+- JVC, NEC16, NEC42, Matsushita, DENON, Sharp, RC5, RC6 & RC6A, IR60 (SDA2008) Grundig, Siemens Gigaset, Nokia
+- BOSE, Kathrein , NUBERT , FAN (ventilator) , SPEAKER (~NUBERT), Bang & Olufsen , RECS80 (SAA3004) , RECS80EXT (SAA3008), Thomson, NIKON camera , Netbox keyboard, ORTEK (Hama) , Telefunken 1560, FDC3402 keyboard , RC Car , iRobot Roomba, RUWIDO, T-Home , A1 TV BOX, LEGO Power RC, RCMM 12,24, or 32, LG Air Condition , Samsung48, Merlin , Pentax , S100 , ACP24, TECHNICS , PANASONIC Beamer , Mitsubishi Aircond , VINCENT, SAMSUNG AH , IRMP specific, GREE CLIMATE , RCII T+A, RADIO e.g. TEVION
 
 # Schematic for Arduino UNO
 ![Fritzing schematic for Arduino UNO](https://github.com/ukw100/IRMP/blob/master/extras/IRMP_UNO_Steckplatine.png)
@@ -31,7 +36,7 @@ It is dated **2.4.2019**. If you have complains about the data or request for ex
 | RAM usage | **52**<br/>(73 / 100 for 15 (main) / 42 protocols) | **62** | 334 | 227 |
 | Supported platforms | **avr<br/>(and avr, esp8266, arm, pic for non Arduino IDE)** | avr, esp8266 | avr, arm(samd) | avr, attiny, esp8266, esp32, arm |
 | Last library update | 4/2019 | 3/2018 | 6/2018 | 11/2017 |
-| Remarks | Decodes 42 protocols concurrently.<br/>Work in progress. | Only one protocol at a time. | LED 13 Feedback. | LED 13 Feedback.<br/>NEC decoding is poor<br/>**A lot of branches available and there is an active community** |
+| Remarks | LED 13 Feedback.<br/>Decodes 42 protocols concurrently.<br/>Work in progress. | Only one protocol at a time. | LED 13 Feedback. | LED 13 Feedback.<br/>NEC decoding is poor<br/>**A lot of branches available and there is an active community** |
 
 \*The Hash protocol gives you a hash as code, which may be sufficient to distinguish your keys on the remote, but may not work with some protocols like Mitsubishi
 
@@ -51,6 +56,7 @@ to
 #define IRMP_PROTOCOL_NAMES 1
 #include <irmpMain15.h>
 #include <irmp.c.h>
+IRMP_DATA irmp_data[1];
 ```
 
 ### In setup change:

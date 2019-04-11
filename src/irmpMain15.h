@@ -279,6 +279,7 @@ extern "C"
 extern void                             irmp_init (void);
 extern uint_fast8_t                     irmp_get_data (IRMP_DATA *);
 extern uint_fast8_t                     irmp_ISR (void);
+extern void                             irmp_blink13(bool aEnableBlinkLed);
 extern void                             irmp_debug_print(void);
 extern void                             irmp_init_timer2(void);
 extern void                             irmp_PCI_ISR(void);

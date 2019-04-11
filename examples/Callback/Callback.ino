@@ -94,18 +94,16 @@ void setup() {
     Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
     //Enable auto resume and pass it the address of your extra buffer
     irmp_init();
+    //    irmp_blink13(true); // Enable LED feedback
     irmp_register_complete_callback_function(&handleReceivedIRData);
 
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
 }
 
 void loop() {
-#ifndef SIZE_TEST
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(1000);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(1000);
-#endif
+/*
+ * Put your code here
+ */
 }
 
 /*

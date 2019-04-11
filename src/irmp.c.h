@@ -2267,6 +2267,9 @@ static volatile uint_fast16_t                   irmp_command;
 static volatile uint_fast16_t                   irmp_id;                // only used for SAMSUNG protocol
 static volatile uint_fast8_t                    irmp_flags;
 // static volatile uint_fast8_t                 irmp_busy_flag;
+#if defined(ARDUINO)
+static volatile bool                            irmp_led_feedback;
+#endif
 
 #if defined(__MBED__)
 // DigitalIn inputPin(IRMP_PIN, PullUp);                                // this requires mbed.h and source to be compiled as cpp
@@ -2970,6 +2973,12 @@ uint_fast8_t irmp_ISR(void)
         }
     }
 #endif // IRMP_USE_CALLBACK == 1
+
+#if defined(ARDUINO)
+    if (irmp_led_feedback){
+        digitalWriteFast(LED_BUILTIN, !irmp_input);
+    }
+#endif
 
     irmp_log(irmp_input);                                                       // log ir signal, if IRMP_LOGGING defined
 
@@ -5392,6 +5401,16 @@ uint_fast8_t irmp_ISR(void)
 }
 
 #if defined(ARDUINO)
+/*
+ * The name is chosen to enable easy migration from other IR libs.
+ * Pin 13 is the pin of the built in LED on the first Arduino boards.
+ */
+void irmp_blink13( bool aEnableBlinkLed){
+    irmp_led_feedback = aEnableBlinkLed;
+    if (aEnableBlinkLed){
+        pinMode(LED_BUILTIN, OUTPUT) ;
+    }
+}
 void irmp_debug_print() {
     Serial.print(" Ir");
     Serial.print(irmp_ir_detected);

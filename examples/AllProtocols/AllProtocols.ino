@@ -81,18 +81,13 @@ void setup() {
     Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
     //Enable auto resume and pass it the address of your extra buffer
     irmp_init();
+    irmp_blink13(true); // Enable LED feedback
     irmp_register_complete_callback_function(&handleReceivedIRData);
 
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
 }
 
 void loop() {
-#ifndef SIZE_TEST
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(1000);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(1000);
-#endif
 }
 
 /*
@@ -105,24 +100,6 @@ void handleReceivedIRData() {
     // enable interrupts
     sei();
 #ifndef SIZE_TEST
-    /*
-     * Skip repetitions of command
-     */
-    if (!(irmp_data[0].flags & IRMP_FLAG_REPETITION)) {
-        /*
-         * Evaluate IR command
-         */
-        switch (irmp_data[0].command) {
-        case 0x48:
-            digitalWrite(LED_BUILTIN, HIGH);
-            break;
-        case 0x0B:
-            digitalWrite(LED_BUILTIN, LOW);
-            break;
-        default:
-            break;
-        }
-    }
     Serial.print(F("P="));
 
     /*

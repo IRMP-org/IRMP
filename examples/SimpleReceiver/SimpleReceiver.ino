@@ -76,8 +76,8 @@ void setup() {
         ; //delay for Leonardo
     // Just to know which program is running on my Arduino
     Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
-    //Enable auto resume and pass it the address of your extra buffer
     irmp_init();
+//    irmp_blink13(true); // Enable LED feedback
 
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
 }
