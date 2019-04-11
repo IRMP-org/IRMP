@@ -5444,14 +5444,24 @@ void irmp_debug_print() {
 }
 
 void irmp_init_timer2(void) {
+#if defined(__AVR_ATmega16__)
+    TCCR2 = _BV(WGM21) | _BV(CS21); // CTC mode, prescale by 8
+    OCR2 = ((F_CPU / 8) / F_INTERRUPTS) - 1; // 132 for 15000 interrupts per second
+    TIMSK = _BV(OCIE2); // enable interrupt
+#else
     TCCR2A = _BV(WGM21); // CTC mode
     TCCR2B = _BV(CS21);  // prescale by 8
     OCR2A = ((F_CPU / 8) / F_INTERRUPTS) - 1; // 132 for 15000 interrupts per second
-    TCNT2 = 0;
     TIMSK2 = _BV(OCIE2A); // enable interrupt
+#endif
+    TCNT2 = 0;
 }
 
+#if defined(__AVR_ATmega16__)
+ISR(TIMER2_COMP_vect) {
+#else
 ISR(TIMER2_COMPA_vect) {
+#endif
     irmp_ISR();
 }
 #endif

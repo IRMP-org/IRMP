@@ -5,6 +5,7 @@
  *
  *  Uses a callback function which is called every time a complete IR command was received.
  *  Receives IR protocol data at pin 3.
+ *  Prints data to LCD connected at pin 4-9
  *
  *  *****************************************************************************************************************************
  *  To access the library files from your sketch, you have to first use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE.
@@ -12,10 +13,6 @@
  *  The library files itself are located in the `src` sub-directory.
  *  If you did not yet store the example as your own sketch, then with Ctrl+K you are instantly in the right library folder.
  *  *****************************************************************************************************************************
- *
- *  To disable one of them or to enable other protocols, you must specify this around line 62 after the "#include <irmp.h>".
- *  Ff you get warnings just ignore them. You can avoid them, if you modify the library file irmpconfig.h directly to specify the protocols.
- *  The exact names of the modifiers can be found in the library file irmpconfig.h at line 50ff.
  *
  *  Copyright (C) 2019  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
@@ -39,6 +36,11 @@
 
 #include <Arduino.h>
 
+#include <LiquidCrystal.h>
+
+#define LCD_COLUMNS 16
+#define LCD_ROWS 2
+
 #define VERSION_EXAMPLE "1.0"
 
 /*
@@ -51,20 +53,12 @@
 
 #define F_INTERRUPTS                     20000 // to support LEGO protocols
 
-//#define SIZE_TEST
-#ifdef SIZE_TEST
-#include <irmpNone.h>
-#define IRMP_SUPPORT_NEC_PROTOCOL        1
-#else
 #include <irmpAll.h>
-#endif
-
-/*
- * After setting the modifiers we can include the code.
- */
 #include <irmp.c.h>
 
 IRMP_DATA irmp_data[1];
+
+LiquidCrystal myLCD(4, 5, 6, 7, 8, 9);
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
@@ -85,6 +79,11 @@ void setup() {
     irmp_register_complete_callback_function(&handleReceivedIRData);
 
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
+
+    myLCD.begin(LCD_COLUMNS, LCD_ROWS);
+    myLCD.print(F("IRMP all V" VERSION_EXAMPLE));
+    myLCD.setCursor(0, 1);
+    myLCD.print(F(__DATE__));
 }
 
 void loop() {
@@ -96,33 +95,66 @@ void loop() {
  * In order to enable other interrupts you can call sei() (enable interrupt again) after getting data.
  */
 void handleReceivedIRData() {
+    /*
+     * Just print the data to Serial and LCD
+     */
+
     irmp_get_data(&irmp_data[0]);
     // enable interrupts
     sei();
-#ifndef SIZE_TEST
-    Serial.print(F("P="));
 
     /*
-     * To see full ASCII protocol names, you must modify irmpconfig.h line 227.
-     * Use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE and the instructions above to access it.
+     * Serial output
      */
-#if IRMP_PROTOCOL_NAMES == 1
+    Serial.print(F("P="));
     const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
     Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
     Serial.print(F(" "));
-#else
-    Serial.print(F("0x"));
-    Serial.print(irmp_data[0].protocol, HEX);
-#endif
-#endif
     Serial.print(F(" A=0x"));
     Serial.print(irmp_data[0].address, HEX);
     Serial.print(F(" C=0x"));
     Serial.print(irmp_data[0].command, HEX);
-#ifndef SIZE_TEST
     if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
         Serial.print(F(" R"));
     }
-#endif
     Serial.println();
+
+    /*
+     * LCD output
+     */
+    // Show protocol name
+    myLCD.clear();
+    myLCD.setCursor(0, 0);
+    myLCD.print(F("P="));
+    myLCD.print((__FlashStringHelper *) (tProtocolStringPtr));
+
+    // Show address
+    myLCD.setCursor(0, 1);
+    uint16_t tCommand = irmp_data[0].command;
+#if (LCD_COLUMNS <= 16)
+    if (tCommand >= 0x100) {
+        myLCD.print(F("0x"));
+    } else {
+        myLCD.print(F("A=0x"));
+    }
+#else
+    myLCD.print(F("A=0x"));
+#endif
+    myLCD.print(irmp_data[0].address, HEX);
+
+    // Show command
+#if (LCD_COLUMNS <= 16)
+    myLCD.setCursor(8, 1);
+    if (tCommand >= 0x100) {
+        myLCD.print(F("0x"));
+    } else {
+        myLCD.setCursor(9, 1);
+        myLCD.print(F("C=0x"));
+    }
+#else
+    myLCD.setCursor(9, 1);
+    myLCD.print(F("C=0x"));
+
+#endif
+    myLCD.print(tCommand, HEX);
 }

@@ -109,9 +109,7 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #if defined (ATMEL_AVR) || defined (__AVR_XMEGA__)                      // use PD4 / Arduino Pin 3 as IR input on AVR
-#  if defined (IRMP_INPUT_PIN)
-#    include "digitalWriteFast.h"                                       // we use pinModeFast() and digitalReadFast() in turn
-#  else
+#  if !defined (IRMP_INPUT_PIN)
 #    ifndef IRMP_PORT_LETTER
 #      define IRMP_PORT_LETTER                    D                     // Port D is Port for Arduino pin 0 to 7. B is for pin 8 to 13, C is for A0 to A5
 #    endif

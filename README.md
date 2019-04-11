@@ -36,12 +36,12 @@ It is dated **2.4.2019**. If you have complains about the data or request for ex
 | RAM usage | **52**<br/>(73 / 100 for 15 (main) / 42 protocols) | **62** | 334 | 227 |
 | Supported platforms | **avr<br/>(and avr, esp8266, arm, pic for non Arduino IDE)** | avr, esp8266 | avr, arm(samd) | avr, attiny, esp8266, esp32, arm |
 | Last library update | 4/2019 | 3/2018 | 6/2018 | 11/2017 |
-| Remarks | LED 13 Feedback.<br/>Decodes 42 protocols concurrently.<br/>Work in progress. | Only one protocol at a time. | LED 13 Feedback. | LED 13 Feedback.<br/>NEC decoding is poor<br/>**A lot of branches available and there is an active community** |
+| Remarks | LED 13 Feedback.<br/>Decodes 42 protocols concurrently.<br/>Work in progress. | Only one protocol at a time. | LED 13 Feedback. | LED 13 Feedback.<br/>NEC decoding is poor.<br/>**A lot of branches available and there is an active community** |
 
 \*The Hash protocol gives you a hash as code, which may be sufficient to distinguish your keys on the remote, but may not work with some protocols like Mitsubishi
 
 # Easy migrating your code from IRremote to IRMP
-See also the [SimpleReceiver](https://github.com/ukw100/IRMP/blob/master/examples/SimpleReceiver/SimpleReceiver.ino) example.
+See also the [SimpleReceiver example](https://github.com/ukw100/IRMP/blob/master/examples/SimpleReceiver/SimpleReceiver.ino) .
 
 ### Change the include and declarations from:
 ```
@@ -69,4 +69,6 @@ and<br/>
 
 You do not need **`myReceiver.resume();`** any more, just delete it.
 
-If you want to distinguish between more than one remote you may also use `irmp_data[0].address` like it is done in the [Callback](https://github.com/ukw100/IRMP/blob/master/examples/Callback/Callback.ino) example.
+The code representation also often changes. In IRMP (as in IRLremote) it is more standard and simpler but different. Use the code from the [SimpleReceiver example](https://github.com/ukw100/IRMP/blob/master/examples/SimpleReceiver/SimpleReceiver.ino) to print the new code representation.
+
+If you want to distinguish between more than one remote you may also use `irmp_data[0].address` like it is done in the [Callback example](https://github.com/ukw100/IRMP/blob/master/examples/Callback/Callback.ino).

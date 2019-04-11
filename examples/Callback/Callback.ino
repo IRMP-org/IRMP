@@ -44,6 +44,9 @@
  * Set library modifiers first to set input pin etc.
  */
 #define IRMP_INPUT_PIN 3
+// You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
+//#define IRMP_PORT_LETTER D
+//#define IRMP_BIT_NUMBER 3
 
 #define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some FLASH
 #define IRMP_USE_COMPLETE_CALLBACK       1 // Enable callback functionality
