@@ -2357,6 +2357,9 @@ irmp_init (void)
     IRMP_PORT &= ~(1 << IRMP_BIT);                                      // deactivate pullup
     IRMP_DDR &= ~(1 << IRMP_BIT);                                       // set pin to input
 #  endif
+#if !defined(IRMP_ENABLE_PIN_CHANGE_INTERRUPT) || (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 0)
+    irmp_init_timer2();
+#endif
 #endif
 
 #if IRMP_LOGGING == 1
@@ -5419,6 +5422,18 @@ void irmp_debug_print() {
     Serial.print(irmp_param.stop_bit);
 
     Serial.println();
+}
+
+void irmp_init_timer2(void) {
+    TCCR2A = _BV(WGM21); // CTC mode
+    TCCR2B = _BV(CS21);  // prescale by 8
+    OCR2A = ((F_CPU / 8) / F_INTERRUPTS) - 1; // 132 for 15000 interrupts per second
+    TCNT2 = 0;
+    TIMSK2 = _BV(OCIE2A); // enable interrupt
+}
+
+ISR(TIMER2_COMPA_vect) {
+    irmp_ISR();
 }
 #endif
 

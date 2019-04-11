@@ -31,7 +31,7 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
-
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
@@ -64,11 +64,12 @@
  */
 #include <irmp.c.h>
 
+IRMP_DATA irmp_data[1];
+
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
-void printReceivedIRData();
-void initTimer2(void);
+void handleReceivedIRData();
 
 void setup() {
 // initialize the digital pin as an output.
@@ -80,13 +81,10 @@ void setup() {
     Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
     //Enable auto resume and pass it the address of your extra buffer
     irmp_init();
-    initTimer2();
-    irmp_register_complete_callback_function(&printReceivedIRData);
+    irmp_register_complete_callback_function(&handleReceivedIRData);
 
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
 }
-
-IRMP_DATA irmp_data[1];
 
 void loop() {
 #ifndef SIZE_TEST
@@ -102,11 +100,29 @@ void loop() {
  * Since this function is executed in Interrupt handler context, make it short and do not use delay() etc.
  * In order to enable other interrupts you can call sei() (enable interrupt again) after getting data.
  */
-void printReceivedIRData() {
+void handleReceivedIRData() {
     irmp_get_data(&irmp_data[0]);
     // enable interrupts
     sei();
 #ifndef SIZE_TEST
+    /*
+     * Skip repetitions of command
+     */
+    if (!(irmp_data[0].flags & IRMP_FLAG_REPETITION)) {
+        /*
+         * Evaluate IR command
+         */
+        switch (irmp_data[0].command) {
+        case 0x48:
+            digitalWrite(LED_BUILTIN, HIGH);
+            break;
+        case 0x0B:
+            digitalWrite(LED_BUILTIN, LOW);
+            break;
+        default:
+            break;
+        }
+    }
     Serial.print(F("P="));
 
     /*
@@ -132,19 +148,4 @@ void printReceivedIRData() {
     }
 #endif
     Serial.println();
-}
-
-void initTimer2(void) {
-    TCCR2A = _BV(WGM21); // CTC mode
-    TCCR2B = _BV(CS21);  // prescale by 8
-    OCR2A = ((F_CPU / 8) / F_INTERRUPTS) - 1; // 132 for 15000 interrupts per second
-    TCNT2 = 0;
-    TIMSK2 = _BV(OCIE2A); // enable interrupt
-}
-
-ISR(TIMER2_COMPA_vect) {
-    digitalWrite(LED_BUILTIN, HIGH);
-    irmp_ISR();
-    digitalWrite(LED_BUILTIN, LOW);
-
 }

@@ -72,10 +72,12 @@
  */
 #include <irmp.c.h>
 
+IRMP_DATA irmp_data[1];
+
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
-void printReceivedIRData();
+void handleReceivedIRData();
 void initPCIInterrupt();
 
 // local modifiers
@@ -96,12 +98,10 @@ void setup() {
 #else
     initPCIInterrupt();
 #endif
-    irmp_register_complete_callback_function(&printReceivedIRData);
+    irmp_register_complete_callback_function(&handleReceivedIRData);
 
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
 }
-
-IRMP_DATA irmp_data[1];
 
 void loop() {
 #ifndef SIZE_TEST
@@ -117,11 +117,29 @@ void loop() {
  * Since this function is executed in Interrupt handler context, make it short and do not use delay() etc.
  * In order to enable other interrupts you can call sei() (enable interrupt again) after getting data.
  */
-void printReceivedIRData() {
+void handleReceivedIRData() {
     irmp_get_data(&irmp_data[0]);
     // enable interrupts
     sei();
 #ifndef SIZE_TEST
+    /*
+     * Skip repetitions of command
+     */
+    if (!(irmp_data[0].flags & IRMP_FLAG_REPETITION)) {
+        /*
+         * Evaluate IR command
+         */
+        switch (irmp_data[0].command) {
+        case 0x48:
+            digitalWrite(LED_BUILTIN, HIGH);
+            break;
+        case 0x0B:
+            digitalWrite(LED_BUILTIN, LOW);
+            break;
+        default:
+            break;
+        }
+    }
     Serial.print(F("P="));
 
     /*
