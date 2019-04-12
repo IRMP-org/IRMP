@@ -20,6 +20,9 @@ not all protocols can be enabled at the same time, since some of them are quite 
 # Schematic for Arduino UNO
 ![Fritzing schematic for Arduino UNO](https://github.com/ukw100/IRMP/blob/master/extras/IRMP_UNO_Steckplatine.png)
 
+# AllProtocol example
+![Nano running AllProtocol example](https://github.com/ukw100/IRMP/blob/master/extras/NEC.jpg)
+
 # Quick comparison of 4 Arduino IR receiving libraries
 ## This is a short comparison and may not be complete or correct
 [I](ArminJo) did it for myself in order to choose a small IR lib for my project and to have a quick overview, when to choose which library.

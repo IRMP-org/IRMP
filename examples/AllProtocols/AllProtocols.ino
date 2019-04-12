@@ -1,5 +1,5 @@
 /*
- *  IRMPAll.cpp
+ *  AllProtocols.cpp
  *
  *  accepts all 42 protocols
  *
@@ -130,29 +130,19 @@ void handleReceivedIRData() {
 
     // Show address
     myLCD.setCursor(0, 1);
-    uint16_t tCommand = irmp_data[0].command;
-#if (LCD_COLUMNS <= 16)
-    if (tCommand >= 0x100) {
-        myLCD.print(F("0x"));
-    } else {
-        myLCD.print(F("A=0x"));
-    }
-#else
     myLCD.print(F("A=0x"));
-#endif
     myLCD.print(irmp_data[0].address, HEX);
 
     // Show command
+    uint16_t tCommand = irmp_data[0].command;
+    myLCD.setCursor(10, 1);
 #if (LCD_COLUMNS <= 16)
-    myLCD.setCursor(8, 1);
     if (tCommand >= 0x100) {
         myLCD.print(F("0x"));
     } else {
-        myLCD.setCursor(9, 1);
         myLCD.print(F("C=0x"));
     }
 #else
-    myLCD.setCursor(9, 1);
     myLCD.print(F("C=0x"));
 
 #endif
