@@ -7,6 +7,7 @@
 #######################################
 
 irmp_protocol_names KEYWORD1
+IRMP_DATA   KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -16,9 +17,15 @@ irmp_init	KEYWORD2
 irmp_get_data	KEYWORD2
 irmp_ISR	KEYWORD2
 irmp_register_complete_callback_function	KEYWORD2
+irmp_blink13    KEYWORD2
+irmp_init_timer2    KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
 
 IRMP_FLAG_REPETITION	LITERAL1
+IRMP_PROTOCOL_NAMES LITERAL1
+IRMP_USE_COMPLETE_CALLBACK  LITERAL1
+F_INTERRUPTS    LITERAL1
+IRMP_ENABLE_PIN_CHANGE_INTERRUPT    LITERAL1
