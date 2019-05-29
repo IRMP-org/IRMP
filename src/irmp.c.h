@@ -4240,7 +4240,7 @@ uint_fast8_t irmp_ISR(void)
                                 else
                                 {
 #ifdef ANALYZE
-                                    ANALYZE_PRINTF ("ignoring NEC repetition frame: timeout occured, key_repetition_len = %d > %d\n",
+                                    ANALYZE_PRINTF ("ignoring NEC repetition frame: timeout occurred, key_repetition_len = %d > %d\n",
                                                     key_repetition_len, NEC_FRAME_REPEAT_PAUSE_LEN_MAX);
 #endif // ANALYZE
                                     irmp_ir_detected = FALSE;
@@ -5200,7 +5200,7 @@ uint_fast8_t irmp_ISR(void)
                             else
                             {
 #ifdef ANALYZE
-                                ANALYZE_PRINTF ("Detected NEC repetition frame, ignoring it: timeout occured, key_repetition_len = %d > %d\n",
+                                ANALYZE_PRINTF ("Detected NEC repetition frame, ignoring it: timeout occurred, key_repetition_len = %d > %d\n",
                                                 key_repetition_len, NEC_FRAME_REPEAT_PAUSE_LEN_MAX);
 #endif // ANALYZE
                                 irmp_ir_detected = FALSE;
