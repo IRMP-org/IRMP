@@ -46,16 +46,31 @@
 
 #include <Arduino.h>
 
-#define VERSION_EXAMPLE "1.0"
+#define VERSION_EXAMPLE "1.1"
 
 /*
  * Set library modifiers first to set input pin etc.
  */
+#if defined(ESP8266)
+#define IRMP_INPUT_PIN 14 // D5
+#elif defined(ESP32)
+#define IRMP_INPUT_PIN 15
+#else
 #define IRMP_INPUT_PIN 3
+// You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
+//#define IRMP_PORT_LETTER D
+//#define IRMP_BIT_NUMBER 3
+#endif
 
-#define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some FLASH
+#define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
 #define IRMP_USE_COMPLETE_CALLBACK       1 // Enable callback functionality
 #define IRMP_ENABLE_PIN_CHANGE_INTERRUPT 1 // Enable interrupt functionality
+
+#if defined(__AVR__)
+void initPCIInterrupt();
+#else
+#define IRMP_USE_ARDUINO_ATTACH_INTERRUPT
+#endif
 
 //#define SIZE_TEST
 #ifdef SIZE_TEST
@@ -64,6 +79,7 @@
 #else
 #include <irmpMain15.h>  // This enables 15 main protocols
 // this protocols is incompatible to NEC in interrupt mode, since it is the same as NEC but has longer data sections
+#undef IRMP_SUPPORT_NEC42_PROTOCOL
 #define IRMP_SUPPORT_NEC42_PROTOCOL      0
 #endif
 
@@ -78,10 +94,7 @@ IRMP_DATA irmp_data[1];
 #define STR(x) STR_HELPER(x)
 
 void handleReceivedIRData();
-void initPCIInterrupt();
 
-// local modifiers
-//#define IRMP_USE_ARDUINO_ATTACH_INTERRUPT
 
 void setup() {
 // initialize the digital pin as an output.
@@ -95,7 +108,7 @@ void setup() {
     irmp_init();
     irmp_blink13(true); // Enable LED feedback
 #ifdef IRMP_USE_ARDUINO_ATTACH_INTERRUPT
-            attachInterrupt(digitalPinToInterrupt(IRMP_BIT_NUMBER), irmp_PCI_ISR, CHANGE);
+            attachInterrupt(digitalPinToInterrupt(IRMP_INPUT_PIN), irmp_PCI_ISR, CHANGE);
 #else
     initPCIInterrupt();
 #endif
@@ -121,14 +134,13 @@ void handleReceivedIRData() {
     sei();
 #ifndef SIZE_TEST
     Serial.print(F("P="));
-
-    /*
-     * To see full ASCII protocol names, you must modify irmpconfig.h line 227.
-     * Use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE and the instructions above to access it.
-     */
 #if IRMP_PROTOCOL_NAMES == 1
+#if defined(__AVR__)
     const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
     Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
+#else
+    Serial.print(irmp_protocol_names[irmp_data[0].protocol]);
+#endif
     Serial.print(F(" "));
 #else
     Serial.print(F("0x"));

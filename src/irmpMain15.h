@@ -263,6 +263,18 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #  define IRMP_SUPPORT_RCMM_PROTOCOL            0
 #endif
 
+#if IRMP_SUPPORT_PENTAX_PROTOCOL == 1 && F_INTERRUPTS > 17000
+#  warning F_INTERRUPTS too high, PENTAX protocol disabled (should be max 17000)
+#  undef IRMP_SUPPORT_PENTAX_PROTOCOL
+#  define IRMP_SUPPORT_PENTAX_PROTOCOL            0
+#endif
+
+#if IRMP_SUPPORT_GREE_PROTOCOL == 1 && F_INTERRUPTS > 17000
+#  warning F_INTERRUPTS too high, GREE protocol disabled (should be max 17000)
+#  undef IRMP_SUPPORT_GREE_PROTOCOL
+#  define IRMP_SUPPORT_GREE_PROTOCOL            0
+#endif
+
 #if F_INTERRUPTS > 20000
 #error F_INTERRUPTS too high (should be not greater than 20000)
 #endif
@@ -281,7 +293,7 @@ extern uint_fast8_t                     irmp_get_data (IRMP_DATA *);
 extern uint_fast8_t                     irmp_ISR (void);
 extern void                             irmp_blink13(bool aEnableBlinkLed);
 extern void                             irmp_debug_print(void);
-extern void                             irmp_init_timer2(void);
+extern void                             irmp_init_timer(void);
 extern void                             irmp_PCI_ISR(void);
 
 #if IRMP_PROTOCOL_NAMES == 1

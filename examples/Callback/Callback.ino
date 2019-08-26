@@ -38,18 +38,24 @@
 
 #include <Arduino.h>
 
-#define VERSION_EXAMPLE "1.0"
+#define VERSION_EXAMPLE "1.1"
 
 /*
  * Set library modifiers first to set input pin etc.
  */
+#if defined(ESP8266)
+#define IRMP_INPUT_PIN 14 // D5
+#elif defined(ESP32)
+#define IRMP_INPUT_PIN 15
+#else
 #define IRMP_INPUT_PIN 3
 // You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
 //#define IRMP_PORT_LETTER D
 //#define IRMP_BIT_NUMBER 3
+#endif
 
-#define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some FLASH
-#define IRMP_USE_COMPLETE_CALLBACK       1 // Enable callback functionality
+#define IRMP_PROTOCOL_NAMES         1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
+#define IRMP_USE_COMPLETE_CALLBACK  1 // Enable callback functionality
 
 //#define SIZE_TEST
 #include <irmpNone.h>
@@ -97,16 +103,25 @@ void setup() {
     Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
     //Enable auto resume and pass it the address of your extra buffer
     irmp_init();
-    //    irmp_blink13(true); // Enable LED feedback
+    irmp_blink13(true); // Enable LED feedback
     irmp_register_complete_callback_function(&handleReceivedIRData);
 
+#if defined(ESP32)
+    Serial.print("CPU frequency=");
+    Serial.print(getCpuFrequencyMhz());
+    Serial.println("MHz");
+    Serial.print("Timer clock frequency=");
+    Serial.print(getApbFrequency());
+    Serial.println("Hz");
+#endif
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
+
 }
 
 void loop() {
-/*
- * Put your code here
- */
+    /*
+     * Put your code here
+     */
 }
 
 /*
@@ -132,27 +147,26 @@ void handleReceivedIRData() {
              * Evaluate IR command
              */
             switch (irmp_data[0].command) {
-                case 0x48:
+            case 0x48:
                 digitalWrite(LED_BUILTIN, HIGH);
                 break;
-                case 0x0B:
+            case 0x0B:
                 digitalWrite(LED_BUILTIN, LOW);
                 break;
-                default:
+            default:
                 break;
             }
         }
     }
 
     Serial.print(F("P="));
-
-    /*
-     * To see full ASCII protocol names, you must modify irmpconfig.h line 227.
-     * Use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE and the instructions above to access it.
-     */
 #if IRMP_PROTOCOL_NAMES == 1
+#if defined(__AVR__)
     const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
     Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
+#else
+    Serial.print(irmp_protocol_names[irmp_data[0].protocol]);
+#endif
     Serial.print(F(" "));
 #else
     Serial.print(F("0x"));

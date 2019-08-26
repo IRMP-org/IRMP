@@ -645,6 +645,10 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #if defined(UNIX_OR_WINDOWS) || IRMP_PROTOCOL_NAMES == 1
+#if !defined(__AVR__)
+#undef PROGMEM
+#define PROGMEM
+#endif
 static const char proto_unknown[]       PROGMEM = "UNKNOWN";
 static const char proto_sircs[]         PROGMEM = "SIRCS";
 static const char proto_nec[]           PROGMEM = "NEC";
@@ -2334,9 +2338,8 @@ irmp_init (void)
 #elif defined (TEENSY_ARM_CORTEX_M4)                                    // TEENSY
     pinMode(IRMP_PIN, INPUT);
 
-#elif defined(__xtensa__)                                               // ESP8266
-    pinMode(IRMP_BIT_NUMBER, INPUT);
-                                                                        // select pin function
+#elif defined(__xtensa__) && !defined(ARDUINO)                          // ESP8266 (for not Arduino IDE)
+    pinMode(IRMP_BIT_NUMBER, INPUT);                                    // select pin function
 #  if (IRMP_BIT_NUMBER == 12)
     PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO12);
 //  doesn't work for me:
@@ -2353,16 +2356,22 @@ irmp_init (void)
 #elif defined(_CHIBIOS_HAL_)
     // ChibiOS HAL automatically initializes all pins according to the board config file, no need to repeat here
 
-#else                                                                   // AVR
-# ifdef IRMP_INPUT_PIN
+#elif defined(ARDUINO)                                                  // ARDUINO IDE
+#  ifdef IRMP_INPUT_PIN
+#    if defined(__AVR_)
     pinModeFast(IRMP_INPUT_PIN, INPUT);                                 // set pin to input
-# else
+#    else
+    pinMode(IRMP_INPUT_PIN, INPUT);                                     // set pin to input
+#    endif
+#  else
     IRMP_PORT &= ~(1 << IRMP_BIT);                                      // deactivate pullup
     IRMP_DDR &= ~(1 << IRMP_BIT);                                       // set pin to input
 #  endif
-#if !defined(IRMP_ENABLE_PIN_CHANGE_INTERRUPT) || (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 0)
-    irmp_init_timer2();
-#endif
+
+#  if !defined(IRMP_ENABLE_PIN_CHANGE_INTERRUPT) || (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 0)
+    irmp_init_timer();
+#  endif
+
 #endif
 
 #if IRMP_LOGGING == 1
@@ -2911,7 +2920,13 @@ static uint_fast8_t repetition_frame_number;
 /*
  * 4us idle, 45 us at start of each pulse @16 Mhz ATMega 328p
  */
+#if defined(ESP8266)
+uint_fast8_t ICACHE_RAM_ATTR irmp_ISR(void)
+#elif defined(ESP32)
+uint_fast8_t IRAM_ATTR irmp_ISR(void)
+#else
 uint_fast8_t irmp_ISR(void)
+#endif
 {
     static uint_fast16_t last_irmp_address = 0xFFFF;                           // save last irmp address to recognize key repetition
     static uint_fast16_t last_irmp_command = 0xFFFF;                           // save last irmp command to recognize key repetition
@@ -2975,9 +2990,25 @@ uint_fast8_t irmp_ISR(void)
 #endif // IRMP_USE_CALLBACK == 1
 
 #if defined(ARDUINO)
+#if defined(__AVR__)
     if (irmp_led_feedback){
         digitalWriteFast(LED_BUILTIN, !irmp_input);
     }
+#else
+    if (irmp_led_feedback){
+        // hope this is fast enough on other platforms
+#if defined(ESP8266)
+        // The LED on my board is active LOW
+        digitalWrite(LED_BUILTIN, irmp_input);
+#else
+// TEST: Toggle pin to get half the sample frequency at the LED output
+//        static bool tLedState;
+//        tLedState = !tLedState;
+//        digitalWrite(LED_BUILTIN, tLedState);
+        digitalWrite(LED_BUILTIN, !irmp_input);
+#endif
+    }
+#endif
 #endif
 
     irmp_log(irmp_input);                                                       // log ir signal, if IRMP_LOGGING defined
@@ -5401,6 +5432,9 @@ uint_fast8_t irmp_ISR(void)
 }
 
 #if defined(ARDUINO)
+#if defined(ESP32)
+static hw_timer_t * sESP32Timer = NULL;
+#endif
 /*
  * The name is chosen to enable easy migration from other IR libs.
  * Pin 13 is the pin of the built in LED on the first Arduino boards.
@@ -5443,28 +5477,55 @@ void irmp_debug_print() {
     Serial.println();
 }
 
-void irmp_init_timer2(void) {
-#if defined(__AVR_ATmega16__)
+#if defined(__AVR__)
+#  if defined(__AVR_ATmega16__)
+ISR(TIMER2_COMP_vect) {
+#  else
+ISR(TIMER2_COMPA_vect) {
+#  endif
+#elif defined(ESP8266)
+// needed because irmp_ISR is declared as uint8_t
+void ICACHE_RAM_ATTR irmp_ESP_ISR(void) {
+#elif defined(ESP32)
+void IRAM_ATTR irmp_ESP_ISR(void) {
+#endif // defined(__AVR__)
+    irmp_ISR();
+}
+
+void irmp_init_timer(void) {
+#if defined(__AVR__)
+    // Use Timer 2
+#  if defined(__AVR_ATmega16__)
     TCCR2 = _BV(WGM21) | _BV(CS21); // CTC mode, prescale by 8
     OCR2 = ((F_CPU / 8) / F_INTERRUPTS) - 1; // 132 for 15000 interrupts per second
     TIMSK = _BV(OCIE2); // enable interrupt
-#else
+#  else
     TCCR2A = _BV(WGM21); // CTC mode
     TCCR2B = _BV(CS21);  // prescale by 8
     OCR2A = ((F_CPU / 8) / F_INTERRUPTS) - 1; // 132 for 15000 interrupts per second
     TIMSK2 = _BV(OCIE2A); // enable interrupt
-#endif
+#  endif
     TCNT2 = 0;
+#elif defined(ESP8266)
+    timer1_isr_init();
+    timer1_attachInterrupt(irmp_ESP_ISR);
+    /*
+     * TIM_DIV1 = 0,   //80MHz (80 ticks/us - 104857.588 us max)
+     * TIM_DIV16 = 1,  //5MHz (5 ticks/us - 1677721.4 us max)
+     * TIM_DIV256 = 3 //312.5Khz (1 tick = 3.2us - 26843542.4 us max)
+     */
+    timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP);
+    timer1_write((F_CPU / 16) / F_INTERRUPTS);
+#elif defined(ESP32)
+    // Use Timer1 with 1 microsecond resolution
+    sESP32Timer = timerBegin(1, 80, true);
+    timerAttachInterrupt(sESP32Timer, irmp_ESP_ISR, true);
+    timerAlarmWrite(sESP32Timer, (getApbFrequency() / 80) / F_INTERRUPTS, true);
+    timerAlarmEnable(sESP32Timer);
+#endif
 }
 
-#if defined(__AVR_ATmega16__)
-ISR(TIMER2_COMP_vect) {
-#else
-ISR(TIMER2_COMPA_vect) {
-#endif
-    irmp_ISR();
-}
-#endif
+#endif // defined(ARDUINO)
 
 #if (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
 /*

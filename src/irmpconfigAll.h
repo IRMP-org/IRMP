@@ -173,8 +173,11 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #elif defined (__xtensa__)
-#  define IRMP_BIT_NUMBER                       12                      // use GPIO12 (Pin 7 UEXT) on ESP8266-EVB evaluation board
-
+#  if defined (IRMP_INPUT_PIN)
+#    define IRMP_BIT_NUMBER                       IRMP_INPUT_PIN
+#  else
+#    define IRMP_BIT_NUMBER                       12                      // use GPIO12 (Pin 7 UEXT) on ESP8266-EVB evaluation board
+#  endif
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change hardware pin here for Teensy 3.x with teensyduino gcc compiler
  *---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -197,7 +200,7 @@
 #elif defined(_CHIBIOS_HAL_)
 #  define IRMP_PIN                              LINE_IR_IN              // use pin names as defined in the board config file, prefixed with "LINE_"
 #  define IRMP_LOGGING_SD                       SD1                     // the ChibiOS HAL Serial Driver instance to log to
-                                                                        // (when IRMP_LOGGING is enabled below). 
+                                                                        // (when IRMP_LOGGING is enabled below).
                                                                         // Make sure SERIAL_BUFFERS_SIZE is large enough when enabling logging
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------

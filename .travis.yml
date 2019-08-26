@@ -1,23 +1,30 @@
 language: c
 sudo: false
 cache:
-  directories:
-    - ~/arduino_ide
-    - ~/.arduino15/packages/
+   directories:
+   - ~/arduino_ide
+   - ~/.arduino15/packages/
 git:
-  depth: false
-  quiet: true
+   depth: false
+   quiet: true
 env:
-  global:
-     - PRETTYNAME="IRMP Arduino Library"
+   global:
+   - PRETTYNAME="IRMP Arduino Library"
 before_install:
-   - source <(curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/install.sh)
-install:
+# Workaround for avoiding "fork/exec /bin/xtensa-lx106-elf-g++: no such file or directory"
+- echo "Removing ESP8266 cache"
+- rm -rf ~/.arduino15/packages/esp8266
+- source <(curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/install.sh)
+#install:
 # For the example to run
-   - arduino --install-library "TimerOne"
+#- arduino --install-library "TimerOne"
 script:
-   - build_platform uno
+- build_platform uno
+- build_platform esp8266
+- build_platform esp32
 notifications:
-  email:
-    on_success: always
-    on_failure: always
+   email:
+      recipients:
+      - armin.arduino@gmail.com
+      on_success: always
+      on_failure: always

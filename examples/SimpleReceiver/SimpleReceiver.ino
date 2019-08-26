@@ -47,14 +47,20 @@
 
 #include <Arduino.h>
 
-#define VERSION_EXAMPLE "1.0"
+#define VERSION_EXAMPLE "1.1"
 
 /*
  * Set library modifiers first to set input pin etc.
  */
+#if defined(ESP8266)
+#define IRMP_INPUT_PIN 14 // D5
+#elif defined(ESP32)
+#define IRMP_INPUT_PIN 15
+#else
 #define IRMP_INPUT_PIN 3
+#endif
 
-#define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some FLASH
+#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
 
 #include <irmpMain15.h>  // This enables 15 main protocols
 
@@ -75,9 +81,12 @@ void setup() {
     while (!Serial)
         ; //delay for Leonardo
     // Just to know which program is running on my Arduino
+#if defined(__ESP8266__)
+    Serial.println();
+#endif
     Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
     irmp_init();
-//    irmp_blink13(true); // Enable LED feedback
+    irmp_blink13(true); // Enable LED feedback
 
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
 }
@@ -97,12 +106,12 @@ void loop() {
         }
 
         Serial.print(F("P="));
-        /*
-         * To see full ASCII protocol names, you must modify irmpconfig.h line 227.
-         * Use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE and the instructions above to access it.
-         */
+#if defined(__AVR__)
         const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
         Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
+#else
+        Serial.print(irmp_protocol_names[irmp_data[0].protocol]);
+#endif
         Serial.print(F(" "));
         Serial.print(F(" A=0x"));
         Serial.print(irmp_data[0].address, HEX);

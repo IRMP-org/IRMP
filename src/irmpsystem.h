@@ -55,14 +55,16 @@
 #  define F_CPU (SysCtlClockGet())
 #elif defined(__xtensa__)                                                           // ESP8266 (Arduino)
 #  include "Arduino.h"
+#if !defined(ESP32)                                                                 // includes not available for ESP32
 #  include "ets_sys.h"
 #  include "osapi.h"
 #  include "gpio.h"
 #  include "os_type.h"
 #  include "c_types.h"
+#endif
 #  define uint_fast8_t uint8_t
 #  define uint_fast16_t uint16_t
-#elif defined(ARDUINO)
+#elif defined(ARDUINO)                                                              // AVR Arduino
 #  include "Arduino.h"
 #  include "digitalWriteFast.h"                                                     // we use pinModeFast() and digitalReadFast() and digitalWriteFast() in turn
 #  define ATMEL_AVR                                                                 // ATMEL AVR
@@ -158,7 +160,9 @@ typedef unsigned short                  uint16_t;
 #  define memcpy_P                      memcpy
 
 #elif defined(__xtensa__)
+#if !defined(ARDUINO)
 #  define PROGMEM
+#endif
 #  define memcpy_P                      memcpy
 
 #elif defined(__MBED__)

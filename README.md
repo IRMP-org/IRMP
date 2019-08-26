@@ -37,7 +37,7 @@ It is dated **2.4.2019**. If you have complains about the data or request for ex
 | Decode method | OnTheFly | OnTheFly | RAM | RAM |
 | FLASH usage (simple NEC example with 5 prints) | 1500<br/>(4300 for 15 main / 8000 for all 42 protocols)<br/>(+200 for callback)<br/>(+80 for interrupt at pin 2+3)| **1270**<br/>(1400 for pin 2+3) | 4830 | 3210 |
 | RAM usage | **52**<br/>(73 / 100 for 15 (main) / 42 protocols) | **62** | 334 | 227 |
-| Supported platforms | **avr<br/>(and avr, esp8266, arm, pic for non Arduino IDE)** | avr, esp8266 | avr, arm(samd) | avr, attiny, esp8266, esp32, arm |
+| Supported platforms | **avr, esp8266<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, arm(samd) | avr, attiny, esp8266, esp32, arm |
 | Last library update | 4/2019 | 3/2018 | 6/2018 | 11/2017 |
 | Remarks | LED 13 Feedback.<br/>Decodes 42 protocols concurrently.<br/>Work in progress. | Only one protocol at a time. | LED 13 Feedback. | LED 13 Feedback.<br/>NEC decoding is poor.<br/>**A lot of branches available and there is an active community** |
 

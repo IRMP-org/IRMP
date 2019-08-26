@@ -41,17 +41,23 @@
 #define LCD_COLUMNS 16
 #define LCD_ROWS 2
 
-#define VERSION_EXAMPLE "1.0"
+#define VERSION_EXAMPLE "1.1"
 
 /*
  * Set library modifiers first to set input pin etc.
  */
+#if defined(ESP8266)
+#define IRMP_INPUT_PIN 14 // D5
+#elif defined(ESP32)
+#define IRMP_INPUT_PIN 15
+#else
 #define IRMP_INPUT_PIN 3
+#endif
 
 #define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some FLASH
 #define IRMP_USE_COMPLETE_CALLBACK       1 // Enable callback functionality
 
-#define F_INTERRUPTS                     20000 // to support LEGO protocols
+#define F_INTERRUPTS                     20000 // Instead of default 15000 to support LEGO + RCMM protocols, but this in turn disables PENTAX and GREE protocols :-(
 
 #include <irmpAll.h>
 #include <irmp.c.h>
@@ -107,8 +113,12 @@ void handleReceivedIRData() {
      * Serial output
      */
     Serial.print(F("P="));
-    const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
-    Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
+#if defined(__AVR__)
+        const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
+        Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
+#else
+        Serial.print(irmp_protocol_names[irmp_data[0].protocol]);
+#endif
     Serial.print(F(" "));
     Serial.print(F(" A=0x"));
     Serial.print(irmp_data[0].address, HEX);
@@ -126,8 +136,11 @@ void handleReceivedIRData() {
     myLCD.clear();
     myLCD.setCursor(0, 0);
     myLCD.print(F("P="));
+#if defined(__AVR__)
     myLCD.print((__FlashStringHelper *) (tProtocolStringPtr));
-
+#else
+    myLCD.print(irmp_protocol_names[irmp_data[0].protocol]);
+#endif
     // Show address
     myLCD.setCursor(0, 1);
     myLCD.print(F("A=0x"));
