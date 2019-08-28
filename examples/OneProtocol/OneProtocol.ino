@@ -1,8 +1,7 @@
 /*
- *  Callback.cpp
+ *  OneProtocol.cpp
  *
- *  Uses a callback function which is called every time a complete IR command was received.
- *  This example additionally filters commands from a remote control named WM010 sending NEC commands
+ *  Receives IR protocol data. Only one protocol is activated.
  *
  *  *****************************************************************************************************************************
  *  To access the library files from your sketch, you have to first use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE.
@@ -44,19 +43,10 @@
 #define IRMP_INPUT_PIN 15
 #else
 #define IRMP_INPUT_PIN 3
-// You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
-//#define IRMP_PORT_LETTER D
-//#define IRMP_BIT_NUMBER 3
 #endif
 
-#define IRMP_PROTOCOL_NAMES         1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
-#define IRMP_USE_COMPLETE_CALLBACK  1 // Enable callback functionality
+#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
 
-//#define SIZE_TEST
-#ifdef SIZE_TEST
-#define IRMP_SUPPORT_NEC_PROTOCOL        1
-#else
-// This enables 15 main protocols manually
 //#define IRMP_SUPPORT_SIRCS_PROTOCOL      1
 #define IRMP_SUPPORT_NEC_PROTOCOL        1
 //#define IRMP_SUPPORT_SAMSUNG_PROTOCOL    1
@@ -73,10 +63,12 @@
 //#define IRMP_SUPPORT_GRUNDIG_PROTOCOL    1
 //#define IRMP_SUPPORT_SIEMENS_PROTOCOL    1
 //#define IRMP_SUPPORT_NOKIA_PROTOCOL      1
-#endif
+/*
+ * More protocol names can be found in irmpSelectAllProtocols.h
+ */
 
 /*
- * After setting the modifiers we can include the code.
+ * After setting the modifiers we can include the code and compile it.
  */
 #include <irmp.c.h>
 
@@ -85,8 +77,6 @@ IRMP_DATA irmp_data[1];
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
-void handleReceivedIRData();
-
 void setup() {
 // initialize the digital pin as an output.
     pinMode(LED_BUILTIN, OUTPUT);
@@ -94,87 +84,45 @@ void setup() {
     while (!Serial)
         ; //delay for Leonardo
     // Just to know which program is running on my Arduino
+#if defined(__ESP8266__)
+    Serial.println();
+#endif
     Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
-    //Enable auto resume and pass it the address of your extra buffer
     irmp_init();
     irmp_blink13(true); // Enable LED feedback
-    irmp_register_complete_callback_function(&handleReceivedIRData);
 
-#if defined(ESP32)
-    Serial.print("CPU frequency=");
-    Serial.print(getCpuFrequencyMhz());
-    Serial.println("MHz");
-    Serial.print("Timer clock frequency=");
-    Serial.print(getApbFrequency());
-    Serial.println("Hz");
-#endif
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
-
 }
 
 void loop() {
-    /*
-     * Put your code here
-     */
-}
+    if (irmp_get_data(&irmp_data[0])) {
 
-/*
- * Here we know, that data is available.
- * Since this function is executed in Interrupt handler context, make it short and do not use delay() etc.
- * In order to enable other interrupts you can call sei() (enable interrupt again) after getting data.
- */
-void handleReceivedIRData() {
-    irmp_get_data(&irmp_data[0]);
-    // enable interrupts
-    sei();
-
-#ifndef SIZE_TEST
-    /*
-     * Filter for commands from the WM010 IR Remote
-     */
-    if (irmp_data[0].address == 0xF708) {
-        /*
-         * Skip repetitions of command
-         */
-        if (!(irmp_data[0].flags & IRMP_FLAG_REPETITION)) {
-            /*
-             * Evaluate IR command
-             */
-            switch (irmp_data[0].command) {
-            case 0x48:
-                digitalWrite(LED_BUILTIN, HIGH);
-                break;
-            case 0x0B:
-                digitalWrite(LED_BUILTIN, LOW);
-                break;
-            default:
-                break;
-            }
+        switch (irmp_data[0].command) {
+        case 0x48:
+            digitalWrite(LED_BUILTIN, HIGH);
+            break;
+        case 0x0B:
+            digitalWrite(LED_BUILTIN, LOW);
+            break;
+        default:
+            break;
         }
-    }
 
-    Serial.print(F("P="));
-#if IRMP_PROTOCOL_NAMES == 1
+        Serial.print(F("P="));
 #if defined(__AVR__)
-    const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
-    Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
+        const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
+        Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
 #else
-    Serial.print(irmp_protocol_names[irmp_data[0].protocol]);
+        Serial.print(irmp_protocol_names[irmp_data[0].protocol]);
 #endif
-    Serial.print(F(" "));
-#else
-    Serial.print(F("0x"));
-    Serial.print(irmp_data[0].protocol, HEX);
-#endif
-#endif
-    Serial.print(F(" A=0x"));
-    Serial.print(irmp_data[0].address, HEX);
-    Serial.print(F(" C=0x"));
-    Serial.print(irmp_data[0].command, HEX);
-#ifndef SIZE_TEST
-    if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
-        Serial.print(F(" R"));
+        Serial.print(F(" "));
+        Serial.print(F(" A=0x"));
+        Serial.print(irmp_data[0].address, HEX);
+        Serial.print(F(" C=0x"));
+        Serial.print(irmp_data[0].command, HEX);
+        if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
+            Serial.print(F(" R"));
+        }
+        Serial.println();
     }
-#endif
-    Serial.println();
 }

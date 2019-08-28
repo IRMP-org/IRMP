@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * irmpSelectMain15Protocols.h
+ * irmpSelectAllProtocols.h
  *
  *
  * Copyright (c) 2009-2019 Frank Meyer - frank(at)fli4l.de
@@ -18,7 +18,7 @@
 // use 20000 for Support of LEGO and RCMM
 #  define F_INTERRUPTS                          20000   // interrupts per second, 50us, min: 10000, max: 20000, typ: 15000
 // use 15000 for Support of PENTAX and GREE
-#  define F_INTERRUPTS                          15000   // interrupts per second, 66,66us, min: 10000, max: 20000, typ: 15000
+//#  define F_INTERRUPTS                          15000   // interrupts per second, 66,66us, min: 10000, max: 20000, typ: 15000
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change settings from 1 to 0 (or comment it out) if you want to disable one or more decoders.

@@ -1,10 +1,9 @@
 /*
  *  AllProtocols.cpp
  *
- *  accepts all 42 protocols
+ *  Accepts 40 protocols simultaneously
  *
  *  Uses a callback function which is called every time a complete IR command was received.
- *  Receives IR protocol data at pin 3.
  *  Prints data to LCD connected at pin 4-9
  *
  *  *****************************************************************************************************************************
@@ -60,7 +59,6 @@
 #define F_INTERRUPTS                     20000 // Instead of default 15000 to support LEGO + RCMM protocols, but this in turn disables PENTAX and GREE protocols :-(
 
 #include <irmpSelectAllProtocols.h>  // This enables 15 main protocols
-#include <irmp.h>
 
 /*
  * After setting the modifiers we can include the code and compile it.

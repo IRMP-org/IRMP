@@ -1,7 +1,7 @@
 /*
  *  SimpleReceiver.cpp
  *
- *  Receives IR protocol data at pin 3. Supports 15 main protocols.
+ *  Receives IR protocol data of 15 main protocols.
  *
  *  *****************************************************************************************************************************
  *  To access the library files from your sketch, you have to first use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE.
@@ -20,10 +20,9 @@
  *      Plus 11 other main protocols by including irmpMain15.h instead of irmp.h
  *      JVC, NEC16, NEC42, Matsushita, DENON, Sharp, RC5, RC6 & RC6A, IR60 (SDA2008) Grundig, Siemens Gigaset, Nokia
  *
- *  To disable one of them or to enable other protocols, you must specify this around line 62 after the "#include <irmp.h>" and before "#include <irmp.cpp.h>".
- *  If you get warnings just ignore them. You can avoid them, if you modify the library file irmpconfig.h directly to specify the protocols.
- *  The exact names of the modifiers can be found in the library file irmpconfig.h at line 50ff.
- *  See also the IRMPCallback example.
+ *  To disable one of them or to enable other protocols, specify this before the "#include <irmp.h>" line.
+ *  If you get warnings of redefining symbols, just ignore them or undefine them first (see Interrupt example).
+ *  The exact names can be found in the library file irmpSelectAllProtocols.h (see Callback example).
  *
  *  Copyright (C) 2019  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
@@ -63,7 +62,6 @@
 #define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
 
 #include <irmpSelectMain15Protocols.h>  // This enables 15 main protocols
-#include <irmp.h>
 
 /*
  * After setting the modifiers we can include the code and compile it.
