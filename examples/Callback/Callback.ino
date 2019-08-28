@@ -58,7 +58,7 @@
 #define IRMP_USE_COMPLETE_CALLBACK  1 // Enable callback functionality
 
 //#define SIZE_TEST
-#include <irmpNone.h>
+#include <irmp.h>
 #ifdef SIZE_TEST
 #define IRMP_SUPPORT_NEC_PROTOCOL        1
 #else

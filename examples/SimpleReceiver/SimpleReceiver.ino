@@ -62,7 +62,8 @@
 
 #define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
 
-#include <irmpMain15.h>  // This enables 15 main protocols
+#include <irmpSelectMain15Protocols.h>  // This enables 15 main protocols
+#include <irmp.h>
 
 /*
  * After setting the modifiers we can include the code and compile it.

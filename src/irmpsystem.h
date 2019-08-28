@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * irmpsystem.h - system specific includes and defines
  *
- * Copyright (c) 2009-2018 Frank Meyer - frank(at)fli4l.de
+ * Copyright (c) 2009-2019 Frank Meyer - frank(at)fli4l.de
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -10,10 +10,10 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifndef _IRMPSYSTEM_H_
-#define _IRMPSYSTEM_H_
+#ifndef IRMPSYSTEM_H
+#define IRMPSYSTEM_H
 
-#if !defined(_IRMP_H_) && !defined(_IRSND_H_)
+#if !defined(IRMP_H) && !defined(_IRSND_H_)
 #  error please include only irmp.h or irsnd.h, not irmpsystem.h
 #endif
 
@@ -197,6 +197,18 @@ typedef unsigned short                  uint_fast16_t;
 #  define FALSE                         0
 #endif
 
+#if IRMP_32_BIT == 1
+
+typedef struct
+{
+    uint8_t                             protocol;                                   // protocol, e.g. NEC_PROTOCOL
+    uint16_t                            address;                                    // address
+    uint32_t                            command;                                    // command
+    uint8_t                             flags;                                      // flags, e.g. repetition
+} IRMP_DATA;
+
+#else // not IRMP_32_BIT == 1
+
 #if defined(PIC_C18)
 #define IRMP_PACKED_STRUCT
 #else
@@ -211,4 +223,6 @@ typedef struct IRMP_PACKED_STRUCT
     uint8_t                             flags;                                      // flags, e.g. repetition
 } IRMP_DATA;
 
-#endif // _IRMPSYSTEM_H_
+#endif // IRMP_32_BIT == 1
+
+#endif // IRMPSYSTEM_H

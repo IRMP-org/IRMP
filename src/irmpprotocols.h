@@ -3,7 +3,7 @@
  *
  * DO NOT INCLUDE THIS FILE, WILL BE INCLUDED BY IRMP.H or IRSND.H!
  *
- * Copyright (c) 2013-2018 Frank Meyer - frank(at)fli4l.de
+ * Copyright (c) 2013-2019 Frank Meyer - frank(at)fli4l.de
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,10 +12,10 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifndef _IRMP_PROTOCOLS_H_
-#define _IRMP_PROTOCOLS_H_
+#ifndef IRMP_PROTOCOLS_H
+#define IRMP_PROTOCOLS_H
 
-#if !defined(_IRMP_H_) && !defined(_IRSND_H_)
+#if !defined(IRMP_H) && !defined(_IRSND_H_)
 #  error please include only irmp.h or irsnd.h, not irmpprotocols.h
 #endif
 
@@ -78,10 +78,12 @@
 #define IRMP_IRMP16_PROTOCOL                    52              // IRMP specific protocol for data transfer, e.g. between two microcontrollers via IR
 #define IRMP_GREE_PROTOCOL                      53              // Gree climate
 #define IRMP_RCII_PROTOCOL                      54              // RC II Infra Red Remote Control Protocol for FM8
+#define IRMP_METZ_PROTOCOL                      55              // METZ
+#define IRMP_ONKYO_PROTOCOL                     56
 
-#define IRMP_RADIO1_PROTOCOL                    55              // Radio protocol (experimental status), do not use it yet!
+#define IRMP_RADIO1_PROTOCOL                    57              // Radio protocol (experimental status), do not use it yet!
 
-#define IRMP_N_PROTOCOLS                        55              // number of supported protocols
+#define IRMP_N_PROTOCOLS                        57              // number of supported protocols
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * timing constants:
@@ -859,11 +861,11 @@ typedef uint8_t     PAUSE_LEN;
 #define MERLIN_LSB                             0                                // MSB...LSB
 #define MERLIN_FLAGS                           (IRMP_PARAM_FLAG_IS_MANCHESTER | IRMP_PARAM_FLAG_1ST_PULSE_IS_1 )  // flags
 #define MERLIN_FRAMES                          1                                // MERLIN sends each frame 1 times
-#define MERLIN_ADDRESS_OFFSET                  1                                // skip 1 bits
-#define MERLIN_ADDRESS_LEN                     8                                // read 8 address bits
-#define MERLIN_COMMAND_OFFSET                  8                                // skip 9 bits (start bit + address)
-#define MERLIN_COMMAND_LEN                     10                               // read 8 command bits
-#define MERLIN_COMPLETE_DATA_LEN               19                               // complete length incl. start bit
+#define MERLIN_ADDRESS_OFFSET                  2                                // skip 1 bits
+#define MERLIN_ADDRESS_LEN                     9                                // read 9 address bits
+#define MERLIN_COMMAND_OFFSET                  11                               // skip 11 bits (start bit + address)
+#define MERLIN_COMMAND_LEN                     32                               // read up to 32 command bits
+#define MERLIN_COMPLETE_DATA_LEN               45                               // complete length incl. start bit
 #define MERLIN_FRAME_REPEAT_PAUSE_TIME         50.0e-3                          // 50 msec pause between frames, don't know if it is correct
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1022,6 +1024,25 @@ typedef uint8_t     PAUSE_LEN;
 #define GREE_FLAGS                              0                               // flags
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
+ * METZ:
+ *---------------------------------------------------------------------------------------------------------------------------------------------------
+ */
+#define METZ_START_BIT_PULSE_TIME                870.0e-6                       //  870 usec pulse
+#define METZ_START_BIT_PAUSE_TIME               2300.0e-6                       // 2300 usec pause
+#define METZ_PULSE_TIME                          435.0e-6                       //  435 usec pulse
+#define METZ_1_PAUSE_TIME                       1680.0e-6                       // 1680 usec pause
+#define METZ_0_PAUSE_TIME                        960.0e-6                       //  960 usec pause
+#define METZ_FRAME_REPEAT_PAUSE_TIME             122.0e-3                       // frame repeat after 122ms
+#define METZ_ADDRESS_OFFSET                      1                              // skip 1 bit (toggle bit)
+#define METZ_ADDRESS_LEN                         6                              // read 6 address bits
+#define METZ_COMMAND_OFFSET                      7                              // skip 7 bits
+#define METZ_COMMAND_LEN                        13                              // read 13 bits
+#define METZ_COMPLETE_DATA_LEN                  20                              // complete length
+#define METZ_STOP_BIT                            0                              // has no stop bit
+#define METZ_LSB                                 0                              // MSB...LSB
+#define METZ_FLAGS                               0                              // flags
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
  * RADIO1 - e.g. Tevion
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
@@ -1048,4 +1069,4 @@ typedef uint8_t     PAUSE_LEN;
  */
 #define AUTO_FRAME_REPETITION_TIME              80.0e-3                         // SIRCS/SAMSUNG32/NUBERT: automatic repetition after 25-50ms
 
-#endif // _IRMP_PROTOCOLS_H_
+#endif // IRMP_PROTOCOLS_H

@@ -59,7 +59,12 @@
 
 #define F_INTERRUPTS                     20000 // Instead of default 15000 to support LEGO + RCMM protocols, but this in turn disables PENTAX and GREE protocols :-(
 
-#include <irmpAll.h>
+#include <irmpSelectAllProtocols.h>  // This enables 15 main protocols
+#include <irmp.h>
+
+/*
+ * After setting the modifiers we can include the code and compile it.
+ */
 #include <irmp.c.h>
 
 IRMP_DATA irmp_data[1];

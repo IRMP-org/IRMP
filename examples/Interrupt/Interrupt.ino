@@ -2,6 +2,8 @@
  *  Interrupt.cpp
  *
  *  Receives IR protocol data at pin 3.
+ *  It uses pin change interrupts and no polling by timer, but might be not working for all protocols.
+ *  Tested for NEC, Kaseiko, Denon, RC6, but still experimental.
  *
  *  *****************************************************************************************************************************
  *  To access the library files from your sketch, you have to first use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE.
@@ -74,11 +76,11 @@ void initPCIInterrupt();
 
 //#define SIZE_TEST
 #ifdef SIZE_TEST
-#include <irmpNone.h>
+#include <irmp.h>
 #define IRMP_SUPPORT_NEC_PROTOCOL        1
 #else
-#include <irmpMain15.h>  // This enables 15 main protocols
-// this protocols is incompatible to NEC in interrupt mode, since it is the same as NEC but has longer data sections
+#include <irmpSelectMain15Protocols.h>  // This enables 15 main protocols
+#include <irmp.h>// this protocols is incompatible to NEC in interrupt mode, since it is the same as NEC but has longer data sections
 #undef IRMP_SUPPORT_NEC42_PROTOCOL
 #define IRMP_SUPPORT_NEC42_PROTOCOL      0
 #endif
