@@ -2,9 +2,11 @@
  *  AllProtocols.cpp
  *
  *  Accepts 40 protocols simultaneously
+ *  If you specify F_INTERRUPTS to 20000 at line 86 (default is 15000) it supports LEGO + RCMM protocols, but disables PENTAX and GREE protocols.
+ *  if you see performance issues, you can disable MERLIN Protocol at line 88.
  *
  *  Uses a callback function which is called every time a complete IR command was received.
- *  Prints data to LCD connected at pin 4-9
+ *  Prints data to LCD connected parallel at pin 4-9 or serial at pin A4, A5
  *
  *  *****************************************************************************************************************************
  *  To access the library files from your sketch, you have to first use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE.
@@ -35,12 +37,37 @@
 
 #include <Arduino.h>
 
-#include <LiquidCrystal.h>
+/*
+ * Comment out, what LCD you use
+ */
+//#define USE_PARALELL_LCD
+//#define USE_SERIAL_LCD
+/*
+ * Define the size of your LCD
+ */
+//#define USE_1602_LCD
+//#define USE_2004_LCD
 
+#if defined (USE_SERIAL_LCD)
+#include <LiquidCrystal_I2C.h>
+#endif
+#if defined (USE_PARALELL_LCD)
+#include <LiquidCrystal.h>
+#endif
+
+
+#if defined (USE_1602_LCD)
+// definitions for a 1602 LCD
 #define LCD_COLUMNS 16
 #define LCD_ROWS 2
+#endif
+#if defined (USE_2004_LCD)
+// definitions for a 2004 LCD
+#define LCD_COLUMNS 20
+#define LCD_ROWS 4
+#endif
 
-#define VERSION_EXAMPLE "1.1"
+#define VERSION_EXAMPLE "1.3"
 
 /*
  * Set library modifiers first to set input pin etc.
@@ -56,9 +83,11 @@
 #define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some FLASH
 #define IRMP_USE_COMPLETE_CALLBACK       1 // Enable callback functionality
 
-#define F_INTERRUPTS                     20000 // Instead of default 15000 to support LEGO + RCMM protocols, but this in turn disables PENTAX and GREE protocols :-(
+//#define F_INTERRUPTS                     20000 // Instead of default 15000 to support LEGO + RCMM protocols, but this in turn disables PENTAX and GREE protocols :-(
 
-#include <irmpSelectAllProtocols.h>  // This enables 15 main protocols
+//#define IRMP_32_BIT                       1 // This enables MERLIN protocol, but decreases performance.
+
+#include <irmpSelectAllProtocols.h>  // This enables all possible protocols
 
 /*
  * After setting the modifiers we can include the code and compile it.
@@ -67,12 +96,20 @@
 
 IRMP_DATA irmp_data[1];
 
+#if defined (USE_SERIAL_LCD)
+LiquidCrystal_I2C myLCD(0x27, LCD_COLUMNS, LCD_ROWS);  // set the LCD address to 0x27 for a 20 chars and 2 line display
+#endif
+#if defined (USE_PARALELL_LCD)
 LiquidCrystal myLCD(4, 5, 6, 7, 8, 9);
+#endif
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
 void handleReceivedIRData();
+void irmp_result_print_LCD();
+
+bool volatile sIRMPDataAvailable = false;
 
 void setup() {
 // initialize the digital pin as an output.
@@ -89,13 +126,38 @@ void setup() {
 
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
 
+#if defined (USE_SERIAL_LCD)
+    myLCD.init();
+    myLCD.clear();
+    myLCD.backlight();
+#endif
+#if defined (USE_PARALELL_LCD)
     myLCD.begin(LCD_COLUMNS, LCD_ROWS);
+#endif
+#if defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
     myLCD.print(F("IRMP all V" VERSION_EXAMPLE));
     myLCD.setCursor(0, 1);
     myLCD.print(F(__DATE__));
+#endif
 }
 
 void loop() {
+    if (sIRMPDataAvailable) {
+        sIRMPDataAvailable = false;
+
+        /*
+         * Serial output
+         */
+        irmp_result_print(&Serial, &irmp_data[0]);
+
+#if defined (USE_SERIAL_LCD)
+        irmp_disable_timer_interrupt(); // disable timer interrupt before sei() below, since it disturbs the serial output
+#endif
+        irmp_result_print_LCD();
+#if defined (USE_SERIAL_LCD)
+        irmp_enable_timer_interrupt();
+#endif
+    }
 }
 
 /*
@@ -107,60 +169,75 @@ void handleReceivedIRData() {
     /*
      * Just print the data to Serial and LCD
      */
-
     irmp_get_data(&irmp_data[0]);
-    // enable interrupts
-    sei();
+    sIRMPDataAvailable = true;
+}
 
-    /*
-     * Serial output
-     */
-    Serial.print(F("P="));
-#if defined(__AVR__)
-        const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
-        Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
-#else
-        Serial.print(irmp_protocol_names[irmp_data[0].protocol]);
-#endif
-    Serial.print(F(" "));
-    Serial.print(F(" A=0x"));
-    Serial.print(irmp_data[0].address, HEX);
-    Serial.print(F(" C=0x"));
-    Serial.print(irmp_data[0].command, HEX);
-    if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
-        Serial.print(F(" R"));
-    }
-    Serial.println();
+/*
+ * LCD output for 1602 and 2004 LCDs
+ */
+void irmp_result_print_LCD() {
+#if defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
+#  if (LCD_ROWS >= 4)
+    const uint8_t tStartRow = 2;
+    // clear data lines
+    myLCD.setCursor(0, tStartRow);
+    myLCD.print(F("                    "));
+    myLCD.setCursor(0, tStartRow + 1);
+    myLCD.print(F("                    "));
 
-    /*
-     * LCD output
-     */
-    // Show protocol name
+#  else
+    const uint8_t tStartRow = 0;
     myLCD.clear();
-    myLCD.setCursor(0, 0);
+#  endif
+
+    // Show protocol name
+    myLCD.setCursor(0, tStartRow);
     myLCD.print(F("P="));
-#if defined(__AVR__)
+#  if defined(__AVR__)
+    const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
     myLCD.print((__FlashStringHelper *) (tProtocolStringPtr));
-#else
+#  else
     myLCD.print(irmp_protocol_names[irmp_data[0].protocol]);
-#endif
-    // Show address
-    myLCD.setCursor(0, 1);
+#  endif
+    /*
+     * Show address
+     */
+    myLCD.setCursor(0, tStartRow + 1);
     myLCD.print(F("A=0x"));
     myLCD.print(irmp_data[0].address, HEX);
 
-    // Show command
+    /*
+     * Show command
+     */
     uint16_t tCommand = irmp_data[0].command;
-    myLCD.setCursor(10, 1);
-#if (LCD_COLUMNS <= 16)
+    myLCD.setCursor(9, tStartRow + 1);
+#  if (LCD_COLUMNS <= 16)
+    /*
+     * render 16 bit commands
+     */
     if (tCommand >= 0x100) {
         myLCD.print(F("0x"));
     } else {
         myLCD.print(F("C=0x"));
     }
-#else
+#  else
     myLCD.print(F("C=0x"));
-
-#endif
+#  endif
     myLCD.print(tCommand, HEX);
+
+    /*
+     * Show repetition flag
+     */
+    if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
+#  if (LCD_COLUMNS > 16)
+        myLCD.setCursor(18, tStartRow + 1);
+#  else
+        myLCD.setCursor(15, tStartRow + 1);
+#  endif
+        myLCD.print('R');
+    }
+
+#endif // defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
 }
+

@@ -32,8 +32,9 @@
  *    - MERLIN
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-
-#define IRMP_32_BIT     0                                                                               // use 32 bit command value, 0 or 1
+#ifndef IRMP_32_BIT
+#  define IRMP_32_BIT     0                                                                               // use 32 bit command value, 0 or 1
+#endif
 
 #endif // IRMPCONFIG_STAGE1_H
 #ifdef IRMPCONFIG_STAGE2_H

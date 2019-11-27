@@ -104,21 +104,6 @@ void loop() {
             break;
         }
 
-        Serial.print(F("P="));
-#if defined(__AVR__)
-        const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
-        Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
-#else
-        Serial.print(irmp_protocol_names[irmp_data[0].protocol]);
-#endif
-        Serial.print(F(" "));
-        Serial.print(F(" A=0x"));
-        Serial.print(irmp_data[0].address, HEX);
-        Serial.print(F(" C=0x"));
-        Serial.print(irmp_data[0].command, HEX);
-        if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
-            Serial.print(F(" R"));
-        }
-        Serial.println();
+        irmp_result_print(&Serial, &irmp_data[0]);
     }
 }

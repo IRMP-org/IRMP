@@ -5686,13 +5686,76 @@ void irmp_init_timer(void) {
 #endif
 }
 
+void irmp_disable_timer_interrupt(void) {
+#if defined(__AVR__)
+    // Use Timer 2
+#  if defined(__AVR_ATmega16__)
+    TIMSK = 0; // disable interrupt
+#  else
+    TIMSK2 = 0; // disable interrupt
+#  endif
+#elif defined(ESP8266)
+    timer1_detachInterrupt(); // disables interrupt too
+#elif defined(ESP32)
+    timerAlarmDisable(sESP32Timer);
+#endif
+}
+
+void irmp_enable_timer_interrupt(void) {
+#if defined(__AVR__)
+    // Use Timer 2
+#  if defined(__AVR_ATmega16__)
+    TIMSK = _BV(OCIE2); // enable interrupt
+#  else
+    TIMSK2 = _BV(OCIE2A); // enable interrupt
+#  endif
+#elif defined(ESP8266)
+    timer1_attachInterrupt(irmp_ESP_ISR); // enables interrupt too
+#elif defined(ESP32)
+    timerAlarmEnable(sESP32Timer);
+#endif
+}
+
+/*
+ * Print protocol name or number, address, code and repetition flag
+ */
+void irmp_result_print(Stream * aSerial, IRMP_DATA * aIRMPDataPtr){
+    /*
+     * Print protocol name or number
+     */
+    aSerial->print(F("P="));
+#if IRMP_PROTOCOL_NAMES == 1
+#  if defined(__AVR__)
+    const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[aIRMPDataPtr->protocol]);
+    Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
+#  else
+    Serial.print(irmp_protocol_names[aIRMPDataPtr->protocol]);
+#  endif
+    Serial.print(F(" "));
+#else
+    Serial.print(F("0x"));
+    Serial.print(aIRMPDataPtr->protocol, HEX);
+#endif
+
+    /*
+     * Print address, code and repetition flag
+     */
+    aSerial->print(F(" A=0x"));
+    aSerial->print(aIRMPDataPtr->address, HEX);
+    aSerial->print(F(" C=0x"));
+    aSerial->print(aIRMPDataPtr->command, HEX);
+    if (aIRMPDataPtr->flags & IRMP_FLAG_REPETITION) {
+        aSerial->print(F(" R"));
+    }
+    aSerial->println();
+}
+
 #endif // defined(ARDUINO)
 
 #if (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
 /*
  * Wrapper for irmp_ISR() in order to run it with Pin Change Interrupts.
- * needs additional 8-9us per call.
- * Ends up to 13us for signal going inactive and 19us for going active.
+ * Needs additional 8-9us per call and 13us for signal going inactive and 19us for going active.
  * Tested for NEC, Kaseiko, Denon, RC6, but still experimental
  */
 //#define PCI_DEBUG

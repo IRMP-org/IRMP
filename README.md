@@ -1,5 +1,6 @@
 
 # IRMP - Infrared Multi Protocol Decoder
+### Version 1.1.0
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Build Status](https://travis-ci.org/ArminJo/irmp.svg?branch=master)](https://travis-ci.org/ArminJo/irmp)
 [![Hit Counter](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2Fukw100%2FIRMP)](https://github.com/brentvollebregt/hit-counter)
@@ -40,7 +41,7 @@ It is dated **2.4.2019**. If you have complains about the data or request for ex
 | RAM usage | **52**<br/>(73 / 100 for 15 (main) / 40 protocols) | **62** | 334 | 227 |
 | Supported platforms | **avr, esp8266<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, arm(samd) | avr, attiny, esp8266, esp32, arm |
 | Last library update | 4/2019 | 3/2018 | 6/2018 | 11/2017 |
-| Remarks | LED 13 Feedback.<br/>Decodes 40 protocols concurrently.<br/>Work in progress. | Only one protocol at a time. | LED 13 Feedback. | LED 13 Feedback.<br/>NEC decoding is poor.<br/>**A lot of branches available and there is an active community** |
+| Remarks | LED 13 Feedback.<br/>Decodes 40 protocols concurrently.<br/>Work in progress. | Only one protocol at a time. | LED 13 Feedback. | LED 13 Feedback.<br/>NEC decoding is poor.<br/>**Abandoned project -203 open issues- and an incredible amount of forks.** |
 
 \*The Hash protocol gives you a hash as code, which may be sufficient to distinguish your keys on the remote, but may not work with some protocols like Mitsubishi
 
@@ -78,6 +79,10 @@ The code representation also often changes. In IRMP (as in IRLremote) it is more
 If you want to distinguish between more than one remote you may also use `irmp_data[0].address` like it is done in the [Callback example](https://github.com/ukw100/IRMP/blob/master/examples/Callback/Callback.ino).
 
 # Revision History
+### Version 1.1.0
+- Added functions `irmp_disable_timer_interrupt()` and `irmp_enable_timer_interrupt()`.
+- Added function `irmp_result_print(Stream * aSerial)`.
+- Improved examples
 ### Version 1.0.1
 - Added ESP8266 + ESP32 support.
 

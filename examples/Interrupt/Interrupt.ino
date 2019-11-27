@@ -109,7 +109,7 @@ void setup() {
     irmp_init();
     irmp_blink13(true); // Enable LED feedback
 #ifdef IRMP_USE_ARDUINO_ATTACH_INTERRUPT
-            attachInterrupt(digitalPinToInterrupt(IRMP_INPUT_PIN), irmp_PCI_ISR, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(IRMP_INPUT_PIN), irmp_PCI_ISR, CHANGE);
 #else
     initPCIInterrupt();
 #endif
@@ -133,29 +133,5 @@ void handleReceivedIRData() {
     irmp_get_data(&irmp_data[0]);
     // enable interrupts
     sei();
-#ifndef SIZE_TEST
-    Serial.print(F("P="));
-#if IRMP_PROTOCOL_NAMES == 1
-#if defined(__AVR__)
-    const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
-    Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
-#else
-    Serial.print(irmp_protocol_names[irmp_data[0].protocol]);
-#endif
-    Serial.print(F(" "));
-#else
-    Serial.print(F("0x"));
-    Serial.print(irmp_data[0].protocol, HEX);
-#endif
-#endif
-    Serial.print(F(" A=0x"));
-    Serial.print(irmp_data[0].address, HEX);
-    Serial.print(F(" C=0x"));
-    Serial.print(irmp_data[0].command, HEX);
-#ifndef SIZE_TEST
-    if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
-        Serial.print(F(" R"));
-    }
-#endif
-    Serial.println();
+    irmp_result_print(&Serial, &irmp_data[0]);
 }

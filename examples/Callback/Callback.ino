@@ -128,7 +128,6 @@ void handleReceivedIRData() {
     // enable interrupts
     sei();
 
-#ifndef SIZE_TEST
     /*
      * Filter for commands from the WM010 IR Remote
      */
@@ -153,28 +152,5 @@ void handleReceivedIRData() {
         }
     }
 
-    Serial.print(F("P="));
-#if IRMP_PROTOCOL_NAMES == 1
-#if defined(__AVR__)
-    const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
-    Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
-#else
-    Serial.print(irmp_protocol_names[irmp_data[0].protocol]);
-#endif
-    Serial.print(F(" "));
-#else
-    Serial.print(F("0x"));
-    Serial.print(irmp_data[0].protocol, HEX);
-#endif
-#endif
-    Serial.print(F(" A=0x"));
-    Serial.print(irmp_data[0].address, HEX);
-    Serial.print(F(" C=0x"));
-    Serial.print(irmp_data[0].command, HEX);
-#ifndef SIZE_TEST
-    if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
-        Serial.print(F(" R"));
-    }
-#endif
-    Serial.println();
+    irmp_result_print(&Serial, &irmp_data[0]);
 }
