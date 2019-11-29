@@ -47,14 +47,12 @@
  */
 //#define USE_1602_LCD
 //#define USE_2004_LCD
-
 #if defined (USE_SERIAL_LCD)
 #include <LiquidCrystal_I2C.h>
 #endif
 #if defined (USE_PARALELL_LCD)
 #include <LiquidCrystal.h>
 #endif
-
 
 #if defined (USE_1602_LCD)
 // definitions for a 1602 LCD
@@ -95,6 +93,10 @@
 #include <irmp.c.h>
 
 IRMP_DATA irmp_data[1];
+
+#if defined (USE_SERIAL_LCD) && defined (USE_PARALELL_LCD)
+#error "Cannot use paralell and serial LCD simultaneous"
+#endif
 
 #if defined (USE_SERIAL_LCD)
 LiquidCrystal_I2C myLCD(0x27, LCD_COLUMNS, LCD_ROWS);  // set the LCD address to 0x27 for a 20 chars and 2 line display
@@ -147,6 +149,7 @@ void loop() {
 
         /*
          * Serial output
+         * takes 2 milliseconds at 115200
          */
         irmp_result_print(&Serial, &irmp_data[0]);
 
@@ -175,68 +178,127 @@ void handleReceivedIRData() {
 
 /*
  * LCD output for 1602 and 2004 LCDs
+ * 40 - 55 Milliseconds per initial output for a 1602 LCD
+ * for a 2014 LCD the initial clearing adds 55 ms.
+ * The expander runs at 100 kHz :-(
+ * 8 milliseconds for 8 bit; 10 ms for 16 bit code output
+ * 3 milliseconds for repeat output
+ *
  */
 void irmp_result_print_LCD() {
 #if defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
+    static uint8_t sLastProtocolIndex;
+    static uint16_t sLastProtocolAddress;
+
 #  if (LCD_ROWS >= 4)
+    static uint8_t sLastCommandPrintPosition = 13;
+
     const uint8_t tStartRow = 2;
-    // clear data lines
-    myLCD.setCursor(0, tStartRow);
-    myLCD.print(F("                    "));
-    myLCD.setCursor(0, tStartRow + 1);
-    myLCD.print(F("                    "));
 
-#  else
+    #  else
+    static uint16_t sLastCommand;
+    static uint8_t sLastCommandPrintPosition;
+
     const uint8_t tStartRow = 0;
-    myLCD.clear();
+    bool tDisplayWasCleared = false;
 #  endif
 
-    // Show protocol name
-    myLCD.setCursor(0, tStartRow);
-    myLCD.print(F("P="));
+    /*
+     * Print only if protocol or address has changed
+     */
+    if (sLastProtocolIndex != irmp_data[0].protocol || sLastProtocolAddress != irmp_data[0].address) {
+        sLastProtocolIndex = irmp_data[0].protocol;
+        sLastProtocolAddress = irmp_data[0].address;
+#  if (LCD_ROWS >= 4)
+        // clear data lines
+        myLCD.setCursor(0, tStartRow);
+        myLCD.print(F("                    "));
+        myLCD.setCursor(0, tStartRow + 1);
+        myLCD.print(F("                    "));
+#  else
+        myLCD.clear();
+        tDisplayWasCleared = true;
+#  endif
+
+        /*
+         * Show protocol name
+         */
+        myLCD.setCursor(0, tStartRow);
+        myLCD.print(F("P="));
 #  if defined(__AVR__)
-    const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
-    myLCD.print((__FlashStringHelper *) (tProtocolStringPtr));
+        const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
+        myLCD.print((__FlashStringHelper *) (tProtocolStringPtr));
 #  else
-    myLCD.print(irmp_protocol_names[irmp_data[0].protocol]);
+        myLCD.print(irmp_protocol_names[irmp_data[0].protocol]);
 #  endif
-    /*
-     * Show address
-     */
-    myLCD.setCursor(0, tStartRow + 1);
-    myLCD.print(F("A=0x"));
-    myLCD.print(irmp_data[0].address, HEX);
 
-    /*
-     * Show command
-     */
-    uint16_t tCommand = irmp_data[0].command;
-    myLCD.setCursor(9, tStartRow + 1);
-#  if (LCD_COLUMNS <= 16)
-    /*
-     * render 16 bit commands
-     */
-    if (tCommand >= 0x100) {
-        myLCD.print(F("0x"));
-    } else {
+        /*
+         * Show address
+         */
+        myLCD.setCursor(0, tStartRow + 1);
+        myLCD.print(F("A=0x"));
+        myLCD.print(irmp_data[0].address, HEX);
+
+#  if (LCD_COLUMNS > 16)
+        /*
+         * Print prefix of command here, since it is constant string
+         */
+        myLCD.setCursor(9, tStartRow + 1);
         myLCD.print(F("C=0x"));
-    }
-#  else
-    myLCD.print(F("C=0x"));
 #  endif
-    myLCD.print(tCommand, HEX);
-
-    /*
-     * Show repetition flag
-     */
-    if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
+    } else {
+        /*
+         * Show or clear repetition flag
+         */
 #  if (LCD_COLUMNS > 16)
         myLCD.setCursor(18, tStartRow + 1);
 #  else
         myLCD.setCursor(15, tStartRow + 1);
 #  endif
-        myLCD.print('R');
+        if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
+            myLCD.print('R');
+            return; // Since it is a repetition, printed data has not changed
+        } else {
+            myLCD.print(' ');
+        }
     }
+
+    /*
+     * Command prefix
+     */
+    uint16_t tCommand = irmp_data[0].command;
+
+#  if (LCD_COLUMNS <= 16)
+    // check if prefix will change
+    if (tDisplayWasCleared || (sLastCommand > 0x100 && tCommand < 0x100) || (sLastCommand < 0x100 && tCommand > 0x100)) {
+        sLastCommand = tCommand;
+        /*
+         * Print prefix of command
+         */
+        myLCD.setCursor(9, tStartRow + 1);
+
+        /*
+         * Print prefix for 8/16 bit commands
+         */
+        if (tCommand >= 0x100) {
+            myLCD.print(F("0x"));
+            sLastCommandPrintPosition = 11;
+        } else {
+            myLCD.print(F("C=0x"));
+            sLastCommandPrintPosition = 13;
+        }
+    }
+#  endif
+
+    /*
+     * Command data
+     */
+    myLCD.setCursor(sLastCommandPrintPosition, tStartRow + 1);
+    if (irmp_data[0].command < 0x10) {
+        // leading 0
+        myLCD.print('0');
+    }
+    myLCD.print(tCommand, HEX);
 
 #endif // defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
 }

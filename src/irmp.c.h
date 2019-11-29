@@ -5718,6 +5718,7 @@ void irmp_enable_timer_interrupt(void) {
 
 /*
  * Print protocol name or number, address, code and repetition flag
+ * needs appr. 2 milliseconds for output
  */
 void irmp_result_print(Stream * aSerial, IRMP_DATA * aIRMPDataPtr){
     /*
