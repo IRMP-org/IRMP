@@ -8,7 +8,9 @@
 ## 50 IR protocols supported and low memory footprint
 40 protocols can be enabled at the same time, since some of them are quite similar and conflicts with each other
 
-![Nano running AllProtocol example](https://github.com/ukw100/IRMP/blob/master/pictures/NEC.jpg)
+| Nano running AllProtocol example | YouTube Video | Instructable |
+|-|-|-|
+| ![Nano running AllProtocol example](https://github.com/ukw100/IRMP/blob/master/pictures/NEC.jpg) | ![YouTube Video](https://github.com/ukw100/IRMP/blob/master/pictures/KASEIKYO+Remote.jpg) | [![Instructable](https://github.com/ArminJo/Arduino-OpenWindowAlarm/blob/master/pictures/instructables-logo-v2.png)](https://www.instructables.com/id/IR-Remote-Analyzer-Receiver-With-Arduino) |
 
 # Documentation at mikrocontroller.net
 ### English
@@ -22,7 +24,7 @@
 - BOSE, Kathrein , NUBERT , FAN (ventilator) , SPEAKER (~NUBERT), Bang & Olufsen , RECS80 (SAA3004) , RECS80EXT (SAA3008), Thomson, NIKON camera , Netbox keyboard, ORTEK (Hama) , Telefunken 1560, FDC3402 keyboard , RC Car , iRobot Roomba, RUWIDO, T-Home , A1 TV BOX, LEGO Power RC, RCMM 12,24, or 32, LG Air Condition , Samsung48, Merlin , Pentax , S100 , ACP24, TECHNICS , PANASONIC Beamer , Mitsubishi Aircond , VINCENT, SAMSUNG AH , IRMP specific, GREE CLIMATE , RCII T+A, RADIO e.g. TEVION, METZ
 
 # Schematic for Arduino UNO
-| | |
+| IR-Receiver connection | Serial LCD connection |
 |---|---|
 ![Fritzing schematic for Arduino UNO](https://github.com/ukw100/IRMP/blob/master/extras/IRMP_UNO_Steckplatine.png) | ![Fritzing schematic for Arduino UNO + LCD](https://github.com/ukw100/IRMP/blob/master/extras/IRMP_UNO_LCD_Steckplatine.png)
 
@@ -80,11 +82,14 @@ The code representation also often changes. In IRMP (as in IRLremote) it is more
 If you want to distinguish between more than one remote you may also use `irmp_data[0].address` like it is done in the [Callback example](https://github.com/ukw100/IRMP/blob/master/examples/Callback/Callback.ino).
 
 # AllProtocol example
-| ![Start](https://github.com/ukw100/IRMP/blob/master/pictures/Start.jpg) | 
+| Serial LCD output | Arduino Serial Monitor output |
+|-|-|
+| ![LCD start](https://github.com/ukw100/IRMP/blob/master/pictures/Start.jpg) | ![Serial Monitor](https://github.com/ukw100/IRMP/blob/master/pictures/AllProtocol_SerialMonitor.png) |
 
+## Sample Protocols
 | | | | |
-|---|---|---|---|
-| ![RC5](https://github.com/ukw100/IRMP/blob/master/pictures/RC5.jpg)| ![NEC42](https://github.com/ukw100/IRMP/blob/master/pictures/NEC42.jpg) |![RC5](https://github.com/ukw100/IRMP/blob/master/pictures/RC5.jpg) |![KASEIKYO](https://github.com/ukw100/IRMP/blob/master/pictures/KASEIKYO.jpg) |
+|-|-|-|-|
+| ![NEC](https://github.com/ukw100/IRMP/blob/master/pictures/NEC_Paralell.jpg)| ![NEC42](https://github.com/ukw100/IRMP/blob/master/pictures/NEC42.jpg) |![RC5](https://github.com/ukw100/IRMP/blob/master/pictures/RC5.jpg) |![KASEIKYO](https://github.com/ukw100/IRMP/blob/master/pictures/KASEIKYO.jpg) |
 | ![DENON](https://github.com/ukw100/IRMP/blob/master/pictures/DENON.jpg) |![GRUNDIG](https://github.com/ukw100/IRMP/blob/master/pictures/GRUNDIG.jpg) |![IR60](https://github.com/ukw100/IRMP/blob/master/pictures/IR60.jpg) |![MATSUSHITA](https://github.com/ukw100/IRMP/blob/master/pictures/MATSUSHITA.jpg) |
 | ![NUBERT](https://github.com/ukw100/IRMP/blob/master/pictures/NUBERT.jpg) |![ONKYO](https://github.com/ukw100/IRMP/blob/master/pictures/ONKYO.jpg) |![RECS80](https://github.com/ukw100/IRMP/blob/master/pictures/RECS80.jpg) |![RUWIDO](https://github.com/ukw100/IRMP/blob/master/pictures/RUWIDO.jpg) |
 | ![SAMSUNG](https://github.com/ukw100/IRMP/blob/master/pictures/SAMSUNG.jpg) |![SIEMENS](https://github.com/ukw100/IRMP/blob/master/pictures/SIEMENS.jpg) |![TELEFUNKEN](https://github.com/ukw100/IRMP/blob/master/pictures/TELEFUNKEN.jpg) |![TELEFUNKEN](https://github.com/ukw100/IRMP/blob/master/pictures/TELEFUNKEN.jpg) |

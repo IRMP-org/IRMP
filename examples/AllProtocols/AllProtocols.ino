@@ -1,7 +1,7 @@
 /*
  *  AllProtocols.cpp
  *
- *  Accepts 40 protocols simultaneously
+ *  Accepts 40 protocols concurrently
  *  If you specify F_INTERRUPTS to 20000 at line 86 (default is 15000) it supports LEGO + RCMM protocols, but disables PENTAX and GREE protocols.
  *  if you see performance issues, you can disable MERLIN Protocol at line 88.
  *
@@ -95,7 +95,7 @@
 IRMP_DATA irmp_data[1];
 
 #if defined (USE_SERIAL_LCD) && defined (USE_PARALELL_LCD)
-#error "Cannot use paralell and serial LCD simultaneous"
+#error "Cannot use paralell and serial LCD simultaneously"
 #endif
 
 #if defined (USE_SERIAL_LCD)
