@@ -1,6 +1,6 @@
 
 # IRMP - Infrared Multi Protocol Decoder
-### Version 1.1.0
+### Version 1.2.0
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Build Status](https://travis-ci.org/ArminJo/irmp.svg?branch=master)](https://travis-ci.org/ArminJo/irmp)
 [![Hit Counter](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2Fukw100%2FIRMP)](https://github.com/brentvollebregt/hit-counter)
@@ -42,7 +42,7 @@ It is dated **2.4.2019**. If you have complains about the data or request for ex
 | Decode method | OnTheFly | OnTheFly | RAM | RAM |
 | FLASH usage (simple NEC example with 5 prints) | 1500<br/>(4300 for 15 main / 8000 for all 40 protocols)<br/>(+200 for callback)<br/>(+80 for interrupt at pin 2+3)| **1270**<br/>(1400 for pin 2+3) | 4830 | 3210 |
 | RAM usage | **52**<br/>(73 / 100 for 15 (main) / 40 protocols) | **62** | 334 | 227 |
-| Supported platforms | **avr, esp8266<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, arm(samd) | avr, attiny, esp8266, esp32, arm |
+| Supported platforms | **avr, esp8266, ESP32, STM32<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, arm(samd) | avr, attiny, esp8266, esp32, arm |
 | Last library update | 4/2019 | 3/2018 | 6/2018 | 11/2017 |
 | Remarks | LED 13 Feedback.<br/>Decodes 40 protocols concurrently.<br/>Work in progress. | Only one protocol at a time. | LED 13 Feedback. | LED 13 Feedback.<br/>NEC decoding is poor.<br/>**Abandoned project -203 open issues- and an incredible amount of forks.** |
 
@@ -96,6 +96,8 @@ If you want to distinguish between more than one remote you may also use `irmp_d
 
 
 # Revision History
+### Version 1.2.0
+- Added STM32 M3 (BluePill) support.
 ### Version 1.1.0
 - Added functions `irmp_disable_timer_interrupt()` and `irmp_enable_timer_interrupt()`.
 - Added function `irmp_result_print(Stream * aSerial)`.

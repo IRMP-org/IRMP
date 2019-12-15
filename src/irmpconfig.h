@@ -53,17 +53,25 @@
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
+ * Change hardware pin here for Arduino IDE if no IRMP_INPUT_PIN specified
+ * Should be first, since it covers multiple platforms
+ *---------------------------------------------------------------------------------------------------------------------------------------------------
+ */
+#if defined(ARDUINO)                                                   	// Arduino IDE for different platforms
+#  if !defined (IRMP_INPUT_PIN)											// Arduino IDE uses IRMP_INPUT_PIN
+#    define IRMP_INPUT_PIN 3
+#  endif
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change hardware pin here for ATMEL ATMega/ATTiny/XMega
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#if defined (ATMEL_AVR) || defined (__AVR_XMEGA__)                      // use PD4 / Arduino Pin 3 as IR input on AVR
-#  if !defined (IRMP_INPUT_PIN)
-#    ifndef IRMP_PORT_LETTER
-#      define IRMP_PORT_LETTER                    D                     // Port D is Port for Arduino pin 0 to 7. B is for pin 8 to 13, C is for A0 to A5
-#    endif
-#    ifndef IRMP_BIT_NUMBER
-#      define IRMP_BIT_NUMBER                     3
-#    endif
+#elif defined (ATMEL_AVR) || defined (__AVR_XMEGA__)                    // use PD4
+#  ifndef IRMP_PORT_LETTER
+#    define IRMP_PORT_LETTER                    D                       // Port D is Port for Arduino pin 0 to 7. B is for pin 8 to 13, C is for A0 to A5
+#  endif
+#  ifndef IRMP_BIT_NUMBER
+#    define IRMP_BIT_NUMBER                     3
 #  endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -121,11 +129,9 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #elif defined (__xtensa__)
-#  if defined (IRMP_INPUT_PIN)
-#    define IRMP_BIT_NUMBER                       IRMP_INPUT_PIN
-#  else
-#    define IRMP_BIT_NUMBER                       12                      // use GPIO12 (Pin 7 UEXT) on ESP8266-EVB evaluation board
-#  endif
+#  define IRMP_BIT_NUMBER                       12                      // use GPIO12 (Pin 7 UEXT) on ESP8266-EVB evaluation board
+
+
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change hardware pin here for Teensy 3.x with teensyduino gcc compiler
  *---------------------------------------------------------------------------------------------------------------------------------------------------

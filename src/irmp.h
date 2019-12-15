@@ -27,7 +27,14 @@
 #  undef IRMPCONFIG_STAGE2_H
 #endif
 
-#if defined (__AVR_XMEGA__)
+#if defined(ARDUINO)  && defined (IRMP_INPUT_PIN)
+#  if defined (AVR)
+#    define input(x)                              digitalReadFast(IRMP_INPUT_PIN)
+#  else
+#    define input(x)                              digitalRead(IRMP_INPUT_PIN)
+#  endif
+
+#elif defined (__AVR_XMEGA__)
 #  define _CONCAT(a,b)                          a##b
 #  define CONCAT(a,b)                           _CONCAT(a,b)
 #  define IRMP_PORT_PRE                         CONCAT(PORT, IRMP_PORT_LETTER)
@@ -40,9 +47,6 @@
 #  define input(x)                              ((x) & (1 << IRMP_BIT))
 
 #elif defined (ATMEL_AVR)
-#  if defined (IRMP_INPUT_PIN)
-#  define input(x)                              digitalReadFast(IRMP_INPUT_PIN)
-#  else
 #  define _CONCAT(a,b)                          a##b
 #  define CONCAT(a,b)                           _CONCAT(a,b)
 #  define IRMP_PORT                             CONCAT(PORT, IRMP_PORT_LETTER)
@@ -50,7 +54,6 @@
 #  define IRMP_PIN                              CONCAT(PIN, IRMP_PORT_LETTER)
 #  define IRMP_BIT                              IRMP_BIT_NUMBER
 #  define input(x)                              ((x) & (1 << IRMP_BIT))
-# endif // defined (ARDUINO)
 #  define IRMP_BIT                              IRMP_BIT_NUMBER
 
 #elif defined (PIC_C18) || defined (PIC_CCS)

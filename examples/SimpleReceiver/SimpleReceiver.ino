@@ -55,6 +55,8 @@
 #define IRMP_INPUT_PIN 14 // D5
 #elif defined(ESP32)
 #define IRMP_INPUT_PIN 15
+#elif defined(__STM32F1__)
+#define IRMP_INPUT_PIN 3 // PA3
 #else
 #define IRMP_INPUT_PIN 3
 #endif
@@ -91,19 +93,28 @@ void setup() {
 }
 
 void loop() {
+    /*
+     * Check if new data available and get them
+     */
     if (irmp_get_data(&irmp_data[0])) {
-
-        switch (irmp_data[0].command) {
-        case 0x48:
-            digitalWrite(LED_BUILTIN, HIGH);
-            break;
-        case 0x0B:
-            digitalWrite(LED_BUILTIN, LOW);
-            break;
-        default:
-            break;
+        /*
+         * Skip repetitions of command
+         */
+        if (!(irmp_data[0].flags & IRMP_FLAG_REPETITION)) {
+            /*
+             * Here data is available and is no repetition -> evaluate IR command
+             */
+            switch (irmp_data[0].command) {
+            case 0x48:
+                digitalWrite(LED_BUILTIN, HIGH);
+                break;
+            case 0x0B:
+                digitalWrite(LED_BUILTIN, LOW);
+                break;
+            default:
+                break;
+            }
         }
-
         irmp_result_print(&Serial, &irmp_data[0]);
     }
 }

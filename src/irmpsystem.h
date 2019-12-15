@@ -17,18 +17,41 @@
 #  error please include only irmp.h or irsnd.h, not irmpsystem.h
 #endif
 
-#if defined(__18CXX)                                                                // Microchip PIC C18 compiler
+#if defined(ARDUINO)                                                              // AVR Arduino. Should be first, since it covers multiple platforms
+#  include "Arduino.h"
+#  if defined(AVR)
+#    include "digitalWriteFast.h"                                                     // we use pinModeFast() and digitalReadFast() and digitalWriteFast() in turn
+#  else
+#    if defined(ESP8266)
+#      include "ets_sys.h"
+#      include "osapi.h"
+#      include "gpio.h"
+#      include "os_type.h"
+#      include "c_types.h"
+#    elif defined(ESP32)
+#    elif defined(__STM32F1__)
+#    endif
+#    define uint_fast8_t uint8_t
+#    define uint_fast16_t uint16_t
+#  endif
+
+
+#elif defined(__18CXX)                                                                // Microchip PIC C18 compiler
 #  define PIC_C18
+
 #elif defined(__XC8)                                                                // PIC XC8 compiler
 #  include <xc.h>
 #  define PIC_C18
+
 #elif defined(__PCM__) || defined(__PCB__) || defined(__PCH__)                      // CCS PIC compiler
 #  define PIC_CCS
+
 #elif defined(STM32L1XX_MD) || defined(STM32L1XX_MDP) || defined(STM32L1XX_HD)      // ARM STM32
 #  include <stm32l1xx.h>
 #  define ARM_STM32
 #  define ARM_STM32L1XX
 #  define F_CPU (SysCtlClockGet())
+
 #elif defined(STM32F10X_LD) || defined(STM32F10X_LD_VL) \
    || defined(STM32F10X_MD) || defined(STM32F10X_MD_VL) \
    || defined(STM32F10X_HD) || defined(STM32F10X_HD_VL) \
@@ -37,10 +60,18 @@
 #  define ARM_STM32
 #  define ARM_STM32F10X
 #  define F_CPU (SysCtlClockGet())
+
+#elif defined(STM32F30X)                                                            // ARM STM32
+#  include <stm32f30x.h>
+#  define ARM_STM32
+#  define ARM_STM32F30X
+#  define F_CPU (SysCtlClockGet())
+
 #elif defined(STM32F4XX)                                                            // ARM STM32
 #  include <stm32f4xx.h>
 #  define ARM_STM32
 #  define ARM_STM32F4XX
+
 #elif defined(USE_HAL_DRIVER)                                                       // ARM STM32 with HAL Library
 #  include "gpio.h"
 #  if defined(_IRSND_H_)
@@ -48,36 +79,38 @@
 #  endif
 #  define ARM_STM32_HAL
 #  define F_CPU SystemCoreClock
+
 #elif defined(__SDCC_stm8)                                                          // STM8
 #  define SDCC_STM8
+
 #elif defined(TARGET_IS_BLIZZARD_RA2)                                               // TI Stellaris (tested on Stellaris Launchpad with Code Composer Studio)
 #  define STELLARIS_ARM_CORTEX_M4
 #  define F_CPU (SysCtlClockGet())
+
 #elif defined(__xtensa__)                                                           // ESP8266 (Arduino)
 #  include "Arduino.h"
-#if !defined(ESP32)                                                                 // includes not available for ESP32
 #  include "ets_sys.h"
 #  include "osapi.h"
 #  include "gpio.h"
 #  include "os_type.h"
 #  include "c_types.h"
-#endif
 #  define uint_fast8_t uint8_t
 #  define uint_fast16_t uint16_t
-#elif defined(ARDUINO)                                                              // AVR Arduino
-#  include "Arduino.h"
-#  include "digitalWriteFast.h"                                                     // we use pinModeFast() and digitalReadFast() and digitalWriteFast() in turn
-#  define ATMEL_AVR                                                                 // ATMEL AVR
+
 #elif defined(TEENSYDUINO) && (defined(__MK20DX256__) || defined(__MK20DX128__))    // Teensy 3.x (tested on Teensy 3.1 in Arduino 1.6.5 / Teensyduino 1.2.5)
 #  include <core_pins.h>
 #  define TEENSY_ARM_CORTEX_M4
+
 #elif defined(unix) || defined(WIN32) || defined(__APPLE__)                         // Unix/Linux or Windows or Apple
 #  define UNIX_OR_WINDOWS
+
 #elif defined(__MBED__)                                                             // mbed platform
 // #include "mbed.h"                                                                // if mbed.h is used, source must be compiled as cpp
 #include "gpio_api.h"
+
 #elif defined(IRMP_CHIBIOS_HAL)                                                     // ChibiOS HAL
 #  include "hal.h"
+
 #else
 #  define ATMEL_AVR                                                                 // ATMEL AVR
 #endif
@@ -160,18 +193,24 @@ typedef unsigned short                  uint16_t;
 #  define memcpy_P                      memcpy
 
 #elif defined(__xtensa__)
-#if !defined(ARDUINO)
-#  define PROGMEM
-#endif
-#  define memcpy_P                      memcpy
+#  if !defined(ARDUINO)
+#    define PROGMEM
+#  endif
+#  if !defined(memcpy_P)
+#    define memcpy_P                      memcpy
+#  endif
 
 #elif defined(__MBED__)
 #  define PROGMEM
 #  define memcpy_P                      memcpy
 
 #else
-#  define PROGMEM
-#  define memcpy_P                      memcpy
+#  if ! defined(PROGMEM)
+#    define PROGMEM
+#  endif
+#  if ! defined(memcpy_P)
+#    define memcpy_P                      memcpy
+#  endif
 
 #endif
 

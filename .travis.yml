@@ -10,15 +10,14 @@ git:
 env:
    global:
    - PRETTYNAME="IRMP Arduino Library"
+   - INSTALL_PLATFORMS="avr,esp8266,esp32,STM32"
 before_install:
-# Workaround for avoiding "fork/exec /bin/xtensa-lx106-elf-g++: no such file or directory"
-- echo "Removing ESP8266 cache"
-- rm -rf ~/.arduino15/packages/esp8266
-- source <(curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/install.sh)
+- source <(curl -SLs https://raw.githubusercontent.com/ArminJo/travis-ci-arduino/master/install.sh)
 #install:
 # For the example to run
 #- arduino --install-library "TimerOne"
 script:
+- build_platform BluePill
 - build_platform uno
 - build_platform esp8266
 - build_platform esp32

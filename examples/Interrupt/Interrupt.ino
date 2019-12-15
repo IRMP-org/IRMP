@@ -58,6 +58,8 @@
 #define IRMP_INPUT_PIN 14 // D5
 #elif defined(ESP32)
 #define IRMP_INPUT_PIN 15
+#elif defined(__STM32F1__)
+#define IRMP_INPUT_PIN 3 // PA3
 #else
 #define IRMP_INPUT_PIN 3
 // You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
@@ -132,6 +134,6 @@ void loop() {
 void handleReceivedIRData() {
     irmp_get_data(&irmp_data[0]);
     // enable interrupts
-    sei();
+    interrupts(); // sei()
     irmp_result_print(&Serial, &irmp_data[0]);
 }

@@ -74,6 +74,8 @@
 #define IRMP_INPUT_PIN 14 // D5
 #elif defined(ESP32)
 #define IRMP_INPUT_PIN 15
+#elif defined(__STM32F1__)
+#define IRMP_INPUT_PIN 3 // PA3
 #else
 #define IRMP_INPUT_PIN 3
 #endif
@@ -195,7 +197,7 @@ void irmp_result_print_LCD() {
 
     const uint8_t tStartRow = 2;
 
-    #  else
+#  else
     static uint16_t sLastCommand;
     static uint8_t sLastCommandPrintPosition;
 
