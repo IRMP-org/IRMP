@@ -1,5 +1,5 @@
 language: c
-sudo: false
+sudo: true
 cache:
    directories:
    - ~/arduino_ide
@@ -10,12 +10,12 @@ git:
 env:
    global:
    - PRETTYNAME="IRMP Arduino Library"
-   - INSTALL_PLATFORMS="avr,esp8266,esp32,STM32"
+   - INSTALL_PLATFORMS="avr,esp8266,esp32,stm32"
 before_install:
 - source <(curl -SLs https://raw.githubusercontent.com/ArminJo/travis-ci-arduino/master/install.sh)
-#install:
-# For the example to run
-#- arduino --install-library "TimerOne"
+#- pwd # = /home/travis/build/ArminJo/<repo_name>
+#- ls -laR
+install: null
 script:
 - build_platform BluePill
 - build_platform uno

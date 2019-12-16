@@ -98,10 +98,12 @@ If you want to distinguish between more than one remote you may also use `irmp_d
 # Revision History
 ### Version 1.2.0
 - Added STM32 M3 (BluePill) support.
+
 ### Version 1.1.0
 - Added functions `irmp_disable_timer_interrupt()` and `irmp_enable_timer_interrupt()`.
 - Added function `irmp_result_print(Stream * aSerial)`.
-- Improved examples
+- Improved examples.
+
 ### Version 1.0.1
 - Added ESP8266 + ESP32 support.
 
