@@ -3068,8 +3068,8 @@ uint_fast8_t irmp_ISR(void)
 #else
 	if (irmp_led_feedback) {
 		// hope this is fast enough on other platforms
-#if defined(ESP8266)
-		// The LED on my board is active LOW
+#if defined(BLINK_13_LED_IS_ACTIVE_LOW)
+		// If the built in LED on the board is active LOW
 		digitalWrite(LED_BUILTIN, irmp_input);
 #else
 // TEST: Toggle pin to get half the sample frequency at the LED output
@@ -5544,6 +5544,7 @@ void irmp_blink13(bool aEnableBlinkLed) {
 		pinMode(LED_BUILTIN, OUTPUT);
 	}
 }
+
 void irmp_debug_print() {
 	Serial.print(" Ir");
 	Serial.print(irmp_ir_detected);

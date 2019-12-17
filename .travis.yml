@@ -14,7 +14,6 @@ env:
 before_install:
 - source <(curl -SLs https://raw.githubusercontent.com/ArminJo/travis-ci-arduino/master/install.sh)
 #- pwd # = /home/travis/build/ArminJo/<repo_name>
-#- ls -laR
 install: null
 script:
 - build_platform BluePill

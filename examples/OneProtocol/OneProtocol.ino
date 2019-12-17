@@ -42,7 +42,7 @@
 #elif defined(ESP32)
 #define IRMP_INPUT_PIN 15
 #elif defined(__STM32F1__)
-#define IRMP_INPUT_PIN 3 // PA3
+#define IRMP_INPUT_PIN 4 // PA4
 #else
 #define IRMP_INPUT_PIN 3
 #endif
@@ -100,8 +100,12 @@ void setup() {
 // initialize the digital pin as an output.
     pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(115200);
-    while (!Serial)
-        ; //delay for Leonardo
+#if defined(__AVR_ATmega32U4__)
+    while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
+#endif
+#if defined(SERIAL_USB)
+    delay(2000); // To be able to connect Serial monitor after reset and before first printout
+#endif
     // Just to know which program is running on my Arduino
 #if defined(__ESP8266__)
     Serial.println();
