@@ -39,10 +39,16 @@
  */
 #if defined(ESP8266)
 #define IRMP_INPUT_PIN 14 // D5
+
 #elif defined(ESP32)
 #define IRMP_INPUT_PIN 15
-#elif defined(__STM32F1__)
+
+#elif defined(STM32F1xx) || defined(__STM32F1__)
+// BluePill in 2 flavors
+// STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+// __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
 #define IRMP_INPUT_PIN 4 // PA4
+
 #else
 #define IRMP_INPUT_PIN 3
 #endif
@@ -114,7 +120,11 @@ void setup() {
     irmp_init();
     irmp_blink13(true); // Enable LED feedback
 
+#if defined(STM32F1xx)
+    Serial.println(F("Ready to receive IR signals at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library
+#else
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
+#endif
 }
 
 void loop() {

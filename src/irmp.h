@@ -309,7 +309,7 @@ extern uint_fast8_t                     irmp_get_data (IRMP_DATA *);
 extern uint_fast8_t                     irmp_ISR (void);
 extern void                             irmp_blink13(bool aEnableBlinkLed);
 extern void                             irmp_debug_print(void);
-extern void                             irmp_result_print(Stream * aSerial);
+extern void                             irmp_result_print(Print * aSerial);
 extern void                             irmp_init_timer(void);
 extern void                             irmp_disable_timer_interrupt(void);
 extern void                             irmp_enable_timer_interrupt(void);

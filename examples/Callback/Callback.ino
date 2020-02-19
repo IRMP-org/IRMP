@@ -41,11 +41,17 @@
 #if defined(ESP8266)
 #define IRMP_INPUT_PIN 14 // D5
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
+
 #elif defined(ESP32)
 #define IRMP_INPUT_PIN 15
-#elif defined(__STM32F1__)
+
+#elif defined(STM32F1xx) || defined(__STM32F1__)
+// BluePill in 2 flavors
+// STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+// __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
 #define IRMP_INPUT_PIN 4 // PA4
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
+
 #else
 #define IRMP_INPUT_PIN 3
 // You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
@@ -116,7 +122,12 @@ void setup() {
     Serial.print(getApbFrequency());
     Serial.println("Hz");
 #endif
+
+#if defined(STM32F1xx)
+    Serial.println(F("Ready to receive IR signals at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library
+#else
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
+#endif
 
 }
 
@@ -133,8 +144,7 @@ void loop() {
  */
 void handleReceivedIRData() {
     irmp_get_data(&irmp_data[0]);
-    // enable interrupts
-    interrupts(); // sei()
+    interrupts(); // Enable interrupts
 
     /*
      * Filter for commands from the WM010 IR Remote

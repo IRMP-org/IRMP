@@ -2407,7 +2407,7 @@ void irmp_init(void) {
 #    endif
 #  else
 	IRMP_PORT &= ~(1 << IRMP_BIT);                                      // deactivate pullup
-	IRMP_DDR &= ~(1 << IRMP_BIT);// set pin to input
+	IRMP_DDR &= ~(1 << IRMP_BIT);                                      // set pin to input
 #  endif
 
 #  if !defined(IRMP_ENABLE_PIN_CHANGE_INTERRUPT) || (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 0)
@@ -5526,10 +5526,20 @@ uint_fast8_t irmp_ISR(void)
 #if defined(ARDUINO)
 #if defined(ESP32)
 static hw_timer_t * sESP32Timer = NULL;
-#elif defined(__STM32F1__)
+
+// BluePill in 2 flavors
+#elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 #include <HardwareTimer.h> // 4 timers and 4. timer is used for tone()
 /*
- * Use timer 3 for ServoEasingInterrupt functions.
+ * Use timer 3 as IRMP timer.
+ * Timer 3 blocks PA6, PA7, PB0, PB1, so if you need one them as Servo output, you must choose another timer.
+ */
+HardwareTimer sSTM32Timer(TIM3);
+
+#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
+#include <HardwareTimer.h> // 4 timers and 4. timer is used for tone()
+/*
+ * Use timer 3 as IRMP timer.
  * Timer 3 blocks PA6, PA7, PB0, PB1, so if you need one them as Servo output, you must choose another timer.
  */
 HardwareTimer sSTM32Timer(3);
@@ -5579,18 +5589,25 @@ void irmp_debug_print() {
 
 #if defined(__AVR__)
 #  if defined(__AVR_ATmega16__)
-ISR(TIMER2_COMP_vect) {
+ISR(TIMER2_COMP_vect)
 #  else
-	ISR(TIMER2_COMPA_vect) {
+	ISR(TIMER2_COMPA_vect)
 #  endif
+
 #elif defined(ESP8266)
 // needed because irmp_ISR is declared as uint8_t
-		void ICACHE_RAM_ATTR irmp_ESP_ISR(void) {
+	void ICACHE_RAM_ATTR irmp_ESP_ISR(void)
+
 #elif defined(ESP32)
-			void IRAM_ATTR irmp_ESP_ISR(void) {
+	void IRAM_ATTR irmp_ESP_ISR(void)
+
+#elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+void irmp_ESP_ISR(HardwareTimer * aDummy __attribute__((unused)))
+
 #else
-void irmp_ESP_ISR(void) {
+	void irmp_ESP_ISR(void)
 #endif // defined(__AVR__)
+{
 	irmp_ISR();
 }
 
@@ -5611,6 +5628,7 @@ void irmp_init_timer(void) {
 	TIMSK2 = _BV(OCIE2A);// enable interrupt
 #  endif
 	TCNT2 = 0;
+
 #elif defined(ESP8266)
 	timer1_isr_init();
 	timer1_attachInterrupt(irmp_ESP_ISR);
@@ -5621,18 +5639,27 @@ void irmp_init_timer(void) {
 	 */
 	timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP);
 	timer1_write((F_CPU / 16) / F_INTERRUPTS);
+
 #elif defined(ESP32)
 	// Use Timer1 with 1 microsecond resolution
 	sESP32Timer = timerBegin(1, 80, true);
 	timerAttachInterrupt(sESP32Timer, irmp_ESP_ISR, true);
 	timerAlarmWrite(sESP32Timer, (getApbFrequency() / 80) / F_INTERRUPTS, true);
 	timerAlarmEnable(sESP32Timer);
-#elif defined(__STM32F1__)
+
+// BluePill in 2 flavors
+#elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+	sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC); // used for generating only interrupts, no pin specified
+	sSTM32Timer.setOverflow(1000000 / F_INTERRUPTS, MICROSEC_FORMAT); // microsecond period
+	sSTM32Timer.attachInterrupt(irmp_ESP_ISR); // this sets update interrupt enable
+	sSTM32Timer.resume(); // Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
+
+#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
 	sSTM32Timer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
 	sSTM32Timer.setPeriod(1000000 / F_INTERRUPTS); // microsecond period
-	sSTM32Timer.setCompare(TIMER_CH1, sSTM32Timer.getOverflow() - 1); // trigger interrupt next period
+	sSTM32Timer.setCompare(TIMER_CH1, sSTM32Timer.getOverflow() - 1);// trigger interrupt next period
 	sSTM32Timer.attachInterrupt(TIMER_CH1, irmp_ESP_ISR);
-	sSTM32Timer.refresh(); // Set the timer's count to 0 and update the prescaler and overflow values.
+	sSTM32Timer.refresh();// Set the timer's count to 0 and update the prescaler and overflow values.
 #endif
 }
 
@@ -5644,11 +5671,18 @@ void irmp_disable_timer_interrupt(void) {
 #  else
 	TIMSK2 = 0; // disable interrupt
 #  endif
+
 #elif defined(ESP8266)
 	timer1_detachInterrupt(); // disables interrupt too
+
 #elif defined(ESP32)
 	timerAlarmDisable(sESP32Timer);
-#elif defined(__STM32F1__)
+
+#elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+	sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_DISABLED);
+	sSTM32Timer.detachInterrupt();
+
+#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
 	sSTM32Timer.setMode(TIMER_CH1, TIMER_DISABLED);
 	sSTM32Timer.detachInterrupt(TIMER_CH1);
 #endif
@@ -5662,11 +5696,19 @@ void irmp_enable_timer_interrupt(void) {
 #  else
 	TIMSK2 = _BV(OCIE2A); // enable interrupt
 #  endif
+
 #elif defined(ESP8266)
 	timer1_attachInterrupt(irmp_ESP_ISR); // enables interrupt too
+
 #elif defined(ESP32)
 	timerAlarmEnable(sESP32Timer);
-#elif defined(__STM32F1__)
+
+#elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+	sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC); // used for generating only interrupts, no pin specified
+	sSTM32Timer.attachInterrupt(irmp_ESP_ISR);
+	sSTM32Timer.refresh(); // Set the timer's count to 0 and update the prescaler and overflow values.
+
+#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
 	sSTM32Timer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
 	sSTM32Timer.attachInterrupt(TIMER_CH1, irmp_ESP_ISR);
 	sSTM32Timer.refresh(); // Set the timer's count to 0 and update the prescaler and overflow values.
@@ -5677,7 +5719,7 @@ void irmp_enable_timer_interrupt(void) {
  * Print protocol name or number, address, code and repetition flag
  * needs appr. 2 milliseconds for output
  */
-void irmp_result_print(Stream * aSerial, IRMP_DATA * aIRMPDataPtr) {
+void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr) {
 	/*
 	 * Print protocol name or number
 	 */
