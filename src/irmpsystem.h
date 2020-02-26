@@ -21,6 +21,7 @@
 #  include "Arduino.h"
 #  if defined(AVR)
 #    include "digitalWriteFast.h"                                                     // we use pinModeFast() and digitalReadFast() and digitalWriteFast() in turn
+#    define memcpy_P                      memcpy_P                                    // Yes we have a memcpy_P function!!!
 #  else
 #    if defined(ESP8266)
 #      include "ets_sys.h"
