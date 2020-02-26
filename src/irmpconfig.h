@@ -57,8 +57,8 @@
  * Should be first, since it covers multiple platforms
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#if defined(ARDUINO)                                                   	// Arduino IDE for different platforms
-#  if !defined (IRMP_INPUT_PIN)											// Arduino IDE uses IRMP_INPUT_PIN
+#if defined(ARDUINO)                                                    // Arduino IDE for different platforms
+#  if !defined (IRMP_INPUT_PIN)                                         // Arduino IDE uses IRMP_INPUT_PIN
 #    define IRMP_INPUT_PIN 3
 #  endif
 
@@ -216,7 +216,8 @@
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * Enable PinChangeInterrupt add on for irmp_ISR(). Tested for NEC, Kaseiko, Denon, RC6 and Arduino ATMega
+ * Enable PinChangeInterrupt add on for irmp_ISR(). Tested for NEC, Kaseiko, Denon, RC6 protocols and Arduino Uno and Arduino ATMega.
+ * Receives IR protocol data  by using pin change interrupts and no polling by timer.
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #ifndef IRMP_ENABLE_PIN_CHANGE_INTERRUPT

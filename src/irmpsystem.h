@@ -23,6 +23,8 @@
 #    include "digitalWriteFast.h"                                                     // we use pinModeFast() and digitalReadFast() and digitalWriteFast() in turn
 #    define memcpy_P                      memcpy_P                                    // Yes we have a memcpy_P function!!!
 #  else
+#    define uint_fast8_t uint8_t
+#    define uint_fast16_t uint16_t
 #    if defined(ESP8266)
 #      include "ets_sys.h"
 #      include "osapi.h"
@@ -30,12 +32,10 @@
 #      include "os_type.h"
 #      include "c_types.h"
 #    elif defined(ESP32)
-#    elif defined(__STM32F1__)
+#    elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#    elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
 #    endif
-#    define uint_fast8_t uint8_t
-#    define uint_fast16_t uint16_t
 #  endif
-
 
 #elif defined(__18CXX)                                                                // Microchip PIC C18 compiler
 #  define PIC_C18
@@ -130,7 +130,6 @@ typedef unsigned char                   uint8_t;
 typedef unsigned short                  uint16_t;
 #  endif
 #endif
-
 
 #if defined(ATMEL_AVR)
 #  include <stdint.h>
@@ -255,13 +254,14 @@ typedef struct
 #define IRMP_PACKED_STRUCT              __attribute__ ((__packed__))
 #endif
 
-typedef struct IRMP_PACKED_STRUCT
-{
-    uint8_t                             protocol;                                   // protocol, e.g. NEC_PROTOCOL
-    uint16_t                            address;                                    // address
-    uint16_t                            command;                                    // command
-    uint8_t                             flags;                                      // flags, e.g. repetition
-} IRMP_DATA;
+typedef struct
+    IRMP_PACKED_STRUCT
+    {
+        uint8_t protocol;                                   // protocol, e.g. NEC_PROTOCOL
+        uint16_t address;                                   // address
+        uint16_t command;                                   // command
+        uint8_t flags;                                      // flags, e.g. repetition
+    } IRMP_DATA;
 
 #endif // IRMP_32_BIT == 1
 

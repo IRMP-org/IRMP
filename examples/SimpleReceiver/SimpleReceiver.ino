@@ -24,7 +24,7 @@
  *  If you get warnings of redefining symbols, just ignore them or undefine them first (see Interrupt example).
  *  The exact names can be found in the library file irmpSelectAllProtocols.h (see Callback example).
  *
- *  Copyright (C) 2019  Armin Joachimsmeyer
+ *  Copyright (C) 2019-2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
@@ -46,7 +46,7 @@
 
 #include <Arduino.h>
 
-#define VERSION_EXAMPLE "1.1"
+#define VERSION_EXAMPLE "1.2"
 
 /*
  * Set library modifiers first to set input pin etc.
@@ -69,6 +69,13 @@
 #define IRMP_INPUT_PIN 4 // PA4
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
 
+#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#include "ATtinySerialOut.h"
+#include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
+#  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+#define IRMP_INPUT_PIN 0
+#  endif
+
 #else
 #define IRMP_INPUT_PIN 3
 #endif
@@ -88,8 +95,6 @@ IRMP_DATA irmp_data[1];
 #define STR(x) STR_HELPER(x)
 
 void setup() {
-// initialize the digital pin as an output.
-	pinMode(LED_BUILTIN, OUTPUT);
 	Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__)
     while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
@@ -100,13 +105,20 @@ void setup() {
 #if defined(__ESP8266__)
 	Serial.println(); // to separate it from the internal boot output
 #endif
+#if defined(ARDUINO_AVR_DIGISPARK) || defined(ARDUINO_AVR_DIGISPARKPRO)
+    changeDigisparkClock();
+#endif
 	// Just to know which program is running on my Arduino
 	Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
 	irmp_init();
 	irmp_blink13(true); // Enable LED feedback
 
-	Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
-}
+#if defined(STM32F1xx)
+    Serial.println(F("Ready to receive IR signals at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library
+#else
+    Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
+#endif
+    }
 
 void loop() {
 	/*
@@ -122,15 +134,18 @@ void loop() {
 			 */
 			switch (irmp_data[0].command) {
 			case 0x48:
+				irmp_blink13(false);
 				digitalWrite(LED_BUILTIN, HIGH);
 				break;
 			case 0x0B:
+				irmp_blink13(false);
 				digitalWrite(LED_BUILTIN, LOW);
 				break;
 			default:
+				irmp_blink13(true);
 				break;
 			}
 		}
-		irmp_result_print(&Serial, &irmp_data[0]);
+        irmp_result_print(&irmp_data[0]);
 	}
 }

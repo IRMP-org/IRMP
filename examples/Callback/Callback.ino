@@ -11,7 +11,7 @@
  *  If you did not yet store the example as your own sketch, then with Ctrl+K you are instantly in the right library folder.
  *  *****************************************************************************************************************************
  *
- *  Copyright (C) 2019  Armin Joachimsmeyer
+ *  Copyright (C) 2019-2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
@@ -33,7 +33,7 @@
 
 #include <Arduino.h>
 
-#define VERSION_EXAMPLE "1.1"
+#define VERSION_EXAMPLE "1.2"
 
 /*
  * Set library modifiers first to set input pin etc.
@@ -51,6 +51,13 @@
 // __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
 #define IRMP_INPUT_PIN 4 // PA4
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
+
+#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#include "ATtinySerialOut.h"
+#include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
+#  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+#define IRMP_INPUT_PIN 0
+#  endif
 
 #else
 #define IRMP_INPUT_PIN 3
@@ -98,8 +105,6 @@ IRMP_DATA irmp_data[1];
 void handleReceivedIRData();
 
 void setup() {
-// initialize the digital pin as an output.
-    pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__)
     while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
@@ -170,5 +175,5 @@ void handleReceivedIRData() {
         }
     }
 
-    irmp_result_print(&Serial, &irmp_data[0]);
+    irmp_result_print(&irmp_data[0]);
 }

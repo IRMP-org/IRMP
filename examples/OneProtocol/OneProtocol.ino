@@ -10,7 +10,7 @@
  *  If you did not yet store the example as your own sketch, then with Ctrl+K you are instantly in the right library folder.
  *  *****************************************************************************************************************************
  *
- *  Copyright (C) 2019  Armin Joachimsmeyer
+ *  Copyright (C) 2019-2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
@@ -32,7 +32,7 @@
 
 #include <Arduino.h>
 
-#define VERSION_EXAMPLE "1.1"
+#define VERSION_EXAMPLE "1.2"
 
 /*
  * Set library modifiers first to set input pin etc.
@@ -49,11 +49,18 @@
 // __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
 #define IRMP_INPUT_PIN 4 // PA4
 
+#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#include "ATtinySerialOut.h"
+#include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
+#  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+#define IRMP_INPUT_PIN 0
+#  endif
+
 #else
 #define IRMP_INPUT_PIN 3
 #endif
 
-#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
+//#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
 
 //#define IRMP_SUPPORT_SIRCS_PROTOCOL      1
 #define IRMP_SUPPORT_NEC_PROTOCOL        1
@@ -102,7 +109,8 @@ IRMP_DATA irmp_data[1];
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
-void setup() {
+void setup()
+{
 // initialize the digital pin as an output.
     pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(115200);
@@ -117,8 +125,9 @@ void setup() {
     Serial.println();
 #endif
     Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
+
     irmp_init();
-    irmp_blink13(true); // Enable LED feedback
+    irmp_blink13(true); // Enable LED feedback - commented out, since we use built in LED in loop below
 
 #if defined(STM32F1xx)
     Serial.println(F("Ready to receive IR signals at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library
@@ -127,15 +136,18 @@ void setup() {
 #endif
 }
 
-void loop() {
+void loop()
+{
     /*
      * Check if new data available and get them
      */
-    if (irmp_get_data(&irmp_data[0])) {
+    if (irmp_get_data(&irmp_data[0]))
+    {
         /*
          * Here data is available -> evaluate IR command
          */
-        switch (irmp_data[0].command) {
+        switch (irmp_data[0].command)
+        {
         case 0x48:
             digitalWrite(LED_BUILTIN, HIGH);
             break;
@@ -146,6 +158,6 @@ void loop() {
             break;
         }
 
-        irmp_result_print(&Serial, &irmp_data[0]);
+        irmp_result_print(&irmp_data[0]);
     }
 }

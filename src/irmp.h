@@ -3,6 +3,8 @@
  *
  * Copyright (c) 2009-2019 Frank Meyer - frank(at)fli4l.de
  *
+ * This file is part of IRMP https://github.com/ukw100/IRMP.
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -54,7 +56,6 @@
 #  define IRMP_PIN                              CONCAT(PIN, IRMP_PORT_LETTER)
 #  define IRMP_BIT                              IRMP_BIT_NUMBER
 #  define input(x)                              ((x) & (1 << IRMP_BIT))
-#  define IRMP_BIT                              IRMP_BIT_NUMBER
 
 #elif defined (PIC_C18) || defined (PIC_CCS)
 #  define input(x)                              (x)
@@ -299,6 +300,9 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 
 #define IRMP_FLAG_REPETITION            0x01
 
+void                             irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr);
+void                             irmp_result_print(IRMP_DATA * aIRMPDataPtr);
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -308,12 +312,16 @@ extern void                             irmp_init (void);
 extern uint_fast8_t                     irmp_get_data (IRMP_DATA *);
 extern uint_fast8_t                     irmp_ISR (void);
 extern void                             irmp_blink13(bool aEnableBlinkLed);
-extern void                             irmp_debug_print(void);
-extern void                             irmp_result_print(Print * aSerial);
+#if defined(__AVR__)
+extern void irmp_debug_print(const __FlashStringHelper * aMessage, bool aDoShortOutput);
+#else
+extern void irmp_debug_print(const char * aMessage, bool aDoShortOutput);
+#endif
 extern void                             irmp_init_timer(void);
 extern void                             irmp_disable_timer_interrupt(void);
 extern void                             irmp_enable_timer_interrupt(void);
 extern void                             irmp_PCI_ISR(void);
+extern void                             initPCIInterrupt(void);
 
 #if IRMP_PROTOCOL_NAMES == 1
 extern const char * const               irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM;

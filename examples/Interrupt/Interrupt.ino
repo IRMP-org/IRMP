@@ -1,7 +1,7 @@
 /*
  *  Interrupt.cpp
  *
- *  Receives IR protocol data  by useing pin change interrupts and no polling by timer.
+ *  Receives IR protocol data  by using pin change interrupts and no polling by timer.
  *  This might be not working for all protocols.
  *  Tested for NEC, Kaseiko, Denon, RC6.
  *
@@ -27,7 +27,7 @@
  *  The exact names can be found in the library file irmpSelectAllProtocols.h (see Callback example).
 
  *
- *  Copyright (C) 2019  Armin Joachimsmeyer
+ *  Copyright (C) 2019-2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
@@ -49,7 +49,7 @@
 
 #include <Arduino.h>
 
-#define VERSION_EXAMPLE "1.1"
+#define VERSION_EXAMPLE "1.2"
 
 /*
  * Set library modifiers first to set input pin etc.
@@ -67,6 +67,13 @@
 
 #define IRMP_INPUT_PIN 4 // PA4
 
+#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#include "ATtinySerialOut.h"
+#include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
+#  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+#define IRMP_INPUT_PIN 0
+#  endif
+
 #else
 #define IRMP_INPUT_PIN 3
 // You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
@@ -78,9 +85,7 @@
 #define IRMP_USE_COMPLETE_CALLBACK       1 // Enable callback functionality
 #define IRMP_ENABLE_PIN_CHANGE_INTERRUPT 1 // Enable interrupt functionality
 
-#if defined(__AVR__)
-void initPCIInterrupt();
-#else
+#if ! defined(__AVR__)
 #define IRMP_USE_ARDUINO_ATTACH_INTERRUPT
 #endif
 
@@ -107,8 +112,6 @@ void handleReceivedIRData();
 
 
 void setup() {
-// initialize the digital pin as an output.
-    pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__)
     while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
@@ -118,14 +121,10 @@ void setup() {
 #endif
     // Just to know which program is running on my Arduino
     Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
-    //Enable auto resume and pass it the address of your extra buffer
+
     irmp_init();
     irmp_blink13(true); // Enable LED feedback
-#ifdef IRMP_USE_ARDUINO_ATTACH_INTERRUPT
-    attachInterrupt(digitalPinToInterrupt(IRMP_INPUT_PIN), irmp_PCI_ISR, CHANGE);
-#else
     initPCIInterrupt();
-#endif
     irmp_register_complete_callback_function(&handleReceivedIRData);
 
 #if defined(STM32F1xx)
@@ -149,5 +148,5 @@ void loop() {
 void handleReceivedIRData() {
     irmp_get_data(&irmp_data[0]);
     interrupts(); // enable interrupts
-    irmp_result_print(&Serial, &irmp_data[0]);
+    irmp_result_print(&irmp_data[0]);
 }
