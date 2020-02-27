@@ -54,6 +54,12 @@
 #include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
 #  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 #define IRMP_INPUT_PIN 0
+#  else
+#    if defined(ARDUINO_AVR_DIGISPARKPRO)
+#define IRMP_INPUT_PIN 9  // PA3 - on DigisparkBoard labeled as pin 9
+#    else
+#define IRMP_INPUT_PIN 3
+#    endif
 #  endif
 
 #else

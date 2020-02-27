@@ -74,6 +74,12 @@
 #include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
 #  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 #define IRMP_INPUT_PIN 0
+#  else
+#    if defined(ARDUINO_AVR_DIGISPARKPRO)
+#define IRMP_INPUT_PIN 9  // PA3 - on DigisparkBoard labeled as pin 9
+#    else
+#define IRMP_INPUT_PIN 3
+#    endif
 #  endif
 
 #else
@@ -112,6 +118,10 @@ void setup() {
 	Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
 	irmp_init();
 	irmp_blink13(true); // Enable LED feedback
+
+	digitalWriteFast(LED_BUILTIN, HIGH);
+	delay(2000);
+	digitalWriteFast(LED_BUILTIN, LOW);
 
 #if defined(STM32F1xx)
     Serial.println(F("Ready to receive IR signals at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library

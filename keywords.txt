@@ -16,9 +16,14 @@ IRMP_DATA	KEYWORD1
 irmp_init	KEYWORD2
 irmp_get_data	KEYWORD2
 irmp_ISR	KEYWORD2
+irmp_PCI_ISR	KEYWORD2
 irmp_register_complete_callback_function	KEYWORD2
 irmp_blink13	KEYWORD2
-irmp_init_timer2	KEYWORD2
+irmp_init_timer	KEYWORD2
+irmp_disable_timer_interrupt	KEYWORD2
+irmp_enable_timer_interrupt	KEYWORD2
+irmp_result_print	KEYWORD2
+initPCIInterrupt	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

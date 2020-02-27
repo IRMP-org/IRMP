@@ -6407,7 +6407,46 @@ void initPCIInterrupt() {
     GIFR |= 1 << PCIF;
     // enable interrupt on next change
     GIMSK |= 1 << PCIE;
-#    else
+
+#    elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#      if defined(ARDUINO_AVR_DIGISPARKPRO)
+#        if (IRMP_INPUT_PIN == 3)
+    // interrupt on any logical change
+    EICRA |= (1 << ISC00);
+    // clear interrupt bit
+    EIFR |= 1 << INTF0;
+    // enable interrupt on next change
+    EIMSK |= 1 << INT0;
+#        elif (IRMP_INPUT_PIN == 9)
+    EICRA |= (1 << ISC10);
+    // clear interrupt bit
+    EIFR |= 1 << INTF1;
+    // enable interrupt on next change
+    EIMSK |= 1 << INT1;
+#        else
+#          error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1) IRMP_INPUT_PIN must be 9 or 3."
+#        endif // if (IRMP_INPUT_PIN == 9)
+
+#      else // defined(ARDUINO_AVR_DIGISPARKPRO)
+#        if (IRMP_INPUT_PIN == 14)
+    // interrupt on any logical change
+    EICRA |= (1 << ISC00);
+    // clear interrupt bit
+    EIFR |= 1 << INTF0;
+    // enable interrupt on next change
+    EIMSK |= 1 << INT0;
+#        elif (IRMP_INPUT_PIN == 3)
+    EICRA |= (1 << ISC10);
+    // clear interrupt bit
+    EIFR |= 1 << INTF1;
+    // enable interrupt on next change
+    EIMSK |= 1 << INT1;
+#        else
+#          error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1) IRMP_INPUT_PIN must be 14 or 3."
+#        endif // if (IRMP_INPUT_PIN == 14)
+#      endif
+
+#    else // defined(__AVR_ATtiny25__)
 #      if (IRMP_INPUT_PIN == 2)
     // interrupt on any logical change
     EICRA |= (1 << ISC00);
@@ -6428,24 +6467,40 @@ void initPCIInterrupt() {
 #  endif
 }
 
-#  if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-ISR(PCINT0_vect) {
-    irmp_PCI_ISR();
-}
-#  else
 /*
- * The ISR for INT0 and INT1
+ * Specify the right INT0, INT1 or PCINT0 interrupt vector according to different pins and cores
  */
-#    if (IRMP_INPUT_PIN == 2)
-ISR(INT0_vect) {
-    irmp_PCI_ISR();
-}
-#    elif (IRMP_INPUT_PIN == 3)
-ISR(INT1_vect) {
-    irmp_PCI_ISR();
-}
+#  if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+ISR(PCINT0_vect)
+#  else
+#    if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#      if defined(ARDUINO_AVR_DIGISPARKPRO)
+#        if (IRMP_INPUT_PIN == 3) //  PB6 / INT0 is connected to USB+ on DigisparkPro boards
+ISR(INT0_vect)
+#        endif
+#       if (IRMP_INPUT_PIN == 9)
+ISR(INT1_vect)
+#       endif
+
+#      else // defined(ARDUINO_AVR_DIGISPARKPRO)
+#        if (IRMP_INPUT_PIN == 14) // For AVR_ATtiny167 INT0 is on pin 14 / PB6
+ISR(INT0_vect)
+#        endif
+#      endif
+
+#    else // AVR_ATtiny167
+#      if (IRMP_INPUT_PIN == 2)
+ISR(INT0_vect)
+#      endif
+#    endif // AVR_ATtiny167
+
+#    if (IRMP_INPUT_PIN == 3) && !defined(ARDUINO_AVR_DIGISPARKPRO)
+ISR(INT1_vect)
 #    endif
 #  endif // defined(__AVR_ATtiny25__)
+{
+    irmp_PCI_ISR();
+}
 #endif // (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
 
 #ifdef ANALYZE

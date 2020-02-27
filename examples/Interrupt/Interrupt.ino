@@ -3,7 +3,7 @@
  *
  *  Receives IR protocol data  by using pin change interrupts and no polling by timer.
  *  This might be not working for all protocols.
- *  Tested for NEC, Kaseiko, Denon, RC6.
+ *  Tested for NEC, Kaseiko, Denon, RC6, Samsung + Samsg32.
  *
  *  *****************************************************************************************************************************
  *  To access the library files from your sketch, you have to first use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE.
@@ -72,6 +72,15 @@
 #include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
 #  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 #define IRMP_INPUT_PIN 0
+#  else
+// for ATtiny167 Pins PB6 and PA3 are usable as interrupt source.
+#    if defined(ARDUINO_AVR_DIGISPARKPRO)
+//#define IRMP_INPUT_PIN 3 // PB6 / INT0 is connected to USB+ on DigisparkPro boards
+#define IRMP_INPUT_PIN 9  // PA3 - on DigisparkBoard labeled as pin 9
+#    else
+//#define IRMP_INPUT_PIN 14 // PB6 / INT0 is connected to USB+ on DigisparkPro boards
+#define IRMP_INPUT_PIN 3
+#    endif
 #  endif
 
 #else
