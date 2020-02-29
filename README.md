@@ -1,6 +1,6 @@
 
 # IRMP - Infrared Multi Protocol Decoder
-### Version 1.2.1
+### Version 1.2.2
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Build Status](https://github.com/ukw100/irmp/workflows/build/badge.svg)](https://github.com/ukw100/irmp/actions)
 [![Hit Counter](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2Fukw100%2FIRMP)](https://github.com/brentvollebregt/hit-counter)
@@ -105,6 +105,9 @@ If you want to distinguish between more than one remote in one sketch, you may a
 
 
 # Revision History
+### Version 1.2.2
+- Fixed bugs introduced in 1.2.1
+ 
 ### Version 1.2.1
 - Bug for AVR architecture fixed.
 - ATtiny85 + ATtiny167 support for ATTinyCore and Digistump core.
