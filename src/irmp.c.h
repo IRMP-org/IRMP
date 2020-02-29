@@ -6313,12 +6313,12 @@ void irmp_PCI_ISR(void) {
     uint32_t tMicros = micros();
     uint32_t tTicks = tMicros - irmp_last_change_micros;// values up to 10000
     irmp_last_change_micros = tMicros;
-#if (F_INTERRUPTS == 15625)
+#  if (F_INTERRUPTS == 15625)
     // F_INTERRUPTS value of 31250 does not work (maybe 8 bit overflow?)
     tTicks = (tTicks << 2) >> 8;// saves 1.3 us
-#else
+#  else
 #error "F_INTERRUPTS must be 15625 (to avoid a time consuming division)"
-#endif
+#  endif
 
     if (tTicks != 0) {
         tTicks -= 1;
@@ -6348,17 +6348,17 @@ void irmp_PCI_ISR(void) {
          * IRMP may be waiting for stop bit, but detects it only at the next call, so do one additional call.
          * !!! ATTENTION !!! This will NOT work if we try to receive simultaneously two protocols which are only different in length like NEC16 and NEC42
          */
-#ifdef PCI_DEBUG
+#  ifdef PCI_DEBUG
         Serial.write('x');
         if(irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
             Serial.print(irmp_start_bit_detected);
         }
-#endif
+#  endif
         if (irmp_start_bit_detected && irmp_bit == irmp_param.complete_len && irmp_param.stop_bit == 1) {
             // call another time to detect a nec repeat
-#ifdef PCI_DEBUG
+#  ifdef PCI_DEBUG
             Serial.println('R');
-#endif
+#  endif
             if(irmp_pulse_time > 0) {
                 irmp_pulse_time--;
             }
@@ -6366,23 +6366,23 @@ void irmp_PCI_ISR(void) {
         }
 
         if (irmp_start_bit_detected && irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
-#ifdef PCI_DEBUG
+#  ifdef PCI_DEBUG
             irmp_debug_print(F("S"));
-#endif
+#  endif
             irmp_ISR();
-#ifdef PCI_DEBUG
+#  ifdef PCI_DEBUG
             irmp_debug_print(F("E"));
             Serial.println();
-#endif
+#  endif
         }
 
-#if (IRMP_SUPPORT_MANCHESTER == 1)
+#  if (IRMP_SUPPORT_MANCHESTER == 1)
         /*
          * Simulate end for Manchester/biphase protocols - 130 bytes
          */
-#ifdef PCI_DEBUG
+#    ifdef PCI_DEBUG
         Serial.println('M');
-#endif
+#    endif
         if (((irmp_bit == irmp_param.complete_len - 1 && tTicks < irmp_param.pause_1_len_max)
                         || (irmp_bit == irmp_param.complete_len - 2 && tTicks > irmp_param.pause_1_len_max))
                 && (irmp_param.flags & IRMP_PARAM_FLAG_IS_MANCHESTER) && irmp_start_bit_detected) {
@@ -6391,10 +6391,9 @@ void irmp_PCI_ISR(void) {
             irmp_ISR();// process dummy stop bit
             irmp_ISR();// reset stop bit and call callback
         }
-#endif
+#  endif
     }
 }
-
 
 void initPCIInterrupt() {
 #  ifdef IRMP_USE_ARDUINO_ATTACH_INTERRUPT
@@ -6464,43 +6463,45 @@ void initPCIInterrupt() {
 #        error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1) IRMP_INPUT_PIN must be 2 or 3."
 #      endif // if (IRMP_INPUT_PIN == 2)
 #    endif // defined(__AVR_ATtiny25__)
-#  endif
+#  endif //IRMP_USE_ARDUINO_ATTACH_INTERRUPT
 }
 
 /*
  * Specify the right INT0, INT1 or PCINT0 interrupt vector according to different pins and cores
  */
-#  if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+#  if defined(__AVR__)
+#   if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 ISR(PCINT0_vect)
-#  else
-#    if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#      if defined(ARDUINO_AVR_DIGISPARKPRO)
-#        if (IRMP_INPUT_PIN == 3) //  PB6 / INT0 is connected to USB+ on DigisparkPro boards
+#    else
+#      if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#        if defined(ARDUINO_AVR_DIGISPARKPRO)
+#          if (IRMP_INPUT_PIN == 3) //  PB6 / INT0 is connected to USB+ on DigisparkPro boards
 ISR(INT0_vect)
-#        endif
-#       if (IRMP_INPUT_PIN == 9)
+#          endif
+#         if (IRMP_INPUT_PIN == 9)
 ISR(INT1_vect)
-#       endif
+#         endif
 
-#      else // defined(ARDUINO_AVR_DIGISPARKPRO)
-#        if (IRMP_INPUT_PIN == 14) // For AVR_ATtiny167 INT0 is on pin 14 / PB6
+#        else // defined(ARDUINO_AVR_DIGISPARKPRO)
+#          if (IRMP_INPUT_PIN == 14) // For AVR_ATtiny167 INT0 is on pin 14 / PB6
 ISR(INT0_vect)
+#          endif
 #        endif
-#      endif
 
-#    else // AVR_ATtiny167
+#      else // AVR_ATtiny167
 #      if (IRMP_INPUT_PIN == 2)
 ISR(INT0_vect)
-#      endif
-#    endif // AVR_ATtiny167
+#        endif
+#      endif // AVR_ATtiny167
 
-#    if (IRMP_INPUT_PIN == 3) && !defined(ARDUINO_AVR_DIGISPARKPRO)
+#      if (IRMP_INPUT_PIN == 3) && !defined(ARDUINO_AVR_DIGISPARKPRO)
 ISR(INT1_vect)
-#    endif
-#  endif // defined(__AVR_ATtiny25__)
+#      endif
+#    endif // defined(__AVR_ATtiny25__)
 {
     irmp_PCI_ISR();
 }
+#  endif
 #endif // (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
 
 #ifdef ANALYZE

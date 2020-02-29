@@ -320,6 +320,7 @@ extern void irmp_debug_print(const char * aMessage, bool aDoShortOutput);
 extern void                             irmp_init_timer(void);
 extern void                             irmp_disable_timer_interrupt(void);
 extern void                             irmp_enable_timer_interrupt(void);
+extern void                             irmp_timer_ISR(void);
 extern void                             irmp_PCI_ISR(void);
 extern void                             initPCIInterrupt(void);
 

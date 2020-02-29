@@ -119,10 +119,6 @@ void setup() {
 	irmp_init();
 	irmp_blink13(true); // Enable LED feedback
 
-	digitalWriteFast(LED_BUILTIN, HIGH);
-	delay(2000);
-	digitalWriteFast(LED_BUILTIN, LOW);
-
 #if defined(STM32F1xx)
     Serial.println(F("Ready to receive IR signals at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library
 #else
