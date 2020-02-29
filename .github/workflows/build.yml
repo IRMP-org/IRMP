@@ -12,6 +12,11 @@ jobs:
     runs-on: ubuntu-latest # I picked Ubuntu to use shell scripts.
     
     env: 
+      # Space separated list with or without double quotes around the list. 
+      # If you need a libraries with a space in its name like Adafruit NeoPixel or Adafruit INA219
+      # I am sorry, but you must add them with double quotes in step "Install libraries" after $REQUIRED_LIBRARIES.
+      # e.g. then arduino-cli lib install $REQUIRED_LIBRARIES "Adafruit NeoPixel" "Adafruit INA219"; fi
+      # In this case the required libraries string must contain at least one character, you can use " ".
       REQUIRED_LIBRARIES: ""
       
       # Output colors
@@ -41,7 +46,7 @@ jobs:
           - esp32:esp32:featheresp32:FlashFreq=80
           - STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
 
-        # Choose the right platform for the boards we want to test. (maybe in the future Arduino will automatically do this for you)
+        # Choose the right platform for the boards we want to test. (maybe in the future Arduino will automatically do this for you).
         # This works like this: when the fqbn is "arduino:avr:uno" the variable `platform` is set to "arduino:avr". 
         # Just take the first 2 token of the fqbn - this cannot be automatically done by GitHub workflow :-(
         #############################################################################################################
@@ -54,7 +59,7 @@ jobs:
 
           - arduino-boards-fqbn: digistump:avr:digispark-tiny16
             platform: digistump:avr
-            examples-exclude: "AllProtocols" # Does not fit in FLASH
+            examples-exclude: "AllProtocols" # Does not fit in FLASH # Space separated list of examples to exclude in build
             
           - arduino-boards-fqbn: digistump:avr:digispark-pro
             platform: digistump:avr
@@ -101,6 +106,7 @@ jobs:
         run: |
           arduino-cli core update-index
           if [ ""${{  matrix.platform }}"" == "" ]; then echo -e ""$RED"ERROR: platform missing for board ${{ matrix.arduino-boards-fqbn }}. Check your matrix.includes entries"; exit 1; fi
+          if [[ ${{  matrix.platform }} != *"arduino"* && ! -f ./arduino-cli.yaml ]]; then echo -e ""$RED"Non Arduino platform ${{  matrix.platform }} requested, but file arduino-cli.yaml is missing."; exit 1; fi
           arduino-cli core install ${{ matrix.platform }} # for each job / board one platform is installed
           if [ ${{  matrix.platform }} == "esp32:esp32" ]; then pip install pyserial; fi
           
@@ -129,20 +135,6 @@ jobs:
                 fi 
               fi
             done
-          
-          else
-            echo -e "Compiling SELECTED examples for board ${{ matrix.arduino-boards-fqbn }} \n"
-            for example in "${{ matrix.examples-include }}"; do
-              echo -n "Compiling $example "
-              build_stdout=$(arduino-cli compile --verbose --warnings all --fqbn ${{ matrix.arduino-boards-fqbn }} ./examples/$example 2>&1)
-              if [ $? -ne 0 ]; then 
-                echo -e ""$RED"\xe2\x9c\x96" # If ok output a green checkmark else a red X and the command output.
-                exit_code=1
-                  echo -e "$(build_stdout)\n"
-              else 
-                echo -e ""$GREEN"\xe2\x9c\x93"
-              fi
-          done
           fi
           exit $exit_code
         shell: bash {0} # Needed to avoid an exit at first error

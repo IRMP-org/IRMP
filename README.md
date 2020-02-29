@@ -1,6 +1,6 @@
 
 # IRMP - Infrared Multi Protocol Decoder
-### Version 1.2.1
+### Version 1.2.2
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Build Status](https://github.com/ukw100/irmp/workflows/build/badge.svg)](https://github.com/ukw100/irmp/actions)
 [![Hit Counter](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2Fukw100%2FIRMP)](https://github.com/brentvollebregt/hit-counter)
@@ -105,6 +105,9 @@ If you want to distinguish between more than one remote in one sketch, you may a
 
 
 # Revision History
+### Version 1.2.2
+- Fixed bugs introduced in 1.2.1
+ 
 ### Version 1.2.1
 - Bug for AVR architecture fixed.
 - ATtiny85 + ATtiny167 support for ATTinyCore and Digistump core.
@@ -121,12 +124,14 @@ If you want to distinguish between more than one remote in one sketch, you may a
 ### Version 1.0.1
 - Added ESP8266 + ESP32 support.
 
-# Travis CI
-The IRMP library examples are built on Travis CI for the following boards:
+# CI
+Since Travis CI is unreliable and slow (5 times slower), the library examples are now tested with GitHub Actions for the following boards:
 
-- Arduino Uno
-- ESP8266 boards (tested with LOLIN D1 R2 board)
-- ESP32   boards (tested with ESP32 DEVKITV1 board)
-- BluePill (STM32F103C)
-- Digispark (ATtiny85)
-- Digispark Pro (ATtiny167)
+- arduino:avr:uno
+- arduino:avr:mega
+- digistump:avr:digispark-tiny16
+- digistump:avr:digispark-pro (ATtiny167)
+- ATTinyCore:avr:attinyx5:chip=85,clock=8internal
+- esp8266:esp8266:huzzah:eesz=4M3M,xtal=80
+- esp32:esp32:featheresp32:FlashFreq=80
+- STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
