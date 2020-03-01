@@ -2,7 +2,7 @@
 # IRMP - Infrared Multi Protocol Decoder
 ### Version 1.2.2
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Build Status](https://github.com/ukw100/irmp/workflows/build/badge.svg)](https://github.com/ukw100/irmp/actions)
+[![Build Status](https://github.com/ukw100/irmp/workflows/LibraryBuild/badge.svg)](https://github.com/ukw100/irmp/actions)
 [![Hit Counter](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2Fukw100%2FIRMP)](https://github.com/brentvollebregt/hit-counter)
 
 ## 50 IR protocols supported and low memory footprint
