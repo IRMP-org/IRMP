@@ -4,13 +4,6 @@
  *  Uses a callback function which is called every time a complete IR command was received.
  *  This example additionally filters commands from a remote control named WM010 sending NEC commands
  *
- *  *****************************************************************************************************************************
- *  To access the library files from your sketch, you have to first use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE.
- *  Then navigate to the parallel `libraries` folder and select the library you want to access.
- *  The library files itself are located in the `src` sub-directory.
- *  If you did not yet store the example as your own sketch, then with Ctrl+K you are instantly in the right library folder.
- *  *****************************************************************************************************************************
- *
  *  Copyright (C) 2019-2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *

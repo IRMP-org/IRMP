@@ -30,9 +30,9 @@
 
 #include "ATtinyUtils.h"
 
-#include <avr/boot.h>  // needed for boot_signature_byte_get()
-#include <avr/power.h> // needed for clock_prescale_set()
-#include <avr/sleep.h> // needed for isBODSFlagExistent()
+#include <avr/boot.h>  // required for boot_signature_byte_get()
+#include <avr/power.h> // required for clock_prescale_set()
+#include <avr/sleep.h> // required for isBODSFlagExistent()
 #include "digitalWriteFast.h"
 
 // since we have not included Arduino.h
@@ -160,7 +160,7 @@ void changeDigisparkClock() {
     /*
      * Code to reset Digispark OCCAL tweak
      */
-#define  SIGRD  5 // needed for boot_signature_byte_get()
+#define  SIGRD  5 // required for boot_signature_byte_get()
     uint8_t tStoredOSCCAL = boot_signature_byte_get(1);
     if (OSCCAL != tStoredOSCCAL) {
 #ifdef DEBUG

@@ -1,9 +1,15 @@
+# LibraryBuild.yml
+# Github workflow script to test compile all examples of an Arduino library repository.
+#
+# Copyright (C) 2020  Armin Joachimsmeyer
+# https://github.com/ArminJo/Github-Actions
+#
 # Before being able to push to my .github\workflows directories,
 # I had to create a new personal token with workflow enabled at https://github.com/settings/tokens
 
 # This is the name of the workflow, visible on GitHub UI.
 name: LibraryBuild
-on: [push]
+on: [push, pull_request] # see: https://help.github.com/en/actions/reference/events-that-trigger-workflows#pull-request-event-pull_request
 
 jobs:
   build:
@@ -17,7 +23,7 @@ jobs:
       # around the name and have at least 2 entries, where the first must be without double quotes! You may use Servo as dummy entry.
       REQUIRED_LIBRARIES:
 
-      # Output colors
+      # Global color definitions for output colors
       RED: '\033[0;31m'
       GREEN: '\033[0;32m'
       YELLOW: '\033[1;33m'
@@ -76,6 +82,10 @@ jobs:
 
           - arduino-boards-fqbn: STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
             platform: STM32:stm32
+
+######################################################
+# End of configuration, start of fixed script section
+######################################################
 
       # Do not cancel all jobs / architectures if one job fails
       fail-fast: false
