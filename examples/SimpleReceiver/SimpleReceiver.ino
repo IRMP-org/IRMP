@@ -3,14 +3,6 @@
  *
  *  Receives IR protocol data of 15 main protocols.
  *
- *  *****************************************************************************************************************************
- *  To access the library files from your sketch, you have to first use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE.
- *  Then navigate to the parallel `libraries` folder and select the library you want to access.
- *  The library files itself are located in the `src` sub-directory.
- *  If you did not yet store the example as your own sketch, then with Ctrl+K you are instantly in the right library folder.
- *  *****************************************************************************************************************************
- *
- *
  *  The following IR protocols are enabled by default:
  *      Sony SIRCS
  *      NEC + APPLE
@@ -20,7 +12,7 @@
  *      Plus 11 other main protocols by including irmpMain15.h instead of irmp.h
  *      JVC, NEC16, NEC42, Matsushita, DENON, Sharp, RC5, RC6 & RC6A, IR60 (SDA2008) Grundig, Siemens Gigaset, Nokia
  *
- *  To disable one of them or to enable other protocols, specify this before the "#include <irmp.h>" line.
+ *  To disable one of them or to enable other protocols, specify this before the "#include <irmp.c.h>" line.
  *  If you get warnings of redefining symbols, just ignore them or undefine them first (see Interrupt example).
  *  The exact names can be found in the library file irmpSelectAllProtocols.h (see Callback example).
  *
