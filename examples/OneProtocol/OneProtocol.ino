@@ -126,7 +126,7 @@ void setup()
     Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
 
     irmp_init();
-    irmp_blink13(true); // Enable LED feedback - commented out, since we use built in LED in loop below
+//    irmp_blink13(true); // Enable LED feedback - commented out, since we use built in LED in loop below
 
 #if defined(STM32F1xx)
     Serial.println(F("Ready to receive IR signals at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library

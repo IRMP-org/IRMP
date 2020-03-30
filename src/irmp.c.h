@@ -260,7 +260,7 @@
 // RUWIDO (see t-home-mediareceiver-15kHz.txt) conflicts here with DENON
 #define DENON_0_PAUSE_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * DENON_0_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
 #define DENON_0_PAUSE_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * DENON_0_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define DENON_AUTO_REPETITION_PAUSE_LEN         ((uint_fast16_t)(F_INTERRUPTS * DENON_AUTO_REPETITION_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define DENON_AUTO_REPETITION_PAUSE_LEN_        ((uint_fast16_t)(F_INTERRUPTS * DENON_AUTO_REPETITION_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
 
 #define THOMSON_PULSE_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * THOMSON_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
 #define THOMSON_PULSE_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * THOMSON_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
@@ -545,7 +545,7 @@
 #define ROOMBA_1_PULSE_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * ROOMBA_1_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 #define ROOMBA_1_PAUSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * ROOMBA_1_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
 #define ROOMBA_1_PAUSE_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * ROOMBA_1_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
-#define ROOMBA_0_PAUSE_LEN                      ((uint_fast8_t)(F_INTERRUPTS * ROOMBA_0_PAUSE_TIME))
+#define ROOMBA_0_PAUSE_LEN_                     ((uint_fast8_t)(F_INTERRUPTS * ROOMBA_0_PAUSE_TIME))
 #define ROOMBA_0_PULSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * ROOMBA_0_PULSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
 #define ROOMBA_0_PULSE_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * ROOMBA_0_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 #define ROOMBA_0_PAUSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * ROOMBA_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
@@ -575,7 +575,7 @@
 #define PENTAX_PULSE_LEN_MAX                    ((uint_fast8_t)(F_INTERRUPTS * PENTAX_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 #define PENTAX_1_PAUSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * PENTAX_1_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
 #define PENTAX_1_PAUSE_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * PENTAX_1_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
-#define PENTAX_0_PAUSE_LEN                      ((uint_fast8_t)(F_INTERRUPTS * PENTAX_0_PAUSE_TIME))
+//#define PENTAX_0_PAUSE_LEN                     ((uint_fast8_t)(F_INTERRUPTS * PENTAX_0_PAUSE_TIME))
 #define PENTAX_PULSE_LEN_MIN                    ((uint_fast8_t)(F_INTERRUPTS * PENTAX_PULSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
 #define PENTAX_PULSE_LEN_MAX                    ((uint_fast8_t)(F_INTERRUPTS * PENTAX_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 #define PENTAX_0_PAUSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * PENTAX_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
@@ -2770,8 +2770,13 @@ void irmp_init(void)
     IRMP_PORT &= ~(1 << IRMP_BIT);                                      // deactivate pullup
     IRMP_DDR &= ~(1 << IRMP_BIT);                                      // set pin to input
 #  endif
-
-#  if !defined(IRMP_ENABLE_PIN_CHANGE_INTERRUPT) || (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 0)
+#  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT && (IRMP_ENABLE_PIN_CHANGE_INTERRUPT != 0)
+#    if defined(ARDUINO_ARCH_AVR)
+    initPCIInterrupt();
+#    else
+#error "Interrupt mode is only enabled for AVR architecture"
+#    endif
+#  else
     irmp_init_timer();
 #  endif
 
@@ -3442,26 +3447,22 @@ uint_fast8_t irmp_ISR(void)
 #endif // IRMP_USE_CALLBACK == 1
 
 #if defined(ARDUINO)
-#if defined(__AVR__)
+#  if defined(__AVR__)
     if (irmp_led_feedback)
     {
         digitalWriteFast(LED_BUILTIN, !irmp_input);
     }
-#else
+#  else
     if (irmp_led_feedback) {
         // hope this is fast enough on other platforms
-#if defined(BLINK_13_LED_IS_ACTIVE_LOW)
+#    if defined(BLINK_13_LED_IS_ACTIVE_LOW)
         // If the built in LED on the board is active LOW
         digitalWrite(LED_BUILTIN, irmp_input);
-#else
-// TEST: Toggle pin to get half the sample frequency at the LED output
-//        static bool tLedState;
-//        tLedState = !tLedState;
-//        digitalWrite(LED_BUILTIN, tLedState);
+#    else
         digitalWrite(LED_BUILTIN, !irmp_input);
-#endif
+#    endif
     }
-#endif
+#  endif
 #endif
 
     irmp_log(irmp_input);                                                       // log ir signal, if IRMP_LOGGING defined
@@ -3526,7 +3527,7 @@ uint_fast8_t irmp_ISR(void)
                         {
                             denon_repetition_len++;
 
-                            if (denon_repetition_len >= DENON_AUTO_REPETITION_PAUSE_LEN && last_irmp_denon_command != 0)
+                            if (denon_repetition_len >= DENON_AUTO_REPETITION_PAUSE_LEN_ && last_irmp_denon_command != 0)
                             {
 #ifdef ANALYZE
                                 ANALYZE_PRINTF ("%8.3fms warning: did not receive inverted command repetition\n",
@@ -4714,7 +4715,7 @@ uint_fast8_t irmp_ISR(void)
                             }
                             else if (irmp_pulse_time >= ROOMBA_0_PULSE_LEN_MIN && irmp_pulse_time <= ROOMBA_0_PULSE_LEN_MAX)
                             {
-                                irmp_pause_time = ROOMBA_0_PAUSE_LEN;
+                                irmp_pause_time = ROOMBA_0_PAUSE_LEN_;
                             }
 
                             got_light = TRUE;                                       // this is a lie, but helps (generates stop bit)
@@ -5998,74 +5999,78 @@ void irmp_blink13(bool aEnableBlinkLed)
     }
 }
 
-#if defined(__AVR__)
+#ifndef USE_ONE_TIMER_FOR_IRMP_AND_IRSND
+#  if defined(__AVR__)
 
-#if F_CPU < 8000000L
+#    if F_CPU < 8000000L
 #error "F_CPU must not be less than 8MHz for IRMP"
-#endif
+#    endif
 
-#  if defined(__AVR_ATmega16__)
+#    if defined(__AVR_ATmega16__)
 ISR(TIMER2_COMP_vect)
-#  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#    elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 // 5 to 22 microseconds for ATtiny@16MHz
-ISR(TIMER1_COMPA_vect)
+ISR(TIMER1_COMPB_vect) // We use TIMER1_COMPB_vect to be compatible with tone() library
+#    else
+ISR(TIMER2_COMPB_vect) // We use TIMER2_COMPB_vect to be compatible with tone() library
+#    endif
 
-#  else
-ISR(TIMER2_COMPA_vect)
-#  endif
-
-#elif defined(ESP8266)
+#  elif defined(ESP8266)
 // needed because irmp_ISR is declared as uint8_t
 void ICACHE_RAM_ATTR irmp_timer_ISR(void)
 
-#elif defined(ESP32)
+#  elif defined(ESP32)
 void IRAM_ATTR irmp_timer_ISR(void)
 
-#elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#  elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 // not needed for __STM32F1__
 void irmp_timer_ISR(HardwareTimer * aDummy __attribute__((unused)))
 
-#else
+#  else
 void irmp_timer_ISR(void)
-#endif // defined(__AVR__)
+#  endif // defined(__AVR__)
+
 {
     irmp_ISR();
 }
+#endif // USE_ONE_TIMER_FOR_IRMP_AND_IRSND
 
 /*
  * NOT used if IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined
+ * Initialize timer to generate interrupts at a rate F_INTERRUPTS (15000) per second to poll the input pin.
  */
 void irmp_init_timer(void)
 {
 #if defined(__AVR__)
     // Use Timer 2
 #  if defined(__AVR_ATmega16__)
-    TCCR2 = _BV(WGM21) | _BV(CS21); // CTC mode, prescale by 8
-    OCR2 = ((F_CPU / 8) / F_INTERRUPTS) - 1; // 132 for 15000 interrupts per second
-    TIMSK = _BV(OCIE2); // enable interrupt
+    TCCR2 = _BV(WGM21) | _BV(CS21);                                     // CTC mode, prescale by 8
+    OCR2 = ((F_CPU / 8) / F_INTERRUPTS) - 1;                            // 132 for 15000 interrupts per second
+    TIMSK = _BV(OCIE2);                                                 // enable interrupt
     TCNT2 = 0;
 
 #  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
     // Since the ISR takes 5 to 22 microseconds for ATtiny@16MHz only 16 and 8 MHz makes sense
 #    if F_CPU >= 16000000L
-    OCR1C = (F_CPU / F_INTERRUPTS / 8) - 1;                            // compare value: 1/15000 of CPU frequency, presc = 8
-    TCCR1 = (1 << CTC1) | (1 << CS12);                                 // switch CTC Mode on, set prescaler to 8
+    OCR1A = OCR1C = (F_CPU / F_INTERRUPTS / 8) - 1;                             // compare value: 1/15000 of CPU frequency, presc = 8
+    TCCR1 = (1 << CTC1) | (1 << CS12);                                  // switch CTC Mode on, set prescaler to 8
 #    else
-    OCR1C = (F_CPU / F_INTERRUPTS / 4) - 1;                            // compare value: 1/15000 of CPU frequency, presc = 4
-    TCCR1 = (1 << CTC1) | (1 << CS11) | (1 << CS10);                   // switch CTC Mode on, set prescaler to 4
+    OCR1A = OCR1C = (F_CPU / F_INTERRUPTS / 4) - 1;                             // compare value: 1/15000 of CPU frequency, presc = 4
+    TCCR1 = (1 << CTC1) | (1 << CS11) | (1 << CS10);                    // switch CTC Mode on, set prescaler to 4
 #    endif
+    TIMSK = (1 << OCIE1A);                                             // enable compare match interrupt
 
 #  elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
     ICR1 = (F_CPU / F_INTERRUPTS / 8) - 1;                              // compare value: 1/15000 of CPU frequency, presc = 8
     TCCR1B = 0;                                                         // switch CTC Mode on
     TCCR1B = (1 << WGM12) | (1 << WGM13) | (1 << CS11);                 // switch CTC Mode on, set prescaler to 8
-    TIMSK1 |= (1 << OCIE1A); // enable compare match interrupt
+    TIMSK1 = (1 << OCIE1A);                                             // enable compare match interrupt
 
 #  else
     TCCR2A = _BV(WGM21); // CTC mode
     TCCR2B = _BV(CS21); // prescale by 8
-    OCR2A = ((F_CPU / 8) / F_INTERRUPTS) - 1; // 132 for 15000 interrupts per second
-    TIMSK2 = _BV(OCIE2A); // enable interrupt
+    OCR2B = OCR2A = ((F_CPU / 8) / F_INTERRUPTS) - 1; // 132 for 15000 interrupts per second
+    TIMSK2 = _BV(OCIE2B); // enable TIMER2_COMPB_vect interrupt to be compatible with tone() library
     TCNT2 = 0;
 #  endif
 
@@ -6149,7 +6154,7 @@ void irmp_enable_timer_interrupt(void)
     TIMSK1 |= (1 << OCIE1A); // enable compare match interrupt
 
 #  else
-    TIMSK2 = _BV(OCIE2A); // enable interrupt
+    TIMSK2 = _BV(OCIE2B); // enable interrupt
 #  endif
 
 #elif defined(ESP8266)

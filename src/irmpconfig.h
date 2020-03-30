@@ -58,7 +58,7 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #if defined(ARDUINO)                                                    // Arduino IDE for different platforms
-#  if !defined (IRMP_INPUT_PIN)                                         // Arduino IDE uses IRMP_INPUT_PIN
+#  if !defined (IRMP_INPUT_PIN)                                         // Arduino IDE uses IRMP_INPUT_PIN instead of PORT and BIT
 #    define IRMP_INPUT_PIN 3
 #  endif
 

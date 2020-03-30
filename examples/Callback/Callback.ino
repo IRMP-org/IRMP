@@ -72,7 +72,7 @@
 #ifdef SIZE_TEST
 #define IRMP_SUPPORT_NEC_PROTOCOL        1
 #else
-// This enables 15 main protocols manually
+// Enables protocols manually
 //#define IRMP_SUPPORT_SIRCS_PROTOCOL      1
 #define IRMP_SUPPORT_NEC_PROTOCOL        1
 //#define IRMP_SUPPORT_SAMSUNG_PROTOCOL    1

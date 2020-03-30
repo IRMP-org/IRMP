@@ -1,20 +1,22 @@
 /*
- *  SimpleReceiver.cpp
+ *  SimpleSender.cpp
  *
- *  Receives IR protocol data of 15 main protocols.
+ *  Sends Samsung protocol frames.
+ *  Is able to send IR protocol data of 15 main protocols.
+ *
  *      Sony SIRCS
  *      NEC + APPLE
  *      Samsung + Samsg32
  *      Kaseikyo
  *
- *      Plus 11 other protocols:
+ *      Plus 11 other main protocols
  *      JVC, NEC16, NEC42, Matsushita, DENON, Sharp, RC5, RC6 & RC6A, IR60 (SDA2008) Grundig, Siemens Gigaset, Nokia
  *
  *  To disable one of them or to enable other protocols, specify this before the "#include <irmp.c.h>" line.
  *  If you get warnings of redefining symbols, just ignore them or undefine them first (see Interrupt example).
  *  The exact names can be found in the library file irmpSelectAllProtocols.h (see Callback example).
  *
- *  Copyright (C) 2020  Armin Joachimsmeyer
+ *  Copyright (C) 2019-2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
@@ -39,10 +41,10 @@
 #define VERSION_EXAMPLE "1.0"
 
 /*
- * Set library modifiers first to set input pin etc.
+ * Set library modifiers first to set output pin etc.
  */
 #if defined(ESP8266)
-#define IRMP_INPUT_PIN 14 // D5
+#define IRSND_OUTPUT_PIN 12 // D6
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
 
 #elif defined(ESP32)
@@ -52,45 +54,40 @@
 // BluePill in 2 flavors
 // STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 // __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-#define IRMP_INPUT_PIN 4 // PA4
+#define IRSND_OUTPUT_PIN 5 // PA5
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
 
 #elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include "ATtinySerialOut.h"
 #include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
 #  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#define IRMP_INPUT_PIN 0
+#define IRSND_OUTPUT_PIN 1
 #  else
 #    if defined(ARDUINO_AVR_DIGISPARKPRO)
-#define IRMP_INPUT_PIN 9  // PA3 - on DigisparkBoard labeled as pin 9
+#define IRSND_OUTPUT_PIN 8  // PA2 - on DigisparkBoard labeled as pin 8
 #    else
-#define IRMP_INPUT_PIN 3
+#define IRSND_OUTPUT_PIN 2
 #    endif
 #  endif
 
 #else
-#define IRMP_INPUT_PIN 3
-// You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
-//#define IRMP_PORT_LETTER D
-//#define IRMP_BIT_NUMBER 3
+#define IRSND_OUTPUT_PIN 4
 #endif
 
-#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
-
-#include <irmpSelectMain15Protocols.h>  // This enables 15 main protocols
-
+#include <irsndSelectMain15Protocols.h>
 /*
  * After setting the modifiers we can include the code and compile it.
  */
-#include <irmp.c.h>
+#include <irsnd.c.h>
 
-IRMP_DATA irmp_data[1];
+IRMP_DATA irsnd_data;
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
-void setup() {
-	Serial.begin(115200);
+void setup()
+{
+    Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__)
     while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
 #endif
@@ -103,44 +100,31 @@ void setup() {
 #if defined(ARDUINO_AVR_DIGISPARK) || defined(ARDUINO_AVR_DIGISPARKPRO)
     changeDigisparkClock();
 #endif
-	// Just to know which program is running on my Arduino
-	Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
-	irmp_init();
-	irmp_blink13(true); // Enable LED feedback
+    // Just to know which program is running on my Arduino
+    Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
+    irsnd_init();
+    irsnd_blink13(true); // Enable LED feedback
 
 #if defined(STM32F1xx)
-    Serial.println(F("Ready to receive IR signals at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library
+    Serial.println(F("Ready to send IR signals at pin PA5")); // the internal pin numbers are crazy for the STM32 Boards library
 #else
-    Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
+    Serial.println(F("Ready to send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
 #endif
-    }
+    irsnd_data.protocol = IRMP_SAMSUNG32_PROTOCOL;
+    irsnd_data.address = 0x0707;
+    irsnd_data.command = 0xFB04;
+    irsnd_data.flags = 0; // repeat frame 0 time
 
-void loop() {
-	/*
-	 * Check if new data available and get them
-	 */
-	if (irmp_get_data(&irmp_data[0])) {
-		/*
-		 * Skip repetitions of command
-		 */
-		if (!(irmp_data[0].flags & IRMP_FLAG_REPETITION)) {
-			/*
-			 * Here data is available and is no repetition -> evaluate IR command
-			 */
-			switch (irmp_data[0].command) {
-			case 0x48:
-				irmp_blink13(false);
-				digitalWrite(LED_BUILTIN, HIGH);
-				break;
-			case 0x0B:
-				irmp_blink13(false);
-				digitalWrite(LED_BUILTIN, LOW);
-				break;
-			default:
-				irmp_blink13(true);
-				break;
-			}
-		}
-        irmp_result_print(&irmp_data[0]);
-	}
+    irsnd_send_data(&irsnd_data, false);
+
+}
+
+void loop()
+{
+    delay(5000);
+    uint8_t tNextCommand = irsnd_data.command;
+    tNextCommand++;
+    // For my Samsung the high byte is the negative of the low byte
+    irsnd_data.command = ((~tNextCommand) << 8) | tNextCommand;
+    irsnd_send_data(&irsnd_data, false); // This stores timer state and restores it after sending
 }

@@ -24,6 +24,13 @@ irmp_disable_timer_interrupt	KEYWORD2
 irmp_enable_timer_interrupt	KEYWORD2
 irmp_result_print	KEYWORD2
 initPCIInterrupt	KEYWORD2
+irsnd_init  KEYWORD2
+irsnd_is_busy   KEYWORD2
+irsnd_send_data KEYWORD2
+irsnd_store_timer   KEYWORD2
+irsnd_restore_timer KEYWORD2
+irsnd_blink13   KEYWORD2
+irsnd_wait_for_not_busy KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
@@ -34,3 +41,4 @@ IRMP_PROTOCOL_NAMES	LITERAL1
 IRMP_USE_COMPLETE_CALLBACK	LITERAL1
 F_INTERRUPTS	LITERAL1
 IRMP_ENABLE_PIN_CHANGE_INTERRUPT	LITERAL1
+USE_ONE_TIMER_FOR_IRMP_AND_IRSND    LITERAL1

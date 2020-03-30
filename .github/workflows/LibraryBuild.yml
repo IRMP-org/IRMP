@@ -38,13 +38,12 @@ jobs:
           - STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
 
         # Specify parameters for each board.
-        # Parameters can be: platform-url, examples-exclude and examples-build-properties
-        # With examples-exclude you may exclude specific examples for a board. Use a space separated list.
+        # With examples-exclude you may exclude specific examples for a board. Use a comma separated list.
         #############################################################################################################
         include:
           - arduino-boards-fqbn: digistump:avr:digispark-tiny16
             platform-url: http://digistump.com/package_digistump_index.json
-            examples-exclude: AllProtocols # Does not fit in FLASH # Space separated list of (unique substrings of) example names to exclude in build
+            examples-exclude: AllProtocols # Does not fit in FLASH # Comma separated list of (unique substrings of) example names to exclude in build
 
           - arduino-boards-fqbn: digistump:avr:digispark-pro
             platform-url: http://digistump.com/package_digistump_index.json
@@ -55,13 +54,15 @@ jobs:
 
           - arduino-boards-fqbn: esp8266:esp8266:huzzah:eesz=4M3M,xtal=80
             platform-url: https://arduino.esp8266.com/stable/package_esp8266com_index.json
-            examples-exclude: AllProtocols # Strange error here
+            examples-exclude: SimpleSender,ReceiveAndSend,Interrupt,AllProtocols # Strange error here
 
           - arduino-boards-fqbn: esp32:esp32:featheresp32:FlashFreq=80
             platform-url: https://dl.espressif.com/dl/package_esp32_index.json
+            examples-exclude: SimpleSender,ReceiveAndSend,Interrupt # Send only for 328P
 
           - arduino-boards-fqbn: STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
             platform-url: https://github.com/stm32duino/BoardManagerFiles/raw/dev/STM32/package_stm_index.json
+            examples-exclude: SimpleSender,ReceiveAndSend,Interrupt # Send only for 328P
 
       # Do not cancel all jobs / architectures if one job fails
       fail-fast: false

@@ -5,13 +5,13 @@
  *  This might be not working for all protocols.
  *  Tested for NEC, Kaseiko, Denon, RC6, Samsung + Samsg32.
  *
- *  The following IR protocols are enabled by default:
+ *  The following IR protocols are enabled:
  *      Sony SIRCS
  *      NEC + APPLE
  *      Samsung + Samsg32
  *      Kaseikyo
  *
- *      Plus 11 other main protocols by including irmpMain15.h instead of irmp.h
+ *      Plus 11 other main protocols
  *      JVC, NEC16, NEC42, Matsushita, DENON, Sharp, RC5, RC6 & RC6A, IR60 (SDA2008) Grundig, Siemens Gigaset, Nokia
  *
  *  To disable one of them or to enable other protocols, specify this before the "#include <irmp.c.h>" line.
@@ -41,7 +41,7 @@
 
 #include <Arduino.h>
 
-#define VERSION_EXAMPLE "1.2"
+#define VERSION_EXAMPLE "2.0"
 
 /*
  * Set library modifiers first to set input pin etc.
@@ -75,10 +75,7 @@
 #  endif
 
 #else
-#define IRMP_INPUT_PIN 3
-// You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
-//#define IRMP_PORT_LETTER D
-//#define IRMP_BIT_NUMBER 3
+#define IRMP_INPUT_PIN 3 // only 2 (INT0) and 3 (INT1) are allowed here
 #endif
 
 #define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
@@ -124,7 +121,6 @@ void setup() {
 
     irmp_init();
     irmp_blink13(true); // Enable LED feedback
-    initPCIInterrupt();
     irmp_register_complete_callback_function(&handleReceivedIRData);
 
 #if defined(STM32F1xx)

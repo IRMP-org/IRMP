@@ -1,7 +1,7 @@
 /*
  * ATtinySerialOut.h
  *
- *  Copyright (C) 2015-2019  Armin Joachimsmeyer
+ *  Copyright (C) 2015-2020  Armin Joachimsmeyer
  *  Email: armin.joachimsmeyer@gmail.com
  *
  *  This file is part of TinySerialOut https://github.com/ArminJo/ATtinySerialOut.
