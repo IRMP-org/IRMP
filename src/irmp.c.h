@@ -1,9 +1,8 @@
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * irmp.c - infrared multi-protocol decoder, supports several remote control protocols
- *
- * It uses Timer
+ * irmp.c.h - infrared multi-protocol decoder, supports several remote control protocols
  *
  * Copyright (c) 2009-2019 Frank Meyer - frank(at)fli4l.de
+ * 2020 Arduino porting by Armin Joachimsmeyer
  *
  * Supported AVR mikrocontrollers:
  *
@@ -2767,8 +2766,8 @@ void irmp_init(void)
     pinMode(IRMP_INPUT_PIN, INPUT);                                     // set pin to input
 #    endif
 #  else
-    IRMP_PORT &= ~(1 << IRMP_BIT);                                      // deactivate pullup
-    IRMP_DDR &= ~(1 << IRMP_BIT);                                      // set pin to input
+    IRMP_PORT &= ~_BV(IRMP_BIT);                                      // deactivate pullup
+    IRMP_DDR &= ~_BV(IRMP_BIT);                                      // set pin to input
 #  endif
 #  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT && (IRMP_ENABLE_PIN_CHANGE_INTERRUPT != 0)
 #    if defined(ARDUINO_ARCH_AVR)
@@ -2779,7 +2778,9 @@ void irmp_init(void)
 #  else
     irmp_init_timer();
 #  endif
-
+#  ifdef IRMP_MEASURE_TIMING
+    pinModeFast(IRMP_TIMING_TEST_PIN, OUTPUT);
+#  endif
 #endif
 
 #if IRMP_LOGGING == 1
@@ -6010,7 +6011,11 @@ void irmp_blink13(bool aEnableBlinkLed)
 ISR(TIMER2_COMP_vect)
 #    elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 // 5 to 22 microseconds for ATtiny@16MHz
+#if defined(ARDUINO_AVR_DIGISPARK)
+ISR(TIMER0_COMPB_vect) // We use TIMER0_COMPB_vect to be compatible with tone() library
+#else
 ISR(TIMER1_COMPB_vect) // We use TIMER1_COMPB_vect to be compatible with tone() library
+#endif
 #    else
 ISR(TIMER2_COMPB_vect) // We use TIMER2_COMPB_vect to be compatible with tone() library
 #    endif
@@ -6031,7 +6036,13 @@ void irmp_timer_ISR(void)
 #  endif // defined(__AVR__)
 
 {
+#  ifdef IRMP_MEASURE_TIMING
+    digitalWriteFast(IRMP_TIMING_TEST_PIN, HIGH); // 2 clock cycles
+#  endif
     irmp_ISR();
+#  ifdef IRMP_MEASURE_TIMING
+    digitalWriteFast(IRMP_TIMING_TEST_PIN, LOW); // 2 clock cycles
+#  endif
 }
 #endif // USE_ONE_TIMER_FOR_IRMP_AND_IRSND
 
@@ -6051,20 +6062,29 @@ void irmp_init_timer(void)
 
 #  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
     // Since the ISR takes 5 to 22 microseconds for ATtiny@16MHz only 16 and 8 MHz makes sense
-#    if F_CPU >= 16000000L
-    OCR1A = OCR1C = (F_CPU / F_INTERRUPTS / 8) - 1;                             // compare value: 1/15000 of CPU frequency, presc = 8
-    TCCR1 = (1 << CTC1) | (1 << CS12);                                  // switch CTC Mode on, set prescaler to 8
+#    if defined(ARDUINO_AVR_DIGISPARK)
+    // the digispark core uses timer 1 for millis() :-(
+    TCCR0A = 0; 														// must be set to zero before configuration!
+    OCR0A = OCR0B = ((F_CPU / 8) / F_INTERRUPTS) - 1;                   // compare value: 1/15000 of CPU frequency, presc = 8
+    TCCR0A = _BV(WGM01);												// CTC with OCRA as top
+    TCCR0B = _BV(CS01);													// presc = 8
+    TIMSK |= _BV(OCIE0B);                                              	// enable compare match interrupt
 #    else
-    OCR1A = OCR1C = (F_CPU / F_INTERRUPTS / 4) - 1;                             // compare value: 1/15000 of CPU frequency, presc = 4
-    TCCR1 = (1 << CTC1) | (1 << CS11) | (1 << CS10);                    // switch CTC Mode on, set prescaler to 4
+#      if F_CPU >= 16000000L
+    OCR1B = OCR1C = ((F_CPU / 8) / F_INTERRUPTS) - 1;                   // compare value: 1/15000 of CPU frequency, presc = 8
+    TCCR1 = _BV(CTC1) | _BV(CS12);										// switch CTC Mode on, set prescaler to 8
+#      else
+    OCR1B = OCR1C = ((F_CPU / 4) / F_INTERRUPTS) - 1;                   // compare value: 1/15000 of CPU frequency, presc = 4
+    TCCR1 = _BV(CTC1) | _BV(CS11) | _BV(CS10);                    		// switch CTC Mode on, set prescaler to 4
+#      endif
+    TIMSK |= _BV(OCIE1B);                                              	// enable compare match interrupt
 #    endif
-    TIMSK = (1 << OCIE1A);                                             // enable compare match interrupt
 
 #  elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-    ICR1 = (F_CPU / F_INTERRUPTS / 8) - 1;                              // compare value: 1/15000 of CPU frequency, presc = 8
+    ICR1 = ((F_CPU / 8) / F_INTERRUPTS) - 1;                            // compare value: 1/15000 of CPU frequency, presc = 8
     TCCR1B = 0;                                                         // switch CTC Mode on
-    TCCR1B = (1 << WGM12) | (1 << WGM13) | (1 << CS11);                 // switch CTC Mode on, set prescaler to 8
-    TIMSK1 = (1 << OCIE1A);                                             // enable compare match interrupt
+    TCCR1B = _BV(WGM12) | _BV(WGM13) | _BV(CS11);                 		// switch CTC Mode on, set prescaler to 8
+    TIMSK1 = _BV(OCIE1A);                                             	// enable compare match interrupt
 
 #  else
     TCCR2A = _BV(WGM21); // CTC mode
@@ -6115,10 +6135,14 @@ void irmp_disable_timer_interrupt(void)
     TIMSK = 0; // disable interrupt
 
 #  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-    TIMSK &= ~(1 << OCIE1A); // disable interrupt
+#if defined(ARDUINO_AVR_DIGISPARK)
+    TIMSK &= ~_BV(OCIE0B); // disable interrupt
+#else
+    TIMSK &= ~_BV(OCIE1B); // disable interrupt
+#endif
 
 #  elif  defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-    TIMSK1 &= ~(1 << OCIE1A); // disable interrupt
+    TIMSK1 &= ~_BV(OCIE1A); // disable interrupt
 
 #  else
     TIMSK2 = 0; // disable interrupt
@@ -6148,10 +6172,14 @@ void irmp_enable_timer_interrupt(void)
     TIMSK = _BV(OCIE2); // enable interrupt
 
 #  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-    TIMSK |= (1 << OCIE1A); // enable compare match interrupt
+#if defined(ARDUINO_AVR_DIGISPARK)
+    TIMSK |= _BV(OCIE0B); // enable compare match interrupt
+#else
+    TIMSK |= _BV(OCIE1B); // enable compare match interrupt
+#endif
 
 #  elif  defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-    TIMSK1 |= (1 << OCIE1A); // enable compare match interrupt
+    TIMSK1 |= _BV(OCIE1A); // enable compare match interrupt
 
 #  else
     TIMSK2 = _BV(OCIE2B); // enable interrupt
@@ -6306,7 +6334,8 @@ void irmp_result_print(IRMP_DATA * aIRMPDataPtr)
 /*
  * Wrapper for irmp_ISR() in order to run it with Pin Change Interrupts.
  * Needs additional 8-9us per call and 13us for signal going inactive and 19us for going active.
- * Tested for NEC, Kaseiko, Denon, RC6, but still experimental
+ * Tested for NEC, Kaseiko, Denon, RC6, Samsung
+ * Requires micros() for timing.
  */
 //#define PCI_DEBUG
 void irmp_PCI_ISR(void) {
@@ -6406,7 +6435,7 @@ void initPCIInterrupt() {
 #  else
 #    if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 	// use PinChangeInterrupt
-    PCMSK |= (1 << IRMP_INPUT_PIN);
+    PCMSK |= _BV(IRMP_INPUT_PIN);
     // clear interrupt bit
     GIFR |= 1 << PCIF;
     // enable interrupt on next change
@@ -6416,13 +6445,13 @@ void initPCIInterrupt() {
 #      if defined(ARDUINO_AVR_DIGISPARKPRO)
 #        if (IRMP_INPUT_PIN == 3)
     // interrupt on any logical change
-    EICRA |= (1 << ISC00);
+    EICRA |= _BV(ISC00);
     // clear interrupt bit
     EIFR |= 1 << INTF0;
     // enable interrupt on next change
     EIMSK |= 1 << INT0;
 #        elif (IRMP_INPUT_PIN == 9)
-    EICRA |= (1 << ISC10);
+    EICRA |= _BV(ISC10);
     // clear interrupt bit
     EIFR |= 1 << INTF1;
     // enable interrupt on next change
@@ -6434,13 +6463,13 @@ void initPCIInterrupt() {
 #      else // defined(ARDUINO_AVR_DIGISPARKPRO)
 #        if (IRMP_INPUT_PIN == 14)
     // interrupt on any logical change
-    EICRA |= (1 << ISC00);
+    EICRA |= _BV(ISC00);
     // clear interrupt bit
     EIFR |= 1 << INTF0;
     // enable interrupt on next change
     EIMSK |= 1 << INT0;
 #        elif (IRMP_INPUT_PIN == 3)
-    EICRA |= (1 << ISC10);
+    EICRA |= _BV(ISC10);
     // clear interrupt bit
     EIFR |= 1 << INTF1;
     // enable interrupt on next change
@@ -6453,13 +6482,13 @@ void initPCIInterrupt() {
 #    else // defined(__AVR_ATtiny25__)
 #      if (IRMP_INPUT_PIN == 2)
     // interrupt on any logical change
-    EICRA |= (1 << ISC00);
+    EICRA |= _BV(ISC00);
     // clear interrupt bit
     EIFR |= 1 << INTF0;
     // enable interrupt on next change
     EIMSK |= 1 << INT0;
 #      elif (IRMP_INPUT_PIN == 3)
-    EICRA |= (1 << ISC10);
+    EICRA |= _BV(ISC10);
     // clear interrupt bit
     EIFR |= 1 << INTF1;
     // enable interrupt on next change

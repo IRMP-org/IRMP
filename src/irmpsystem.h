@@ -13,7 +13,7 @@
 #ifndef IRMPSYSTEM_H
 #define IRMPSYSTEM_H
 
-#if !defined(IRMP_H) && !defined(_IRSND_H_)
+#if !defined(IRMP_H) && !defined(IRSND_H)
 #  error please include only irmp.h or irsnd.h, not irmpsystem.h
 #endif
 

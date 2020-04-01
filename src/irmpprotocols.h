@@ -15,7 +15,7 @@
 #ifndef IRMP_PROTOCOLS_H
 #define IRMP_PROTOCOLS_H
 
-#if !defined(IRMP_H) && !defined(_IRSND_H_)
+#if !defined(IRMP_H) && !defined(IRSND_H)
 #  error please include only irmp.h or irsnd.h, not irmpprotocols.h
 #endif
 

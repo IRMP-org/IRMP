@@ -2,19 +2,29 @@
  *  SimpleReceiver.cpp
  *
  *  Receives IR protocol data of 15 main protocols.
+ *
+ *  *****************************************************************************************************************************
+ *  To access the library files from your sketch, you have to first use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE.
+ *  Then navigate to the parallel `libraries` folder and select the library you want to access.
+ *  The library files itself are located in the `src` sub-directory.
+ *  If you did not yet store the example as your own sketch, then with Ctrl+K you are instantly in the right library folder.
+ *  *****************************************************************************************************************************
+ *
+ *
+ *  The following IR protocols are enabled by default:
  *      Sony SIRCS
  *      NEC + APPLE
  *      Samsung + Samsg32
  *      Kaseikyo
  *
- *      Plus 11 other protocols:
+ *      Plus 11 other main protocols by including irmpMain15.h instead of irmp.h
  *      JVC, NEC16, NEC42, Matsushita, DENON, Sharp, RC5, RC6 & RC6A, IR60 (SDA2008) Grundig, Siemens Gigaset, Nokia
  *
- *  To disable one of them or to enable other protocols, specify this before the "#include <irmp.c.h>" line.
+ *  To disable one of them or to enable other protocols, specify this before the "#include <irmp.h>" line.
  *  If you get warnings of redefining symbols, just ignore them or undefine them first (see Interrupt example).
  *  The exact names can be found in the library file irmpSelectAllProtocols.h (see Callback example).
  *
- *  Copyright (C) 2020  Armin Joachimsmeyer
+ *  Copyright (C) 2019  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
@@ -36,7 +46,7 @@
 
 #include <Arduino.h>
 
-#define VERSION_EXAMPLE "1.0"
+#define VERSION_EXAMPLE "1.1"
 
 /*
  * Set library modifiers first to set input pin etc.
@@ -46,7 +56,11 @@
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
 
 #elif defined(ESP32)
-#define IRMP_INPUT_PIN 15 // D15
+#define IRMP_INPUT_PIN 15
+
+#elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#define IRMP_INPUT_PIN 4 // PA4
+#define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
 
 #elif defined(STM32F1xx) || defined(__STM32F1__)
 // BluePill in 2 flavors
@@ -67,13 +81,7 @@
 #define IRMP_INPUT_PIN 3
 #    endif
 #  endif
-
-#else
-#define IRMP_INPUT_PIN 3
-// You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
-//#define IRMP_PORT_LETTER D
-//#define IRMP_BIT_NUMBER 3
-#endif
+#endif // defined(ESP8266)
 
 #define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
 
@@ -106,14 +114,10 @@ void setup() {
 	// Just to know which program is running on my Arduino
 	Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
 	irmp_init();
-	irmp_blink13(true); // Enable LED feedback
+	irmp_blink13(true); // Enable LED feedback - Is disabled here since we need the LED for loop output
 
-#if defined(STM32F1xx)
-    Serial.println(F("Ready to receive IR signals at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library
-#else
-    Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
-#endif
-    }
+	Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
+}
 
 void loop() {
 	/*
@@ -129,18 +133,15 @@ void loop() {
 			 */
 			switch (irmp_data[0].command) {
 			case 0x48:
-				irmp_blink13(false);
 				digitalWrite(LED_BUILTIN, HIGH);
 				break;
 			case 0x0B:
-				irmp_blink13(false);
 				digitalWrite(LED_BUILTIN, LOW);
 				break;
 			default:
-				irmp_blink13(true);
 				break;
 			}
 		}
-        irmp_result_print(&irmp_data[0]);
+		irmp_result_print(&irmp_data[0]);
 	}
 }

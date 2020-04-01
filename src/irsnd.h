@@ -10,8 +10,8 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifndef _IRSND_H_
-#define _IRSND_H_
+#ifndef IRSND_H
+#define IRSND_H
 
 #include "irmpsystem.h"
 #ifndef IRSND_USE_AS_LIB
@@ -135,11 +135,17 @@ extern uint8_t                                  irsnd_send_data (IRMP_DATA *, ui
 extern void                                     irsnd_stop (void);
 extern uint8_t                                  irsnd_ISR (void);
 
+#if defined(ARDUINO)
+#if ! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) && defined(IRMP_H)
+#error "You seem to use receive and send in one sketch but forget to define USE_ONE_TIMER_FOR_IRMP_AND_IRSND. Unfortunately this cannot be done automatically."
+#endif
+
 extern void                                     irsnd_init_and_store_timer(void);
 extern void                                     irsnd_store_timer(void);
 extern void                                     irsnd_restore_timer(void);
 extern void                                     irsnd_blink13(bool aEnableBlinkLed);
 extern void                                     irsnd_wait_for_not_busy(void);
+#endif // defined(ARDUINO)
 #if IRSND_USE_CALLBACK == 1
 extern void                                     irsnd_set_callback_ptr (void (*cb)(uint8_t));
 #endif // IRSND_USE_CALLBACK == 1
@@ -148,4 +154,4 @@ extern void                                     irsnd_set_callback_ptr (void (*c
 }
 #endif
 
-#endif /* _IRSND_H_ */
+#endif /* IRSND_H */

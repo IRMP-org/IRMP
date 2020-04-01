@@ -12,10 +12,10 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifndef _IRSNDCONFIG_H_
-#define _IRSNDCONFIG_H_
+#ifndef IRSNDCONFIG_H
+#define IRSNDCONFIG_H
 
-#if !defined(_IRSND_H_)
+#if !defined(IRSND_H)
 #  error please include only irsnd.h, not irsndconfig.h
 #endif
 
@@ -154,4 +154,4 @@
 #  define IRSND_USE_CALLBACK                    0                       // flag: 0 = don't use callbacks, 1 = use callbacks, default is 0
 #endif
 
-#endif // _IRSNDCONFIG_H_
+#endif // IRSNDCONFIG_H

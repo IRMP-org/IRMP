@@ -33,12 +33,15 @@
  * Set library modifiers first to set input and output pin etc.
  */
 #if defined(ESP8266)
-#define IRMP_INPUT_PIN 14 // D5
+#define IRMP_INPUT_PIN 14   // D5
 #define IRSND_OUTPUT_PIN 12 // D6
+#define TONE_PIN 15         //D8
+
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
 
 #elif defined(ESP32)
-#define IRMP_INPUT_PIN 15 // D15
+#define IRMP_INPUT_PIN 15   // D15
+#define TONE_PIN 16
 
 #elif defined(STM32F1xx) || defined(__STM32F1__)
 // BluePill in 2 flavors
@@ -46,6 +49,8 @@
 // __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
 #define IRMP_INPUT_PIN 4 // PA4
 #define IRSND_OUTPUT_PIN 5 // PA5
+#define TONE_PIN 6
+
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
 
 #elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
@@ -53,11 +58,15 @@
 #include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
 #  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 #define IRMP_INPUT_PIN 0
-#define IRSND_OUTPUT_PIN 1
+#define IRSND_OUTPUT_PIN 4 // Pin 1 is internal LED on Digispark board, Pin 2 is serial output with ATtinySerialOut, Pin3 is USB+
+#define TONE_PIN 3
+//#define IRMP_MEASURE_TIMING
+//#define IRMP_TIMING_TEST_PIN 3
 #  else
+#define TONE_PIN 5
 #    if defined(ARDUINO_AVR_DIGISPARKPRO)
-#define IRMP_INPUT_PIN 9  // PA3 - on DigisparkBoard labeled as pin 9
-#define IRSND_OUTPUT_PIN 8  // PA2 - on DigisparkBoard labeled as pin 8
+#define IRMP_INPUT_PIN 9  // PA3 - on Digispark board labeled as pin 9
+#define IRSND_OUTPUT_PIN 8  // PA2 - on Digispark board labeled as pin 8
 #    else
 #define IRMP_INPUT_PIN 3
 #define IRSND_OUTPUT_PIN 2
@@ -67,6 +76,7 @@
 #else
 #define IRMP_INPUT_PIN 3
 #define IRSND_OUTPUT_PIN 4
+#define TONE_PIN 5
 #endif
 
 #define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
@@ -104,7 +114,6 @@ void setup()
 #endif
     // Just to know which program is running on my Arduino
     Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
-
     irmp_init();
     irmp_blink13(true); // Enable LED feedback for receive
 
@@ -132,6 +141,8 @@ void loop()
      */
     if (irmp_get_data(&irmp_data[0]))
     {
+        irmp_result_print(&irmp_data[0]);
+
         /*
          * Here data is available -> evaluate IR command
          */
@@ -141,10 +152,10 @@ void loop()
             /*
              * Do beep
              */
-            tone(5, 2200);
+            tone(TONE_PIN, 2200);
             delay(200);
-            noTone(5);
-            irmp_init(); // restore timer2 for IR receive after using of tone
+            noTone(TONE_PIN);
+            irmp_init(); // restore timer for IR receive after using of tone
             delay(1000);
 
             irsnd_data.command = 0xE51A; // MENU
@@ -162,6 +173,5 @@ void loop()
             break;
         }
 
-        irmp_result_print(&irmp_data[0]);
     }
 }

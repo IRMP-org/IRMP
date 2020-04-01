@@ -7,7 +7,7 @@
 
 ## 50 IR protocols supported and low memory footprint
 Only 40 protocols can be enabled for receive at the same time, because some of them are quite similar and conflicts with each other.<br/>
-39 protocols are available for send. Send implementation is currently (2/2020) available only for Arduino ATmega328 boards.
+39 protocols are available for send. Send implementation is currently (2/2020) available only for AVR boards.
 
 | Nano running AllProtocol example | YouTube Video | Instructable |
 |-|-|-|
@@ -29,14 +29,15 @@ Only 40 protocols can be enabled for receive at the same time, because some of t
 
 # Timer usage
 The IRMP **receive** library works by polling the input pin at a rate of 10 to 20 kHz. Default is 15 kHz.<br/>
-The IRMP **send** library works by bit banging the output pin at a frequency of 38 kHz. This **avoids blocking waits** and allows to choose an **arbitrary pin**, you are not restricted to pin 3 or 11. Send Interrupts require 20% CPU time.<br/>
+The IRMP **send** library works by bit banging the output pin at a frequency of 38 kHz. This **avoids blocking waits** and allows to choose an **arbitrary pin**, you are not restricted to pin 3 or 11. Send Interrupts require 50% CPU time.<br/>
 
 **Some protocols can be received by just using interrupts from the input pin** instead of polling by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. In this case **no timer is needed**. See [Interrupt example](https://github.com/ukw100/IRMP/blob/master/examples/Interrupt/Interrupt.ino).<br/>
 
 - For AVR **timer 2 (Tone timer)** is used for receiving **and** sending. For variants, which have no timer 2 like ATtiny85 or ATtiny167, **timer 1** is used.
 - For ESP8266 and ESP32 **timer1** is used.
 - For STM32 (BluePill) **timer 3 (Servo timer) channel 1** is used as default.<br/>
-- The `millis()` function and the corresponding timer is not used by IRMP!
+- If you use polling mode with timer 2, the `millis()` function and the corresponding timer is not used by IRMP! 
+- In Interrupt mode, the `micros()` function is used as timebase.
 
 # Schematic for Arduino UNO
 | IR-Receiver connection | Serial LCD connection |

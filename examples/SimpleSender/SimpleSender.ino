@@ -61,7 +61,7 @@
 #include "ATtinySerialOut.h"
 #include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
 #  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#define IRSND_OUTPUT_PIN 1
+#define IRSND_OUTPUT_PIN 4 // Pin 1 is internal LED on Digispark board, Pin 2 is serial output with ATtinySerialOut, Pin3 is USB+
 #  else
 #    if defined(ARDUINO_AVR_DIGISPARKPRO)
 #define IRSND_OUTPUT_PIN 8  // PA2 - on DigisparkBoard labeled as pin 8
