@@ -24,6 +24,11 @@
 
 #include "irsnd.h"
 
+#ifdef ARDUINO
+#undef IRMP_H
+#include "IRTimer.cpp.h"
+#endif
+
 #ifndef F_CPU
 #  error F_CPU unkown
 #endif
@@ -533,11 +538,11 @@ typedef uint8_t IRSND_PAUSE_LEN;
 #define ACP24_0_PAUSE_LEN                       (uint8_t)(F_INTERRUPTS * ACP24_0_PAUSE_TIME + 0.5)
 #define ACP24_FRAME_REPEAT_PAUSE_LEN            (uint16_t)(F_INTERRUPTS * ACP24_FRAME_REPEAT_PAUSE_TIME + 0.5)                // use uint16_t!
 
-static volatile uint8_t irsnd_busy = 0;
+volatile uint8_t irsnd_busy = 0; // Used by IRTimer.cpp.h
 static volatile uint8_t irsnd_protocol = 0;
 static volatile uint8_t irsnd_buffer[11] = { 0 };
 static volatile uint8_t irsnd_repeat = 0;
-static volatile uint8_t irsnd_is_on = FALSE;
+volatile uint8_t irsnd_is_on = FALSE; // Used by IRTimer.cpp.h
 
 #if IRSND_USE_CALLBACK == 1
 static void (*irsnd_callback_ptr) (uint8_t);
@@ -1704,7 +1709,8 @@ uint8_t irsnd_send_data(IRMP_DATA * irmp_data_p, uint8_t do_wait) {
 	}
 
 #if defined(ARDUINO)
-	irsnd_init_and_store_timer(); // to enable alternately send and receive with the same timer
+    storeIRTimer(); // store current timer state
+    IRInitSendTimer(); // to enable alternately send and receive with the same timer
 	if (do_wait) {
 		while (irsnd_busy) {
 			// do nothing;
@@ -3112,190 +3118,13 @@ uint8_t irsnd_ISR(void) {
 	return irsnd_busy;
 }
 
-#if defined(ARDUINO)
 void irsnd_wait_for_not_busy(void) {
 	while (irsnd_busy) {
 		// just wait
 	}
 }
 
-/*
- * Temporarily storage for timer register
- */
-uint8_t sTimerTCCRA;
-uint8_t sTimerTCCRB;
-uint8_t sTimerOCR;
-uint8_t sTimerOCRB;
-uint8_t sTimerTIMSK;
-
-/*
- * Initialize timer 2 to generate interrupts at 76000 kHz to toggle output pin.
- * Is called at each irsnd_send_data(), to enable alternately send and receive with the same timer 2.
- */
-void irsnd_init_and_store_timer(void) {
-#if defined(__AVR__)
-	// Use Timer 2
-	irsnd_store_timer(); // store current timer state
-#  if defined(__AVR_ATmega16__)
-	TCCR2 = _BV(WGM21) | _BV(CS21);                                     // CTC mode, prescale by 8
-	OCR2 = ((F_CPU / 8) / F_INTERRUPTS) - 1;// 132 for 15000 interrupts per second
-	TIMSK = _BV(OCIE2);// enable interrupt
-	TCNT2 = 0;
-
-#  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-	// Since the ISR takes 5 to 22 microseconds for ATtiny@16MHz only 16 and 8 MHz makes sense
-#    if defined(ARDUINO_AVR_DIGISPARK)
-	// the digispark core uses timer 1 for millis() :-(
-    TCCR0A = 0; 														// must be set to zero before configuration!
-	OCR0A = OCR0B = ((F_CPU / 8) / IRSND_INTERRUPT_FREQ_FOR_38_KHZ) - 1;  // compare value: 1/15000 of CPU frequency, presc = 8
-	TCCR0A = _BV(WGM01);												// CTC wit OCRA as top
-	TCCR0B = _BV(CS01);													// presc = 8
-	TIMSK |= _BV(OCIE0B);                                                // enable compare match interrupt
-#    else
-#      if F_CPU >= 16000000L
-			OCR1B = OCR1C = ((F_CPU / 8) / IRSND_INTERRUPT_FREQ_FOR_38_KHZ) - 1; // compare value: 1/72000 of CPU frequency, presc = 8
-			TCCR1 = (1 << CTC1) | (1 << CS12);// switch CTC Mode on, set prescaler to 8
-#      else
-			OCR1B = OCR1C = ((F_CPU / 4) / IRSND_INTERRUPT_FREQ_FOR_38_KHZ) - 1; // compare value: 1/72000 of CPU frequency, presc = 4
-			TCCR1 = (1 << CTC1) | (1 << CS11) | (1 << CS10);// switch CTC Mode on, set prescaler to 4
-#      endif
-			TIMSK |= (1 << OCIE1B);                                              // enable compare match interrupt
-#    endif
-
-#  elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-	OCR1B = ICR1 = ((F_CPU / 8) / IRSND_INTERRUPT_FREQ_FOR_38_KHZ ) - 1;             // compare value: 1/72000 of CPU frequency, presc = 8
-	TCCR1B = 0;// TODO needed???                                                       // switch CTC Mode on
-	TCCR1B = (1 << WGM12) | (1 << WGM13) | (1 << CS10);// switch CTC Mode on, no prescaler
-	TIMSK1 = (1 << OCIE1B);// enable compare match interrupt
-
-#  else
-	TCCR2A = _BV(WGM21); // CTC mode
-	TCCR2B = _BV(CS20);// no prescale
-	OCR2B = OCR2A = (F_CPU / IRSND_INTERRUPT_FREQ_FOR_38_KHZ) - 1;// 209 for 76000 interrupts per second - toggle at each interrupt
-	TIFR2 = _BV(OCF2B) | _BV(OCF2A) | _BV(TOV2);// reset interrupt flags
-	TIMSK2 = _BV(OCIE2B);// enable TIMER2_COMPB_vect interrupt to be compatible with tone() library
-	TCNT2 = 0;
-#  endif
-
-#elif defined(ESP8266)
-	timer1_isr_init();
-	timer1_attachInterrupt(irmp_timer_ISR);
-	/*
-	 * TIM_DIV1 = 0,   //80MHz (80 ticks/us - 104857.588 us max)
-	 * TIM_DIV16 = 1,  //5MHz (5 ticks/us - 1677721.4 us max)
-	 * TIM_DIV256 = 3 //312.5Khz (1 tick = 3.2us - 26843542.4 us max)
-	 */
-	timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP);
-	timer1_write((F_CPU / 16) / F_INTERRUPTS);
-
-#elif defined(ESP32)
-	// Use Timer1 with 1 microsecond resolution
-	sESP32Timer = timerBegin(1, 80, true);
-	timerAttachInterrupt(sESP32Timer, irmp_timer_ISR, true);
-	timerAlarmWrite(sESP32Timer, (getApbFrequency() / 80) / F_INTERRUPTS, true);
-	timerAlarmEnable(sESP32Timer);
-
-// BluePill in 2 flavors
-#elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-	sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);  // used for generating only interrupts, no pin specified
-	sSTM32Timer.setOverflow(1000000 / F_INTERRUPTS, MICROSEC_FORMAT);// microsecond period
-	sSTM32Timer.attachInterrupt(irmp_timer_ISR);// this sets update interrupt enable
-	sSTM32Timer.resume();// Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
-
-#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-	sSTM32Timer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
-	sSTM32Timer.setPeriod(1000000 / F_INTERRUPTS);                      // microsecond period
-	sSTM32Timer.attachInterrupt(TIMER_CH1, irmp_timer_ISR);
-	sSTM32Timer.refresh();// Set the timer's count to 0 and update the prescaler and overflow values.
-#endif
-}
-
-void irsnd_store_timer(void) {
-#  if defined(__AVR_ATmega16__)
-	sTimerTCCRA = TCCR2
-	sTimerOCR = OCR2;
-	sTimerTIMSK = TIMSK
-
-#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#if defined(ARDUINO_AVR_DIGISPARK)
-	sTimerTCCRA = TCCR0A;
-	sTimerTCCRB = TCCR0B;
-	sTimerOCRB = OCR0B;
-	sTimerOCR = OCR0A;
-	sTimerTIMSK = TIMSK;
-#else
-	sTimerTCCRA = TCCR1;
-	sTimerOCRB = OCR1B;
-	sTimerOCR = OCR1C;
-	sTimerTIMSK = TIMSK;
-#endif
-
-#elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-	sTimerTCCRB = TCCR1B;
-	sTimerOCR = ICR1;
-	sTimerOCRB = OCR1B;
-	sTimerTIMSK = TIMSK1;
-
-#else
-	// store current timer state
-	sTimerTCCRA = TCCR2A;
-	sTimerTCCRB = TCCR2B;
-	sTimerOCR = OCR2A;
-	sTimerOCRB = OCR2B;
-	sTimerTIMSK = TIMSK2;
-#endif
-}
-
-void irsnd_restore_timer(void) {
-#if defined(__AVR__)
-	// Use Timer 2
-#  if defined(__AVR_ATmega16__)
-	TIMSK = 0; // disable interrupt
-
-#  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#if defined(ARDUINO_AVR_DIGISPARK)
-	TCCR0A = sTimerTCCRA;
-	TCCR0B = sTimerTCCRB;
-	OCR0B = sTimerOCRB;
-	OCR0A = sTimerOCR;
-	TIMSK = sTimerTIMSK;
-#else
-	TCCR1 = sTimerTCCRA;
-	OCR1B = sTimerOCRB;
-	OCR1C = sTimerOCR;
-	TIMSK = sTimerTIMSK;
-#endif
-
-#  elif  defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-	TCCR1B = sTimerTCCRB;
-	ICR1 = sTimerOCR;
-	OCR1B = sTimerOCRB;
-	TIMSK1 = sTimerTIMSK;
-
-#  else
-	TCCR2A = sTimerTCCRA;
-	TCCR2B = sTimerTCCRB;
-	OCR2A = sTimerOCR;
-	OCR2B = sTimerOCRB;
-	TIMSK2 = sTimerTIMSK;
-#  endif
-
-#elif defined(ESP8266)
-	timer1_detachInterrupt(); // disables interrupt too
-
-#elif defined(ESP32)
-	timerAlarmDisable(sESP32Timer);
-
-#elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-	sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_DISABLED);
-	sSTM32Timer.detachInterrupt();
-
-#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-	sSTM32Timer.setMode(TIMER_CH1, TIMER_DISABLED);
-	sSTM32Timer.detachInterrupt(TIMER_CH1);
-#endif
-}
-
+#if defined(ARDUINO)
 /*
  * Echoes the input signal to the built in LED.
  * The name is chosen to enable easy migration from other IR libs.
@@ -3311,71 +3140,8 @@ void irsnd_blink13(bool aEnableBlinkLed) {
 #endif
 	}
 }
-
-/*
- * ISR is active while signal is sent AND during the trailing pause of IR frame
- * Called every 13.5us
- * Bit bang requires 5.9 us. 5 us for 16 push and 16 pop etc. and 0.9 us for function body
- * Together with call of irsnd_ISR() 10.5 us (frame) or 9.4 (trailing pause) - measured by scope
- * We use TIMER2_COMPB_vect to be compatible with tone() library
- */
-#if defined(__AVR__)
-
-#  if F_CPU < 8000000L
-#error "F_CPU must not be less than 8MHz for IRSND"
-#  endif
-#  if defined(__AVR_ATmega16__)
-ISR(TIMER2_COMP_vect)
-#  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#if defined(ARDUINO_AVR_DIGISPARK)
-ISR(TIMER0_COMPB_vect) // We use TIMER0_COMPB_vect to be compatible with tone() library
-#else
-ISR(TIMER1_COMPB_vect) // We use TIMER1_COMPB_vect to be compatible with tone() library
 #endif
-#  else
-ISR(TIMER2_COMPB_vect)
-# endif
-{
-	static uint8_t sDivider = 4;
-#  ifdef IRMP_MEASURE_TIMING
-	digitalWriteFast(IRMP_TIMING_TEST_PIN, HIGH); // 2 clock cycles
-#  endif
-#  ifdef USE_ONE_TIMER_FOR_IRMP_AND_IRSND
-	if(irsnd_busy) {
-#  endif
-	if (irsnd_is_on) {
-#  if defined(__AVR__)
-		digitalToggleFast(IRSND_OUTPUT_PIN);
-#  else
-		digitalWrite(IRSND_OUTPUT_PIN, !digitalRead(IRSND_OUTPUT_PIN));
-#  endif
-	} else {
-#  if defined(__AVR__)
-		digitalWriteFast(IRSND_OUTPUT_PIN, LOW);
-#  else
-		digitalWrite(IRSND_OUTPUT_PIN, LOW);
-#  endif
-	}
-	if (--sDivider == 0) {
-		// empty call needs additional 0.7 us
-		if (!irsnd_ISR()) {
-			irsnd_restore_timer();
-		}
-		sDivider = 4;
-	}
-#  ifdef USE_ONE_TIMER_FOR_IRMP_AND_IRSND
-}
-else {
-	irmp_ISR();
-}
-#  endif
-#  ifdef IRMP_MEASURE_TIMING
-	digitalWriteFast(IRMP_TIMING_TEST_PIN, LOW); // 2 clock cycles
-#  endif
-}
-#endif // defined(__AVR__)
 
-#endif // #if defined(ARDUINO)
 #ifdef ANALYZE
 
 // main function - for unix/linux + windows only!

@@ -313,21 +313,17 @@ extern uint_fast8_t                     irmp_get_data (IRMP_DATA *);
 extern uint_fast8_t                     irmp_ISR (void);
 
 #if defined(ARDUINO)
-#if ! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) && defined(IRSND_H)
-#error "You seem to use receive and send in one sketch but forget to define USE_ONE_TIMER_FOR_IRMP_AND_IRSND. Unfortunately this cannot be done automatically."
-#endif
 extern void                             irmp_blink13(bool aEnableBlinkLed);
 #  if defined(__AVR__)
 extern void irmp_debug_print(const __FlashStringHelper * aMessage, bool aDoShortOutput);
 #  else
 extern void irmp_debug_print(const char * aMessage, bool aDoShortOutput);
 #  endif
-extern void                             irmp_init_timer(void);
-extern void                             irmp_disable_timer_interrupt(void);
-extern void                             irmp_enable_timer_interrupt(void);
+
 extern void                             irmp_timer_ISR(void);
 extern void                             irmp_PCI_ISR(void);
 extern void                             initPCIInterrupt(void);
+
 #  if IRMP_PROTOCOL_NAMES == 1
 extern const char * const               irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM;
 #  endif

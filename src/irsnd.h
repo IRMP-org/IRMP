@@ -135,17 +135,12 @@ extern uint8_t                                  irsnd_send_data (IRMP_DATA *, ui
 extern void                                     irsnd_stop (void);
 extern uint8_t                                  irsnd_ISR (void);
 
-#if defined(ARDUINO)
-#if ! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) && defined(IRMP_H)
-#error "You seem to use receive and send in one sketch but forget to define USE_ONE_TIMER_FOR_IRMP_AND_IRSND. Unfortunately this cannot be done automatically."
-#endif
-
-extern void                                     irsnd_init_and_store_timer(void);
-extern void                                     irsnd_store_timer(void);
-extern void                                     irsnd_restore_timer(void);
 extern void                                     irsnd_blink13(bool aEnableBlinkLed);
 extern void                                     irsnd_wait_for_not_busy(void);
-#endif // defined(ARDUINO)
+
+extern volatile uint8_t                         irsnd_is_on; // Used by IRTimer.cpp.h
+extern volatile uint8_t                         irsnd_busy; // Used by IRTimer.cpp.h
+
 #if IRSND_USE_CALLBACK == 1
 extern void                                     irsnd_set_callback_ptr (void (*cb)(uint8_t));
 #endif // IRSND_USE_CALLBACK == 1

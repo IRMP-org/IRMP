@@ -25,6 +25,11 @@
 
 #include "irmp.h"
 
+#ifdef ARDUINO
+#undef IRSND_H
+#include "IRTimer.cpp.h"
+#endif
+
 #if IRMP_SUPPORT_GRUNDIG_PROTOCOL == 1 || IRMP_SUPPORT_NOKIA_PROTOCOL == 1 || IRMP_SUPPORT_IR60_PROTOCOL == 1
 #  define IRMP_SUPPORT_GRUNDIG_NOKIA_IR60_PROTOCOL  1
 #else
@@ -2776,7 +2781,7 @@ void irmp_init(void)
 #error "Interrupt mode is only enabled for AVR architecture"
 #    endif
 #  else
-    irmp_init_timer();
+    initIRReceiveTimer();
 #  endif
 #  ifdef IRMP_MEASURE_TIMING
     pinModeFast(IRMP_TIMING_TEST_PIN, OUTPUT);
@@ -5962,26 +5967,12 @@ uint_fast8_t irmp_ISR(void)
 }
 
 #if defined(ARDUINO)
-#if defined(ESP32)
-static hw_timer_t * sESP32Timer = NULL;
 
-// BluePill in 2 flavors
-#elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-#include <HardwareTimer.h> // 4 timers and 4. timer is used for tone()
-/*
- * Use timer 3 as IRMP timer.
- * Timer 3 blocks PA6, PA7, PB0, PB1, so if you need one them as Servo output, you must choose another timer.
- */
-HardwareTimer sSTM32Timer(TIM3);
+#if (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
+// Must be included after irmp_ISR to have all the internal variables of irmp_ISR declared
+#include "irmpPinChangeInterrupt.cpp.h"
+#endif // (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
 
-#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-#include <HardwareTimer.h> // 4 timers and 4. timer is used for tone()
-/*
- * Use timer 3 as IRMP timer.
- * Timer 3 blocks PA6, PA7, PB0, PB1, so if you need one them as Servo output, you must choose another timer.
- */
-HardwareTimer sSTM32Timer(3);
-#endif
 /*
  * Echoes the input signal to the built in LED.
  * The name is chosen to enable easy migration from other IR libs.
@@ -5998,209 +5989,6 @@ void irmp_blink13(bool aEnableBlinkLed)
     pinMode(LED_BUILTIN, OUTPUT);
 #endif
     }
-}
-
-#ifndef USE_ONE_TIMER_FOR_IRMP_AND_IRSND
-#  if defined(__AVR__)
-
-#    if F_CPU < 8000000L
-#error "F_CPU must not be less than 8MHz for IRMP"
-#    endif
-
-#    if defined(__AVR_ATmega16__)
-ISR(TIMER2_COMP_vect)
-#    elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-// 5 to 22 microseconds for ATtiny@16MHz
-#if defined(ARDUINO_AVR_DIGISPARK)
-ISR(TIMER0_COMPB_vect) // We use TIMER0_COMPB_vect to be compatible with tone() library
-#else
-ISR(TIMER1_COMPB_vect) // We use TIMER1_COMPB_vect to be compatible with tone() library
-#endif
-#    else
-ISR(TIMER2_COMPB_vect) // We use TIMER2_COMPB_vect to be compatible with tone() library
-#    endif
-
-#  elif defined(ESP8266)
-// needed because irmp_ISR is declared as uint8_t
-void ICACHE_RAM_ATTR irmp_timer_ISR(void)
-
-#  elif defined(ESP32)
-void IRAM_ATTR irmp_timer_ISR(void)
-
-#  elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-// not needed for __STM32F1__
-void irmp_timer_ISR(HardwareTimer * aDummy __attribute__((unused)))
-
-#  else
-void irmp_timer_ISR(void)
-#  endif // defined(__AVR__)
-
-{
-#  ifdef IRMP_MEASURE_TIMING
-    digitalWriteFast(IRMP_TIMING_TEST_PIN, HIGH); // 2 clock cycles
-#  endif
-    irmp_ISR();
-#  ifdef IRMP_MEASURE_TIMING
-    digitalWriteFast(IRMP_TIMING_TEST_PIN, LOW); // 2 clock cycles
-#  endif
-}
-#endif // USE_ONE_TIMER_FOR_IRMP_AND_IRSND
-
-/*
- * NOT used if IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined
- * Initialize timer to generate interrupts at a rate F_INTERRUPTS (15000) per second to poll the input pin.
- */
-void irmp_init_timer(void)
-{
-#if defined(__AVR__)
-    // Use Timer 2
-#  if defined(__AVR_ATmega16__)
-    TCCR2 = _BV(WGM21) | _BV(CS21);                                     // CTC mode, prescale by 8
-    OCR2 = ((F_CPU / 8) / F_INTERRUPTS) - 1;                            // 132 for 15000 interrupts per second
-    TIMSK = _BV(OCIE2);                                                 // enable interrupt
-    TCNT2 = 0;
-
-#  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-    // Since the ISR takes 5 to 22 microseconds for ATtiny@16MHz only 16 and 8 MHz makes sense
-#    if defined(ARDUINO_AVR_DIGISPARK)
-    // the digispark core uses timer 1 for millis() :-(
-    TCCR0A = 0; 														// must be set to zero before configuration!
-    OCR0A = OCR0B = ((F_CPU / 8) / F_INTERRUPTS) - 1;                   // compare value: 1/15000 of CPU frequency, presc = 8
-    TCCR0A = _BV(WGM01);												// CTC with OCRA as top
-    TCCR0B = _BV(CS01);													// presc = 8
-    TIMSK |= _BV(OCIE0B);                                              	// enable compare match interrupt
-#    else
-#      if F_CPU >= 16000000L
-    OCR1B = OCR1C = ((F_CPU / 8) / F_INTERRUPTS) - 1;                   // compare value: 1/15000 of CPU frequency, presc = 8
-    TCCR1 = _BV(CTC1) | _BV(CS12);										// switch CTC Mode on, set prescaler to 8
-#      else
-    OCR1B = OCR1C = ((F_CPU / 4) / F_INTERRUPTS) - 1;                   // compare value: 1/15000 of CPU frequency, presc = 4
-    TCCR1 = _BV(CTC1) | _BV(CS11) | _BV(CS10);                    		// switch CTC Mode on, set prescaler to 4
-#      endif
-    TIMSK |= _BV(OCIE1B);                                              	// enable compare match interrupt
-#    endif
-
-#  elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-    ICR1 = ((F_CPU / 8) / F_INTERRUPTS) - 1;                            // compare value: 1/15000 of CPU frequency, presc = 8
-    TCCR1B = 0;                                                         // switch CTC Mode on
-    TCCR1B = _BV(WGM12) | _BV(WGM13) | _BV(CS11);                 		// switch CTC Mode on, set prescaler to 8
-    TIMSK1 = _BV(OCIE1A);                                             	// enable compare match interrupt
-
-#  else
-    TCCR2A = _BV(WGM21); // CTC mode
-    TCCR2B = _BV(CS21); // prescale by 8
-    OCR2B = OCR2A = ((F_CPU / 8) / F_INTERRUPTS) - 1; // 132 for 15000 interrupts per second
-    TIMSK2 = _BV(OCIE2B); // enable TIMER2_COMPB_vect interrupt to be compatible with tone() library
-    TCNT2 = 0;
-#  endif
-
-#elif defined(ESP8266)
-    timer1_isr_init();
-    timer1_attachInterrupt(irmp_timer_ISR);
-    /*
-     * TIM_DIV1 = 0,   //80MHz (80 ticks/us - 104857.588 us max)
-     * TIM_DIV16 = 1,  //5MHz (5 ticks/us - 1677721.4 us max)
-     * TIM_DIV256 = 3 //312.5Khz (1 tick = 3.2us - 26843542.4 us max)
-     */
-    timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP);
-    timer1_write((F_CPU / 16) / F_INTERRUPTS);
-
-#elif defined(ESP32)
-    // Use Timer1 with 1 microsecond resolution
-    sESP32Timer = timerBegin(1, 80, true);
-    timerAttachInterrupt(sESP32Timer, irmp_timer_ISR, true);
-    timerAlarmWrite(sESP32Timer, (getApbFrequency() / 80) / F_INTERRUPTS, true);
-    timerAlarmEnable(sESP32Timer);
-
-// BluePill in 2 flavors
-#elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-    sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);  // used for generating only interrupts, no pin specified
-    sSTM32Timer.setOverflow(1000000 / F_INTERRUPTS, MICROSEC_FORMAT);   // microsecond period
-    sSTM32Timer.attachInterrupt(irmp_timer_ISR);                          // this sets update interrupt enable
-    sSTM32Timer.resume();  // Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
-
-#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-    sSTM32Timer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
-    sSTM32Timer.setPeriod(1000000 / F_INTERRUPTS);                      // microsecond period
-    sSTM32Timer.attachInterrupt(TIMER_CH1, irmp_timer_ISR);
-    sSTM32Timer.refresh(); // Set the timer's count to 0 and update the prescaler and overflow values.
-#endif
-}
-
-void irmp_disable_timer_interrupt(void)
-{
-#if defined(__AVR__)
-    // Use Timer 2
-#  if defined(__AVR_ATmega16__)
-    TIMSK = 0; // disable interrupt
-
-#  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#if defined(ARDUINO_AVR_DIGISPARK)
-    TIMSK &= ~_BV(OCIE0B); // disable interrupt
-#else
-    TIMSK &= ~_BV(OCIE1B); // disable interrupt
-#endif
-
-#  elif  defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-    TIMSK1 &= ~_BV(OCIE1A); // disable interrupt
-
-#  else
-    TIMSK2 = 0; // disable interrupt
-#  endif
-
-#elif defined(ESP8266)
-    timer1_detachInterrupt(); // disables interrupt too
-
-#elif defined(ESP32)
-    timerAlarmDisable(sESP32Timer);
-
-#elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-    sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_DISABLED);
-    sSTM32Timer.detachInterrupt();
-
-#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-    sSTM32Timer.setMode(TIMER_CH1, TIMER_DISABLED);
-    sSTM32Timer.detachInterrupt(TIMER_CH1);
-#endif
-}
-
-void irmp_enable_timer_interrupt(void)
-{
-#if defined(__AVR__)
-    // Use Timer 2
-#  if defined(__AVR_ATmega16__)
-    TIMSK = _BV(OCIE2); // enable interrupt
-
-#  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#if defined(ARDUINO_AVR_DIGISPARK)
-    TIMSK |= _BV(OCIE0B); // enable compare match interrupt
-#else
-    TIMSK |= _BV(OCIE1B); // enable compare match interrupt
-#endif
-
-#  elif  defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-    TIMSK1 |= _BV(OCIE1A); // enable compare match interrupt
-
-#  else
-    TIMSK2 = _BV(OCIE2B); // enable interrupt
-#  endif
-
-#elif defined(ESP8266)
-    timer1_attachInterrupt(irmp_timer_ISR); // enables interrupt too
-
-#elif defined(ESP32)
-    timerAlarmEnable(sESP32Timer);
-
-#elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-    sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC); // used for generating only interrupts, no pin specified
-    sSTM32Timer.attachInterrupt(irmp_timer_ISR);
-    sSTM32Timer.refresh(); // Set the timer's count to 0 and update the prescaler and overflow values.
-
-#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-    sSTM32Timer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
-    sSTM32Timer.attachInterrupt(TIMER_CH1, irmp_timer_ISR);
-    sSTM32Timer.refresh(); // Set the timer's count to 0 and update the prescaler and overflow values.
-#endif
 }
 
 #if defined(__AVR__)
@@ -6289,6 +6077,9 @@ void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr)
     aSerial->println();
 }
 
+/*
+ * Do not just call irmp_result_print( &Serial, aIRMPDataPtr), since this is not always possible for ATtinies.
+ */
 void irmp_result_print(IRMP_DATA * aIRMPDataPtr)
 {
     /*
@@ -6327,216 +6118,7 @@ void irmp_result_print(IRMP_DATA * aIRMPDataPtr)
     }
     Serial.println();
 }
-
 #endif // defined(ARDUINO)
-
-#if (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
-/*
- * Wrapper for irmp_ISR() in order to run it with Pin Change Interrupts.
- * Needs additional 8-9us per call and 13us for signal going inactive and 19us for going active.
- * Tested for NEC, Kaseiko, Denon, RC6, Samsung
- * Requires micros() for timing.
- */
-//#define PCI_DEBUG
-void irmp_PCI_ISR(void) {
-    static uint32_t irmp_last_change_micros;
-
-    uint_fast8_t irmp_input = input(IRMP_PIN);
-
-    // compute ticks after last change
-    uint32_t tMicros = micros();
-    uint32_t tTicks = tMicros - irmp_last_change_micros;// values up to 10000
-    irmp_last_change_micros = tMicros;
-#  if (F_INTERRUPTS == 15625)
-    // F_INTERRUPTS value of 31250 does not work (maybe 8 bit overflow?)
-    tTicks = (tTicks << 2) >> 8;// saves 1.3 us
-#  else
-#error "F_INTERRUPTS must be 15625 (to avoid a time consuming division)"
-#  endif
-
-    if (tTicks != 0) {
-        tTicks -= 1;
-    }
-
-    if (irmp_input) {
-        // start of pause -> set pulse width
-        irmp_pulse_time += tTicks;
-    } else {
-        // start of pulse -> set pause or time between repetitions
-        if (!irmp_start_bit_detected) {
-            if (tTicks > 0xFFFF) {
-                // avoid overflow
-                tTicks = 0xFFFF;
-            }
-            key_repetition_len = tTicks;
-        } else {
-            irmp_pause_time += tTicks;
-        }
-    }
-
-    irmp_ISR();
-
-    if(!irmp_ir_detected && irmp_input) {
-        /*
-         * Simulate end for protocols
-         * IRMP may be waiting for stop bit, but detects it only at the next call, so do one additional call.
-         * !!! ATTENTION !!! This will NOT work if we try to receive simultaneously two protocols which are only different in length like NEC16 and NEC42
-         */
-#  ifdef PCI_DEBUG
-        Serial.write('x');
-        if(irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
-            Serial.print(irmp_start_bit_detected);
-        }
-#  endif
-        if (irmp_start_bit_detected && irmp_bit == irmp_param.complete_len && irmp_param.stop_bit == 1) {
-            // call another time to detect a nec repeat
-#  ifdef PCI_DEBUG
-            Serial.println('R');
-#  endif
-            if(irmp_pulse_time > 0) {
-                irmp_pulse_time--;
-            }
-            irmp_ISR();
-        }
-
-        if (irmp_start_bit_detected && irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
-#  ifdef PCI_DEBUG
-            irmp_debug_print(F("S"));
-#  endif
-            irmp_ISR();
-#  ifdef PCI_DEBUG
-            irmp_debug_print(F("E"));
-            Serial.println();
-#  endif
-        }
-
-#  if (IRMP_SUPPORT_MANCHESTER == 1)
-        /*
-         * Simulate end for Manchester/biphase protocols - 130 bytes
-         */
-#    ifdef PCI_DEBUG
-        Serial.println('M');
-#    endif
-        if (((irmp_bit == irmp_param.complete_len - 1 && tTicks < irmp_param.pause_1_len_max)
-                        || (irmp_bit == irmp_param.complete_len - 2 && tTicks > irmp_param.pause_1_len_max))
-                && (irmp_param.flags & IRMP_PARAM_FLAG_IS_MANCHESTER) && irmp_start_bit_detected) {
-            irmp_pause_time = 2 * irmp_param.pause_1_len_max;
-            irmp_ISR();        // Write last one (with value 0) or 2 (with last value 1) data bits and set wait for dummy stop bit
-            irmp_ISR();// process dummy stop bit
-            irmp_ISR();// reset stop bit and call callback
-        }
-#  endif
-    }
-}
-
-void initPCIInterrupt() {
-#  ifdef IRMP_USE_ARDUINO_ATTACH_INTERRUPT
-    attachInterrupt(digitalPinToInterrupt(IRMP_INPUT_PIN), irmp_PCI_ISR, CHANGE);
-#  else
-#    if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-	// use PinChangeInterrupt
-    PCMSK |= _BV(IRMP_INPUT_PIN);
-    // clear interrupt bit
-    GIFR |= 1 << PCIF;
-    // enable interrupt on next change
-    GIMSK |= 1 << PCIE;
-
-#    elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#      if defined(ARDUINO_AVR_DIGISPARKPRO)
-#        if (IRMP_INPUT_PIN == 3)
-    // interrupt on any logical change
-    EICRA |= _BV(ISC00);
-    // clear interrupt bit
-    EIFR |= 1 << INTF0;
-    // enable interrupt on next change
-    EIMSK |= 1 << INT0;
-#        elif (IRMP_INPUT_PIN == 9)
-    EICRA |= _BV(ISC10);
-    // clear interrupt bit
-    EIFR |= 1 << INTF1;
-    // enable interrupt on next change
-    EIMSK |= 1 << INT1;
-#        else
-#          error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1) IRMP_INPUT_PIN must be 9 or 3."
-#        endif // if (IRMP_INPUT_PIN == 9)
-
-#      else // defined(ARDUINO_AVR_DIGISPARKPRO)
-#        if (IRMP_INPUT_PIN == 14)
-    // interrupt on any logical change
-    EICRA |= _BV(ISC00);
-    // clear interrupt bit
-    EIFR |= 1 << INTF0;
-    // enable interrupt on next change
-    EIMSK |= 1 << INT0;
-#        elif (IRMP_INPUT_PIN == 3)
-    EICRA |= _BV(ISC10);
-    // clear interrupt bit
-    EIFR |= 1 << INTF1;
-    // enable interrupt on next change
-    EIMSK |= 1 << INT1;
-#        else
-#          error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1) IRMP_INPUT_PIN must be 14 or 3."
-#        endif // if (IRMP_INPUT_PIN == 14)
-#      endif
-
-#    else // defined(__AVR_ATtiny25__)
-#      if (IRMP_INPUT_PIN == 2)
-    // interrupt on any logical change
-    EICRA |= _BV(ISC00);
-    // clear interrupt bit
-    EIFR |= 1 << INTF0;
-    // enable interrupt on next change
-    EIMSK |= 1 << INT0;
-#      elif (IRMP_INPUT_PIN == 3)
-    EICRA |= _BV(ISC10);
-    // clear interrupt bit
-    EIFR |= 1 << INTF1;
-    // enable interrupt on next change
-    EIMSK |= 1 << INT1;
-#      else
-#        error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1) IRMP_INPUT_PIN must be 2 or 3."
-#      endif // if (IRMP_INPUT_PIN == 2)
-#    endif // defined(__AVR_ATtiny25__)
-#  endif //IRMP_USE_ARDUINO_ATTACH_INTERRUPT
-}
-
-/*
- * Specify the right INT0, INT1 or PCINT0 interrupt vector according to different pins and cores
- */
-#  if defined(__AVR__)
-#   if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-ISR(PCINT0_vect)
-#    else
-#      if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#        if defined(ARDUINO_AVR_DIGISPARKPRO)
-#          if (IRMP_INPUT_PIN == 3) //  PB6 / INT0 is connected to USB+ on DigisparkPro boards
-ISR(INT0_vect)
-#          endif
-#         if (IRMP_INPUT_PIN == 9)
-ISR(INT1_vect)
-#         endif
-
-#        else // defined(ARDUINO_AVR_DIGISPARKPRO)
-#          if (IRMP_INPUT_PIN == 14) // For AVR_ATtiny167 INT0 is on pin 14 / PB6
-ISR(INT0_vect)
-#          endif
-#        endif
-
-#      else // AVR_ATtiny167
-#      if (IRMP_INPUT_PIN == 2)
-ISR(INT0_vect)
-#        endif
-#      endif // AVR_ATtiny167
-
-#      if (IRMP_INPUT_PIN == 3) && !defined(ARDUINO_AVR_DIGISPARKPRO)
-ISR(INT1_vect)
-#      endif
-#    endif // defined(__AVR_ATtiny25__)
-{
-    irmp_PCI_ISR();
-}
-#  endif
-#endif // (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
 
 #ifdef ANALYZE
 

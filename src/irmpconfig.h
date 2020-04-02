@@ -12,6 +12,9 @@
  * (at your option) any later version.
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
+
+#define IRMPCONFIG_H
+
 #ifndef IRMP_H
 #  error please include only irmp.h, not irmpconfig.h
 #endif

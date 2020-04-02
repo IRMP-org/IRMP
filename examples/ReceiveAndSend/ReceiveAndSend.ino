@@ -152,6 +152,8 @@ void loop()
             /*
              * Do beep
              */
+            Serial.println(F("Special key detected, now beep and send IR frames"));
+
             tone(TONE_PIN, 2200);
             delay(200);
             noTone(TONE_PIN);
