@@ -47,11 +47,15 @@
 
 #elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include "ATtinySerialOut.h"
-#include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
 #  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 #define IRMP_INPUT_PIN 0
+#    if defined(ARDUINO_AVR_DIGISPARK)
+#define LED_BUILTIN PB1
+#    endif
+
 #  else
 #    if defined(ARDUINO_AVR_DIGISPARKPRO)
+#define LED_BUILTIN 1 // On a Digispark Pro we have PB1 / D1 (Digispark library) or D9 (ATtinyCore lib) / on DigisparkBoard labeled as pin 1
 #define IRMP_INPUT_PIN 9  // PA3 - on DigisparkBoard labeled as pin 9
 #    else
 #define IRMP_INPUT_PIN 3
@@ -96,7 +100,7 @@
  */
 #include <irmp.c.h>
 
-IRMP_DATA irmp_data[1];
+IRMP_DATA irmp_data;
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
@@ -147,21 +151,21 @@ void loop() {
  * In order to enable other interrupts you can call sei() (enable interrupt again) after getting data.
  */
 void handleReceivedIRData() {
-    irmp_get_data(&irmp_data[0]);
+    irmp_get_data(&irmp_data);
     interrupts(); // Enable interrupts
 
     /*
      * Filter for commands from the WM010 IR Remote
      */
-    if (irmp_data[0].address == 0xF708) {
+    if (irmp_data.address == 0xF708) {
         /*
          * Skip repetitions of command
          */
-        if (!(irmp_data[0].flags & IRMP_FLAG_REPETITION)) {
+        if (!(irmp_data.flags & IRMP_FLAG_REPETITION)) {
             /*
              * Evaluate IR command
              */
-            switch (irmp_data[0].command) {
+            switch (irmp_data.command) {
             case 0x48:
                 digitalWrite(LED_BUILTIN, HIGH);
                 break;
@@ -174,5 +178,5 @@ void handleReceivedIRData() {
         }
     }
 
-    irmp_result_print(&irmp_data[0]);
+    irmp_result_print(&irmp_data);
 }

@@ -320,7 +320,6 @@ extern void irmp_debug_print(const __FlashStringHelper * aMessage, bool aDoShort
 extern void irmp_debug_print(const char * aMessage, bool aDoShortOutput);
 #  endif
 
-extern void                             irmp_timer_ISR(void);
 extern void                             irmp_PCI_ISR(void);
 extern void                             initPCIInterrupt(void);
 

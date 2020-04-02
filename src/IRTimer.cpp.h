@@ -47,7 +47,7 @@ HardwareTimer sSTM32Timer(3);
 
 #if defined(IRSND_H) // we compile for irsnd
 #undef IR_INTERRUPT_FREQUENCY
-#define IR_INTERRUPT_FREQUENCY IRSND_INTERRUPT_FREQ_FOR_38_KHZ
+#define IR_INTERRUPT_FREQUENCY IRSND_INTERRUPT_FREQUENCY
 
 /*
  * Temporarily storage for timer register
@@ -83,18 +83,24 @@ void initIRReceiveTimer(void) {
     // Since the ISR takes 5 to 22 microseconds for ATtiny@16MHz only 16 and 8 MHz makes sense
 #    if defined(ARDUINO_AVR_DIGISPARK)
     // the digispark core uses timer 1 for millis() :-(
+    // Timer 0 has only 1 and 8 as useful prescaler
     TCCR0A = 0;                                                         // must be set to zero before configuration!
-    OCR0A = OCR0B = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;                   // compare value: 1/15000 of CPU frequency, presc = 8
-    TCCR0A = _BV(WGM01);                                                // CTC with OCRA as top
+#      if (F_CPU / IR_INTERRUPT_FREQUENCY) > 256                        // for 8 bit timer
+    OCR0A = OCR0B = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;         // 132 for 15 kHz @16 MHz
     TCCR0B = _BV(CS01);                                                 // presc = 8
+#      else
+    OCR0A = OCR0B = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;               // compare value: 209 for 76 kHz, 221 for 72kHz @16MHz
+    TCCR0B = _BV(CS00);                                                 // presc = 1 / no prescaling
+#      endif
+    TCCR0A = _BV(WGM01);                                                // CTC with OCRA as top
     TIMSK |= _BV(OCIE0B);                                               // enable compare match interrupt
 #    else
-#      if ((F_CPU / 4) / IR_INTERRUPT_FREQUENCY) > 256                  // for 8 bit timer
-    OCR1B = OCR1C = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;         // compare value: 1/15000 of CPU frequency, presc = 8
+#      if (F_CPU / IR_INTERRUPT_FREQUENCY) > 256                        // for 8 bit timer
+    OCR1B = OCR1C = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;         // 132 for 15 kHz @16 MHz
     TCCR1 = _BV(CTC1) | _BV(CS12);                                      // switch CTC Mode on, set prescaler to 8
 #      else
-    OCR1B = OCR1C = ((F_CPU / 4) / IR_INTERRUPT_FREQUENCY) - 1;         // compare value: 1/15000 of CPU frequency, presc = 4
-    TCCR1 = _BV(CTC1) | _BV(CS11) | _BV(CS10);                          // switch CTC Mode on, set prescaler to 4
+    OCR1B = OCR1C = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;               // compare value: 209 for 76 kHz, 221 for 72kHz @16MHz
+    TCCR1 = _BV(CTC1) | _BV(CS10);                                      // switch CTC Mode on, set prescaler to 1 / no prescaling
 #      endif
     TIMSK |= _BV(OCIE1B);                                               // enable compare match interrupt
 #    endif
@@ -378,10 +384,11 @@ void irmp_timer_ISR(void)
 	    }
 	    else
 	    {
+	    // Disable output here
 #  if defined(__AVR__)
-	        digitalWriteFast(IRSND_OUTPUT_PIN, LOW);
+	    pinModeFast(IRSND_OUTPUT_PIN, INPUT);
 #  else
-	        digitalWrite(IRSND_OUTPUT_PIN, LOW);
+	    pinMode(IRSND_OUTPUT_PIN, INPUT);
 #  endif
 	    }
 	    if (--sDivider == 0)

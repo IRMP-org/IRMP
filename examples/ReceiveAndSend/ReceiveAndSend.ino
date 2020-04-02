@@ -2,8 +2,8 @@
  *  ReceiveAndSend.cpp
  *
  *  Serves as a IR remote macro expander
- *  Receives Samsung32 protocol and  on receiving a specified input frame, it sends multiple Samsung32 frames.
- *  This works as a Netflix-key emulation for my oldSamsung TV.
+ *  Receives Samsung32 protocol and on receiving a specified input frame, it sends multiple Samsung32 frames.
+ *  This serves as a Netflix-key emulation for my oldSamsung TV.
  *
  *  Copyright (C) 2019-2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
@@ -25,6 +25,15 @@
  *
  */
 
+// ATMEL ATTINY85
+// Piezo speaker must have a 270 Ohm resistor in series for USB programming and running at the Samsung.
+// IR LED has a 270 Ohm resistor in series.
+//                                                    +-\/-+
+//                                   !RESET (5) PB5  1|    |8  Vcc
+// USB+ 3.6V Z-Diode, 1.5kOhm to VCC  Piezo (3) PB3  2|    |7  PB2 (2) TX Debug output
+// USB- 3.6V Z-Diode              IR Output (4) PB4  3|    |6  PB1 (1) Feedback LED
+//                                              GND  4|    |5  PB0 (0) IR Input
+//                                                    +----+
 #include <Arduino.h>
 
 #define VERSION_EXAMPLE "1.0"
@@ -55,16 +64,20 @@
 
 #elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include "ATtinySerialOut.h"
-#include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
 #  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 #define IRMP_INPUT_PIN 0
-#define IRSND_OUTPUT_PIN 4 // Pin 1 is internal LED on Digispark board, Pin 2 is serial output with ATtinySerialOut, Pin3 is USB+
+#define IRSND_OUTPUT_PIN 4 // Pin 2 is serial output with ATtinySerialOut. Pin 1 is internal LED and Pin3 is USB+ with pullup on Digispark board.
 #define TONE_PIN 3
 //#define IRMP_MEASURE_TIMING
 //#define IRMP_TIMING_TEST_PIN 3
-#  else
+#    if defined(ARDUINO_AVR_DIGISPARK)
+#define LED_BUILTIN PB1
+#    endif
+
+#  else // ATtiny87 or ATtiny167 here
 #define TONE_PIN 5
 #    if defined(ARDUINO_AVR_DIGISPARKPRO)
+#define LED_BUILTIN 1 // On a Digispark Pro we have PB1 / D1 (Digispark library) or D9 (ATtinyCore lib) / on DigisparkBoard labeled as pin 1
 #define IRMP_INPUT_PIN 9  // PA3 - on Digispark board labeled as pin 9
 #define IRSND_OUTPUT_PIN 8  // PA2 - on Digispark board labeled as pin 8
 #    else
@@ -79,7 +92,7 @@
 #define TONE_PIN 5
 #endif
 
-#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
+#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH. Must before #include <irmp*>
 
 #define IRMP_SUPPORT_SAMSUNG_PROTOCOL     1
 #define IRSND_SUPPORT_SAMSUNG_PROTOCOL    1
@@ -87,93 +100,168 @@
 /*
  * After setting the modifiers we can include the code and compile it.
  */
+//#define IR_OUTPUT_IS_ACTIVE_LOW
 #define USE_ONE_TIMER_FOR_IRMP_AND_IRSND // otherwise we get an error: redefinition of 'void __vector_8()
 #include <irmp.c.h>
 #include <irsnd.c.h>
 
-IRMP_DATA irmp_data[1];
+IRMP_DATA irmp_data;
 IRMP_DATA irsnd_data;
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
-void setup()
-{
-    Serial.begin(115200);
+void sendSamsungSmartHubMacro(bool aDoSelect);
+void IRSendWithDelay(uint16_t aCommand, uint16_t aDelayMillis);
+
+void setup() {
+	Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__)
-    while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
+	while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
 #endif
 #if defined(SERIAL_USB)
-    delay(2000); // To be able to connect Serial monitor after reset and before first printout
+	delay(2000); // To be able to connect Serial monitor after reset and before first printout
 #endif
 #if defined(__ESP8266__)
 	Serial.println(); // to separate it from the internal boot output
 #endif
-#if defined(ARDUINO_AVR_DIGISPARK) || defined(ARDUINO_AVR_DIGISPARKPRO)
-    changeDigisparkClock();
-#endif
-    // Just to know which program is running on my Arduino
-    Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
-    irmp_init();
-    irmp_blink13(true); // Enable LED feedback for receive
 
-    irsnd_init();
-    irsnd_blink13(true); // Enable LED feedback for send
+	// Just to know which program is running on my Arduino
+	Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
+
+	tone(TONE_PIN, 2200);
+	delay(400);
+	noTone(TONE_PIN);
+
+	irmp_init();
+	irmp_blink13(true); // Enable LED feedback for receive
+
+	irsnd_init();
+	irsnd_blink13(true); // Enable LED feedback for send
 
 #if defined(STM32F1xx)
-    Serial.println(F("Ready to receive IR signals at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library
-    Serial.println(F("Ready to send IR signals at pin PA5")); // the internal pin numbers are crazy for the STM32 Boards library
+	Serial.println(F("Ready to receive IR signals at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library
+	Serial.println(F("Ready to send IR signals at pin PA5"));// the internal pin numbers are crazy for the STM32 Boards library
 #else
-    Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
-    Serial.println(F("Ready to send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
+	Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
+	Serial.println(F("Ready to send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
 #endif
 
-    irsnd_data.protocol = IRMP_SAMSUNG32_PROTOCOL;
-    irsnd_data.address = 0x0707;
-    irsnd_data.flags = 1; // repeat frame 1 time
-
+	irsnd_data.protocol = IRMP_SAMSUNG32_PROTOCOL;
+	irsnd_data.address = 0x0707;
+	irsnd_data.flags = 1; // repeat frame 1 time
 }
 
-void loop()
-{
-    /*
-     * Check if new data available and get them
-     */
-    if (irmp_get_data(&irmp_data[0]))
-    {
-        irmp_result_print(&irmp_data[0]);
+void loop() {
+	/*
+	 * Check if new data available and get them
+	 */
+	if (irmp_get_data(&irmp_data)) {
+#if ! defined(ARDUINO_AVR_DIGISPARK) || defined(USED_BETTER_DIGISPAK_COMPILER)
+		irmp_result_print(&irmp_data);
+#endif
+		/*
+		 * Here data is available -> evaluate IR command
+		 */
+		switch (irmp_data.command) {
+		case 0xB847: // The play key on the bottom of my Samsung remote
+			Serial.println(F("Play key detected, open Netflix"));
+			sendSamsungSmartHubMacro(true);
+			break;
 
-        /*
-         * Here data is available -> evaluate IR command
-         */
-        switch (irmp_data[0].command)
-        {
-        case 0xB847:
-            /*
-             * Do beep
-             */
-            Serial.println(F("Special key detected, now beep and send IR frames"));
+		case 0xB54A: // The pause key on the bottom of my Samsung remote
+			Serial.println(F("Pause key detected, open SmartHub"));
+			sendSamsungSmartHubMacro(false);
+			break;
 
-            tone(TONE_PIN, 2200);
-            delay(200);
-            noTone(TONE_PIN);
-            irmp_init(); // restore timer for IR receive after using of tone
-            delay(1000);
+		default:
+			break;
+		}
+	}
+}
 
-            irsnd_data.command = 0xE51A; // MENU
-            irsnd_send_data(&irsnd_data, true); // Wait for frame to end. This stores timer state and restores it after sending
-            delay(500);
+void IRSendWithDelay(uint16_t aCommand, uint16_t aDelayMillis) {
+	irsnd_data.command = aCommand;
+	irsnd_send_data(&irsnd_data, true); // true = wait for frame to end. This stores timer state and restores it after sending
+	delay(aDelayMillis);
+}
 
-            irsnd_data.command = 0x9E61; // Down arrow
-            irsnd_send_data(&irsnd_data, true);
+bool sMacroWasCalledBefore = false;
+#define INITIAL_WAIT_TIME_APPS_READY_MILLIS 70000 // Time to let the TV load all software before Netflix can be started without an error
+#define INITIAL_WAIT_TIME_SMARTHUB_READY_MILLIS 20000 // Time to let the TV load all software before SmartHub manu can be displayed
 
-            /*
-             * Place your delays and codes here
-             */
-            break;
-        default:
-            break;
-        }
+/*
+ * This macro calls the last SmartHub application you selected manually
+ *
+ * @param aDoSelect - if true select the current app (needs longer initial wait time) else show smarthub menu
+ *
+ */
+void sendSamsungSmartHubMacro(bool aDoSelect) {
+	uint32_t tWaitTimeAfterBoot;
+	if (aDoSelect) {
+		tWaitTimeAfterBoot = INITIAL_WAIT_TIME_APPS_READY_MILLIS;
+	} else {
+		tWaitTimeAfterBoot = INITIAL_WAIT_TIME_SMARTHUB_READY_MILLIS;
+	}
 
-    }
+	if (millis() < tWaitTimeAfterBoot) {
+#if ! defined(ARDUINO_AVR_DIGISPARK) || defined(USED_BETTER_DIGISPAK_COMPILER)
+		// division by 1000 and printing requires much (8%) program space
+		Serial.print(F("It is "));
+		Serial.print(millis() / 1000);
+		Serial.print(F(" seconds after boot, Samsung TV requires "));
+		Serial.print(tWaitTimeAfterBoot / 1000);
+		Serial.println(F(" seconds after boot to be ready for the command"));
+#endif
+		tone(TONE_PIN, 2200);
+		delay(100);
+		noTone(TONE_PIN);
+		delay(100);
+		tone(TONE_PIN, 2200);
+		delay(100);
+		noTone(TONE_PIN);
+
+		while (millis() < tWaitTimeAfterBoot) {
+			delay(10); // blocking wait
+		}
+	}
+
+	// Do beep feedback for special key to be received
+	tone(TONE_PIN, 2200);
+	delay(200);
+	noTone(TONE_PIN);
+	irmp_init(); // restore timer for IR receive after using of tone
+
+	Serial.println(F("Wait for \"not supported\" to disappear"));
+	delay(2000);
+
+	Serial.println(F("Start sending of Samsung Netflix IR macro"));
+
+	IRSendWithDelay(0xE51A, 2000); // Menu and wait for the Menu to pop up
+
+	Serial.println(F("Wait for the menu to pop up"));
+	if (!sMacroWasCalledBefore) {
+		delay(2000); // wait additional time for the Menu load
+	}
+
+	for (uint8_t i = 0; i < 4; ++i) {
+		IRSendWithDelay(0x9E61, 250); // Down arrow
+	}
+
+	IRSendWithDelay(0x9D62, 400); // Right arrow
+	for (uint8_t i = 0; i < 2; ++i) {
+		IRSendWithDelay(0x9E61, 250); // Down arrow
+	}
+
+	delay(250);
+	IRSendWithDelay(0x9768, 1); // Enter for SmartHub
+
+	if (aDoSelect) {
+		Serial.println(F("Wait for SmartHub to show up, before entering current application"));
+		delay(10000); // Wait not longer than 12 seconds, because smarthub menu then disappears
+		IRSendWithDelay(0x9768, 1); // Enter for last application (e.g. Netflix or Amazon)
+	}
+
+	sMacroWasCalledBefore = true;
+
 }

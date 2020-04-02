@@ -59,11 +59,15 @@
 
 #elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include "ATtinySerialOut.h"
-#include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
 #  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#define IRSND_OUTPUT_PIN 4 // Pin 1 is internal LED on Digispark board, Pin 2 is serial output with ATtinySerialOut, Pin3 is USB+
+#define IRSND_OUTPUT_PIN 4 // Pin 2 is serial output with ATtinySerialOut. Pin 1 is internal LED and Pin3 is USB+ with pullup on Digispark board.
+#    if defined(ARDUINO_AVR_DIGISPARK)
+#define LED_BUILTIN PB1
+#    endif
+
 #  else
 #    if defined(ARDUINO_AVR_DIGISPARKPRO)
+#define LED_BUILTIN 1 // On a Digispark Pro we have PB1 / D1 (Digispark library) or D9 (ATtinyCore lib) / on DigisparkBoard labeled as pin 1
 #define IRSND_OUTPUT_PIN 8  // PA2 - on DigisparkBoard labeled as pin 8
 #    else
 #define IRSND_OUTPUT_PIN 2
@@ -73,6 +77,8 @@
 #else
 #define IRSND_OUTPUT_PIN 4
 #endif
+
+//#define IR_OUTPUT_IS_ACTIVE_LOW
 
 #include <irsndSelectMain15Protocols.h>
 /*
@@ -97,9 +103,7 @@ void setup()
 #if defined(__ESP8266__)
 	Serial.println(); // to separate it from the internal boot output
 #endif
-#if defined(ARDUINO_AVR_DIGISPARK) || defined(ARDUINO_AVR_DIGISPARKPRO)
-    changeDigisparkClock();
-#endif
+
     // Just to know which program is running on my Arduino
     Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
     irsnd_init();

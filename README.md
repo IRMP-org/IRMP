@@ -30,6 +30,7 @@ Only 40 protocols can be enabled for receive at the same time, because some of t
 # Timer usage
 The IRMP **receive** library works by polling the input pin at a rate of 10 to 20 kHz. Default is 15 kHz.<br/>
 The IRMP **send** library works by bit banging the output pin at a frequency of 38 kHz. This **avoids blocking waits** and allows to choose an **arbitrary pin**, you are not restricted to pin 3 or 11. Send Interrupts require 50% CPU time.<br/>
+The **tone() library is still available**. You can use it alternating with IR receive and send, see [ReceiveAndSend example](https://github.com/ukw100/IRMP/blob/master/examples/ReceiveAndSend/ReceiveAndSend.ino).
 
 **Some protocols can be received by just using interrupts from the input pin** instead of polling by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. In this case **no timer is needed**. See [Interrupt example](https://github.com/ukw100/IRMP/blob/master/examples/Interrupt/Interrupt.ino).<br/>
 
@@ -38,6 +39,12 @@ The IRMP **send** library works by bit banging the output pin at a frequency of 
 - For STM32 (BluePill) **timer 3 (Servo timer) channel 1** is used as default.<br/>
 - If you use polling mode with timer 2, the `millis()` function and the corresponding timer is not used by IRMP! 
 - In Interrupt mode, the `micros()` function is used as timebase.
+
+# Features
+- Interrupt mode for major protocols.
+- Supports inverted feedback LED for send and receive feedback.
+- Supports inverted IR output for LED connected to VCC.
+- Compatible with Arduino tone() library.
 
 # Schematic for Arduino UNO
 | IR-Receiver connection | Serial LCD connection |
@@ -119,8 +126,8 @@ If you want to distinguish between more than one remote in one sketch, you may a
 - Added IR send fuctionality (IRSND).
 - Use `TIMER2_COMPB_vect` to be compatible with tone() library.
 - No longer required to call initPCIInterrupt() manually if IRMP_ENABLE_PIN_CHANGE_INTERRUPT is set.
-- Extracted code for timer to IRTimer.cpp.h.
-- Extracted code for Pin change interrupt to irmpPinChangeInterrupt.cpp.h.
+- Separated code for timer to IRTimer.cpp.h.
+- Separated code for Pin change interrupt to irmpPinChangeInterrupt.cpp.h.
 
 ### Version 1.2.2
 - Fixed bugs introduced in 1.2.1.

@@ -564,6 +564,13 @@ static void irsnd_on(void) {
 		if (irsnd_led_feedback) {
 			digitalWriteFast(LED_BUILTIN, HIGH);
 		}
+        pinModeFast(IRSND_OUTPUT_PIN, OUTPUT);
+        // start with LED active
+#    if defined(IR_OUTPUT_IS_ACTIVE_LOW)
+        digitalWriteFast(IRSND_OUTPUT_PIN, LOW);
+#    else
+        digitalWriteFast(IRSND_OUTPUT_PIN, HIGH);
+#    endif
 #  else
 		if (irsnd_led_feedback) {
 			// hope this is fast enough on other platforms
@@ -574,6 +581,12 @@ static void irsnd_on(void) {
 			digitalWrite(LED_BUILTIN, HIGH);
 #    endif
 		}
+        pinMode(IRSND_OUTPUT_PIN, OUTPUT);
+#    if defined(IR_OUTPUT_IS_ACTIVE_LOW)
+        digitalWrite(IRSND_OUTPUT_PIN, LOW);
+#    else
+        digitalWrite(IRSND_OUTPUT_PIN, HIGH);
+#    endif
 #  endif
 #else
 #  if defined(PIC_C18)                                  // PIC C18

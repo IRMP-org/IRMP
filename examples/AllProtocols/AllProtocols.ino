@@ -79,11 +79,15 @@
 
 #elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include "ATtinySerialOut.h"
-#include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
 #  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 #define IRMP_INPUT_PIN 0
+#    if defined(ARDUINO_AVR_DIGISPARK)
+#define LED_BUILTIN PB1
+#    endif
+
 #  else
 #    if defined(ARDUINO_AVR_DIGISPARKPRO)
+#define LED_BUILTIN 1 // On a Digispark Pro we have PB1 / D1 (Digispark library) or D9 (ATtinyCore lib) / on DigisparkBoard labeled as pin 1
 #define IRMP_INPUT_PIN 9  // PA3 - on DigisparkBoard labeled as pin 9
 #    else
 #define IRMP_INPUT_PIN 3
@@ -108,7 +112,7 @@
  */
 #include <irmp.c.h>
 
-IRMP_DATA irmp_data[1];
+IRMP_DATA irmp_data;
 
 #if defined (USE_SERIAL_LCD) && defined (USE_PARALELL_LCD)
 #error "Cannot use paralell and serial LCD simultaneously"
@@ -173,14 +177,14 @@ void loop() {
          * Serial output
          * takes 2 milliseconds at 115200
          */
-        irmp_result_print(&irmp_data[0]);
+        irmp_result_print(&irmp_data);
 
 #if defined (USE_SERIAL_LCD)
-        irmp_disable_timer_interrupt(); // disable timer interrupt before sei() below, since it disturbs the serial output
+        disableIRTimerInterrupt(); // disable timer interrupt before sei() below, since it disturbs the serial output
 #endif
         irmp_result_print_LCD();
 #if defined (USE_SERIAL_LCD)
-        irmp_enable_timer_interrupt();
+        enableIRTimerInterrupt();
 #endif
     }
 }
@@ -194,7 +198,7 @@ void handleReceivedIRData() {
     /*
      * Just print the data to Serial and LCD
      */
-    irmp_get_data(&irmp_data[0]);
+    irmp_get_data(&irmp_data);
     sIRMPDataAvailable = true;
 }
 
@@ -228,9 +232,9 @@ void irmp_result_print_LCD() {
     /*
      * Print only if protocol or address has changed
      */
-    if (sLastProtocolIndex != irmp_data[0].protocol || sLastProtocolAddress != irmp_data[0].address) {
-        sLastProtocolIndex = irmp_data[0].protocol;
-        sLastProtocolAddress = irmp_data[0].address;
+    if (sLastProtocolIndex != irmp_data.protocol || sLastProtocolAddress != irmp_data.address) {
+        sLastProtocolIndex = irmp_data.protocol;
+        sLastProtocolAddress = irmp_data.address;
 #  if (LCD_ROWS >= 4)
         // clear data lines
         myLCD.setCursor(0, tStartRow);
@@ -248,10 +252,10 @@ void irmp_result_print_LCD() {
         myLCD.setCursor(0, tStartRow);
         myLCD.print(F("P="));
 #  if defined(__AVR__)
-        const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data[0].protocol]);
+        const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data.protocol]);
         myLCD.print((__FlashStringHelper *) (tProtocolStringPtr));
 #  else
-        myLCD.print(irmp_protocol_names[irmp_data[0].protocol]);
+        myLCD.print(irmp_protocol_names[irmp_data.protocol]);
 #  endif
 
         /*
@@ -259,7 +263,7 @@ void irmp_result_print_LCD() {
          */
         myLCD.setCursor(0, tStartRow + 1);
         myLCD.print(F("A=0x"));
-        myLCD.print(irmp_data[0].address, HEX);
+        myLCD.print(irmp_data.address, HEX);
 
 #  if (LCD_COLUMNS > 16)
         /*
@@ -277,7 +281,7 @@ void irmp_result_print_LCD() {
 #  else
         myLCD.setCursor(15, tStartRow + 1);
 #  endif
-        if (irmp_data[0].flags & IRMP_FLAG_REPETITION) {
+        if (irmp_data.flags & IRMP_FLAG_REPETITION) {
             myLCD.print('R');
             return; // Since it is a repetition, printed data has not changed
         } else {
@@ -288,7 +292,7 @@ void irmp_result_print_LCD() {
     /*
      * Command prefix
      */
-    uint16_t tCommand = irmp_data[0].command;
+    uint16_t tCommand = irmp_data.command;
 
 #  if (LCD_COLUMNS <= 16)
     // check if prefix will change
@@ -316,7 +320,7 @@ void irmp_result_print_LCD() {
      * Command data
      */
     myLCD.setCursor(sLastCommandPrintPosition, tStartRow + 1);
-    if (irmp_data[0].command < 0x10) {
+    if (irmp_data.command < 0x10) {
         // leading 0
         myLCD.print('0');
     }

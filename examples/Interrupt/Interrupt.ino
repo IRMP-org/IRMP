@@ -60,12 +60,16 @@
 
 #elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include "ATtinySerialOut.h"
-#include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
 #  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 #define IRMP_INPUT_PIN 0
+#    if defined(ARDUINO_AVR_DIGISPARK)
+#define LED_BUILTIN PB1
+#    endif
+
 #  else
 // for ATtiny167 Pins PB6 and PA3 are usable as interrupt source.
 #    if defined(ARDUINO_AVR_DIGISPARKPRO)
+#define LED_BUILTIN 1 // On a Digispark Pro we have PB1 / D1 (Digispark library) or D9 (ATtinyCore lib) / on DigisparkBoard labeled as pin 1
 //#define IRMP_INPUT_PIN 3 // PB6 / INT0 is connected to USB+ on DigisparkPro boards
 #define IRMP_INPUT_PIN 9  // PA3 - on DigisparkBoard labeled as pin 9
 #    else
@@ -100,7 +104,7 @@
  */
 #include <irmp.c.h>
 
-IRMP_DATA irmp_data[1];
+IRMP_DATA irmp_data;
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
@@ -142,7 +146,7 @@ void loop() {
  * In order to enable other interrupts you can call sei() (enable interrupt again) after getting data.
  */
 void handleReceivedIRData() {
-    irmp_get_data(&irmp_data[0]);
+    irmp_get_data(&irmp_data);
     interrupts(); // enable interrupts
-    irmp_result_print(&irmp_data[0]);
+    irmp_result_print(&irmp_data);
 }

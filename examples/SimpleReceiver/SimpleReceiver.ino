@@ -71,11 +71,15 @@
 
 #elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include "ATtinySerialOut.h"
-#include "ATtinyUtils.h" // for changeDigisparkClock() and definition of LED_BUILTIN
 #  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 #define IRMP_INPUT_PIN 0
+#    if defined(ARDUINO_AVR_DIGISPARK)
+#define LED_BUILTIN PB1
+#    endif
+
 #  else
 #    if defined(ARDUINO_AVR_DIGISPARKPRO)
+#define LED_BUILTIN 1 // On a Digispark Pro we have PB1 / D1 (Digispark library) or D9 (ATtinyCore lib) / on DigisparkBoard labeled as pin 1
 #define IRMP_INPUT_PIN 9  // PA3 - on DigisparkBoard labeled as pin 9
 #    else
 #define IRMP_INPUT_PIN 3
@@ -83,7 +87,7 @@
 #  endif
 #endif // defined(ESP8266)
 
-#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
+#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH. Must before #include <irmp*>
 
 #include <irmpSelectMain15Protocols.h>  // This enables 15 main protocols
 
@@ -92,7 +96,7 @@
  */
 #include <irmp.c.h>
 
-IRMP_DATA irmp_data[1];
+IRMP_DATA irmp_data;
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
@@ -108,9 +112,7 @@ void setup() {
 #if defined(__ESP8266__)
 	Serial.println(); // to separate it from the internal boot output
 #endif
-#if defined(ARDUINO_AVR_DIGISPARK) || defined(ARDUINO_AVR_DIGISPARKPRO)
-    changeDigisparkClock();
-#endif
+
 	// Just to know which program is running on my Arduino
 	Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
 	irmp_init();
@@ -123,15 +125,15 @@ void loop() {
 	/*
 	 * Check if new data available and get them
 	 */
-	if (irmp_get_data(&irmp_data[0])) {
+	if (irmp_get_data(&irmp_data)) {
 		/*
 		 * Skip repetitions of command
 		 */
-		if (!(irmp_data[0].flags & IRMP_FLAG_REPETITION)) {
+		if (!(irmp_data.flags & IRMP_FLAG_REPETITION)) {
 			/*
 			 * Here data is available and is no repetition -> evaluate IR command
 			 */
-			switch (irmp_data[0].command) {
+			switch (irmp_data.command) {
 			case 0x48:
 				digitalWrite(LED_BUILTIN, HIGH);
 				break;
@@ -142,6 +144,6 @@ void loop() {
 				break;
 			}
 		}
-		irmp_result_print(&irmp_data[0]);
+		irmp_result_print(&irmp_data);
 	}
 }
