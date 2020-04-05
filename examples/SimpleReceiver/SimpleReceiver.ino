@@ -58,15 +58,11 @@
 #elif defined(ESP32)
 #define IRMP_INPUT_PIN 15
 
-#elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-#define IRMP_INPUT_PIN 4 // PA4
-#define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
-
 #elif defined(STM32F1xx) || defined(__STM32F1__)
 // BluePill in 2 flavors
 // STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 // __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-#define IRMP_INPUT_PIN 4 // PA4
+#define IRMP_INPUT_PIN PA4
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
 
 #elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)

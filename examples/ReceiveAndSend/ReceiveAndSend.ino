@@ -3,7 +3,7 @@
  *
  *  Serves as a IR remote macro expander
  *  Receives Samsung32 protocol and on receiving a specified input frame, it sends multiple Samsung32 frames.
- *  This serves as a Netflix-key emulation for my oldSamsung TV.
+ *  This serves as a Netflix-key emulation for my old Samsung H5273 TV.
  *
  *  Copyright (C) 2019-2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
@@ -56,7 +56,7 @@
 // BluePill in 2 flavors
 // STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 // __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-#define IRMP_INPUT_PIN 4 // PA4
+#define IRMP_INPUT_PIN PA4
 #define IRSND_OUTPUT_PIN 5 // PA5
 #define TONE_PIN 6
 
@@ -127,7 +127,7 @@ void setup() {
 #endif
 
 	// Just to know which program is running on my Arduino
-	Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
+	Serial.println(F("START ReceiveAndSend.cpp\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
 
 	tone(TONE_PIN, 2200);
 	delay(400);
@@ -157,9 +157,8 @@ void loop() {
 	 * Check if new data available and get them
 	 */
 	if (irmp_get_data(&irmp_data)) {
-#if ! defined(ARDUINO_AVR_DIGISPARK) || defined(USED_BETTER_DIGISPAK_COMPILER)
 		irmp_result_print(&irmp_data);
-#endif
+
 		/*
 		 * Here data is available -> evaluate IR command
 		 */
@@ -205,14 +204,13 @@ void sendSamsungSmartHubMacro(bool aDoSelect) {
 	}
 
 	if (millis() < tWaitTimeAfterBoot) {
-#if ! defined(ARDUINO_AVR_DIGISPARK) || defined(USED_BETTER_DIGISPAK_COMPILER)
 		// division by 1000 and printing requires much (8%) program space
 		Serial.print(F("It is "));
 		Serial.print(millis() / 1000);
-		Serial.print(F(" seconds after boot, Samsung TV requires "));
+		Serial.print(F(" seconds after boot, Samsung H5273 TV requires "));
 		Serial.print(tWaitTimeAfterBoot / 1000);
 		Serial.println(F(" seconds after boot to be ready for the command"));
-#endif
+
 		tone(TONE_PIN, 2200);
 		delay(100);
 		noTone(TONE_PIN);
@@ -235,7 +233,7 @@ void sendSamsungSmartHubMacro(bool aDoSelect) {
 	Serial.println(F("Wait for \"not supported\" to disappear"));
 	delay(2000);
 
-	Serial.println(F("Start sending of Samsung Netflix IR macro"));
+	Serial.println(F("Start sending of Samsung IR macro"));
 
 	IRSendWithDelay(0xE51A, 2000); // Menu and wait for the Menu to pop up
 

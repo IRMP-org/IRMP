@@ -128,6 +128,7 @@ If you want to distinguish between more than one remote in one sketch, you may a
 - No longer required to call initPCIInterrupt() manually if IRMP_ENABLE_PIN_CHANGE_INTERRUPT is set.
 - Separated code for timer to IRTimer.cpp.h.
 - Separated code for Pin change interrupt to irmpPinChangeInterrupt.cpp.h.
+- Fixed wrong pin numbers for BluePill.
 
 ### Version 1.2.2
 - Fixed bugs introduced in 1.2.1.
