@@ -19,8 +19,8 @@
 
 #if defined(ARDUINO)                                                              // AVR Arduino. Should be first, since it covers multiple platforms
 #  include "Arduino.h"
-#  if defined(AVR)
 #    include "digitalWriteFast.h"                                                     // we use pinModeFast() and digitalReadFast() and digitalWriteFast() in turn
+#  if defined(__AVR__)
 #    define memcpy_P                      memcpy_P                                    // Yes we have a memcpy_P function!!!
 #  else
 #    define uint_fast8_t uint8_t

@@ -30,7 +30,7 @@
 #endif
 
 #if defined(ARDUINO)  && defined (IRMP_INPUT_PIN)
-#  if defined (AVR)
+#  if defined (__AVR__)
 #    define input(x)                              digitalReadFast(IRMP_INPUT_PIN)
 #  else
 #    define input(x)                              digitalRead(IRMP_INPUT_PIN)

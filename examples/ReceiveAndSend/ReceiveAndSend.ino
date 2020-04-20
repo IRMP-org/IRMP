@@ -26,7 +26,7 @@
  */
 
 // ATMEL ATTINY85
-// Piezo speaker must have a 270 Ohm resistor in series for USB programming and running at the Samsung.
+// Piezo speaker must have a 270 Ohm resistor in series for USB programming and running at the Samsung TV.
 // IR LED has a 270 Ohm resistor in series.
 //                                                    +-\/-+
 //                                   !RESET (5) PB5  1|    |8  Vcc
@@ -36,38 +36,45 @@
 //                                                    +----+
 #include <Arduino.h>
 
-#define VERSION_EXAMPLE "1.0"
+#define VERSION_EXAMPLE "1.1"
 
 /*
  * Set library modifiers first to set input and output pin etc.
  */
 #if defined(ESP8266)
-#define IRMP_INPUT_PIN 14   // D5
-#define IRSND_OUTPUT_PIN 12 // D6
-#define TONE_PIN 15         //D8
-
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
+#define IRMP_INPUT_PIN 	 D5
+#define IRSND_OUTPUT_PIN D6 // D4 is internal LED
+#define tone(a,b) void() // tone() inhibits receive timer
+#define noTone(a) void()
+//#define IRMP_MEASURE_TIMING
+//#define IRMP_TIMING_TEST_PIN D7
 
 #elif defined(ESP32)
-#define IRMP_INPUT_PIN 15   // D15
-#define TONE_PIN 16
+#define IRMP_INPUT_PIN   15  // D15
+#define IRSND_OUTPUT_PIN  4  // D4
+#define tone(a,b) void() // no tone() available on ESP32
+#define noTone(a) void()
 
 #elif defined(STM32F1xx) || defined(__STM32F1__)
 // BluePill in 2 flavors
 // STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 // __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-#define IRMP_INPUT_PIN PA4
-#define IRSND_OUTPUT_PIN 5 // PA5
-#define TONE_PIN 6
-
+ // Timer 3 of IRMP blocks PA6, PA7, PB0, PB1 for use by Servo or tone()
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
+#define IRMP_INPUT_PIN   PA6
+#define IRSND_OUTPUT_PIN PA7
+#define TONE_PIN         PA3
+//#define IRMP_MEASURE_TIMING
+//#define IRMP_TIMING_TEST_PIN PA5
+
 
 #elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include "ATtinySerialOut.h"
 #  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#define IRMP_INPUT_PIN 0
+#define IRMP_INPUT_PIN   0
 #define IRSND_OUTPUT_PIN 4 // Pin 2 is serial output with ATtinySerialOut. Pin 1 is internal LED and Pin3 is USB+ with pullup on Digispark board.
-#define TONE_PIN 3
+#define TONE_PIN         3
 //#define IRMP_MEASURE_TIMING
 //#define IRMP_TIMING_TEST_PIN 3
 #    if defined(ARDUINO_AVR_DIGISPARK)
@@ -77,19 +84,21 @@
 #  else // ATtiny87 or ATtiny167 here
 #define TONE_PIN 5
 #    if defined(ARDUINO_AVR_DIGISPARKPRO)
-#define LED_BUILTIN 1 // On a Digispark Pro we have PB1 / D1 (Digispark library) or D9 (ATtinyCore lib) / on DigisparkBoard labeled as pin 1
-#define IRMP_INPUT_PIN 9  // PA3 - on Digispark board labeled as pin 9
+#define LED_BUILTIN      1 // On a Digispark Pro we have PB1 / D1 (Digispark library) or D9 (ATtinyCore lib) / on DigisparkBoard labeled as pin 1
+#define IRMP_INPUT_PIN   9  // PA3 - on Digispark board labeled as pin 9
 #define IRSND_OUTPUT_PIN 8  // PA2 - on Digispark board labeled as pin 8
 #    else
-#define IRMP_INPUT_PIN 3
+#define IRMP_INPUT_PIN   3
 #define IRSND_OUTPUT_PIN 2
 #    endif
 #  endif
 
 #else
-#define IRMP_INPUT_PIN 3
+#define IRMP_INPUT_PIN   3
 #define IRSND_OUTPUT_PIN 4
-#define TONE_PIN 5
+#define TONE_PIN         5
+//#define IRMP_MEASURE_TIMING
+//#define IRMP_TIMING_TEST_PIN 6
 #endif
 
 #define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH. Must before #include <irmp*>
@@ -115,6 +124,11 @@ void sendSamsungSmartHubMacro(bool aDoSelect);
 void IRSendWithDelay(uint16_t aCommand, uint16_t aDelayMillis);
 
 void setup() {
+#if defined(MCUSR)
+	MCUSR = 0; // To reset old boot flags for next boot
+#endif
+
+	pinMode(LED_BUILTIN, OUTPUT);
 	Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__)
 	while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
@@ -130,7 +144,9 @@ void setup() {
 	Serial.println(F("START ReceiveAndSend.cpp\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
 
 	tone(TONE_PIN, 2200);
+	digitalWrite(LED_BUILTIN, HIGH);
 	delay(400);
+	digitalWrite(LED_BUILTIN, LOW);
 	noTone(TONE_PIN);
 
 	irmp_init();
@@ -176,6 +192,8 @@ void loop() {
 		default:
 			break;
 		}
+		// Flush repeats received
+		irmp_get_data(&irmp_data);
 	}
 }
 
@@ -261,5 +279,6 @@ void sendSamsungSmartHubMacro(bool aDoSelect) {
 	}
 
 	sMacroWasCalledBefore = true;
+	Serial.println(F("Done"));
 
 }

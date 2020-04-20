@@ -38,24 +38,24 @@
 
 #include <Arduino.h>
 
-#define VERSION_EXAMPLE "1.0"
+#define VERSION_EXAMPLE "1.1"
 
 /*
  * Set library modifiers first to set output pin etc.
  */
 #if defined(ESP8266)
-#define IRSND_OUTPUT_PIN 12 // D6
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
+#define IRSND_OUTPUT_PIN D6
 
 #elif defined(ESP32)
-#define IRMP_INPUT_PIN 15 // D15
+#define IRSND_OUTPUT_PIN  4  // D4
 
 #elif defined(STM32F1xx) || defined(__STM32F1__)
 // BluePill in 2 flavors
 // STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 // __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-#define IRSND_OUTPUT_PIN PA5
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
+#define IRSND_OUTPUT_PIN PA7
 
 #elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include "ATtinySerialOut.h"
@@ -119,6 +119,8 @@ void setup()
     irsnd_data.command = 0xFB04;
     irsnd_data.flags = 0; // repeat frame 0 time
 
+    Serial.print(F("Send 0x"));
+    Serial.println(irsnd_data.command,HEX);
     irsnd_send_data(&irsnd_data, false);
 
 }
@@ -130,5 +132,7 @@ void loop()
     tNextCommand++;
     // For my Samsung the high byte is the negative of the low byte
     irsnd_data.command = ((~tNextCommand) << 8) | tNextCommand;
+    Serial.print(F("Send 0x"));
+    Serial.println(irsnd_data.command,HEX);
     irsnd_send_data(&irsnd_data, false); // This stores timer state and restores it after sending
 }

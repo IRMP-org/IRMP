@@ -24,16 +24,17 @@
 
 #include "irsnd.h"
 
-#ifdef ARDUINO
-#undef IRMP_H
-#include "IRTimer.cpp.h"
-#endif
-
 #ifndef F_CPU
 #  error F_CPU unkown
 #endif
 
+#ifdef ARDUINO
+#undef IRMP_H // Remove old symbol maybe set from former including irmp.c.h. We are in IRSND now!
+#include "IRTimer.cpp.h" // Timer related definitions like OC0A are here
+#else
+
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
+ * Non Arduino definitions here
  *  ATtiny pin definition of OC0A / OC0B
  *  ATmega pin definition of OC2 / OC2A / OC2B / OC0 / OC0A / OC0B
  *---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -204,6 +205,7 @@
 #    error mikrocontroller not defined, please fill in definitions here.
 #  endif // unix, WIN32
 #endif // __AVR...
+#endif // ARDUINO
 
 #if defined(__AVR_XMEGA__)
 #  define _CONCAT(a,b)                              a##b
@@ -560,11 +562,16 @@ static void irsnd_on(void) {
 	if (!irsnd_is_on) {
 #ifndef ANALYZE
 #if defined(ARDUINO)
-#  if defined(__AVR__)
+#  if defined(pinModeFast)
 		if (irsnd_led_feedback) {
+#    if defined(BLINK_13_LED_IS_ACTIVE_LOW)
+			// If the built in LED on the board is active LOW
+			digitalWriteFast(LED_BUILTIN, LOW);
+#    else
 			digitalWriteFast(LED_BUILTIN, HIGH);
+#    endif
 		}
-        pinModeFast(IRSND_OUTPUT_PIN, OUTPUT);
+        pinModeFast(IRSND_OUTPUT_PIN, OUTPUT); // Pin is set to input in ISR if (! irsnd_is_on)
         // start with LED active
 #    if defined(IR_OUTPUT_IS_ACTIVE_LOW)
         digitalWriteFast(IRSND_OUTPUT_PIN, LOW);
@@ -581,7 +588,7 @@ static void irsnd_on(void) {
 			digitalWrite(LED_BUILTIN, HIGH);
 #    endif
 		}
-        pinMode(IRSND_OUTPUT_PIN, OUTPUT);
+        pinMode(IRSND_OUTPUT_PIN, OUTPUT); // Pin is set to input in ISR if (! irsnd_is_on)
 #    if defined(IR_OUTPUT_IS_ACTIVE_LOW)
         digitalWrite(IRSND_OUTPUT_PIN, LOW);
 #    else
@@ -658,27 +665,31 @@ static void irsnd_on(void) {
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  *  Switch PWM off
  *  @details  Switches PWM off
+ *  Only called by irsnd_ISR
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-static void irsnd_off(void) {
-	if (irsnd_is_on) {
+static void irsnd_off(void)
+{
+    if (irsnd_is_on)
+    {
 #ifndef ANALYZE
 #if defined(ARDUINO)
-#  if defined(__AVR__)
-		if (irsnd_led_feedback) {
-			digitalWriteFast(LED_BUILTIN, LOW);
-		}
-#  else
-		if (irsnd_led_feedback) {
-			// hope this is fast enough on other platforms
+        // Manage feedback LED
+        if (irsnd_led_feedback)
+        {
 #    if defined(BLINK_13_LED_IS_ACTIVE_LOW)
-			// If the built in LED on the board is active LOW
-			digitalWrite(LED_BUILTIN, HIGH);
+            // If the built in LED on the board is active LOW
+            digitalWriteFast(LED_BUILTIN, HIGH);
 #    else
-			digitalWrite(LED_BUILTIN, LOW);
+            digitalWriteFast(LED_BUILTIN, LOW);
 #    endif
-		}
-#  endif
+        }
+        // Disable IR-LED
+#    if defined(IR_OUTPUT_IS_ACTIVE_LOW)
+        digitalWriteFast(IRSND_OUTPUT_PIN, HIGH);
+#    else
+        digitalWriteFast(IRSND_OUTPUT_PIN, LOW);
+#    endif
 #else
 #  if defined(PIC_C18)                                                                  // PIC C18
 		PWMoff();
@@ -735,7 +746,7 @@ static void irsnd_off(void) {
 #    endif // IRSND_OCx
 		IRSND_PORT &= ~(1 << IRSND_BIT);                 // set IRSND_BIT to low
 #  endif //C18
-#endif // defined (ARDUINO)
+#endif // ! defined (ARDUINO)
 #endif // ANALYZE
 
 #if IRSND_USE_CALLBACK == 1
@@ -745,8 +756,8 @@ static void irsnd_off(void) {
 		}
 #endif // IRSND_USE_CALLBACK == 1
 
-		irsnd_is_on = FALSE;
-	}
+        irsnd_is_on = FALSE;
+    }
 }
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -884,7 +895,7 @@ static void irsnd_set_freq(IRSND_FREQ_TYPE freq) {
 #      error wrong value of IRSND_OCx
 #    endif
 #  endif //PIC_C18
-#endif // ANALYZE
+#endif // ! defined (ANALYZE) && ! defined (ARDUINO)
 }
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -895,10 +906,12 @@ static void irsnd_set_freq(IRSND_FREQ_TYPE freq) {
 void irsnd_init(void) {
 #ifndef ANALYZE
 #  if defined(ARDUINO)
-	pinModeFast(IRSND_OUTPUT_PIN, OUTPUT); // Thats all, do not call irsnd_init_and_store_timer() here, it is done at irsnd_send_data()
+#    // Do not call irsnd_init_and_store_timer() here, it is done at irsnd_send_data().
+    pinModeFast(IRSND_OUTPUT_PIN, OUTPUT);
 #    ifdef IRMP_MEASURE_TIMING
 	pinModeFast(IRMP_TIMING_TEST_PIN, OUTPUT);
 #    endif
+
 #  elif defined(PIC_C18)                                                      // PIC C18 or XC8 compiler
 #    if ! defined(__12F1840)                                                // only C18:
 	OpenTimer;
@@ -1061,8 +1074,7 @@ static uint8_t sircs_additional_bitlen;
 #endif // IRSND_SUPPORT_SIRCS_PROTOCOL == 1
 
 /*
- * For Arduino: always wait for last command to have ended.
- * @param  do_wait - For NON Arduino: wait for last command to have ended - For Arduino: wait for current command to have ended.
+ * @param  do_wait - wait for last command to have ended before sending. For Arduino: Additionally wait for sent command to have ended.
  */
 uint8_t irsnd_send_data(IRMP_DATA * irmp_data_p, uint8_t do_wait) {
 #if IRSND_SUPPORT_RECS80_PROTOCOL == 1
@@ -1085,7 +1097,7 @@ uint8_t irsnd_send_data(IRMP_DATA * irmp_data_p, uint8_t do_wait) {
 
 	if (do_wait) {
 		while (irsnd_busy) {
-			// do nothing;
+			// wait for last command to have ended
 		}
 	}
 #if ! defined(ARDUINO)
@@ -3146,10 +3158,11 @@ void irsnd_wait_for_not_busy(void) {
 void irsnd_blink13(bool aEnableBlinkLed) {
 	irsnd_led_feedback = aEnableBlinkLed;
 	if (aEnableBlinkLed) {
-#if defined(__AVR__)
 		pinModeFast(LED_BUILTIN, OUTPUT);
+#if defined(BLINK_13_LED_IS_ACTIVE_LOW)
+		digitalWriteFast(LED_BUILTIN, HIGH);
 #else
-		pinMode(LED_BUILTIN, OUTPUT);
+		digitalWriteFast(LED_BUILTIN, LOW);
 #endif
 	}
 }

@@ -1,44 +1,25 @@
 
 # IRMP - Infrared Multi Protocol Decoder + Encoder
-### Version 2.0.0
+### Version 2.1.0
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Build Status](https://github.com/ukw100/irmp/workflows/LibraryBuild/badge.svg)](https://github.com/ukw100/irmp/actions)
 [![Hit Counter](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2Fukw100%2FIRMP)](https://github.com/brentvollebregt/hit-counter)
 
 ## 50 IR protocols supported and low memory footprint
-Only 40 protocols can be enabled for receive at the same time, because some of them are quite similar and conflicts with each other.<br/>
-39 protocols are available for send. Send implementation is currently (2/2020) available only for AVR boards.
+- Only 40 protocols can be enabled for receive at the same time, because some of them are quite similar and conflicts with each other.
+- 39 protocols are available for send.
+- FLASH usage in bytes: 1500 for one protocol, 4300 for 15 main and 8000 for all 40 protocols.
+- RAM usage in bytes: 52, 73 and 100.
 
 | Nano running AllProtocol example | YouTube Video | Instructable |
 |-|-|-|
 | ![Nano running AllProtocol example](https://github.com/ukw100/IRMP/blob/master/pictures/NEC.jpg) | ![YouTube Video](https://github.com/ukw100/IRMP/blob/master/pictures/KASEIKYO+Remote.jpg) | [![Instructable](https://github.com/ArminJo/Arduino-OpenWindowAlarm/blob/master/pictures/instructables-logo-v2.png)](https://www.instructables.com/id/IR-Remote-Analyzer-Receiver-With-Arduino) |
-
-# Documentation at mikrocontroller.net
-### English
-   http://www.mikrocontroller.net/articles/IRMP_-_english<br/>
-   http://www.mikrocontroller.net/articles/IRSND_-_english
-### German
-   http://www.mikrocontroller.net/articles/IRMP<br/>
-   http://www.mikrocontroller.net/articles/IRSND
-   
+ 
 # List of protocols
 - Sony SIRCS, NEC + APPLE + ONKYO, Samsung + Samsg32, Kaseikyo
 - JVC, NEC16, NEC42, Matsushita, DENON, Sharp, RC5, RC6 & RC6A, IR60 (SDA2008) Grundig, Siemens Gigaset, Nokia
 - BOSE, Kathrein , NUBERT , FAN (ventilator) , SPEAKER (~NUBERT), Bang & Olufsen , RECS80 (SAA3004) , RECS80EXT (SAA3008), Thomson, NIKON camera , Netbox keyboard, ORTEK (Hama) , Telefunken 1560, FDC3402 keyboard , RC Car , iRobot Roomba, RUWIDO, T-Home , A1 TV BOX, LEGO Power RC, RCMM 12,24, or 32, LG Air Condition , Samsung48, Merlin , Pentax , S100 , ACP24, TECHNICS , PANASONIC Beamer , Mitsubishi Aircond , VINCENT, SAMSUNG AH , IRMP specific, GREE CLIMATE , RCII T+A, RADIO e.g. TEVION, METZ<br/>
 - **NEC, Kaseiko, Denon, RC6, Samsung + Samsg32 were sucessfully tested in interrupt mode.**
-
-# Timer usage
-The IRMP **receive** library works by polling the input pin at a rate of 10 to 20 kHz. Default is 15 kHz.<br/>
-The IRMP **send** library works by bit banging the output pin at a frequency of 38 kHz. This **avoids blocking waits** and allows to choose an **arbitrary pin**, you are not restricted to pin 3 or 11. Send Interrupts require 50% CPU time.<br/>
-The **tone() library is still available**. You can use it alternating with IR receive and send, see [ReceiveAndSend example](https://github.com/ukw100/IRMP/blob/master/examples/ReceiveAndSend/ReceiveAndSend.ino).
-
-**Some protocols can be received by just using interrupts from the input pin** instead of polling by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. In this case **no timer is needed**. See [Interrupt example](https://github.com/ukw100/IRMP/blob/master/examples/Interrupt/Interrupt.ino).<br/>
-
-- For AVR **timer 2 (Tone timer)** is used for receiving **and** sending. For variants, which have no timer 2 like ATtiny85 or ATtiny167, **timer 1** is used.
-- For ESP8266 and ESP32 **timer1** is used.
-- For STM32 (BluePill) **timer 3 (Servo timer) channel 1** is used as default.<br/>
-- If you use polling mode with timer 2, the `millis()` function and the corresponding timer is not used by IRMP! 
-- In Interrupt mode, the `micros()` function is used as timebase.
 
 # Features
 - Interrupt mode for major protocols.
@@ -56,7 +37,7 @@ The **tone() library is still available**. You can use it alternating with IR re
 I created this comparison matrix for [myself](ArminJo) in order to choose a small IR lib for my project and to have a quick overview, when to choose which library.<br/>
 It is dated from **30.3.2020**. If you have complains about the data or request for extensions, please send a PM or open an issue.
 
-| Subject | [IRMP](https://github.com/ukw100/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2) | [IRremote](https://github.com/z3t0/Arduino-IRremote) |
+| Subject | [IRMP](https://github.com/ukw100/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**Abandoned** | [IRremote](https://github.com/z3t0/Arduino-IRremote)<br/>**Abandoned** |
 |---------|------|-----------|--------|----------|
 | Number of protocols | **50** | Nec + Panasonic + Hash \* | 12 + Hash \* | 13 |
 | 3.Party libs needed| % | PinChangeInterrupt if not pin 2 or 3 | % | % |
@@ -68,9 +49,9 @@ It is dated from **30.3.2020**. If you have complains about the data or request 
 | FLASH usage (simple NEC example with 5 prints) | 1500<br/>(4300 for 15 main / 8000 for all 40 protocols)<br/>(+200 for callback)<br/>
 (+80 for interrupt at pin 2+3)| **1270**<br/>(1400 for pin 2+3) | 4830 | 3210 |
 | RAM usage | **52**<br/>(73 / 100 for 15 (main) / 40 protocols) | **62** | 334 | 227 |
-| Supported platforms | **avr, attiny, Digispark (Pro), esp8266, ESP32, STM32<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, SAMD 21, SAMD 51 | avr, attiny, *esp8266*, esp32, arm(some boards) |
-| Last library update | 3/2020 | 4/2018 | 9/2019 | 11/2017 |
-| Remarks | LED 13 Feedback.<br/>Decodes 40 protocols concurrently.<br/>39 Protocols to send.<br/>Work in progress. | Only one protocol at a time. | Consists of 5 libraries. LED 13 Feedback. | LED 13 Feedback.<br/>NEC decoding is poor.<br/>**Abandoned project -213 open issues- and therefore an incredible amount of forks.** |
+| Supported platforms | **avr, attiny, Digispark (Pro), esp8266, ESP32, STM32, SAMD 21<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, SAMD 21, SAMD 51 | avr, attiny, *esp8266*, esp32, arm(some boards) |
+| Last library update | 4/2020 | 4/2018 | 9/2019 | 11/2017 |
+| Remarks | LED 13 Feedback.<br/>Decodes 40 protocols concurrently.<br/>39 Protocols to send.<br/>Work in progress. | Only one protocol at a time. | Consists of 5 libraries. LED 13 Feedback. **Project containing bugs - 45 issues, no reaction for at least one year.** | LED 13 Feedback.<br/>NEC decoding is poor.<br/>**213 open issues- and therefore an incredible amount of forks.** |
 
 \*The Hash protocol gives you a hash as code, which may be sufficient to distinguish your keys on the remote, but may not work with some protocols like Mitsubishi
 
@@ -107,6 +88,21 @@ The IR code representation of IRMP is different from that in IRremote. In IRMP (
 
 If you want to distinguish between more than one remote in one sketch, you may also use `irmp_data[0].address` like it is done in the [Callback example](https://github.com/ukw100/IRMP/blob/master/examples/Callback/Callback.ino).
 
+# Timer usage
+The IRMP **receive** library works by polling the input pin at a rate of 10 to 20 kHz. Default is 15 kHz.<br/>
+The IRMP **send** library works by bit banging the output pin at a frequency of 38 kHz. This **avoids blocking waits** and allows to choose an **arbitrary pin**, you are not restricted to pin 3 or 11. Send Interrupts require 50% CPU time on a 16 MHz AVR.<br/>
+The **tone() library is still available**. You can use it alternating with IR receive and send, see [ReceiveAndSend example](https://github.com/ukw100/IRMP/blob/master/examples/ReceiveAndSend/ReceiveAndSend.ino).
+
+**Some protocols can be received by just using interrupts from the input pin** instead of polling by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. In this case **no timer is needed**. See [Interrupt example](https://github.com/ukw100/IRMP/blob/master/examples/Interrupt/Interrupt.ino).<br/>
+
+- For AVR **timer 2 (Tone timer)** is used for receiving **and** sending. For variants, which have no timer 2 like ATtiny85 or ATtiny167, **timer 1** is used.
+- For SAMD **TC3** is used.
+- For ESP8266 and ESP32 **timer1** is used.
+- For STM32 (BluePill) **timer 3 (Servo timer) channel 1** is used as default.<br/>
+- If you use polling (default) mode with timer 2, the `millis()` function and the corresponding timer is not used by IRMP! 
+- In Interrupt mode, the `micros()` function is used as timebase.
+
+
 # AllProtocol example
 | Serial LCD output | Arduino Serial Monitor output |
 |-|-|
@@ -121,7 +117,20 @@ If you want to distinguish between more than one remote in one sketch, you may a
 | ![SAMSUNG](https://github.com/ukw100/IRMP/blob/master/pictures/SAMSUNG.jpg) |![SIEMENS](https://github.com/ukw100/IRMP/blob/master/pictures/SIEMENS.jpg) |![TELEFUNKEN](https://github.com/ukw100/IRMP/blob/master/pictures/TELEFUNKEN.jpg) |![TELEFUNKEN](https://github.com/ukw100/IRMP/blob/master/pictures/TELEFUNKEN.jpg) |
 
 
+# Documentation at mikrocontroller.net
+### English
+   http://www.mikrocontroller.net/articles/IRMP_-_english<br/>
+   http://www.mikrocontroller.net/articles/IRSND_-_english
+### German
+   http://www.mikrocontroller.net/articles/IRMP<br/>
+   http://www.mikrocontroller.net/articles/IRSND
+  
+  
 # Revision History
+### Version 2.1.0
+- Supported SAMD platform.
+- IRSND enabled for non AVR platforms.
+
 ### Version 2.0.0
 - Added IR send fuctionality (IRSND).
 - Use `TIMER2_COMPB_vect` to be compatible with tone() library.
@@ -154,9 +163,12 @@ Since Travis CI is unreliable and slow (5 times slower), the library examples ar
 
 - arduino:avr:uno
 - arduino:avr:mega
+- arduino:samd:arduino_zero_edbg
 - digistump:avr:digispark-tiny16
 - digistump:avr:digispark-pro (ATtiny167)
 - ATTinyCore:avr:attinyx5:chip=85,clock=8internal
 - esp8266:esp8266:huzzah:eesz=4M3M,xtal=80
 - esp32:esp32:featheresp32:FlashFreq=80
 - STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
+
+#### If you find this library useful, please give it a star.

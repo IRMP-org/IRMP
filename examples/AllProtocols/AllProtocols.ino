@@ -64,8 +64,8 @@
  * Set library modifiers first to set input pin etc.
  */
 #if defined(ESP8266)
-#define IRMP_INPUT_PIN 14 // D5
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
+#define IRMP_INPUT_PIN D5
 
 #elif defined(ESP32)
 #define IRMP_INPUT_PIN 15
@@ -74,8 +74,9 @@
 // BluePill in 2 flavors
 // STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 // __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-#define IRMP_INPUT_PIN PA4
+// Timer 3 of IRMP blocks PA6, PA7, PB0, PB1 for use by Servo or tone()
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
+#define IRMP_INPUT_PIN   PA6
 
 #elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include "ATtinySerialOut.h"

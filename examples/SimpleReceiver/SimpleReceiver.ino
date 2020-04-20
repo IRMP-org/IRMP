@@ -52,7 +52,7 @@
  * Set library modifiers first to set input pin etc.
  */
 #if defined(ESP8266)
-#define IRMP_INPUT_PIN 14 // D5
+#define IRMP_INPUT_PIN D5
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
 
 #elif defined(ESP32)
@@ -62,6 +62,7 @@
 // BluePill in 2 flavors
 // STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 // __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
+// Timer 3 of IRMP blocks PA6, PA7, PB0, PB1 for use by Servo or tone()
 #define IRMP_INPUT_PIN PA4
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
 
@@ -75,7 +76,7 @@
 
 #  else
 #    if defined(ARDUINO_AVR_DIGISPARKPRO)
-#define LED_BUILTIN 1 // On a Digispark Pro we have PB1 / D1 (Digispark library) or D9 (ATtinyCore lib) / on DigisparkBoard labeled as pin 1
+#define LED_BUILTIN    1 // On a Digispark Pro we have PB1 / D1 (Digispark library) or D9 (ATtinyCore lib) / on DigisparkBoard labeled as pin 1
 #define IRMP_INPUT_PIN 9  // PA3 - on DigisparkBoard labeled as pin 9
 #    else
 #define IRMP_INPUT_PIN 3
@@ -100,10 +101,10 @@ IRMP_DATA irmp_data;
 void setup() {
 	Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__)
-    while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
+	while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
 #endif
 #if defined(SERIAL_USB)
-    delay(2000); // To be able to connect Serial monitor after reset and before first printout
+	delay(2000); // To be able to connect Serial monitor after reset and before first printout
 #endif
 #if defined(__ESP8266__)
 	Serial.println(); // to separate it from the internal boot output
@@ -112,7 +113,7 @@ void setup() {
 	// Just to know which program is running on my Arduino
 	Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
 	irmp_init();
-	irmp_blink13(true); // Enable LED feedback - Is disabled here since we need the LED for loop output
+	irmp_blink13(true); // Enable LED feedback
 
 	Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
 }
@@ -131,10 +132,8 @@ void loop() {
 			 */
 			switch (irmp_data.command) {
 			case 0x48:
-				digitalWrite(LED_BUILTIN, HIGH);
-				break;
-			case 0x0B:
-				digitalWrite(LED_BUILTIN, LOW);
+				digitalWrite(LED_BUILTIN, HIGH); // will be set to low by IR feedback / irmp_blink13()
+				delay(4000);
 				break;
 			default:
 				break;

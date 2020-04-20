@@ -26,7 +26,7 @@
 #include "irmp.h"
 
 #ifdef ARDUINO
-#undef IRSND_H
+#undef IRSND_H  // Remove old symbol maybe set from former including irsnd.c.h. We are in IRMP now!
 #include "IRTimer.cpp.h"
 #endif
 
@@ -2765,21 +2765,13 @@ void irmp_init(void)
 
 #elif defined(ARDUINO)                                                  // ARDUINO IDE
 #  ifdef IRMP_INPUT_PIN
-#    if defined(__AVR__)
     pinModeFast(IRMP_INPUT_PIN, INPUT);                                 // set pin to input
-#    else
-    pinMode(IRMP_INPUT_PIN, INPUT);                                     // set pin to input
-#    endif
 #  else
     IRMP_PORT &= ~_BV(IRMP_BIT);                                      // deactivate pullup
     IRMP_DDR &= ~_BV(IRMP_BIT);                                      // set pin to input
 #  endif
 #  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT && (IRMP_ENABLE_PIN_CHANGE_INTERRUPT != 0)
-#    if defined(ARDUINO_ARCH_AVR)
     initPCIInterrupt();
-#    else
-#error "Interrupt mode is only enabled for AVR architecture"
-#    endif
 #  else
     initIRReceiveTimer();
 #  endif
@@ -5978,17 +5970,16 @@ uint_fast8_t irmp_ISR(void)
  * The name is chosen to enable easy migration from other IR libs.
  * Pin 13 is the pin of the built in LED on the first Arduino boards.
  */
-void irmp_blink13(bool aEnableBlinkLed)
-{
-    irmp_led_feedback = aEnableBlinkLed;
-    if (aEnableBlinkLed)
-    {
-#if defined(__AVR__)
-        pinModeFast(LED_BUILTIN, OUTPUT);
+void irmp_blink13(bool aEnableBlinkLed) {
+	irmp_led_feedback = aEnableBlinkLed;
+	if (aEnableBlinkLed) {
+		pinModeFast(LED_BUILTIN, OUTPUT);
+#if defined(BLINK_13_LED_IS_ACTIVE_LOW)
+		digitalWriteFast(LED_BUILTIN, HIGH);
 #else
-    pinMode(LED_BUILTIN, OUTPUT);
+		digitalWriteFast(LED_BUILTIN, LOW);
 #endif
-    }
+	}
 }
 
 #if defined(__AVR__)
