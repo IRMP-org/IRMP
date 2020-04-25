@@ -96,6 +96,10 @@
 #    endif
 #  endif
 
+#elif defined(ARDUINO_ARCH_APOLLO3)
+#define IRMP_INPUT_PIN   11
+#define IRSND_OUTPUT_PIN 12
+
 #else
 #define IRMP_INPUT_PIN   3
 #define IRSND_OUTPUT_PIN 4

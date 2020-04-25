@@ -49,7 +49,7 @@ It is dated from **30.3.2020**. If you have complains about the data or request 
 | FLASH usage (simple NEC example with 5 prints) | 1500<br/>(4300 for 15 main / 8000 for all 40 protocols)<br/>(+200 for callback)<br/>
 (+80 for interrupt at pin 2+3)| **1270**<br/>(1400 for pin 2+3) | 4830 | 3210 |
 | RAM usage | **52**<br/>(73 / 100 for 15 (main) / 40 protocols) | **62** | 334 | 227 |
-| Supported platforms | **avr, attiny, Digispark (Pro), esp8266, ESP32, STM32, SAMD 21<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, SAMD 21, SAMD 51 | avr, attiny, *esp8266*, esp32, arm(some boards) |
+| Supported platforms | **avr, attiny, Digispark (Pro), esp8266, ESP32, STM32, SAMD 21, Apollo3<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, SAMD 21, SAMD 51 | avr, attiny, *esp8266*, esp32, arm(some boards) |
 | Last library update | 4/2020 | 4/2018 | 9/2019 | 11/2017 |
 | Remarks | LED 13 Feedback.<br/>Decodes 40 protocols concurrently.<br/>39 Protocols to send.<br/>Work in progress. | Only one protocol at a time. | Consists of 5 libraries. LED 13 Feedback. **Project containing bugs - 45 issues, no reaction for at least one year.** | LED 13 Feedback.<br/>NEC decoding is poor.<br/>**213 open issues- and therefore an incredible amount of forks.** |
 
@@ -97,6 +97,7 @@ The **tone() library is still available**. You can use it alternating with IR re
 
 - For AVR **timer 2 (Tone timer)** is used for receiving **and** sending. For variants, which have no timer 2 like ATtiny85 or ATtiny167, **timer 1** is used.
 - For SAMD **TC3** is used.
+- For Apollo3 **Timer 3 segment B** is used.
 - For ESP8266 and ESP32 **timer1** is used.
 - For STM32 (BluePill) **timer 3 (Servo timer) channel 1** is used as default.<br/>
 - If you use polling (default) mode with timer 2, the `millis()` function and the corresponding timer is not used by IRMP! 
@@ -128,11 +129,11 @@ The **tone() library is still available**. You can use it alternating with IR re
   
 # Revision History
 ### Version 2.2.0
-- Supported Apollo3 platform.
+- Supported **Apollo3** platform.
 - Fixed DigisparkPro bug.
 
 ### Version 2.1.0
-- Supported SAMD platform.
+- Supported **SAMD** platform.
 - IRSND enabled for non AVR platforms.
 
 ### Version 2.0.0

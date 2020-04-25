@@ -82,6 +82,10 @@
 #define IRMP_INPUT_PIN   3
 #    endif
 #  endif
+
+#elif defined(ARDUINO_ARCH_APOLLO3)
+#define IRMP_INPUT_PIN   11
+
 #endif // defined(ESP8266)
 
 #define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH. Must before #include <irmp*>

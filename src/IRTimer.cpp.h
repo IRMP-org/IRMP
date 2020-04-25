@@ -75,11 +75,8 @@ uint64_t sTimerAlarmValue;
 #elif defined(STM32F1xx) || defined(__STM32F1__)
 uint32_t sTimerOverflowValue;
 
-#elif defined(ARDUINO_ARCH_SAMD)
+#elif defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_APOLLO3)
 uint16_t sTimerCompareCapureValue;
-
-#elif defined(ARDUINO_ARCH_APOLLO3)
-
 
 #endif
 
@@ -216,7 +213,16 @@ TC->CTRLA.reg |= TC_CTRLA_ENABLE;
 while (TC->STATUS.bit.SYNCBUSY == 1); // wait for sync (max 6 clocks?)
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
+// Use Timer 3 segment B
+am_hal_ctimer_clear(3, AM_HAL_CTIMER_TIMERB); // reset timer
+// only AM_HAL_CTIMER_FN_REPEAT resets counter after match (CTC mode)
+am_hal_ctimer_config_single(3, AM_HAL_CTIMER_TIMERB, (AM_HAL_CTIMER_INT_ENABLE | AM_HAL_CTIMER_HFRC_12MHZ | AM_HAL_CTIMER_FN_REPEAT));
+am_hal_ctimer_compare_set(3, AM_HAL_CTIMER_TIMERB, 0, 12000000 / IR_INTERRUPT_FREQUENCY);
+am_hal_ctimer_start(3, AM_HAL_CTIMER_TIMERB);
 
+am_hal_ctimer_int_register(AM_HAL_CTIMER_INT_TIMERA0, irmp_timer_ISR);
+am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
+NVIC_EnableIRQ(CTIMER_IRQn);
 #endif
 }
 
@@ -272,8 +278,7 @@ sTimerOverflowValue = sSTM32Timer.getOverflow();
 sTimerCompareCapureValue = TC3->COUNT16.CC[0].reg;
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
-
-
+sTimerCompareCapureValue = *((uint32_t *)CTIMERADDRn(CTIMER, 3, CMPRB0)) & 0xFFFF;
 #  endif
 }
 
@@ -330,7 +335,7 @@ sSTM32Timer.setOverflow(sTimerOverflowValue);
 TC3->COUNT16.CC[0].reg = sTimerCompareCapureValue;
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
-
+am_hal_ctimer_compare_set(3, AM_HAL_CTIMER_TIMERB, 0, sTimerCompareCapureValue);
 
 #  endif
 }
@@ -382,7 +387,7 @@ while (TC3->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY)
 	; //wait until TC5 is done syncing
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
-
+am_hal_ctimer_int_disable(AM_HAL_CTIMER_INT_TIMERB3);
 
 #endif
 }
@@ -429,7 +434,7 @@ while (TC3->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY)
 	; //wait until TC5 is done syncing
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
-
+am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
 
 #endif
 }
@@ -450,6 +455,20 @@ while (TC3->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY)
  */
 #ifndef ISR_DEFINED
 #define ISR_DEFINED
+
+#if defined(ARDUINO_ARCH_APOLLO3)
+/*
+ * The isr, which calls the dispatcher/service, which call the irmp_timer_ISR
+ */
+extern "C" void am_ctimer_isr(void) {
+	// Check and clear any active CTIMER interrupts.
+	uint32_t ui32Status = am_hal_ctimer_int_status_get(true);
+	am_hal_ctimer_int_clear(ui32Status);
+
+	// Run handlers for the various possible timer events.
+	am_hal_ctimer_int_service(ui32Status);
+}
+#endif
 
 #if defined(__AVR__)
 
@@ -486,7 +505,7 @@ void irmp_timer_ISR(void)
 void TC3_Handler(void)
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
-void TC3_Handler(void) // choose a better name
+void irmp_timer_ISR(void)
 
 #endif // defined(__AVR__)
 
