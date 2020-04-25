@@ -45,7 +45,7 @@
  */
 #if defined(ESP8266)
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
-#define IRSND_OUTPUT_PIN D6
+#define IRSND_OUTPUT_PIN 12 // D6
 
 #elif defined(ESP32)
 #define IRSND_OUTPUT_PIN  4  // D4

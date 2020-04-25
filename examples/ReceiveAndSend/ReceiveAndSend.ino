@@ -43,12 +43,12 @@
  */
 #if defined(ESP8266)
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
-#define IRMP_INPUT_PIN 	 D5
-#define IRSND_OUTPUT_PIN D6 // D4 is internal LED
+#define IRMP_INPUT_PIN 	 14 // D5
+#define IRSND_OUTPUT_PIN 12 // D6 - D4/2 is internal LED
 #define tone(a,b) void() // tone() inhibits receive timer
 #define noTone(a) void()
 //#define IRMP_MEASURE_TIMING
-//#define IRMP_TIMING_TEST_PIN D7
+//#define IRMP_TIMING_TEST_PIN 13 // D7
 
 #elif defined(ESP32)
 #define IRMP_INPUT_PIN   15  // D15
@@ -82,12 +82,15 @@
 #    endif
 
 #  else // ATtiny87 or ATtiny167 here
-#define TONE_PIN 5
 #    if defined(ARDUINO_AVR_DIGISPARKPRO)
-#define LED_BUILTIN      1 // On a Digispark Pro we have PB1 / D1 (Digispark library) or D9 (ATtinyCore lib) / on DigisparkBoard labeled as pin 1
-#define IRMP_INPUT_PIN   9  // PA3 - on Digispark board labeled as pin 9
-#define IRSND_OUTPUT_PIN 8  // PA2 - on Digispark board labeled as pin 8
+#define TONE_PIN 	     5 // PA7
+#define LED_BUILTIN      1 // PB1 - on Digispark board labeled as pin 1
+#define IRMP_INPUT_PIN   9 // PA3 - on Digispark board labeled as pin 9
+#define IRSND_OUTPUT_PIN 8 // PA2 - on Digispark board labeled as pin 8
+//#define IRMP_MEASURE_TIMING
+//#define IRMP_TIMING_TEST_PIN 10 // PA4
 #    else
+#define TONE_PIN         7
 #define IRMP_INPUT_PIN   3
 #define IRSND_OUTPUT_PIN 2
 #    endif

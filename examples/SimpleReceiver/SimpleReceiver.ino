@@ -52,7 +52,7 @@
  * Set library modifiers first to set input pin etc.
  */
 #if defined(ESP8266)
-#define IRMP_INPUT_PIN D5
+#define IRMP_INPUT_PIN 14  // D5
 #define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
 
 #elif defined(ESP32)
@@ -76,10 +76,12 @@
 
 #  else
 #    if defined(ARDUINO_AVR_DIGISPARKPRO)
-#define LED_BUILTIN    1 // On a Digispark Pro we have PB1 / D1 (Digispark library) or D9 (ATtinyCore lib) / on DigisparkBoard labeled as pin 1
-#define IRMP_INPUT_PIN 9  // PA3 - on DigisparkBoard labeled as pin 9
+#define LED_BUILTIN      1 // PB1 - on Digispark board labeled as pin 1
+#define IRMP_INPUT_PIN   9 // PA3 - on Digispark board labeled as pin 9
+#define IRMP_MEASURE_TIMING
+#define IRMP_TIMING_TEST_PIN 10 // PA4
 #    else
-#define IRMP_INPUT_PIN 3
+#define IRMP_INPUT_PIN   3
 #    endif
 #  endif
 #endif // defined(ESP8266)

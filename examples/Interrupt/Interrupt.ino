@@ -72,12 +72,11 @@
 #  else
 // for ATtiny167 Pins PB6 and PA3 are usable as interrupt source.
 #    if defined(ARDUINO_AVR_DIGISPARKPRO)
-#define LED_BUILTIN 1 // On a Digispark Pro we have PB1 / D1 (Digispark library) or D9 (ATtinyCore lib) / on DigisparkBoard labeled as pin 1
-//#define IRMP_INPUT_PIN 3 // PB6 / INT0 is connected to USB+ on DigisparkPro boards
-#define IRMP_INPUT_PIN 9  // PA3 - on DigisparkBoard labeled as pin 9
+#define LED_BUILTIN      1 // PB1 - on Digispark board labeled as pin 1
+#define IRMP_INPUT_PIN   9 // PA3 - on Digispark board labeled as pin 9
+//#define IRMP_INPUT_PIN  14 // PB6 / INT0 is connected to USB+ on DigisparkPro boards
 #    else
-//#define IRMP_INPUT_PIN 14 // PB6 / INT0 is connected to USB+ on DigisparkPro boards
-#define IRMP_INPUT_PIN 3
+#define IRMP_INPUT_PIN   3
 #    endif
 #  endif
 
