@@ -44,6 +44,7 @@ jobs:
           - esp8266:esp8266:d1_mini:eesz=4M3M,xtal=80
           - esp32:esp32:featheresp32:FlashFreq=80
           - STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
+          - SparkFun:apollo3:amap3nano
 
         # Specify parameters for each board.
         # With examples-exclude you may exclude specific examples for a board. Use a comma separated list.
@@ -69,6 +70,10 @@ jobs:
 
           - arduino-boards-fqbn: STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
             platform-url: https://github.com/stm32duino/BoardManagerFiles/raw/dev/STM32/package_stm_index.json
+
+          - arduino-boards-fqbn: SparkFun:apollo3:amap3nano
+            platform-url: https://raw.githubusercontent.com/sparkfun/Arduino_Boards/master/IDE_Board_Manager/package_sparkfun_index.json
+
 
       # Do not cancel all jobs / architectures if one job fails
       fail-fast: false

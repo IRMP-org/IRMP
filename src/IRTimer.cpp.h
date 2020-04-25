@@ -74,6 +74,9 @@ uint32_t sTimerOverflowValue;
 #elif defined(ARDUINO_ARCH_SAMD)
 uint16_t sTimerCompareCapureValue;
 
+#elif defined(ARDUINO_ARCH_APOLLO3)
+
+
 #endif
 
 void IRInitSendTimer(void) {
@@ -206,6 +209,9 @@ NVIC_EnableIRQ (TC3_IRQn);
 
 TC->CTRLA.reg |= TC_CTRLA_ENABLE;
 while (TC->STATUS.bit.SYNCBUSY == 1); // wait for sync (max 6 clocks?)
+
+#elif defined(ARDUINO_ARCH_APOLLO3)
+
 #endif
 }
 
@@ -259,6 +265,9 @@ sTimerOverflowValue = sSTM32Timer.getOverflow();
 
 #elif defined(ARDUINO_ARCH_SAMD)
 sTimerCompareCapureValue = TC3->COUNT16.CC[0].reg;
+
+#elif defined(ARDUINO_ARCH_APOLLO3)
+
 
 #  endif
 }
@@ -315,6 +324,9 @@ sSTM32Timer.setOverflow(sTimerOverflowValue);
 #elif defined(ARDUINO_ARCH_SAMD)
 TC3->COUNT16.CC[0].reg = sTimerCompareCapureValue;
 
+#elif defined(ARDUINO_ARCH_APOLLO3)
+
+
 #  endif
 }
 #endif // defined(IRSND_H)
@@ -363,6 +375,10 @@ sSTM32Timer.detachInterrupt(TIMER_CH1);
 TC3->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;
 while (TC3->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY)
 	; //wait until TC5 is done syncing
+
+#elif defined(ARDUINO_ARCH_APOLLO3)
+
+
 #endif
 }
 
@@ -406,6 +422,10 @@ sSTM32Timer.refresh(); // Set the timer's count to 0 and update the prescaler an
 TC3->COUNT16.CTRLA.reg |= TC_CTRLA_ENABLE;
 while (TC3->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY)
 	; //wait until TC5 is done syncing
+
+#elif defined(ARDUINO_ARCH_APOLLO3)
+
+
 #endif
 }
 
@@ -460,11 +480,17 @@ void irmp_timer_ISR(void)
 #elif defined(ARDUINO_ARCH_SAMD)
 void TC3_Handler(void)
 
+#elif defined(ARDUINO_ARCH_APOLLO3)
+void TC3_Handler(void) // choose a better name
+
 #endif // defined(__AVR__)
 
 {
 #if defined(ARDUINO_ARCH_SAMD)
 	TC3->COUNT16.INTFLAG.bit.MC0 = 1; // Clear interrupt
+
+#elif defined(ARDUINO_ARCH_APOLLO3)
+	 // Clear interrupt
 #endif
 
 #  if defined(IRSND_H) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
