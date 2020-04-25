@@ -58,7 +58,11 @@ HardwareTimer sSTM32Timer(3);
 #if defined(__AVR__)
 uint8_t sTimerTCCRA;
 uint8_t sTimerTCCRB;
+#if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+uint16_t sTimerOCR; // we have a 16 bit timer
+#else
 uint8_t sTimerOCR;
+#endif
 uint8_t sTimerOCRB;
 uint8_t sTimerTIMSK;
 
@@ -85,7 +89,7 @@ void IRInitSendTimer(void) {
 #undef IR_INTERRUPT_FREQUENCY
 #define IR_INTERRUPT_FREQUENCY F_INTERRUPTS
 
-	void initIRReceiveTimer(void) {
+void initIRReceiveTimer(void) {
 #endif
 
 /*
@@ -116,7 +120,7 @@ TCCR0B = _BV(CS00);// presc = 1 / no prescaling
 TCCR0A = _BV(WGM01);                                                // CTC with OCRA as top
 TIMSK |= _BV(OCIE0B);// enable compare match interrupt
 #    else
-#      if (F_CPU / IR_INTERRUPT_FREQUENCY) > 256                        // for 8 bit timer
+#      if (F_CPU / IR_INTERRUPT_FREQUENCY) > 256                    // for 8 bit timer
 OCR1B = OCR1C = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;         // 132 for 15 kHz @16 MHz
 TCCR1 = _BV(CTC1) | _BV(CS12);// switch CTC Mode on, set prescaler to 8
 #      else
@@ -127,9 +131,10 @@ TIMSK |= _BV(OCIE1B);                                               // enable co
 #    endif
 
 #  elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-ICR1 = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;                  // compare value: 1/15000 of CPU frequency, presc = 8
+// Timer 1 is a 16 bit counter so we need no prescaler
+ICR1 = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;                        // 1065 for 15 kHz @16 MHz. compare value: 1/15000 of CPU frequency
 TCCR1B = 0;// switch CTC Mode on
-TCCR1B = _BV(WGM12) | _BV(WGM13) | _BV(CS10);// switch CTC Mode on, set prescaler to 8
+TCCR1B = _BV(WGM12) | _BV(WGM13) | _BV(CS10);// switch CTC Mode on, set prescaler to 1 / no prescaling
 TIMSK1 = _BV(OCIE1B);// enable compare match interrupt
 
 #  else // __AVR_ATmega328__ here
