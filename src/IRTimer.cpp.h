@@ -220,7 +220,7 @@ am_hal_ctimer_config_single(3, AM_HAL_CTIMER_TIMERB, (AM_HAL_CTIMER_INT_ENABLE |
 am_hal_ctimer_compare_set(3, AM_HAL_CTIMER_TIMERB, 0, 12000000 / IR_INTERRUPT_FREQUENCY);
 am_hal_ctimer_start(3, AM_HAL_CTIMER_TIMERB);
 
-am_hal_ctimer_int_register(AM_HAL_CTIMER_INT_TIMERA0, irmp_timer_ISR);
+am_hal_ctimer_int_register(AM_HAL_CTIMER_INT_TIMERB3, irmp_timer_ISR);
 am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
 NVIC_EnableIRQ(CTIMER_IRQn);
 #endif
