@@ -151,10 +151,10 @@ void writeByte(int8_t aByte);
 void writeUnsignedByte(uint8_t aByte);
 void writeUnsignedByteHex(uint8_t aByte);
 void writeUnsignedByteHexWithPrefix(uint8_t aByte);
-void writeInt(int aInteger);
-void writeUnsignedInt(unsigned int aInteger);
-void writeLong(long aLong);
-void writeUnsignedLong(unsigned long aLong);
+void writeInt(int16_t aInteger);
+void writeUnsignedInt(uint16_t aInteger);
+void writeLong(int32_t aLong);
+void writeUnsignedLong(uint32_t aLong);
 void writeFloat(double aFloat);
 void writeFloat(double aFloat, uint8_t aDigits);
 
@@ -185,20 +185,20 @@ public:
     void print(const char* aStringPtr);
     void print(char aChar);
     void print(uint8_t aByte, uint8_t aBase = 10);
-    void print(int aInteger, uint8_t aBase = 10);
-    void print(unsigned int aInteger, uint8_t aBase = 10);
-    void print(long aLong, uint8_t aBase = 10);
-    void print(unsigned long aLong, uint8_t aBase = 10);
+    void print(int16_t aInteger, uint8_t aBase = 10);
+    void print(uint16_t aInteger, uint8_t aBase = 10);
+    void print(int32_t aLong, uint8_t aBase = 10);
+    void print(uint32_t aLong, uint8_t aBase = 10);
     void print(double aFloat, uint8_t aDigits = 2);
 
     void println(const char* aStringPtr);
     void println(const __FlashStringHelper * aStringPtr);
     void println(char aChar);
     void println(uint8_t aByte, uint8_t aBase = 10);
-    void println(int aInteger, uint8_t aBase = 10);
-    void println(unsigned int aInteger, uint8_t aBase = 10);
-    void println(long aLong, uint8_t aBase = 10);
-    void println(unsigned long aLong, uint8_t aBase = 10);
+    void println(int16_t aInteger, uint8_t aBase = 10);
+    void println(uint16_t aInteger, uint8_t aBase = 10);
+    void println(int32_t aLong, uint8_t aBase = 10);
+    void println(uint32_t aLong, uint8_t aBase = 10);
     void println(double aFloat, uint8_t aDigits = 2);
 
     void println(void);

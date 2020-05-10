@@ -58,7 +58,7 @@
 #define LCD_ROWS 4
 #endif
 
-#define VERSION_EXAMPLE "1.3.1"
+#define VERSION_EXAMPLE "1.4"
 
 /*
  * Set library modifiers first to set input pin etc.
@@ -95,8 +95,12 @@
 #    endif
 #  endif
 
-#else
-#define IRMP_INPUT_PIN 3
+#endif
+// default for IRMP_INPUT_PIN is 3
+
+// On the Zero and others we switch explicitly to SerialUSB
+#if defined(ARDUINO_ARCH_SAMD)
+#define Serial SerialUSB
 #endif
 
 #define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some FLASH

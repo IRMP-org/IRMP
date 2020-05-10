@@ -38,7 +38,7 @@
 
 #include <Arduino.h>
 
-#define VERSION_EXAMPLE "1.1"
+#define VERSION_EXAMPLE "1.2"
 
 /*
  * Set library modifiers first to set output pin etc.
@@ -76,6 +76,11 @@
 
 #else
 #define IRSND_OUTPUT_PIN 4
+#endif
+
+// On the Zero and others we switch explicitly to SerialUSB
+#if defined(ARDUINO_ARCH_SAMD)
+#define Serial SerialUSB
 #endif
 
 //#define IR_OUTPUT_IS_ACTIVE_LOW

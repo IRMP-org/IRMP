@@ -37,7 +37,7 @@ jobs:
         arduino-boards-fqbn:
           - arduino:avr:uno
           - arduino:avr:mega
-          - arduino:samd:arduino_zero_edbg
+          - arduino:samd:arduino_zero_native
           - digistump:avr:digispark-tiny16
           - digistump:avr:digispark-pro
           - ATTinyCore:avr:attinyx5:chip=85,clock=8internal

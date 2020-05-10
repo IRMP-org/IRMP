@@ -233,27 +233,27 @@ void writeByte(int8_t aByte) {
     writeStringSkipLeadingSpaces(tStringBuffer);
 }
 
-void writeInt(int aInteger) {
+void writeInt(int16_t aInteger) {
     char tStringBuffer[7];
     itoa(aInteger, tStringBuffer, 10);
     writeStringSkipLeadingSpaces(tStringBuffer);
 }
 
-void writeUnsignedInt(unsigned int aInteger) {
+void writeUnsignedInt(uint16_t aInteger) {
     char tStringBuffer[6];
-    itoa(aInteger, tStringBuffer, 10);
+    utoa(aInteger, tStringBuffer, 10);
     writeStringSkipLeadingSpaces(tStringBuffer);
 }
 
-void writeLong(long aLong) {
+void writeLong(int32_t aLong) {
     char tStringBuffer[12];
     ltoa(aLong, tStringBuffer, 10);
     writeStringSkipLeadingSpaces(tStringBuffer);
 }
 
-void writeUnsignedLong(unsigned long aLong) {
+void writeUnsignedLong(uint32_t aLong) {
     char tStringBuffer[11];
-    ltoa(aLong, tStringBuffer, 10);
+    ultoa(aLong, tStringBuffer, 10);
     writeStringSkipLeadingSpaces(tStringBuffer);
 }
 
@@ -373,27 +373,27 @@ void TinySerialOut::print(uint8_t aByte, uint8_t aBase) {
     }
 }
 
-void TinySerialOut::print(int aInteger, uint8_t aBase) {
+void TinySerialOut::print(int16_t aInteger, uint8_t aBase) {
     char tStringBuffer[7];
     itoa(aInteger, tStringBuffer, aBase);
     writeStringSkipLeadingSpaces(tStringBuffer);
 }
 
-void TinySerialOut::print(unsigned int aInteger, uint8_t aBase) {
+void TinySerialOut::print(uint16_t aInteger, uint8_t aBase) {
     char tStringBuffer[6];
-    itoa(aInteger, tStringBuffer, aBase);
+    utoa(aInteger, tStringBuffer, aBase);
     writeStringSkipLeadingSpaces(tStringBuffer);
 }
 
-void TinySerialOut::print(long aLong, uint8_t aBase) {
+void TinySerialOut::print(int32_t aLong, uint8_t aBase) {
     char tStringBuffer[12];
     ltoa(aLong, tStringBuffer, aBase);
     writeStringSkipLeadingSpaces(tStringBuffer);
 }
 
-void TinySerialOut::print(unsigned long aLong, uint8_t aBase) {
+void TinySerialOut::print(uint32_t aLong, uint8_t aBase) {
     char tStringBuffer[11];
-    ltoa(aLong, tStringBuffer, aBase);
+    ultoa(aLong, tStringBuffer, aBase);
     writeStringSkipLeadingSpaces(tStringBuffer);
 }
 
@@ -423,22 +423,22 @@ void TinySerialOut::println(uint8_t aByte, uint8_t aBase) {
     println();
 }
 
-void TinySerialOut::println(int aInteger, uint8_t aBase) {
+void TinySerialOut::println(int16_t aInteger, uint8_t aBase) {
     print(aInteger, aBase);
     println();
 }
 
-void TinySerialOut::println(unsigned int aInteger, uint8_t aBase) {
+void TinySerialOut::println(uint16_t aInteger, uint8_t aBase) {
     print(aInteger, aBase);
     println();
 }
 
-void TinySerialOut::println(long aLong, uint8_t aBase) {
+void TinySerialOut::println(int32_t aLong, uint8_t aBase) {
     print(aLong, aBase);
     println();
 }
 
-void TinySerialOut::println(unsigned long aLong, uint8_t aBase) {
+void TinySerialOut::println(uint32_t aLong, uint8_t aBase) {
     print(aLong, aBase);
     println();
 }

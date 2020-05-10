@@ -25,7 +25,7 @@
 
 #include <Arduino.h>
 
-#define VERSION_EXAMPLE "1.2"
+#define VERSION_EXAMPLE "1.3"
 
 /*
  * Set library modifiers first to set input pin etc.
@@ -62,8 +62,12 @@
 #    endif
 #  endif
 
-#else
-#define IRMP_INPUT_PIN 3
+#endif
+// default for IRMP_INPUT_PIN is 3
+
+// On the Zero and others we switch explicitly to SerialUSB
+#if defined(ARDUINO_ARCH_SAMD)
+#define Serial SerialUSB
 #endif
 
 //#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH. Must before #include <irmp*>
