@@ -20,7 +20,7 @@ jobs:
   build:
     name: ${{ matrix.arduino-boards-fqbn }} - test compiling examples
 
-    runs-on: ubuntu-latest # I picked Ubuntu to use shell scripts.
+    runs-on: ubuntu-18.04 # I picked Ubuntu to use shell scripts.
 
     strategy:
       matrix:
@@ -72,8 +72,8 @@ jobs:
             platform-url: https://github.com/stm32duino/BoardManagerFiles/raw/dev/STM32/package_stm_index.json
 
           # All examples give strange BFD assertions
-          #- arduino-boards-fqbn: SparkFun:apollo3:amap3nano
-          #  platform-url: https://raw.githubusercontent.com/sparkfun/Arduino_Boards/master/IDE_Board_Manager/package_sparkfun_index.json
+          - arduino-boards-fqbn: SparkFun:apollo3:amap3nano
+            platform-url: https://raw.githubusercontent.com/sparkfun/Arduino_Boards/master/IDE_Board_Manager/package_sparkfun_index.json
 
       # Do not cancel all jobs / architectures if one job fails
       fail-fast: false
