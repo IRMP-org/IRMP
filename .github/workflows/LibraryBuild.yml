@@ -71,9 +71,9 @@ jobs:
           - arduino-boards-fqbn: STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
             platform-url: https://github.com/stm32duino/BoardManagerFiles/raw/dev/STM32/package_stm_index.json
 
-          # All examples give strange BFD assertions
-          - arduino-boards-fqbn: SparkFun:apollo3:amap3nano
-            platform-url: https://raw.githubusercontent.com/sparkfun/Arduino_Boards/master/IDE_Board_Manager/package_sparkfun_index.json
+          # ALL examples give strange BFD assertions
+          #- arduino-boards-fqbn: SparkFun:apollo3:amap3nano
+          #  platform-url: https://raw.githubusercontent.com/sparkfun/Arduino_Boards/master/IDE_Board_Manager/package_sparkfun_index.json
 
       # Do not cancel all jobs / architectures if one job fails
       fail-fast: false
