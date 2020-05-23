@@ -130,6 +130,10 @@ LiquidCrystal_I2C myLCD(0x27, LCD_COLUMNS, LCD_ROWS);  // set the LCD address to
 LiquidCrystal myLCD(4, 5, 6, 7, 8, 9);
 #endif
 
+// For cyclically display of VCC
+#include "ADCUtils.h"
+#define MILLIS_BETWEEN_VOLTAGE_PRINT 5000
+
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
@@ -138,7 +142,8 @@ void irmp_result_print_LCD();
 
 bool volatile sIRMPDataAvailable = false;
 
-void setup() {
+void setup()
+{
     Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__)
     while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
@@ -159,6 +164,8 @@ void setup() {
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
 #endif
 
+    getVCCVoltageMillivoltSimple(); // to initialize ADC mux and reference
+
 #if defined (USE_SERIAL_LCD)
     myLCD.init();
     myLCD.clear();
@@ -167,15 +174,20 @@ void setup() {
 #if defined (USE_PARALELL_LCD)
     myLCD.begin(LCD_COLUMNS, LCD_ROWS);
 #endif
+
 #if defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
-    myLCD.print(F("IRMP all V" VERSION_EXAMPLE));
+    myLCD.print(F("IRMP all  V" VERSION_EXAMPLE));
     myLCD.setCursor(0, 1);
     myLCD.print(F(__DATE__));
 #endif
 }
 
-void loop() {
-    if (sIRMPDataAvailable) {
+void loop()
+{
+    static uint32_t sMillisOfLastVoltagePrint;
+
+    if (sIRMPDataAvailable)
+    {
         sIRMPDataAvailable = false;
 
         /*
@@ -184,12 +196,36 @@ void loop() {
          */
         irmp_result_print(&irmp_data);
 
-#if defined (USE_SERIAL_LCD)
-        disableIRTimerInterrupt(); // disable timer interrupt before sei() below, since it disturbs the serial output
-#endif
+#if defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
+#  if defined (USE_SERIAL_LCD)
+        disableIRTimerInterrupt(); // disable timer interrupt, since it disturbs the serial output
+#  endif
         irmp_result_print_LCD();
-#if defined (USE_SERIAL_LCD)
+#  if defined (USE_SERIAL_LCD)
         enableIRTimerInterrupt();
+#  endif
+#endif
+    }
+
+    /*
+     * Periodically print VCC
+     */
+    if (millis() - sMillisOfLastVoltagePrint > MILLIS_BETWEEN_VOLTAGE_PRINT)
+    {
+        sMillisOfLastVoltagePrint = millis();
+        uint16_t tVCC = getVCCVoltageMillivoltSimple();
+
+        Serial.print(F("VCC="));
+        Serial.print(tVCC);
+        Serial.println(F("mV"));
+
+#if defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
+        myLCD.setCursor(10, 0);
+        myLCD.print(' ');
+        myLCD.print(tVCC / 1000);
+        myLCD.print('.');
+        myLCD.print(((tVCC + 5) / 10) % 100);
+        myLCD.print('V');
 #endif
     }
 }
@@ -197,9 +233,10 @@ void loop() {
 /*
  * Here we know, that data is available.
  * Since this function is executed in Interrupt handler context, make it short and do not use delay() etc.
- * In order to enable other interrupts you can call sei() (enable interrupt again) after getting data.
+ * In order to enable other interrupts you can call interrupts() (enable interrupt again) after getting data.
  */
-void handleReceivedIRData() {
+void handleReceivedIRData()
+{
     /*
      * Just print the data to Serial and LCD
      */
@@ -210,13 +247,14 @@ void handleReceivedIRData() {
 /*
  * LCD output for 1602 and 2004 LCDs
  * 40 - 55 Milliseconds per initial output for a 1602 LCD
- * for a 2014 LCD the initial clearing adds 55 ms.
+ * for a 2004 LCD the initial clearing adds 55 ms.
  * The expander runs at 100 kHz :-(
  * 8 milliseconds for 8 bit; 10 ms for 16 bit code output
  * 3 milliseconds for repeat output
  *
  */
-void irmp_result_print_LCD() {
+void irmp_result_print_LCD()
+{
 #if defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
     static uint8_t sLastProtocolIndex;
     static uint16_t sLastProtocolAddress;
@@ -237,7 +275,8 @@ void irmp_result_print_LCD() {
     /*
      * Print only if protocol or address has changed
      */
-    if (sLastProtocolIndex != irmp_data.protocol || sLastProtocolAddress != irmp_data.address) {
+    if (sLastProtocolIndex != irmp_data.protocol || sLastProtocolAddress != irmp_data.address)
+    {
         sLastProtocolIndex = irmp_data.protocol;
         sLastProtocolAddress = irmp_data.address;
 #  if (LCD_ROWS >= 4)
@@ -277,7 +316,9 @@ void irmp_result_print_LCD() {
         myLCD.setCursor(9, tStartRow + 1);
         myLCD.print(F("C=0x"));
 #  endif
-    } else {
+    }
+    else
+    {
         /*
          * Show or clear repetition flag
          */
@@ -286,10 +327,13 @@ void irmp_result_print_LCD() {
 #  else
         myLCD.setCursor(15, tStartRow + 1);
 #  endif
-        if (irmp_data.flags & IRMP_FLAG_REPETITION) {
+        if (irmp_data.flags & IRMP_FLAG_REPETITION)
+        {
             myLCD.print('R');
             return; // Since it is a repetition, printed data has not changed
-        } else {
+        }
+        else
+        {
             myLCD.print(' ');
         }
     }
@@ -301,7 +345,8 @@ void irmp_result_print_LCD() {
 
 #  if (LCD_COLUMNS <= 16)
     // check if prefix will change
-    if (tDisplayWasCleared || (sLastCommand > 0x100 && tCommand < 0x100) || (sLastCommand < 0x100 && tCommand > 0x100)) {
+    if (tDisplayWasCleared || (sLastCommand > 0x100 && tCommand < 0x100) || (sLastCommand < 0x100 && tCommand > 0x100))
+    {
         sLastCommand = tCommand;
         /*
          * Print prefix of command
@@ -311,10 +356,13 @@ void irmp_result_print_LCD() {
         /*
          * Print prefix for 8/16 bit commands
          */
-        if (tCommand >= 0x100) {
+        if (tCommand >= 0x100)
+        {
             myLCD.print(F("0x"));
             sLastCommandPrintPosition = 11;
-        } else {
+        }
+        else
+        {
             myLCD.print(F("C=0x"));
             sLastCommandPrintPosition = 13;
         }
@@ -325,7 +373,8 @@ void irmp_result_print_LCD() {
      * Command data
      */
     myLCD.setCursor(sLastCommandPrintPosition, tStartRow + 1);
-    if (irmp_data.command < 0x10) {
+    if (irmp_data.command < 0x10)
+    {
         // leading 0
         myLCD.print('0');
     }

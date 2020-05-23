@@ -40,7 +40,7 @@ Available as Arduino library "IRMP"
 I created this comparison matrix for [myself](ArminJo) in order to choose a small IR lib for my project and to have a quick overview, when to choose which library.<br/>
 It is dated from **30.3.2020**. If you have complains about the data or request for extensions, please send a PM or open an issue.
 
-| Subject | [IRMP](https://github.com/ukw100/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**Abandoned** | [IRremote](https://github.com/z3t0/Arduino-IRremote)<br/>**Abandoned** |
+| Subject | [IRMP](https://github.com/ukw100/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**mostly unmaintained** | [IRremote](https://github.com/z3t0/Arduino-IRremote)<br/>**mostly unmaintained** |
 |---------|------|-----------|--------|----------|
 | Number of protocols | **50** | Nec + Panasonic + Hash \* | 12 + Hash \* | 13 |
 | 3.Party libs needed| % | PinChangeInterrupt if not pin 2 or 3 | % | % |
