@@ -130,9 +130,11 @@ LiquidCrystal_I2C myLCD(0x27, LCD_COLUMNS, LCD_ROWS);  // set the LCD address to
 LiquidCrystal myLCD(4, 5, 6, 7, 8, 9);
 #endif
 
+#if defined(__AVR__)
 // For cyclically display of VCC
 #include "ADCUtils.h"
 #define MILLIS_BETWEEN_VOLTAGE_PRINT 5000
+#endif
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
@@ -164,7 +166,9 @@ void setup()
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
 #endif
 
+#if defined(__AVR__)
     getVCCVoltageMillivoltSimple(); // to initialize ADC mux and reference
+#endif
 
 #if defined (USE_SERIAL_LCD)
     myLCD.init();
@@ -228,8 +232,8 @@ void loop()
         myLCD.print(((tVCC + 5) / 10) % 100);
         myLCD.print('V');
 #  endif
-#endif
     }
+#endif
 }
 
 /*
