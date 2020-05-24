@@ -166,7 +166,7 @@ timerAlarmWrite(sESP32Timer, (getApbFrequency() / 80) / IR_INTERRUPT_FREQUENCY, 
 timerAlarmEnable(sESP32Timer);
 
 // BluePill in 2 flavors
-#elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#elif defined(STM32F1xx) // stm32duino "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);      // used for generating only interrupts, no pin specified
 sSTM32Timer.setPrescaleFactor(1);
 sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT); // microsecond period
@@ -174,7 +174,7 @@ sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT); // microse
 sSTM32Timer.attachInterrupt(irmp_timer_ISR); // this sets update interrupt enable
 sSTM32Timer.resume(); // Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
 
-#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
+#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (Roger Clark's STM32duino.com) of manual installed hardware folder
 sSTM32Timer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
 sSTM32Timer.setPrescaleFactor(1);
 sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY);
@@ -495,16 +495,10 @@ void ICACHE_RAM_ATTR irmp_timer_ISR(void)
 #elif defined(ESP32)
 void IRAM_ATTR irmp_timer_ISR(void)
 
-#elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-void irmp_timer_ISR(HardwareTimer * aDummy __attribute__((unused)))
-
-#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-void irmp_timer_ISR(void)
-
 #elif defined(ARDUINO_ARCH_SAMD)
 void TC3_Handler(void)
 
-#elif defined(ARDUINO_ARCH_APOLLO3)
+#else // STM32F1xx (v1.9), __STM32F1__, ARDUINO_ARCH_APOLLO3
 void irmp_timer_ISR(void)
 
 #endif // defined(__AVR__)

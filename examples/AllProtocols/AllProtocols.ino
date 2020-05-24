@@ -207,6 +207,7 @@ void loop()
 #endif
     }
 
+#if defined(__AVR__)
     /*
      * Periodically print VCC
      */
@@ -219,13 +220,14 @@ void loop()
         Serial.print(tVCC);
         Serial.println(F("mV"));
 
-#if defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
+#  if defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
         myLCD.setCursor(10, 0);
         myLCD.print(' ');
         myLCD.print(tVCC / 1000);
         myLCD.print('.');
         myLCD.print(((tVCC + 5) / 10) % 100);
         myLCD.print('V');
+#  endif
 #endif
     }
 }
