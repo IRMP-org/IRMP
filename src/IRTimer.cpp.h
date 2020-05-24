@@ -498,6 +498,9 @@ void IRAM_ATTR irmp_timer_ISR(void)
 #elif defined(ARDUINO_ARCH_SAMD)
 void TC3_Handler(void)
 
+#elif defined(STM32F1xx) && STM32_CORE_VERSION_MAJOR == 1 &&  STM32_CORE_VERSION_MINOR <= 8 // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+void irmp_timer_ISR(HardwareTimer * aDummy __attribute__((unused))) // changed in stm32duino 1.9 - 5/2020
+
 #else // STM32F1xx (v1.9), __STM32F1__, ARDUINO_ARCH_APOLLO3
 void irmp_timer_ISR(void)
 
