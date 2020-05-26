@@ -40,7 +40,7 @@ Available as Arduino library "IRMP"
 I created this comparison matrix for [myself](ArminJo) in order to choose a small IR lib for my project and to have a quick overview, when to choose which library.<br/>
 It is dated from **30.3.2020**. If you have complains about the data or request for extensions, please send a PM or open an issue.
 
-| Subject | [IRMP](https://github.com/ukw100/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**mostly unmaintained** | [IRremote](https://github.com/z3t0/Arduino-IRremote)<br/>**mostly unmaintained** |
+| Subject | [IRMP](https://github.com/ukw100/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**mostly unmaintained** | [IRremote](https://github.com/z3t0/Arduino-IRremote) |
 |---------|------|-----------|--------|----------|
 | Number of protocols | **50** | Nec + Panasonic + Hash \* | 12 + Hash \* | 13 |
 | 3.Party libs needed| % | PinChangeInterrupt if not pin 2 or 3 | % | % |
@@ -54,7 +54,7 @@ It is dated from **30.3.2020**. If you have complains about the data or request 
 | RAM usage | **52**<br/>(73 / 100 for 15 (main) / 40 protocols) | **62** | 334 | 227 |
 | Supported platforms | **avr, attiny, Digispark (Pro), esp8266, ESP32, STM32, SAMD 21, Apollo3<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, SAMD 21, SAMD 51 | avr, attiny, *esp8266*, esp32, arm(some boards) |
 | Last library update | 4/2020 | 4/2018 | 9/2019 | 11/2017 |
-| Remarks | LED 13 Feedback.<br/>Decodes 40 protocols concurrently.<br/>39 Protocols to send.<br/>Work in progress. | Only one protocol at a time. | Consists of 5 libraries. LED 13 Feedback. **Project containing bugs - 45 issues, no reaction for at least one year.** | LED 13 Feedback.<br/>NEC decoding is poor.<br/>**213 open issues- and therefore an incredible amount of forks.** |
+| Remarks | LED 13 Feedback.<br/>Decodes 40 protocols concurrently.<br/>39 Protocols to send.<br/>Work in progress. | Only one protocol at a time. | Consists of 5 libraries. LED 13 Feedback. **Project containing bugs - 45 issues, no reaction for at least one year.** | LED 13 Feedback.<br/>NEC decoding is poor.<br/>**213 open issues and therefore an incredible amount of forks.** |
 
 \*The Hash protocol gives you a hash as code, which may be sufficient to distinguish your keys on the remote, but may not work with some protocols like Mitsubishi
 

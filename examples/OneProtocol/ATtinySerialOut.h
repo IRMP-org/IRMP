@@ -49,11 +49,15 @@
 //                    +----+
 //
 
-#ifndef TINY_SERIAL_OUT_H_
-#define TINY_SERIAL_OUT_H_
+#ifndef ATTINY_SERIAL_OUT_H_
+#define ATTINY_SERIAL_OUT_H_
 
 #if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include <Arduino.h>
+
+#define VERSION_ATTINY_SERIAL_OUT "1.1.0"
+#define VERSION_ATTINY_SERIAL_OUT_MAJOR 1
+#define VERSION_ATTINY_SERIAL_OUT_MINOR 1
 
 #if (F_CPU != 1000000) &&  (F_CPU != 8000000) &&  (F_CPU != 16000000)
 #error "F_CPU value must be 1000000, 8000000 or 16000000."
@@ -179,6 +183,7 @@ public:
 
     // virtual functions of Print class
     size_t write(uint8_t aByte);
+    operator bool() { return true; } // To support "while (!Serial); // wait for serial port to connect. Needed for Leonardo only
 
 #if !defined(TINY_SERIAL_INHERIT_FROM_PRINT)
     void print(const __FlashStringHelper * aStringPtr);
@@ -220,6 +225,6 @@ extern TinySerialOut Serial;
 
 #endif // defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 
-#endif /* TINY_SERIAL_OUT_H_ */
+#endif /* ATTINY_SERIAL_OUT_H_ */
 
 #pragma once
