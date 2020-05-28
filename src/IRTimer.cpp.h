@@ -165,6 +165,15 @@ timerAttachInterrupt(sESP32Timer, irmp_timer_ISR, true);
 timerAlarmWrite(sESP32Timer, (getApbFrequency() / 80) / IR_INTERRUPT_FREQUENCY, true);
 timerAlarmEnable(sESP32Timer);
 
+#if defined(DEBUG) && defined(ESP32)
+    Serial.print("CPU frequency=");
+    Serial.print(getCpuFrequencyMhz());
+    Serial.println("MHz");
+    Serial.print("Timer clock frequency=");
+    Serial.print(getApbFrequency());
+    Serial.println("Hz");
+#endif
+
 // BluePill in 2 flavors
 #elif defined(STM32F1xx) // stm32duino "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);      // used for generating only interrupts, no pin specified
@@ -384,7 +393,7 @@ sSTM32Timer.detachInterrupt(TIMER_CH1);
 #elif defined(ARDUINO_ARCH_SAMD)
 TC3->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;
 while (TC3->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY)
-	; //wait until TC5 is done syncing
+    ; //wait until TC5 is done syncing
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
 am_hal_ctimer_int_disable(AM_HAL_CTIMER_INT_TIMERB3);
@@ -431,7 +440,7 @@ sSTM32Timer.refresh(); // Set the timer's count to 0 and update the prescaler an
 #elif defined(ARDUINO_ARCH_SAMD)
 TC3->COUNT16.CTRLA.reg |= TC_CTRLA_ENABLE;
 while (TC3->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY)
-	; //wait until TC5 is done syncing
+    ; //wait until TC5 is done syncing
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
 am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
@@ -461,12 +470,12 @@ am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
  * The isr, which calls the dispatcher/service, which call the irmp_timer_ISR
  */
 extern "C" void am_ctimer_isr(void) {
-	// Check and clear any active CTIMER interrupts.
-	uint32_t ui32Status = am_hal_ctimer_int_status_get(true);
-	am_hal_ctimer_int_clear(ui32Status);
+    // Check and clear any active CTIMER interrupts.
+    uint32_t ui32Status = am_hal_ctimer_int_status_get(true);
+    am_hal_ctimer_int_clear(ui32Status);
 
-	// Run handlers for the various possible timer events.
-	am_hal_ctimer_int_service(ui32Status);
+    // Run handlers for the various possible timer events.
+    am_hal_ctimer_int_service(ui32Status);
 }
 #endif
 
@@ -508,10 +517,10 @@ void irmp_timer_ISR(void)
 
 {
 #if defined(ARDUINO_ARCH_SAMD)
-	TC3->COUNT16.INTFLAG.bit.MC0 = 1; // Clear interrupt
+    TC3->COUNT16.INTFLAG.bit.MC0 = 1; // Clear interrupt
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
-	 // Clear interrupt
+     // Clear interrupt
 #endif
 
 #  if defined(IRSND_H) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
@@ -524,28 +533,28 @@ digitalWriteFast(IRMP_TIMING_TEST_PIN, HIGH); // 2 clock cycles
 
 #  if defined(IRSND_H) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
 if(irsnd_busy) {
-	if (irsnd_is_on)
-	{
+    if (irsnd_is_on)
+    {
 #  if defined(digitalToggleFast)
-		digitalToggleFast(IRSND_OUTPUT_PIN);
+        digitalToggleFast(IRSND_OUTPUT_PIN);
 #  else
-		digitalWrite(IRSND_OUTPUT_PIN, !digitalRead(IRSND_OUTPUT_PIN));
+        digitalWrite(IRSND_OUTPUT_PIN, !digitalRead(IRSND_OUTPUT_PIN));
 #  endif
-	}
+    }
 
-	if (--sDivider == 0)
-	{
-		// empty call needs additional 0.7 us
-		if (!irsnd_ISR())
-		{
-			restoreIRTimer();
+    if (--sDivider == 0)
+    {
+        // empty call needs additional 0.7 us
+        if (!irsnd_ISR())
+        {
+            restoreIRTimer();
 #    if ! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
 // only send active -> disable interrupt
-			disableIRTimerInterrupt();
+            disableIRTimerInterrupt();
 #    endif
-		}
-		sDivider = 4;
-	}
+        }
+        sDivider = 4;
+    }
 } // if(irsnd_busy)
 
 
@@ -557,7 +566,7 @@ else
 #  endif
 
 #  if defined(IRMP_H) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
-	irmp_ISR();
+    irmp_ISR();
 #  endif
 
 #  if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)

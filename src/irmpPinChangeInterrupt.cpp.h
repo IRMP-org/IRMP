@@ -42,141 +42,141 @@ void IRAM_ATTR irmp_PCI_ISR(void)
 void irmp_PCI_ISR(void)
 #endif
 {
-	static uint32_t irmp_last_change_micros;
+    static uint32_t irmp_last_change_micros;
 
-	uint_fast8_t irmp_input = input(IRMP_PIN);
+    uint_fast8_t irmp_input = input(IRMP_PIN);
 
-	// compute ticks after last change
-	uint32_t tMicros = micros();
-	uint32_t tTicks = tMicros - irmp_last_change_micros; // values up to 10000
-	irmp_last_change_micros = tMicros;
+    // compute ticks after last change
+    uint32_t tMicros = micros();
+    uint32_t tTicks = tMicros - irmp_last_change_micros; // values up to 10000
+    irmp_last_change_micros = tMicros;
 #if (F_INTERRUPTS == 15625)
-	// F_INTERRUPTS value of 31250 does not work (maybe 8 bit overflow?)
-	tTicks = (tTicks << 2) >> 8;// saves 1.3 us
+    // F_INTERRUPTS value of 31250 does not work (maybe 8 bit overflow?)
+    tTicks = (tTicks << 2) >> 8;// saves 1.3 us
 #else
 #error "F_INTERRUPTS must be 15625 (to avoid a time consuming division)"
 #endif
 
-	if (tTicks != 0) {
-		tTicks -= 1;
-	}
+    if (tTicks != 0) {
+        tTicks -= 1;
+    }
 
-	if (irmp_input) {
-		// start of pause -> set pulse width
-		irmp_pulse_time += tTicks;
-	} else {
-		// start of pulse -> set pause or time between repetitions
-		if (!irmp_start_bit_detected) {
-			if (tTicks > 0xFFFF) {
-				// avoid overflow
-				tTicks = 0xFFFF;
-			}
-			key_repetition_len = tTicks;
-		} else {
-			irmp_pause_time += tTicks;
-		}
-	}
+    if (irmp_input) {
+        // start of pause -> set pulse width
+        irmp_pulse_time += tTicks;
+    } else {
+        // start of pulse -> set pause or time between repetitions
+        if (!irmp_start_bit_detected) {
+            if (tTicks > 0xFFFF) {
+                // avoid overflow
+                tTicks = 0xFFFF;
+            }
+            key_repetition_len = tTicks;
+        } else {
+            irmp_pause_time += tTicks;
+        }
+    }
 
-	irmp_ISR();
+    irmp_ISR();
 
-	if (!irmp_ir_detected && irmp_input) {
-		/*
-		 * Simulate end for protocols
-		 * IRMP may be waiting for stop bit, but detects it only at the next call, so do one additional call.
-		 * !!! ATTENTION !!! This will NOT work if we try to receive simultaneously two protocols which are only different in length like NEC16 and NEC42
-		 */
+    if (!irmp_ir_detected && irmp_input) {
+        /*
+         * Simulate end for protocols
+         * IRMP may be waiting for stop bit, but detects it only at the next call, so do one additional call.
+         * !!! ATTENTION !!! This will NOT work if we try to receive simultaneously two protocols which are only different in length like NEC16 and NEC42
+         */
 #ifdef PCI_DEBUG
-		Serial.write('x');
-		if(irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
-			Serial.print(irmp_start_bit_detected);
-		}
+        Serial.write('x');
+        if(irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
+            Serial.print(irmp_start_bit_detected);
+        }
 #endif
-		if (irmp_start_bit_detected && irmp_bit == irmp_param.complete_len && irmp_param.stop_bit == 1) {
-			// call another time to detect a nec repeat
+        if (irmp_start_bit_detected && irmp_bit == irmp_param.complete_len && irmp_param.stop_bit == 1) {
+            // call another time to detect a nec repeat
 #ifdef PCI_DEBUG
-			Serial.println('R');
+            Serial.println('R');
 #endif
-			if (irmp_pulse_time > 0) {
-				irmp_pulse_time--;
-			}
-			irmp_ISR();
-		}
+            if (irmp_pulse_time > 0) {
+                irmp_pulse_time--;
+            }
+            irmp_ISR();
+        }
 
-		if (irmp_start_bit_detected && irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
+        if (irmp_start_bit_detected && irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
 #ifdef PCI_DEBUG
-			irmp_debug_print(F("S"));
+            irmp_debug_print(F("S"));
 #endif
-			irmp_ISR();
+            irmp_ISR();
 #ifdef PCI_DEBUG
-			irmp_debug_print(F("E"));
-			Serial.println();
+            irmp_debug_print(F("E"));
+            Serial.println();
 #endif
-		}
+        }
 
 #if (IRMP_SUPPORT_MANCHESTER == 1)
-		/*
-		 * Simulate end for Manchester/biphase protocols - 130 bytes
-		 */
+        /*
+         * Simulate end for Manchester/biphase protocols - 130 bytes
+         */
 #  ifdef PCI_DEBUG
-		Serial.println('M');
+        Serial.println('M');
 #  endif
-		if (((irmp_bit == irmp_param.complete_len - 1 && tTicks < irmp_param.pause_1_len_max)
-						|| (irmp_bit == irmp_param.complete_len - 2 && tTicks > irmp_param.pause_1_len_max))
-				&& (irmp_param.flags & IRMP_PARAM_FLAG_IS_MANCHESTER) && irmp_start_bit_detected) {
-			irmp_pause_time = 2 * irmp_param.pause_1_len_max;
-			irmp_ISR();        // Write last one (with value 0) or 2 (with last value 1) data bits and set wait for dummy stop bit
-			irmp_ISR();// process dummy stop bit
-			irmp_ISR();// reset stop bit and call callback
-		}
+        if (((irmp_bit == irmp_param.complete_len - 1 && tTicks < irmp_param.pause_1_len_max)
+                        || (irmp_bit == irmp_param.complete_len - 2 && tTicks > irmp_param.pause_1_len_max))
+                && (irmp_param.flags & IRMP_PARAM_FLAG_IS_MANCHESTER) && irmp_start_bit_detected) {
+            irmp_pause_time = 2 * irmp_param.pause_1_len_max;
+            irmp_ISR();        // Write last one (with value 0) or 2 (with last value 1) data bits and set wait for dummy stop bit
+            irmp_ISR();// process dummy stop bit
+            irmp_ISR();// reset stop bit and call callback
+        }
 #endif
-	}
+    }
 }
 
 void initPCIInterrupt() {
 #ifdef IRMP_USE_ARDUINO_ATTACH_INTERRUPT
-	attachInterrupt(digitalPinToInterrupt(IRMP_INPUT_PIN), irmp_PCI_ISR, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(IRMP_INPUT_PIN), irmp_PCI_ISR, CHANGE);
 #else
 #  if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-	// use PinChangeInterrupt
-	PCMSK |= _BV(IRMP_INPUT_PIN);
-	// clear interrupt bit
-	GIFR |= 1 << PCIF;
-	// enable interrupt on next change
-	GIMSK |= 1 << PCIE;
+    // use PinChangeInterrupt
+    PCMSK |= _BV(IRMP_INPUT_PIN);
+    // clear interrupt bit
+    GIFR |= 1 << PCIF;
+    // enable interrupt on next change
+    GIMSK |= 1 << PCIE;
 
 #  elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #    if defined(ARDUINO_AVR_DIGISPARKPRO)
 #      if (IRMP_INPUT_PIN == 3)
-	// interrupt on any logical change
-	EICRA |= _BV(ISC00);
-	// clear interrupt bit
-	EIFR |= 1 << INTF0;
-	// enable interrupt on next change
-	EIMSK |= 1 << INT0;
+    // interrupt on any logical change
+    EICRA |= _BV(ISC00);
+    // clear interrupt bit
+    EIFR |= 1 << INTF0;
+    // enable interrupt on next change
+    EIMSK |= 1 << INT0;
 #      elif (IRMP_INPUT_PIN == 9)
-	EICRA |= _BV(ISC10);
-	// clear interrupt bit
-	EIFR |= 1 << INTF1;
-	// enable interrupt on next change
-	EIMSK |= 1 << INT1;
+    EICRA |= _BV(ISC10);
+    // clear interrupt bit
+    EIFR |= 1 << INTF1;
+    // enable interrupt on next change
+    EIMSK |= 1 << INT1;
 #      else
 #        error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1) IRMP_INPUT_PIN must be 9 or 3."
 #      endif // if (IRMP_INPUT_PIN == 9)
 
 #    else // defined(ARDUINO_AVR_DIGISPARKPRO)
 #      if (IRMP_INPUT_PIN == 14)
-	// interrupt on any logical change
-	EICRA |= _BV(ISC00);
-	// clear interrupt bit
-	EIFR |= 1 << INTF0;
-	// enable interrupt on next change
-	EIMSK |= 1 << INT0;
+    // interrupt on any logical change
+    EICRA |= _BV(ISC00);
+    // clear interrupt bit
+    EIFR |= 1 << INTF0;
+    // enable interrupt on next change
+    EIMSK |= 1 << INT0;
 #      elif (IRMP_INPUT_PIN == 3)
-	EICRA |= _BV(ISC10);
-	// clear interrupt bit
-	EIFR |= 1 << INTF1;
-	// enable interrupt on next change
-	EIMSK |= 1 << INT1;
+    EICRA |= _BV(ISC10);
+    // clear interrupt bit
+    EIFR |= 1 << INTF1;
+    // enable interrupt on next change
+    EIMSK |= 1 << INT1;
 #      else
 #        error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1) IRMP_INPUT_PIN must be 14 or 3."
 #      endif // if (IRMP_INPUT_PIN == 14)
@@ -184,18 +184,18 @@ void initPCIInterrupt() {
 
 #  else // defined(__AVR_ATtiny25__)
 #    if (IRMP_INPUT_PIN == 2)
-	// interrupt on any logical change
-	EICRA |= _BV(ISC00);
-	// clear interrupt bit
-	EIFR |= 1 << INTF0;
-	// enable interrupt on next change
-	EIMSK |= 1 << INT0;
+    // interrupt on any logical change
+    EICRA |= _BV(ISC00);
+    // clear interrupt bit
+    EIFR |= 1 << INTF0;
+    // enable interrupt on next change
+    EIMSK |= 1 << INT0;
 #    elif (IRMP_INPUT_PIN == 3)
-	EICRA |= _BV(ISC10);
-	// clear interrupt bit
-	EIFR |= 1 << INTF1;
-	// enable interrupt on next change
-	EIMSK |= 1 << INT1;
+    EICRA |= _BV(ISC10);
+    // clear interrupt bit
+    EIFR |= 1 << INTF1;
+    // enable interrupt on next change
+    EIMSK |= 1 << INT1;
 #    else
 #      error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1) IRMP_INPUT_PIN must be 2 or 3."
 #    endif // if (IRMP_INPUT_PIN == 2)
@@ -236,7 +236,7 @@ ISR(INT1_vect)
 #    endif
 #  endif // defined(__AVR_ATtiny25__)
 {
-	irmp_PCI_ISR();
+    irmp_PCI_ISR();
 }
 #endif // defined(__AVR__)
 

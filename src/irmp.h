@@ -15,6 +15,10 @@
 #ifndef IRMP_H
 #define IRMP_H
 
+#define VERSION_IRMP "2.2.0"
+#define VERSION_IRMP_MAJOR 2
+#define VERSION_IRMP_MINOR 2
+
 #ifndef IRMP_USE_AS_LIB
 #  define IRMPCONFIG_STAGE1_H
 #  include "irmpconfig.h"

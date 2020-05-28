@@ -5970,16 +5970,18 @@ uint_fast8_t irmp_ISR(void)
  * The name is chosen to enable easy migration from other IR libs.
  * Pin 13 is the pin of the built in LED on the first Arduino boards.
  */
-void irmp_blink13(bool aEnableBlinkLed) {
-	irmp_led_feedback = aEnableBlinkLed;
-	if (aEnableBlinkLed) {
-		pinModeFast(LED_BUILTIN, OUTPUT);
+void irmp_blink13(bool aEnableBlinkLed)
+{
+    irmp_led_feedback = aEnableBlinkLed;
+    if (aEnableBlinkLed)
+    {
+        pinModeFast(LED_BUILTIN, OUTPUT);
 #if defined(BLINK_13_LED_IS_ACTIVE_LOW)
-		digitalWriteFast(LED_BUILTIN, HIGH);
+        digitalWriteFast(LED_BUILTIN, HIGH);
 #else
-		digitalWriteFast(LED_BUILTIN, LOW);
+        digitalWriteFast(LED_BUILTIN, LOW);
 #endif
-	}
+    }
 }
 
 #if defined(__AVR__)

@@ -37,7 +37,7 @@ extern void     IRInitSendTimer(void);
 //#if defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 //extern void     irmp_timer_ISR(HardwareTimer * aDummy __attribute__((unused))); // changed in stm32duino 1.9
 //#else
-extern void		irmp_timer_ISR(void);
+extern void     irmp_timer_ISR(void);
 //#endif
 
 extern void     disableIRTimerInterrupt(void);
