@@ -731,8 +731,9 @@ static const char proto_onkyo[] PROGMEM = "ONKYO";
 static const char proto_radio1[] PROGMEM = "RADIO1";
 
 /*
- * This array holds the protocol numbers (from irmpprotocols.h)
+ * irmp_used_protocol_index holds the protocol numbers (from irmpprotocols.h)
  * for the included protocol name entries of the irmp_used_protocol_names array below
+ * E.g. irmp_used_protocol_index=2,7 and irmp_used_protocol_names="NEC","RC5".
  *
  * Both arrays together are generally smaller than the complete irmp_protocol_names array
  * allowing them to be used on ATtinies even if program code for access is bigger.

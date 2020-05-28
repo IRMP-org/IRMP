@@ -28,7 +28,7 @@
  */
 #include "PinDefinitionsAndMore.h" // Sets input pin to 3
 
-//#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH.
+#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH.
 
 //#define IRMP_SUPPORT_SIRCS_PROTOCOL      1
 #define IRMP_SUPPORT_NEC_PROTOCOL        1
@@ -47,22 +47,22 @@
 //#define IRMP_SUPPORT_SIEMENS_PROTOCOL    1
 //#define IRMP_SUPPORT_NOKIA_PROTOCOL      1
 
-// use 20000 for Support of LEGO and RCMM
-//#define F_INTERRUPTS                            20000   // interrupts per second, 50us, min: 10000, max: 20000, typ: 15000
-//#define IRMP_SUPPORT_LEGO_PROTOCOL              1       // LEGO Power RC        >= 20000                 ~150 bytes
-//#define IRMP_SUPPORT_RCMM_PROTOCOL              1       // RCMM 12,24, or 32    >= 20000                 ~150 bytes
+// use F_INTERRUPTS=20000 for Support of LEGO and RCMM
+//#define F_INTERRUPTS                     20000   // interrupts per second, 50us, min: 10000, max: 20000, typ: 15000
+//#define IRMP_SUPPORT_LEGO_PROTOCOL       1       // LEGO Power RC        >= 20000  ~150 bytes
+//#define IRMP_SUPPORT_RCMM_PROTOCOL       1       // RCMM 12,24, or 32    >= 20000  ~150 bytes
 
 /*
  * Protocols which are not enabled in the irmpSelectAllProtocols.h for the AllProtocol example
  */
-//#define IRMP_SUPPORT_FAN_PROTOCOL               1       // FAN (ventilator)     >= 10000                  ~50 bytes     conflicts with NUBERT
-//#define IRMP_SUPPORT_ORTEK_PROTOCOL             1       // ORTEK (Hama)         >= 10000                 ~150 bytes     conflicts with FDC and NETBOX
-//#define IRMP_SUPPORT_ROOMBA_PROTOCOL            1       // iRobot Roomba        >= 10000                 ~150 bytes     conflicts with RC6
-//#define IRMP_SUPPORT_RUWIDO_PROTOCOL            1       // RUWIDO, T-Home       >= 15000                 ~550 bytes     conflicts with DENON
-//#define IRMP_SUPPORT_S100_PROTOCOL              1       // S100                 >= 10000                 ~250 bytes     conflicts with RC5
-//#define IRMP_SUPPORT_ACP24_PROTOCOL             1       // ACP24                >= 10000                 ~250 bytes     conflicts with DENON
-//#define IRMP_SUPPORT_PANASONIC_PROTOCOL         1       // PANASONIC Beamer     >= 10000                 ~250 bytes     conflicts with KASEIKYO
-//#define IRMP_SUPPORT_RCII_PROTOCOL              1       // RCII T+A             >= 15000                 ~250 bytes     conflicts with GRUNDIG and NOKIA
+//#define IRMP_SUPPORT_FAN_PROTOCOL        1       // FAN (ventilator)     >= 10000   ~50 bytes     conflicts with NUBERT
+//#define IRMP_SUPPORT_ORTEK_PROTOCOL      1       // ORTEK (Hama)         >= 10000  ~150 bytes     conflicts with FDC and NETBOX
+//#define IRMP_SUPPORT_ROOMBA_PROTOCOL     1       // iRobot Roomba        >= 10000  ~150 bytes     conflicts with RC6
+//#define IRMP_SUPPORT_RUWIDO_PROTOCOL     1       // RUWIDO, T-Home       >= 15000  ~550 bytes     conflicts with DENON
+//#define IRMP_SUPPORT_S100_PROTOCOL       1       // S100                 >= 10000  ~250 bytes     conflicts with RC5
+//#define IRMP_SUPPORT_ACP24_PROTOCOL      1       // ACP24                >= 10000  ~250 bytes     conflicts with DENON
+//#define IRMP_SUPPORT_PANASONIC_PROTOCOL  1       // PANASONIC Beamer     >= 10000  ~250 bytes     conflicts with KASEIKYO
+//#define IRMP_SUPPORT_RCII_PROTOCOL       1       // RCII T+A             >= 15000  ~250 bytes     conflicts with GRUNDIG and NOKIA
 /*
  * More protocol definitions can be found in irmpSelectAllProtocols.h
  */

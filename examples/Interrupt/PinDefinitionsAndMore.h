@@ -4,7 +4,7 @@
  *  Contains IRMP_INPUT_PIN definitions for IRMP examples for various platforms
  *  as well as includes and definitions for LED_BUILTIN
  *
- *  Copyright (C) 2019-2020  Armin Joachimsmeyer
+ *  Copyright (C) 2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
