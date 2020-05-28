@@ -23,54 +23,12 @@
  *
  */
 
-#include <Arduino.h>
-
-#define VERSION_EXAMPLE "1.3"
-
 /*
  * Set library modifiers first to set input pin etc.
  */
-#if defined(ESP8266)
-#define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
-#define IRMP_INPUT_PIN D5
+#include "PinDefinitionsAndMore.h"
 
-#elif defined(ESP32)
-#define IRMP_INPUT_PIN 15
-
-#elif defined(STM32F1xx) || defined(__STM32F1__)
-// BluePill in 2 flavors
-// STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-// __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-// Timer 3 of IRMP blocks PA6, PA7, PB0, PB1 for use by Servo or tone()
-#define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
-#define IRMP_INPUT_PIN   PA6
-
-#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#include "ATtinySerialOut.h"
-#  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#define IRMP_INPUT_PIN 0
-#    if defined(ARDUINO_AVR_DIGISPARK)
-#define LED_BUILTIN PB1
-#    endif
-
-#  else
-#    if defined(ARDUINO_AVR_DIGISPARKPRO)
-#define LED_BUILTIN      1 // PB1 - on Digispark board labeled as pin 1
-#define IRMP_INPUT_PIN   9 // PA3 - on Digispark board labeled as pin 9
-#    else
-#define IRMP_INPUT_PIN 3
-#    endif
-#  endif
-
-#endif
-// default for IRMP_INPUT_PIN is 3
-
-// On the Zero and others we switch explicitly to SerialUSB
-#if defined(ARDUINO_ARCH_SAMD)
-#define Serial SerialUSB
-#endif
-
-//#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH. Must before #include <irmp*>
+//#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH.
 
 //#define IRMP_SUPPORT_SIRCS_PROTOCOL      1
 #define IRMP_SUPPORT_NEC_PROTOCOL        1
@@ -116,9 +74,6 @@
 
 IRMP_DATA irmp_data;
 
-#define STR_HELPER(x) #x
-#define STR(x) STR_HELPER(x)
-
 void setup()
 {
 // initialize the digital pin as an output.
@@ -134,7 +89,7 @@ void setup()
 #if defined(__ESP8266__)
     Serial.println();
 #endif
-    Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
+    Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
     irmp_init();
 //    irmp_blink13(true); // Enable LED feedback - commented out, since we use built in LED in loop below

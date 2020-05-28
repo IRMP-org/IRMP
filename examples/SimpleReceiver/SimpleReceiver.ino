@@ -51,48 +51,7 @@
 /*
  * Set library modifiers first to set input pin etc.
  */
-#if defined(ESP8266)
-#define IRMP_INPUT_PIN 14  // D5
-#define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
-
-#elif defined(ESP32)
-#define IRMP_INPUT_PIN 15
-
-#elif defined(STM32F1xx) || defined(__STM32F1__)
-// BluePill in 2 flavors
-// STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-// __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-// Timer 3 of IRMP blocks PA6, PA7, PB0, PB1 for use by Servo or tone()
-#define IRMP_INPUT_PIN PA4
-#define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
-
-#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#include "ATtinySerialOut.h"
-#  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#define IRMP_INPUT_PIN 0
-#    if defined(ARDUINO_AVR_DIGISPARK)
-#define LED_BUILTIN PB1
-#    endif
-
-#  else
-#    if defined(ARDUINO_AVR_DIGISPARKPRO)
-#define LED_BUILTIN      1 // PB1 - on Digispark board labeled as pin 1
-#define IRMP_INPUT_PIN   9 // PA3 - on Digispark board labeled as pin 9
-#    else
-#define IRMP_INPUT_PIN   3
-#    endif
-#  endif
-
-#elif defined(ARDUINO_ARCH_APOLLO3)
-#define IRMP_INPUT_PIN   11
-
-#endif // defined(ESP8266)
-// default for IRMP_INPUT_PIN is 3
-
-// On the Zero and others we switch explicitly to SerialUSB
-#if defined(ARDUINO_ARCH_SAMD)
-#define Serial SerialUSB
-#endif
+#include "PinDefinitionsAndMore.h"
 
 #define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH. Must before #include <irmp*>
 
@@ -108,47 +67,54 @@ IRMP_DATA irmp_data;
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
-void setup() {
-	Serial.begin(115200);
+void setup()
+{
+    Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__)
-	while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
+    while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
 #endif
 #if defined(SERIAL_USB)
-	delay(2000); // To be able to connect Serial monitor after reset and before first printout
+    delay(2000); // To be able to connect Serial monitor after reset and before first printout
 #endif
 #if defined(__ESP8266__)
-	Serial.println(); // to separate it from the internal boot output
+    Serial.println(); // to separate it from the internal boot output
 #endif
 
-	// Just to know which program is running on my Arduino
-	Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
-	irmp_init();
-	irmp_blink13(true); // Enable LED feedback
+    // Just to know which program is running on my Arduino
+    Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
+    Serial.println(F("Using library version " VERSION_IRMP));
 
-	Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
+    irmp_init();
+    irmp_blink13(true); // Enable LED feedback
+
+    Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
 }
 
-void loop() {
-	/*
-	 * Check if new data available and get them
-	 */
-	if (irmp_get_data(&irmp_data)) {
-		/*
-		 * Skip repetitions of command
-		 */
-		if (!(irmp_data.flags & IRMP_FLAG_REPETITION)) {
-			/*
-			 * Here data is available and is no repetition -> evaluate IR command
-			 */
-			switch (irmp_data.command) {
-			case 0x48:
-				digitalWrite(LED_BUILTIN, HIGH); // will be set to low by IR feedback / irmp_blink13()
-				delay(4000);
-				break;
-			default:
-				break;
-			}
-		}
-		irmp_result_print(&irmp_data);
-	}
+void loop()
+{
+    /*
+     * Check if new data available and get them
+     */
+    if (irmp_get_data(&irmp_data))
+    {
+        /*
+         * Skip repetitions of command
+         */
+        if (!(irmp_data.flags & IRMP_FLAG_REPETITION))
+        {
+            /*
+             * Here data is available and is no repetition -> evaluate IR command
+             */
+            switch (irmp_data.command)
+            {
+            case 0x48:
+                digitalWrite(LED_BUILTIN, HIGH); // will be set to low by IR feedback / irmp_blink13()
+                delay(4000);
+                break;
+            default:
+                break;
+            }
+        }
+        irmp_result_print(&irmp_data);
+    }
 }

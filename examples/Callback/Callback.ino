@@ -24,64 +24,14 @@
  *
  */
 
-#include <Arduino.h>
-
-#define VERSION_EXAMPLE "1.3"
-
 /*
  * Set library modifiers first to set input pin etc.
  */
-#if defined(ESP8266)
-#define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
-#define IRMP_INPUT_PIN D5
-
-#elif defined(ESP32)
-#define IRMP_INPUT_PIN 15
-
-#elif defined(STM32F1xx) || defined(__STM32F1__)
-// BluePill in 2 flavors
-// STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-// __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-// Timer 3 of IRMP blocks PA6, PA7, PB0, PB1 for use by Servo or tone()
-#define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
-#define IRMP_INPUT_PIN   PA6
-
-#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#include "ATtinySerialOut.h"
-#  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#define IRMP_INPUT_PIN 0
-#    if defined(ARDUINO_AVR_DIGISPARK)
-#define LED_BUILTIN PB1
-#    endif
-
-#  else
-#    if defined(ARDUINO_AVR_DIGISPARKPRO)
-#define LED_BUILTIN      1 // PB1 - on Digispark board labeled as pin 1
-#define IRMP_INPUT_PIN   9 // PA3 - on Digispark board labeled as pin 9
-#    else
-#define IRMP_INPUT_PIN   3
-#    endif
-#  endif
-
-#else
-#define IRMP_INPUT_PIN 3
-// You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
-//#define IRMP_PORT_LETTER D
-//#define IRMP_BIT_NUMBER 3
-#endif
-
-// On the Zero and others we switch explicitly to SerialUSB
-#if defined(ARDUINO_ARCH_SAMD)
-#define Serial SerialUSB
-#endif
+#include "PinDefinitionsAndMore.h"
 
 #define IRMP_PROTOCOL_NAMES         1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
 #define IRMP_USE_COMPLETE_CALLBACK  1 // Enable callback functionality
 
-//#define SIZE_TEST
-#ifdef SIZE_TEST
-#define IRMP_SUPPORT_NEC_PROTOCOL        1
-#else
 // Enables protocols manually
 //#define IRMP_SUPPORT_SIRCS_PROTOCOL      1
 #define IRMP_SUPPORT_NEC_PROTOCOL        1
@@ -99,7 +49,6 @@
 //#define IRMP_SUPPORT_GRUNDIG_PROTOCOL    1
 //#define IRMP_SUPPORT_SIEMENS_PROTOCOL    1
 //#define IRMP_SUPPORT_NOKIA_PROTOCOL      1
-#endif
 
 /*
  * After setting the modifiers we can include the code.
@@ -107,9 +56,6 @@
 #include <irmp.c.h>
 
 IRMP_DATA irmp_data;
-
-#define STR_HELPER(x) #x
-#define STR(x) STR_HELPER(x)
 
 void handleReceivedIRData();
 
@@ -122,20 +68,12 @@ void setup() {
     delay(2000); // To be able to connect Serial monitor after reset and before first printout
 #endif
     // Just to know which program is running on my Arduino
-    Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
+    Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
+
     //Enable auto resume and pass it the address of your extra buffer
     irmp_init();
     irmp_blink13(true); // Enable LED feedback
     irmp_register_complete_callback_function(&handleReceivedIRData);
-
-#if defined(ESP32)
-    Serial.print("CPU frequency=");
-    Serial.print(getCpuFrequencyMhz());
-    Serial.println("MHz");
-    Serial.print("Timer clock frequency=");
-    Serial.print(getApbFrequency());
-    Serial.println("Hz");
-#endif
 
 #if defined(STM32F1xx)
     Serial.println(F("Ready to receive IR signals at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library

@@ -38,51 +38,10 @@
 
 #include <Arduino.h>
 
-#define VERSION_EXAMPLE "1.2"
-
 /*
  * Set library modifiers first to set output pin etc.
  */
-#if defined(ESP8266)
-#define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
-#define IRSND_OUTPUT_PIN 12 // D6
-
-#elif defined(ESP32)
-#define IRSND_OUTPUT_PIN  4  // D4
-
-#elif defined(STM32F1xx) || defined(__STM32F1__)
-// BluePill in 2 flavors
-// STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-// __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-#define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
-#define IRSND_OUTPUT_PIN PA7
-
-#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#include "ATtinySerialOut.h"
-#  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#define IRSND_OUTPUT_PIN 4 // Pin 2 is serial output with ATtinySerialOut. Pin 1 is internal LED and Pin3 is USB+ with pullup on Digispark board.
-#    if defined(ARDUINO_AVR_DIGISPARK)
-#define LED_BUILTIN PB1
-#    endif
-
-#  else
-#    if defined(ARDUINO_AVR_DIGISPARKPRO)
-#define LED_BUILTIN 1 // On a Digispark Pro we have PB1 / D1 (Digispark library) or D9 (ATtinyCore lib) / on DigisparkBoard labeled as pin 1
-#define IRSND_OUTPUT_PIN 8  // PA2 - on DigisparkBoard labeled as pin 8
-#    else
-#define IRSND_OUTPUT_PIN 2
-#    endif
-#  endif
-
-#else
-#define IRSND_OUTPUT_PIN 4
-#endif
-
-// On the Zero and others we switch explicitly to SerialUSB
-#if defined(ARDUINO_ARCH_SAMD)
-#define Serial SerialUSB
-#endif
-
+#include "PinDefinitionsAndMore.h"
 //#define IR_OUTPUT_IS_ACTIVE_LOW
 
 #include <irsndSelectMain15Protocols.h>
@@ -92,9 +51,6 @@
 #include <irsnd.c.h>
 
 IRMP_DATA irsnd_data;
-
-#define STR_HELPER(x) #x
-#define STR(x) STR_HELPER(x)
 
 void setup()
 {
@@ -106,11 +62,12 @@ void setup()
     delay(2000); // To be able to connect Serial monitor after reset and before first printout
 #endif
 #if defined(__ESP8266__)
-	Serial.println(); // to separate it from the internal boot output
+    Serial.println(); // to separate it from the internal boot output
 #endif
 
     // Just to know which program is running on my Arduino
-    Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
+    Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
+
     irsnd_init();
     irsnd_blink13(true); // Enable LED feedback
 
@@ -125,7 +82,7 @@ void setup()
     irsnd_data.flags = 0; // repeat frame 0 time
 
     Serial.print(F("Send 0x"));
-    Serial.println(irsnd_data.command,HEX);
+    Serial.println(irsnd_data.command, HEX);
     irsnd_send_data(&irsnd_data, false);
 
 }
@@ -138,6 +95,6 @@ void loop()
     // For my Samsung the high byte is the negative of the low byte
     irsnd_data.command = ((~tNextCommand) << 8) | tNextCommand;
     Serial.print(F("Send 0x"));
-    Serial.println(irsnd_data.command,HEX);
+    Serial.println(irsnd_data.command, HEX);
     irsnd_send_data(&irsnd_data, false); // This stores timer state and restores it after sending
 }

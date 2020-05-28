@@ -28,10 +28,8 @@
  *
  */
 
-#include <Arduino.h>
-
 /*
- * Comment out, what LCD you use
+ * Comment out the type of LCD you use
  */
 //#define USE_PARALELL_LCD
 //#define USE_SERIAL_LCD
@@ -40,69 +38,12 @@
  */
 //#define USE_1602_LCD
 //#define USE_2004_LCD
-#if defined (USE_SERIAL_LCD)
-#include <LiquidCrystal_I2C.h>
-#endif
-#if defined (USE_PARALELL_LCD)
-#include <LiquidCrystal.h>
-#endif
 
-#if defined (USE_1602_LCD)
-// definitions for a 1602 LCD
-#define LCD_COLUMNS 16
-#define LCD_ROWS 2
-#endif
-#if defined (USE_2004_LCD)
-// definitions for a 2004 LCD
-#define LCD_COLUMNS 20
-#define LCD_ROWS 4
-#endif
-
-#define VERSION_EXAMPLE "1.4"
+#include "PinDefinitionsAndMore.h"
 
 /*
  * Set library modifiers first to set input pin etc.
  */
-#if defined(ESP8266)
-#define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
-#define IRMP_INPUT_PIN D5
-
-#elif defined(ESP32)
-#define IRMP_INPUT_PIN 15
-
-#elif defined(STM32F1xx) || defined(__STM32F1__)
-// BluePill in 2 flavors
-// STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-// __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-// Timer 3 of IRMP blocks PA6, PA7, PB0, PB1 for use by Servo or tone()
-#define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
-#define IRMP_INPUT_PIN   PA6
-
-#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#include "ATtinySerialOut.h"
-#  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#define IRMP_INPUT_PIN 0
-#    if defined(ARDUINO_AVR_DIGISPARK)
-#define LED_BUILTIN PB1
-#    endif
-
-#  else
-#    if defined(ARDUINO_AVR_DIGISPARKPRO)
-#define LED_BUILTIN      1 // PB1 - on Digispark board labeled as pin 1
-#define IRMP_INPUT_PIN   9 // PA3 - on Digispark board labeled as pin 9
-#    else
-#define IRMP_INPUT_PIN   3
-#    endif
-#  endif
-
-#endif
-// default for IRMP_INPUT_PIN is 3
-
-// On the Zero and others we switch explicitly to SerialUSB
-#if defined(ARDUINO_ARCH_SAMD)
-#define Serial SerialUSB
-#endif
-
 #define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some FLASH
 #define IRMP_USE_COMPLETE_CALLBACK       1 // Enable callback functionality
 
@@ -136,9 +77,6 @@ LiquidCrystal myLCD(4, 5, 6, 7, 8, 9);
 #define MILLIS_BETWEEN_VOLTAGE_PRINT 5000
 #endif
 
-#define STR_HELPER(x) #x
-#define STR(x) STR_HELPER(x)
-
 void handleReceivedIRData();
 void irmp_result_print_LCD();
 
@@ -154,7 +92,7 @@ void setup()
     delay(2000); // To be able to connect Serial monitor after reset and before first printout
 #endif
     // Just to know which program is running on my Arduino
-    Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
+    Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
     irmp_init();
     irmp_blink13(true); // Enable LED feedback
@@ -180,7 +118,7 @@ void setup()
 #endif
 
 #if defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
-    myLCD.print(F("IRMP all  V" VERSION_EXAMPLE));
+    myLCD.print(F("IRMP all  V" VERSION_IRMP));
     myLCD.setCursor(0, 1);
     myLCD.print(F(__DATE__));
 #endif
