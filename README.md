@@ -16,7 +16,7 @@ Available as Arduino library "IRMP"
 
 | Nano running AllProtocol example | YouTube Video | Instructable |
 |-|-|-|
-| ![Nano running AllProtocol example](https://github.com/ukw100/IRMP/blob/master/pictures/NEC.jpg) | ![YouTube Video](https://github.com/ukw100/IRMP/blob/master/pictures/KASEIKYO+Remote.jpg) | [![Instructable](https://github.com/ArminJo/Arduino-OpenWindowAlarm/blob/master/pictures/instructables-logo-v2.png)](https://www.instructables.com/id/IR-Remote-Analyzer-Receiver-With-Arduino) |
+| ![Nano running AllProtocol example](pictures/NEC.jpg) | ![YouTube Video](pictures/KASEIKYO+Remote.jpg) | [![Instructable](https://github.com/ArminJo/Arduino-OpenWindowAlarm/blob/master/pictures/instructables-logo-v2.png)](https://www.instructables.com/id/IR-Remote-Analyzer-Receiver-With-Arduino) |
  
 # List of protocols
 - Sony SIRCS, NEC + APPLE + ONKYO, Samsung + Samsg32, Kaseikyo
@@ -33,11 +33,11 @@ Available as Arduino library "IRMP"
 # Schematic for Arduino UNO
 | IR-Receiver connection | Serial LCD connection |
 |---|---|
-![Fritzing schematic for Arduino UNO](https://github.com/ukw100/IRMP/blob/master/extras/IRMP_UNO_Steckplatine.png) | ![Fritzing schematic for Arduino UNO + LCD](https://github.com/ukw100/IRMP/blob/master/extras/IRMP_UNO_LCD_Steckplatine.png)
+![Fritzing schematic for Arduino UNO](extras/IRMP_UNO_Steckplatine.png) | ![Fritzing schematic for Arduino UNO + LCD](extras/IRMP_UNO_LCD_Steckplatine.png)
 
 # Quick comparison of 4 Arduino IR receiving libraries
 ## This is a short comparison and may not be complete or correct
-I created this comparison matrix for [myself](ArminJo) in order to choose a small IR lib for my project and to have a quick overview, when to choose which library.<br/>
+I created this comparison matrix for [myself](https://github.com/ArminJo) in order to choose a small IR lib for my project and to have a quick overview, when to choose which library.<br/>
 It is dated from **30.3.2020**. If you have complains about the data or request for extensions, please send a PM or open an issue.
 
 | Subject | [IRMP](https://github.com/ukw100/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**mostly unmaintained** | [IRremote](https://github.com/z3t0/Arduino-IRremote) |
@@ -59,7 +59,7 @@ It is dated from **30.3.2020**. If you have complains about the data or request 
 \*The Hash protocol gives you a hash as code, which may be sufficient to distinguish your keys on the remote, but may not work with some protocols like Mitsubishi
 
 # Easy migrating your code from IRremote to IRMP
-See also the [SimpleReceiver example](https://github.com/ukw100/IRMP/blob/master/examples/SimpleReceiver/SimpleReceiver.ino) .
+See also the [SimpleReceiver example](examples/SimpleReceiver/SimpleReceiver.ino) .
 
 ### Change the include and declarations from:
 ```
@@ -87,16 +87,16 @@ and<br/>
 
 You do not need **`myReceiver.resume();`** any more, just delete it.
 
-The IR code representation of IRMP is different from that in IRremote. In IRMP (as in IRLremote) it is more standard and simpler. Use the function `irmp_result_print(&irmp_data[0])` to print the IR code representation. Seee [SimpleReceiver example](https://github.com/ukw100/IRMP/blob/master/examples/SimpleReceiver/SimpleReceiver.ino).
+The IR code representation of IRMP is different from that in IRremote. In IRMP (as in IRLremote) it is more standard and simpler. Use the function `irmp_result_print(&irmp_data[0])` to print the IR code representation. Seee [SimpleReceiver example](examples/SimpleReceiver/SimpleReceiver.ino).
 
-If you want to distinguish between more than one remote in one sketch, you may also use `irmp_data[0].address` like it is done in the [Callback example](https://github.com/ukw100/IRMP/blob/master/examples/Callback/Callback.ino).
+If you want to distinguish between more than one remote in one sketch, you may also use `irmp_data[0].address` like it is done in the [Callback example](examples/Callback/Callback.ino).
 
 # Timer usage
 The IRMP **receive** library works by polling the input pin at a rate of 10 to 20 kHz. Default is 15 kHz.<br/>
 The IRMP **send** library works by bit banging the output pin at a frequency of 38 kHz. This **avoids blocking waits** and allows to choose an **arbitrary pin**, you are not restricted to pin 3 or 11. Send Interrupts require 50% CPU time on a 16 MHz AVR.<br/>
-The **tone() library is still available**. You can use it alternating with IR receive and send, see [ReceiveAndSend example](https://github.com/ukw100/IRMP/blob/master/examples/ReceiveAndSend/ReceiveAndSend.ino).
+The **tone() library is still available**. You can use it alternating with IR receive and send, see [ReceiveAndSend example](examples/ReceiveAndSend/ReceiveAndSend.ino).
 
-**Some protocols can be received by just using interrupts from the input pin** instead of polling by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. In this case **no timer is needed**. See [Interrupt example](https://github.com/ukw100/IRMP/blob/master/examples/Interrupt/Interrupt.ino).<br/>
+**Some protocols can be received by just using interrupts from the input pin** instead of polling by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. In this case **no timer is needed**. See [Interrupt example](examples/Interrupt/Interrupt.ino).<br/>
 
 - For AVR **timer 2 (Tone timer)** is used for receiving **and** sending. For variants, which have no timer 2 like ATtiny85 or ATtiny167, **timer 1** is used.
 - For SAMD **TC3** is used.
@@ -110,15 +110,15 @@ The **tone() library is still available**. You can use it alternating with IR re
 # AllProtocol example
 | Serial LCD output | Arduino Serial Monitor output |
 |-|-|
-| ![LCD start](https://github.com/ukw100/IRMP/blob/master/pictures/Start.jpg) | ![Serial Monitor](https://github.com/ukw100/IRMP/blob/master/pictures/AllProtocol_SerialMonitor.png) |
+| ![LCD start](pictures/Start.jpg) | ![Serial Monitor](pictures/AllProtocol_SerialMonitor.png) |
 
 ## Sample Protocols
 | | | | |
 |-|-|-|-|
-| ![NEC](https://github.com/ukw100/IRMP/blob/master/pictures/NEC_Paralell.jpg)| ![NEC42](https://github.com/ukw100/IRMP/blob/master/pictures/NEC42.jpg) |![RC5](https://github.com/ukw100/IRMP/blob/master/pictures/RC5.jpg) |![KASEIKYO](https://github.com/ukw100/IRMP/blob/master/pictures/KASEIKYO.jpg) |
-| ![DENON](https://github.com/ukw100/IRMP/blob/master/pictures/DENON.jpg) |![GRUNDIG](https://github.com/ukw100/IRMP/blob/master/pictures/GRUNDIG.jpg) |![IR60](https://github.com/ukw100/IRMP/blob/master/pictures/IR60.jpg) |![MATSUSHITA](https://github.com/ukw100/IRMP/blob/master/pictures/MATSUSHITA.jpg) |
-| ![NUBERT](https://github.com/ukw100/IRMP/blob/master/pictures/NUBERT.jpg) |![ONKYO](https://github.com/ukw100/IRMP/blob/master/pictures/ONKYO.jpg) |![RECS80](https://github.com/ukw100/IRMP/blob/master/pictures/RECS80.jpg) |![RUWIDO](https://github.com/ukw100/IRMP/blob/master/pictures/RUWIDO.jpg) |
-| ![SAMSUNG](https://github.com/ukw100/IRMP/blob/master/pictures/SAMSUNG.jpg) |![SIEMENS](https://github.com/ukw100/IRMP/blob/master/pictures/SIEMENS.jpg) |![TELEFUNKEN](https://github.com/ukw100/IRMP/blob/master/pictures/TELEFUNKEN.jpg) |![TELEFUNKEN](https://github.com/ukw100/IRMP/blob/master/pictures/TELEFUNKEN.jpg) |
+| ![NEC](pictures/NEC_Paralell.jpg)| ![NEC42](pictures/NEC42.jpg) |![RC5](pictures/RC5.jpg) |![KASEIKYO](pictures/KASEIKYO.jpg) |
+| ![DENON](pictures/DENON.jpg) |![GRUNDIG](pictures/GRUNDIG.jpg) |![IR60](pictures/IR60.jpg) |![MATSUSHITA](pictures/MATSUSHITA.jpg) |
+| ![NUBERT](pictures/NUBERT.jpg) |![ONKYO](pictures/ONKYO.jpg) |![RECS80](pictures/RECS80.jpg) |![RUWIDO](pictures/RUWIDO.jpg) |
+| ![SAMSUNG](pictures/SAMSUNG.jpg) |![SIEMENS](pictures/SIEMENS.jpg) |![TELEFUNKEN](pictures/TELEFUNKEN.jpg) |![TELEFUNKEN](pictures/TELEFUNKEN.jpg) |
 
 
 # Documentation at mikrocontroller.net
