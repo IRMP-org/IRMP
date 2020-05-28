@@ -15,9 +15,7 @@
 #ifndef IRMP_H
 #define IRMP_H
 
-#define VERSION_IRMP "2.2.0"
-#define VERSION_IRMP_MAJOR 2
-#define VERSION_IRMP_MINOR 2
+#include "irmpVersion.h"
 
 #ifndef IRMP_USE_AS_LIB
 #  define IRMPCONFIG_STAGE1_H
@@ -304,36 +302,36 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 
 #define IRMP_FLAG_REPETITION            0x01
 
-void                             irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr);
-void                             irmp_result_print(IRMP_DATA * aIRMPDataPtr);
+void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr);
+void irmp_result_print(IRMP_DATA * aIRMPDataPtr);
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-extern void                             irmp_init (void);
-extern uint_fast8_t                     irmp_get_data (IRMP_DATA *);
-extern uint_fast8_t                     irmp_ISR (void);
+extern void irmp_init(void);
+extern uint_fast8_t irmp_get_data(IRMP_DATA *);
+extern uint_fast8_t irmp_ISR(void);
 
 #if defined(ARDUINO)
-extern void                             irmp_blink13(bool aEnableBlinkLed);
+extern void irmp_blink13(bool aEnableBlinkLed);
 #  if defined(__AVR__)
 extern void irmp_debug_print(const __FlashStringHelper * aMessage, bool aDoShortOutput);
 #  else
 extern void irmp_debug_print(const char * aMessage, bool aDoShortOutput);
 #  endif
 
-extern void                             irmp_PCI_ISR(void);
-extern void                             initPCIInterrupt(void);
+extern void irmp_PCI_ISR(void);
+extern void initPCIInterrupt(void);
 
 #  if IRMP_PROTOCOL_NAMES == 1
-extern const char * const               irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM;
+extern const char * const irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM;
 #  endif
 #endif
 
 #if IRMP_USE_CALLBACK == 1
-extern void                             irmp_set_callback_ptr (void (*cb)(uint_fast8_t));
+extern void irmp_set_callback_ptr (void (*cb)(uint_fast8_t));
 #endif // IRMP_USE_CALLBACK == 1
 
 #ifdef __cplusplus

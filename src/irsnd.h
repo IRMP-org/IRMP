@@ -1,4 +1,4 @@
- /*---------------------------------------------------------------------------------------------------------------------------------------------------
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
  * irsnd.h
  *
  * Copyright (c) 2010-2019 Frank Meyer - frank(at)fli4l.de
@@ -13,6 +13,7 @@
 #ifndef IRSND_H
 #define IRSND_H
 
+#include "irmpVersion.h"
 #include "irmpsystem.h"
 #ifndef IRSND_USE_AS_LIB
 #  include "irsndconfig.h"
@@ -129,17 +130,17 @@ extern "C"
 {
 #endif
 
-extern void                                     irsnd_init (void);
-extern uint8_t                                  irsnd_is_busy (void);
-extern uint8_t                                  irsnd_send_data (IRMP_DATA *, uint8_t);
-extern void                                     irsnd_stop (void);
-extern uint8_t                                  irsnd_ISR (void);
+extern void irsnd_init(void);
+extern uint8_t irsnd_is_busy(void);
+extern uint8_t irsnd_send_data(IRMP_DATA *, uint8_t);
+extern void irsnd_stop(void);
+extern uint8_t irsnd_ISR(void);
 
-extern void                                     irsnd_blink13(bool aEnableBlinkLed);
-extern void                                     irsnd_wait_for_not_busy(void);
+extern void irsnd_blink13(bool aEnableBlinkLed);
+extern void irsnd_wait_for_not_busy(void);
 
-extern volatile uint8_t                         irsnd_is_on; // Used by IRTimer.cpp.h
-extern volatile uint8_t                         irsnd_busy; // Used by IRTimer.cpp.h
+extern volatile uint8_t irsnd_is_on; // Used by IRTimer.cpp.h
+extern volatile uint8_t irsnd_busy; // Used by IRTimer.cpp.h
 
 #if IRSND_USE_CALLBACK == 1
 extern void                                     irsnd_set_callback_ptr (void (*cb)(uint8_t));

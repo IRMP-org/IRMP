@@ -36,8 +36,6 @@
  *
  */
 
-#include <Arduino.h>
-
 /*
  * Set library modifiers first to set output pin etc.
  */
