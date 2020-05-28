@@ -34,9 +34,6 @@
 // USB- 3.6V Z-Diode              IR Output (4) PB4  3|    |6  PB1 (1) Feedback LED
 //                                              GND  4|    |5  PB0 (0) IR Input
 //                                                    +----+
-#include <Arduino.h>
-
-#define VERSION_EXAMPLE "1.2"
 
 /*
  * Set library modifiers first to set input and output pin etc.

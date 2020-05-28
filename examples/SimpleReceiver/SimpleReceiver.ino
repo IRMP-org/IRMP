@@ -44,10 +44,6 @@
  *
  */
 
-#include <Arduino.h>
-
-#define VERSION_EXAMPLE "1.2"
-
 /*
  * Set library modifiers first to set input pin etc.
  */
@@ -64,9 +60,6 @@
 
 IRMP_DATA irmp_data;
 
-#define STR_HELPER(x) #x
-#define STR(x) STR_HELPER(x)
-
 void setup()
 {
     Serial.begin(115200);
@@ -81,8 +74,7 @@ void setup()
 #endif
 
     // Just to know which program is running on my Arduino
-    Serial.println(F("START " __FILE__ "\r\nVersion " VERSION_EXAMPLE " from " __DATE__));
-    Serial.println(F("Using library version " VERSION_IRMP));
+    Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
     irmp_init();
     irmp_blink13(true); // Enable LED feedback

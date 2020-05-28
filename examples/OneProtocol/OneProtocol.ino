@@ -26,7 +26,7 @@
 /*
  * Set library modifiers first to set input pin etc.
  */
-#include "PinDefinitionsAndMore.h"
+#include "PinDefinitionsAndMore.h" // Sets input pin to 3
 
 //#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH.
 
