@@ -183,6 +183,9 @@ void initPCIInterrupt() {
 #    endif
 
 #  else // defined(__AVR_ATtiny25__)
+    /*
+     * ATmegas here
+     */
 #    if (IRMP_INPUT_PIN == 2)
     // interrupt on any logical change
     EICRA |= _BV(ISC00);

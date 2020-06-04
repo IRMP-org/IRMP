@@ -316,6 +316,7 @@ extern uint_fast8_t irmp_ISR(void);
 
 #if defined(ARDUINO)
 extern void irmp_blink13(bool aEnableBlinkLed);
+constexpr auto irmp_LEDFeedback = irmp_blink13; // alias for irmp_blink13
 #  if defined(__AVR__)
 extern void irmp_debug_print(const __FlashStringHelper * aMessage, bool aDoShortOutput);
 #  else

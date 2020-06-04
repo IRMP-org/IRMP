@@ -3454,7 +3454,7 @@ uint_fast8_t irmp_ISR(void)
 #  else
     if (irmp_led_feedback) {
         // hope this is fast enough on other platforms
-#    if defined(BLINK_13_LED_IS_ACTIVE_LOW)
+#    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
         // If the built in LED on the board is active LOW
         digitalWrite(LED_BUILTIN, irmp_input);
 #    else
@@ -5977,7 +5977,7 @@ void irmp_blink13(bool aEnableBlinkLed)
     if (aEnableBlinkLed)
     {
         pinModeFast(LED_BUILTIN, OUTPUT);
-#if defined(BLINK_13_LED_IS_ACTIVE_LOW)
+#if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
         digitalWriteFast(LED_BUILTIN, HIGH);
 #else
         digitalWriteFast(LED_BUILTIN, LOW);

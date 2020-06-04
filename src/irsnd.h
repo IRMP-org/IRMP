@@ -137,6 +137,7 @@ extern void irsnd_stop(void);
 extern uint8_t irsnd_ISR(void);
 
 extern void irsnd_blink13(bool aEnableBlinkLed);
+constexpr auto irsnd_LEDFeedback = irsnd_blink13; // alias for irmp_blink13
 extern void irsnd_wait_for_not_busy(void);
 
 extern volatile uint8_t irsnd_is_on; // Used by IRTimer.cpp.h

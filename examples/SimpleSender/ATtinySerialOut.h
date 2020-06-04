@@ -99,11 +99,6 @@
 #endif
 
 /*
- * Define or comment this out, if you want to use this class as a replacement for standard Serial as the print class
- * Adds around 800 Bytes of code
- */
-//#define TINY_SERIAL_INHERIT_FROM_PRINT
-/*
  * Define or comment this out, if you want to save code size and if you can live with 87 micro seconds intervals of disabled interrupts for each sent byte.
  */
 //#define USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
@@ -129,11 +124,13 @@ inline void writeValue(uint8_t aValue) {
     write1Start8Data1StopNoParity(aValue);
 }
 
-// The same class as for plain arduino
+// The same class definition as for plain arduino
 #if defined(ARDUINO_AVR_DIGISPARK)
 // The digispark library defines (2/2019) F but not __FlashStringHelper
 //# define F(string_literal) ((fstr_t*)PSTR(string_literal))
+#  if ! defined(__FlashStringHelper)
 #define __FlashStringHelper fstr_t
+#  endif
 #endif
 #if not defined(F)
 class __FlashStringHelper;
@@ -164,11 +161,7 @@ void writeFloat(double aFloat, uint8_t aDigits);
 
 char nibbleToHex(uint8_t aByte);
 
-#if defined(TINY_SERIAL_INHERIT_FROM_PRINT)
-class TinySerialOut: public Print
-#else
 class TinySerialOut
-#endif
 {
 public:
 
@@ -185,7 +178,6 @@ public:
     size_t write(uint8_t aByte);
     operator bool() { return true; } // To support "while (!Serial); // wait for serial port to connect. Needed for Leonardo only
 
-#if !defined(TINY_SERIAL_INHERIT_FROM_PRINT)
     void print(const __FlashStringHelper * aStringPtr);
     void print(const char* aStringPtr);
     void print(char aChar);
@@ -207,7 +199,6 @@ public:
     void println(double aFloat, uint8_t aDigits = 2);
 
     void println(void);
-#endif // TINY_SERIAL_INHERIT_FROM_PRINT
 
 };
 
@@ -222,6 +213,7 @@ extern TinySerialOut SerialOut;
 #else
 extern TinySerialOut Serial;
 #endif
+#define Print TinySerialOut
 
 #endif // defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 

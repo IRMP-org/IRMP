@@ -27,10 +27,22 @@
 #include <Arduino.h>
 
 /*
- * Set library modifiers first to set input pin etc.
+ * Pin mapping table for different platforms
+ *
+ * Platform     IR input    IR output   Tone
+ * -----------------------------------------
+ * DEFAULT/AVR  3           4           5
+ * ATtinyX5     0           4           3
+ * ATtin167     9           8           5 // Digispark pro number schema
+ * ATtin167     3           2           7
+ * SAMD21       3           4           5
+ * ESP8266      14 // D5    12 // D6    %
+ * ESP32        15          4           %
+ * BluePill     PA6         PA7         PA3
+ * APOLLO3      11          12          5
  */
 #if defined(ESP8266)
-#define BLINK_13_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
+#define FEEDBACK_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
 #define IRMP_INPUT_PIN   14 // D5
 #define IRSND_OUTPUT_PIN 12 // D6 - D4/2 is internal LED
 #define tone(a,b) void() // tone() inhibits receive timer
@@ -48,7 +60,7 @@
 // STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 // __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manually installed hardware folder
 // Timer 3 of IRMP blocks PA6, PA7, PB0, PB1 for use by Servo or tone()
-#define BLINK_13_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
+#define FEEDBACK_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
 #define IRMP_INPUT_PIN   PA6
 #define IRSND_OUTPUT_PIN PA7
 #define TONE_PIN         PA3
@@ -60,7 +72,7 @@
 #    if defined(ARDUINO_AVR_DIGISPARK)
 #define LED_BUILTIN PB1
 #    endif
-#define IRMP_INPUT_PIN 0
+#define IRMP_INPUT_PIN   0
 #define IRSND_OUTPUT_PIN 4 // Pin 2 is serial output with ATtinySerialOut. Pin 1 is internal LED and Pin3 is USB+ with pullup on Digispark board.
 #define TONE_PIN         3
 //#define IRMP_TIMING_TEST_PIN 3
@@ -72,7 +84,7 @@
 #define IRMP_INPUT_PIN   9 // PA3 - on Digispark board labeled as pin 9
 //#define IRMP_INPUT_PIN  14 // PB6 / INT0 is connected to USB+ on DigisparkPro boards
 #define IRSND_OUTPUT_PIN 8 // PA2 - on Digispark board labeled as pin 8
-#define TONE_PIN          5 // PA7
+#define TONE_PIN         5 // PA7
 //#define IRMP_TIMING_TEST_PIN 10 // PA4
 
 #    else
@@ -85,9 +97,10 @@
 #elif defined(ARDUINO_ARCH_APOLLO3)
 #define IRMP_INPUT_PIN   11
 #define IRSND_OUTPUT_PIN 12
+#define TONE_PIN         5
 
 #else
-#define IRMP_INPUT_PIN   3 // only 2 (INT0) and 3 (INT1) are allowed here, default is 3, even if not specified.
+#define IRMP_INPUT_PIN   3 // To be compatible with interrupt example, pin 3 is chosen here (which is default).
 #define IRSND_OUTPUT_PIN 4
 #define TONE_PIN         5
 //#define IRMP_TIMING_TEST_PIN 6
@@ -99,12 +112,20 @@
 // On the Zero and others we switch explicitly to SerialUSB
 #if defined(ARDUINO_ARCH_SAMD)
 #define Serial SerialUSB
+//#undef LED_BUILTIN
+// The Chinese SAMD21 M0-Mini clone has no led connected, if you connect it, it is on pin 24.
+// D2 and D4 are reversed on these boards
+//#define LED_BUILTIN 24
+//#define LED_BUILTIN 25 // Or choose pin 25, it is the TX pin, but active high.
 #endif
 
 #if ! defined(__AVR__) // for AVR we manage hardware directly in void initPCIInterrupt()
 #define IRMP_USE_ARDUINO_ATTACH_INTERRUPT
 #endif
 
+/*
+ * Helper macro for getting a macro definition as string
+ */
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 

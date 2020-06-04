@@ -564,7 +564,7 @@ static void irsnd_on(void) {
 #if defined(ARDUINO)
 #  if defined(pinModeFast)
         if (irsnd_led_feedback) {
-#    if defined(BLINK_13_LED_IS_ACTIVE_LOW)
+#    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
             // If the built in LED on the board is active LOW
             digitalWriteFast(LED_BUILTIN, LOW);
 #    else
@@ -581,7 +581,7 @@ static void irsnd_on(void) {
 #  else
         if (irsnd_led_feedback) {
             // hope this is fast enough on other platforms
-#    if defined(BLINK_13_LED_IS_ACTIVE_LOW)
+#    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
             // If the built in LED on the board is active LOW
             digitalWrite(LED_BUILTIN, LOW);
 #    else
@@ -677,7 +677,7 @@ static void irsnd_off(void)
         // Manage feedback LED
         if (irsnd_led_feedback)
         {
-#    if defined(BLINK_13_LED_IS_ACTIVE_LOW)
+#    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
             // If the built in LED on the board is active LOW
             digitalWriteFast(LED_BUILTIN, HIGH);
 #    else
@@ -770,8 +770,10 @@ extern void pwm_init(uint16_t freq);
 #include <stdio.h>
 #endif
 
+#if defined (ANALYZE) || defined (ARDUINO)
+static void irsnd_set_freq(IRSND_FREQ_TYPE freq __attribute__((unused))) { // to avoid compiler warning
+#else
 static void irsnd_set_freq(IRSND_FREQ_TYPE freq) {
-#if ! defined (ANALYZE) && ! defined (ARDUINO)
 #  if defined(PIC_C18)                                                                      // PIC C18 or XC8
 #    if defined(__12F1840)                                                                  // XC8
     TRISA2=0;
@@ -3159,7 +3161,7 @@ void irsnd_blink13(bool aEnableBlinkLed) {
     irsnd_led_feedback = aEnableBlinkLed;
     if (aEnableBlinkLed) {
         pinModeFast(LED_BUILTIN, OUTPUT);
-#if defined(BLINK_13_LED_IS_ACTIVE_LOW)
+#if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
         digitalWriteFast(LED_BUILTIN, HIGH);
 #else
         digitalWriteFast(LED_BUILTIN, LOW);

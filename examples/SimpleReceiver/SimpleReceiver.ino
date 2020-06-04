@@ -66,7 +66,7 @@ void setup()
 #if defined(__AVR_ATmega32U4__)
     while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
 #endif
-#if defined(SERIAL_USB)
+#if defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL)
     delay(2000); // To be able to connect Serial monitor after reset and before first printout
 #endif
 #if defined(__ESP8266__)
@@ -77,9 +77,10 @@ void setup()
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
     irmp_init();
-    irmp_blink13(true); // Enable LED feedback
+    irmp_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN
 
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
+    yield();
 }
 
 void loop()

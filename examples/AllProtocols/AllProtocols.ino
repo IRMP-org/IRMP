@@ -88,14 +88,14 @@ void setup()
 #if defined(__AVR_ATmega32U4__)
     while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
 #endif
-#if defined(SERIAL_USB)
+#if defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL)
     delay(2000); // To be able to connect Serial monitor after reset and before first printout
 #endif
     // Just to know which program is running on my Arduino
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
     irmp_init();
-    irmp_blink13(true); // Enable LED feedback
+    irmp_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN
     irmp_register_complete_callback_function(&handleReceivedIRData);
 
 #if defined(STM32F1xx)
@@ -118,7 +118,7 @@ void setup()
 #endif
 
 #if defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
-    myLCD.print(F("IRMP all  V" VERSION_IRMP));
+    myLCD.print(F("IRMP all  v" VERSION_IRMP));
     myLCD.setCursor(0, 1);
     myLCD.print(F(__DATE__));
 #endif
