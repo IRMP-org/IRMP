@@ -159,7 +159,7 @@ timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP);
 timer1_write((F_CPU / 16) / IR_INTERRUPT_FREQUENCY);
 
 #elif defined(ESP32)
-// Use Timer1 with 1 microsecond resolution
+// Use Timer1 with 1 microsecond resolution, main clock is 80MHZ
 sESP32Timer = timerBegin(1, 80, true);
 timerAttachInterrupt(sESP32Timer, irmp_timer_ISR, true);
 timerAlarmWrite(sESP32Timer, (getApbFrequency() / 80) / IR_INTERRUPT_FREQUENCY, true);
@@ -193,22 +193,16 @@ sSTM32Timer.refresh(); // Set the timer's count to 0 and update the prescaler an
 
 #elif defined(ARDUINO_ARCH_SAMD)
 REG_GCLK_CLKCTRL = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID_TCC2_TC3); // GCLK1=32kHz,  GCLK0=48Mhz
-while ( GCLK->STATUS.bit.SYNCBUSY == 1 ); // wait for sync
+//    while (GCLK->STATUS.bit.SYNCBUSY) // not required to wait
+//        ;
 
 TcCount16* TC = (TcCount16*) TC3;
 
 TC->CTRLA.reg &= ~TC_CTRLA_ENABLE; // Enable write access to CTRLA register
 while (TC->STATUS.bit.SYNCBUSY == 1); // wait for sync
 
-TC->CTRLA.reg |= TC_CTRLA_MODE_COUNT16; // Set Timer counter Mode to 16 bits
-while (TC->STATUS.bit.SYNCBUSY == 1); // wait for sync
-TC->CTRLA.reg |= TC_CTRLA_WAVEGEN_MFRQ;// Use match mode so that the timer counter resets when the count matches the compare register
-while (TC->STATUS.bit.SYNCBUSY == 1); // wait for sync
-TC->CTRLA.reg |= TC_CTRLA_PRESCALER_DIV1;
-while (TC->STATUS.bit.SYNCBUSY == 1); // wait for sync
-
 // Set Timer counter Mode to 16 bits, use match mode so that the timer counter resets when the count matches the compare register
-//TC->CTRLA.reg |= TC_CTRLA_MODE_COUNT16 | TC_CTRLA_WAVEGEN_MFRQ |TC_CTRLA_PRESCALER_DIV1;
+TC->CTRLA.reg |= TC_CTRLA_MODE_COUNT16 | TC_CTRLA_WAVEGEN_MFRQ |TC_CTRLA_PRESCALER_DIV1;
 
 TC->CC[0].reg = (uint16_t) ((F_CPU / IR_INTERRUPT_FREQUENCY)- 1); // ((48Mhz / sampleRate) - 1);
 
@@ -219,7 +213,7 @@ TC->INTENSET.bit.MC0 = 1;
 NVIC_EnableIRQ (TC3_IRQn);
 
 TC->CTRLA.reg |= TC_CTRLA_ENABLE;
-while (TC->STATUS.bit.SYNCBUSY == 1); // wait for sync (max 6 clocks?)
+//    while (TC5->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY); // Not required to wait at end of function
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
 // Use Timer 3 segment B

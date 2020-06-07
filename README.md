@@ -5,6 +5,7 @@ Available as Arduino library "IRMP"
 ### [Version 2.2.0](https://github.com/ukw100/IRMP/releases)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Commits since latest](https://img.shields.io/github/commits-since/ukw100/irmp/latest)](https://github.com/ukw100/irmp/commits/master)
 [![Build Status](https://github.com/ukw100/irmp/workflows/LibraryBuild/badge.svg)](https://github.com/ukw100/irmp/actions)
 [![Hit Counter](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2Fukw100%2FIRMP)](https://github.com/brentvollebregt/hit-counter)
 
@@ -131,6 +132,12 @@ The **tone() library is still available**. You can use it alternating with IR re
   
   
 # Revision History
+### Version 2.2.1
+- Improved pin layout.
+- Fixed bug with stm32duino 1.9.
+- Version number.
+- Blink13 -> LEDFeedback.
+
 ### Version 2.2.0
 - Supported **Apollo3** platform.
 - Fixed DigisparkPro bug.
