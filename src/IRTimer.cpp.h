@@ -192,7 +192,7 @@ sSTM32Timer.attachInterrupt(TIMER_CH1, irmp_timer_ISR);
 sSTM32Timer.refresh(); // Set the timer's count to 0 and update the prescaler and overflow values.
 
 #elif defined(ARDUINO_ARCH_SAMD)
-REG_GCLK_CLKCTRL = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID_TCC2_TC3); // GCLK1=32kHz,  GCLK0=48Mhz
+REG_GCLK_CLKCTRL = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID_TCC2_TC3); // GCLK1=32kHz,  GCLK0=48MHz
 //    while (GCLK->STATUS.bit.SYNCBUSY) // not required to wait
 //        ;
 
@@ -204,7 +204,7 @@ while (TC->STATUS.bit.SYNCBUSY == 1); // wait for sync
 // Set Timer counter Mode to 16 bits, use match mode so that the timer counter resets when the count matches the compare register
 TC->CTRLA.reg |= TC_CTRLA_MODE_COUNT16 | TC_CTRLA_WAVEGEN_MFRQ |TC_CTRLA_PRESCALER_DIV1;
 
-TC->CC[0].reg = (uint16_t) ((F_CPU / IR_INTERRUPT_FREQUENCY)- 1); // ((48Mhz / sampleRate) - 1);
+TC->CC[0].reg = (uint16_t) ((F_CPU / IR_INTERRUPT_FREQUENCY)- 1); // ((48MHz / sampleRate) - 1);
 
 // Enable the compare interrupt
 TC->INTENSET.reg = 0;

@@ -43,7 +43,9 @@
  */
 #if defined(ESP8266)
 #define FEEDBACK_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
+#if ! defined(ALLOW_DYNAMIC_INPUT_PIN)
 #define IRMP_INPUT_PIN   14 // D5
+#endif
 #define IRSND_OUTPUT_PIN 12 // D6 - D4/2 is internal LED
 #define tone(a,b) void() // tone() inhibits receive timer
 #define noTone(a) void()
