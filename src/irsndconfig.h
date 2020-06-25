@@ -37,8 +37,13 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #if defined(ARDUINO)                                                        // Arduino IDE for different platforms
-#  if !defined(IRSND_OUTPUT_PIN)                                            // Arduino IDE uses IRSND_OUTPUT_PIN instead of PORT and BIT
-#    define IRSND_OUTPUT_PIN 4
+#  if defined(ALLOW_DYNAMIC_PINS)
+#    undef IRSND_OUTPUT_PIN
+#    define IRSND_OUTPUT_PIN irsnd_output_pin
+#  else // defined(ALLOW_DYNAMIC_PINS)
+#    if !defined(IRSND_OUTPUT_PIN)                                            // Arduino IDE uses IRSND_OUTPUT_PIN instead of PORT and BIT
+#      define IRSND_OUTPUT_PIN 4
+#    endif
 #  endif
 #  if !defined(IRMP_TIMING_TEST_PIN)                                        // Only for test purposes
 #    define IRMP_TIMING_TEST_PIN 5

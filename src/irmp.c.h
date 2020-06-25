@@ -2682,7 +2682,10 @@ static volatile uint_fast16_t irmp_id;                // only used for SAMSUNG p
 static volatile uint_fast8_t irmp_flags;
 // static volatile uint_fast8_t                 irmp_busy_flag;
 #if defined(ARDUINO)
-static volatile bool irmp_led_feedback;
+static bool irmp_led_feedback;
+#  if defined(ALLOW_DYNAMIC_PINS)
+static uint_fast8_t irmp_input_pin; // global variable to hold input pin number. Is referenced by defining IRMP_INPUT_PIN as irmp_input_pin.
+#  endif
 #endif
 
 #if defined(__MBED__)
@@ -2768,8 +2771,8 @@ void irmp_init(void)
 #  ifdef IRMP_INPUT_PIN
     pinModeFast(IRMP_INPUT_PIN, INPUT);                                 // set pin to input
 #  else
-    IRMP_PORT &= ~_BV(IRMP_BIT);                                      // deactivate pullup
-    IRMP_DDR &= ~_BV(IRMP_BIT);                                      // set pin to input
+    IRMP_PORT &= ~_BV(IRMP_BIT);                                        // deactivate pullup
+    IRMP_DDR &= ~_BV(IRMP_BIT);                                         // set pin to input
 #  endif
 #  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT && (IRMP_ENABLE_PIN_CHANGE_INTERRUPT != 0)
     initPCIInterrupt();
@@ -3374,7 +3377,7 @@ static uint_fast8_t wait_for_start_space;                                       
 static uint_fast8_t repetition_frame_number;
 
 /*
- * 4us idle, 45 us at start of each pulse @16 Mhz ATMega 328p
+ * 4us idle, 45 us at start of each pulse @16 MHz ATMega 328p
  */
 #if defined(ESP8266)
 uint_fast8_t ICACHE_RAM_ATTR irmp_ISR(void)
@@ -5966,12 +5969,21 @@ uint_fast8_t irmp_ISR(void)
 #include "irmpPinChangeInterrupt.cpp.h"
 #endif // (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
 
+#if defined(ALLOW_DYNAMIC_PINS)
+void irmpInit(uint_fast8_t aIrmpInputPin)
+{
+    irmp_input_pin = aIrmpInputPin;
+    irmp_init();
+}
+#define irmp_init() use_irmpInit_instead_of_irmp_init()
+#endif
+
 /*
  * Echoes the input signal to the built in LED.
  * The name is chosen to enable easy migration from other IR libs.
  * Pin 13 is the pin of the built in LED on the first Arduino boards.
  */
-void irmp_blink13(bool aEnableBlinkLed)
+void irmp_LEDFeedback(bool aEnableBlinkLed)
 {
     irmp_led_feedback = aEnableBlinkLed;
     if (aEnableBlinkLed)

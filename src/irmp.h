@@ -314,9 +314,14 @@ extern void irmp_init(void);
 extern uint_fast8_t irmp_get_data(IRMP_DATA *);
 extern uint_fast8_t irmp_ISR(void);
 
+#ifdef __cplusplus
+}
+#endif
+
 #if defined(ARDUINO)
-extern void irmp_blink13(bool aEnableBlinkLed);
-constexpr auto irmp_LEDFeedback = irmp_blink13; // alias for irmp_blink13
+extern void irmpInit(uint_fast8_t aIrmpInputPin);
+extern void irmp_LEDFeedback(bool aEnableBlinkLed);
+constexpr auto irmp_blink13 = irmp_LEDFeedback; // alias for irmp_blink13
 #  if defined(__AVR__)
 extern void irmp_debug_print(const __FlashStringHelper * aMessage, bool aDoShortOutput);
 #  else
@@ -335,8 +340,5 @@ extern const char * const irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM;
 extern void irmp_set_callback_ptr (void (*cb)(uint_fast8_t));
 #endif // IRMP_USE_CALLBACK == 1
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif // IRMP_H

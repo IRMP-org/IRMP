@@ -445,10 +445,9 @@ am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
 #endif // TIMER_INTERRUPT_EN_DISABLE_DEFINED
 
 /*
- * If both irmp and irsnd are used  compile it only in the second step, when all variables are declared.
+ * If both irmp and irsnd are used, compile it only in the second step, when all variables are declared.
  */
 #if ! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) || ( defined(IRSNDCONFIG_H) && defined(IRMPCONFIG_H) )
-
 /*
  * ISR is active while signal is sent AND during the trailing pause of IR frame
  * Called every 13.5us
@@ -530,6 +529,9 @@ if(irsnd_busy) {
     if (irsnd_is_on)
     {
 #  if defined(digitalToggleFast)
+#    if defined(ALLOW_DYNAMIC_PINS) && defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
+        extern uint_fast8_t irsnd_output_pin; // declaration is required for macro below
+#    endif
         digitalToggleFast(IRSND_OUTPUT_PIN);
 #  else
         digitalWrite(IRSND_OUTPUT_PIN, !digitalRead(IRSND_OUTPUT_PIN));

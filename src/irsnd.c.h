@@ -31,6 +31,7 @@
 #ifdef ARDUINO
 #undef IRMP_H // Remove old symbol maybe set from former including irmp.c.h. We are in IRSND now!
 #include "IRTimer.cpp.h" // Timer related definitions like OC0A are here
+uint_fast8_t irsnd_output_pin;
 #else
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -3152,12 +3153,22 @@ void irsnd_wait_for_not_busy(void) {
 }
 
 #if defined(ARDUINO)
+#if defined(ALLOW_DYNAMIC_PINS)
+void irsndInit(uint_fast8_t aIrsndOutputPin)
+{
+    irsnd_output_pin = aIrsndOutputPin;
+    irsnd_init();
+}
+#define irsnd_init() use_irsndInit_instead_of_irsnd_init()
+
+#endif
+
 /*
  * Echoes the input signal to the built in LED.
  * The name is chosen to enable easy migration from other IR libs.
  * Pin 13 is the pin of the built in LED on the first Arduino boards.
  */
-void irsnd_blink13(bool aEnableBlinkLed) {
+void irsnd_LEDFeedback(bool aEnableBlinkLed) {
     irsnd_led_feedback = aEnableBlinkLed;
     if (aEnableBlinkLed) {
         pinModeFast(LED_BUILTIN, OUTPUT);

@@ -53,14 +53,15 @@ jobs:
         include:
           - arduino-boards-fqbn: digistump:avr:digispark-tiny16
             platform-url: https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
-            examples-exclude: AllProtocols # Does not fit in FLASH # Comma separated list of (unique substrings of) example names to exclude in build
+            examples-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH # Comma separated list of (unique substrings of) example names to exclude in build
 
           - arduino-boards-fqbn: digistump:avr:digispark-pro
             platform-url: https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
+            examples-exclude: ReceiveAndSendDynamicPins # No Serial.available
 
           - arduino-boards-fqbn: ATTinyCore:avr:attinyx5:chip=85,clock=8internal
             platform-url: http://drazzy.com/package_drazzy.com_index.json
-            examples-exclude: AllProtocols # Does not fit in FLASH
+            examples-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH, No Serial.available
 
           - arduino-boards-fqbn: esp8266:esp8266:d1_mini:eesz=4M3M,xtal=80
             platform-url: https://arduino.esp8266.com/stable/package_esp8266com_index.json

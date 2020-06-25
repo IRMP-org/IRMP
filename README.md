@@ -2,7 +2,7 @@
 # [IRMP](https://github.com/ukw100/IRMP) - Infrared Multi Protocol Decoder + Encoder
 Available as Arduino library "IRMP"
 
-### [Version 2.2.0](https://github.com/ukw100/IRMP/releases)
+### [Version 2.3.0](https://github.com/ukw100/IRMP/releases)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Commits since latest](https://img.shields.io/github/commits-since/ukw100/irmp/latest)](https://github.com/ukw100/irmp/commits/master)
@@ -107,6 +107,10 @@ The **tone() library is still available**. You can use it alternating with IR re
 - If you use polling (default) mode with timer 2, the `millis()` function and the corresponding timer is not used by IRMP! 
 - In Interrupt mode, the `micros()` function is used as timebase.
 
+# Dynamic pins numbers
+if you want to use pin numbers specified at runtime, you must define `ALLOW_DYNAMIC_PINS` and call `irmpInit(aIrmpInputPin)` and `irsndInit(aIrsndOutputPin)` instead of irmp_init() and irsnd_init(). See [ReceiveAndSendDynamicPins example](examples/ReceiveAndSend/ReceiveAndSendDynamicPins.ino).
+If you specify `ALLOW_DYNAMIC_PINS` and still use the wrong functions, you will get errors like:
+`macro "irmp_init" passed 1 arguments, but takes just 0` or `macro "irsnd_init" passed 1 arguments, but takes just 0`
 
 # AllProtocol example
 | Serial LCD output | Arduino Serial Monitor output |
@@ -132,7 +136,8 @@ The **tone() library is still available**. You can use it alternating with IR re
   
   
 # Revision History
-### Version 2.2.1
+### Version 2.3.0
+- Added `ALLOW_DYNAMIC_PINS` and `irmp_set_input_pin()` to allow pin selection at runtime.
 - Improved pin layout.
 - Fixed bug with stm32duino 1.9.
 - Version number.

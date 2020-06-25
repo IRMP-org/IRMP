@@ -378,8 +378,8 @@ if (__builtin_constant_p(P) && __builtin_constant_p(V)) { \
 #if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
 #define digitalReadFast(P) ( (int) __digitalReadFast((P)) )
 #define __digitalReadFast(P ) \
-  (__builtin_constant_p(P) ) ? ( \
-  ( BIT_READ(*__digitalPinToPINReg(P), __digitalPinToBit(P))) ? HIGH:LOW ) : \
+  (__builtin_constant_p(P) ) ? \
+  (( BIT_READ(*__digitalPinToPINReg(P), __digitalPinToBit(P))) ? HIGH:LOW ) : \
   digitalRead((P))
 #else
 #define digitalReadFast digitalRead
@@ -388,7 +388,14 @@ if (__builtin_constant_p(P) && __builtin_constant_p(V)) { \
 
 #ifndef digitalToggleFast
 #if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
-#define digitalToggleFast(P) BIT_SET(*__digitalPinToPINReg(P), __digitalPinToBit(P))
+#define digitalToggleFast(P) \
+if (__builtin_constant_p(P)) { \
+  BIT_SET(*__digitalPinToPINReg(P), __digitalPinToBit(P)); \
+} else { \
+  digitalWrite(P, ! digitalRead(P)); \
+}
+#else
+#define digitalToggleFast(P) digitalWrite(P, ! digitalRead(P))
 #endif
 #endif
 
