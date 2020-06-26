@@ -88,16 +88,15 @@ and<br/>
 
 You do not need **`myReceiver.resume();`** any more, just delete it.
 
-The IR code representation of IRMP is different from that in IRremote. In IRMP (as in IRLremote) it is more standard and simpler. Use the function `irmp_result_print(&irmp_data[0])` to print the IR code representation. Seee [SimpleReceiver example](examples/SimpleReceiver/SimpleReceiver.ino).
+The IR code representation of IRMP is different from that in IRremote. In IRMP (as in IRLremote) it is more standard and simpler. Use the function `irmp_result_print(&irmp_data[0])` to print the IR code representation. See [SimpleReceiver example](examples/SimpleReceiver/SimpleReceiver.ino).
 
 If you want to distinguish between more than one remote in one sketch, you may also use `irmp_data[0].address` like it is done in the [Callback example](examples/Callback/Callback.ino).
 
 # Timer usage
 The IRMP **receive** library works by polling the input pin at a rate of 10 to 20 kHz. Default is 15 kHz.<br/>
-The IRMP **send** library works by bit banging the output pin at a frequency of 38 kHz. This **avoids blocking waits** and allows to choose an **arbitrary pin**, you are not restricted to pin 3 or 11. Send Interrupts require 50% CPU time on a 16 MHz AVR.<br/>
-The **tone() library is still available**. You can use it alternating with IR receive and send, see [ReceiveAndSend example](examples/ReceiveAndSend/ReceiveAndSend.ino).
-
-**Some protocols can be received by just using interrupts from the input pin** instead of polling by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. In this case **no timer is needed**. See [Interrupt example](examples/Interrupt/Interrupt.ino).<br/>
+Many protocols can be received **without timer usage**, just by using interrupts from the input pin by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. See [Interrupt example](examples/Interrupt/Interrupt.ino).<br/>
+The IRMP **send** library works by bit banging the output pin at a frequency of 38 kHz. This **avoids blocking waits** and allows to choose an **arbitrary pin**, you are not restricted to pin 3 or 11. The interrupts for send pin bit banging require 50% CPU time on a 16 MHz AVR.<br/>
+The **tone() library (using timer 2) is still available**. You can use it alternating with IR receive and send, see [ReceiveAndSend example](examples/ReceiveAndSend/ReceiveAndSend.ino).
 
 - For AVR **timer 2 (Tone timer)** is used for receiving **and** sending. For variants, which have no timer 2 like ATtiny85 or ATtiny167, **timer 1** is used.
 - For SAMD **TC3** is used.
@@ -105,7 +104,7 @@ The **tone() library is still available**. You can use it alternating with IR re
 - For ESP8266 and ESP32 **timer1** is used.
 - For STM32 (BluePill) **timer 3 (Servo timer) channel 1** is used as default.<br/>
 - If you use polling (default) mode with timer 2, the `millis()` function and the corresponding timer is not used by IRMP! 
-- In Interrupt mode, the `micros()` function is used as timebase.
+- In interrupt mode, the `micros()` function is used as timebase.
 
 # Dynamic pins numbers
 if you want to use pin numbers specified at runtime, you must define `ALLOW_DYNAMIC_PINS` and call `irmpInit(aIrmpInputPin)` and `irsndInit(aIrsndOutputPin)` instead of irmp_init() and irsnd_init(). See [ReceiveAndSendDynamicPins example](examples/ReceiveAndSend/ReceiveAndSendDynamicPins.ino).

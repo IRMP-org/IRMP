@@ -117,6 +117,10 @@ void setup()
         ; // Wait for user response
     }
     sIRMPInputPin = Serial.parseInt();
+    while (Serial.available())
+    {
+        Serial.read(); // read rest of line and CR/LF from buffer to enable for next input
+    }
     Serial.print(F("Ready to receive IR signals at pin "));
     Serial.println(sIRMPInputPin);
     irmpInit(sIRMPInputPin);
@@ -132,8 +136,6 @@ void setup()
     Serial.println(tIRSNDOutputPin);
     irsndInit(tIRSNDOutputPin);
     irsnd_LEDFeedback(true); // Enable LED feedback for send
-
-    Serial.println(F("Ready to send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
 
     irsnd_data.protocol = IRMP_SAMSUNG32_PROTOCOL;
     irsnd_data.address = 0x0707;
@@ -228,7 +230,7 @@ void sendSamsungSmartHubMacro(bool aDoSelect)
     tone(TONE_PIN, 2200);
     delay(200);
     noTone(TONE_PIN);
-    irmpInit (sIRMPInputPin); // restore timer for IR receive after using of tone
+    irmpInit(sIRMPInputPin); // restore timer for IR receive after using of tone
 
     Serial.println(F("Wait for \"not supported\" to disappear"));
     delay(2000);

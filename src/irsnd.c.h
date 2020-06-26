@@ -32,6 +32,10 @@
 #undef IRMP_H // Remove old symbol maybe set from former including irmp.c.h. We are in IRSND now!
 #include "IRTimer.cpp.h" // Timer related definitions like OC0A are here
 uint_fast8_t irsnd_output_pin;
+#  if defined (__AVR__)
+volatile uint8_t * irsnd_output_pin_input_port;
+uint8_t irsnd_output_pin_mask;
+#  endif
 #else
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -3157,6 +3161,11 @@ void irsnd_wait_for_not_busy(void) {
 void irsndInit(uint_fast8_t aIrsndOutputPin)
 {
     irsnd_output_pin = aIrsndOutputPin;
+#if defined(__AVR__)
+    // store port and pin mask for fast toggle on AVR
+    irsnd_output_pin_input_port = portInputRegister(digitalPinToPort(aIrsndOutputPin));
+    irsnd_output_pin_mask = digitalPinToBitMask(aIrsndOutputPin);
+#endif
     irsnd_init();
 }
 #define irsnd_init() use_irsndInit_instead_of_irsnd_init()

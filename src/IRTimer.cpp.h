@@ -129,7 +129,7 @@ TIMSK |= _BV(OCIE1B);                                               // enable co
 
 #  elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 // Timer 1 is a 16 bit counter so we need no prescaler
-ICR1 = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;                        // 1065 for 15 kHz @16 MHz. compare value: 1/15000 of CPU frequency
+ICR1 = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;// 1065 for 15 kHz @16 MHz. compare value: 1/15000 of CPU frequency
 TCCR1B = 0;// switch CTC Mode on
 TCCR1B = _BV(WGM12) | _BV(WGM13) | _BV(CS10);// switch CTC Mode on, set prescaler to 1 / no prescaling
 TIMSK1 = _BV(OCIE1B);// enable compare match interrupt
@@ -166,22 +166,22 @@ timerAlarmWrite(sESP32Timer, (getApbFrequency() / 80) / IR_INTERRUPT_FREQUENCY, 
 timerAlarmEnable(sESP32Timer);
 
 #if defined(DEBUG) && defined(ESP32)
-    Serial.print("CPU frequency=");
-    Serial.print(getCpuFrequencyMhz());
-    Serial.println("MHz");
-    Serial.print("Timer clock frequency=");
-    Serial.print(getApbFrequency());
-    Serial.println("Hz");
+Serial.print("CPU frequency=");
+Serial.print(getCpuFrequencyMhz());
+Serial.println("MHz");
+Serial.print("Timer clock frequency=");
+Serial.print(getApbFrequency());
+Serial.println("Hz");
 #endif
 
 // BluePill in 2 flavors
 #elif defined(STM32F1xx) // stm32duino "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);      // used for generating only interrupts, no pin specified
 sSTM32Timer.setPrescaleFactor(1);
-sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT); // microsecond period
+sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT);// microsecond period
 //sSTM32Timer.setOverflow(1000000 / IR_INTERRUPT_FREQUENCY, MICROSEC_FORMAT); // microsecond period
-sSTM32Timer.attachInterrupt(irmp_timer_ISR); // this sets update interrupt enable
-sSTM32Timer.resume(); // Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
+sSTM32Timer.attachInterrupt(irmp_timer_ISR);// this sets update interrupt enable
+sSTM32Timer.resume();// Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
 
 #elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (Roger Clark's STM32duino.com) of manual installed hardware folder
 sSTM32Timer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
@@ -189,7 +189,7 @@ sSTM32Timer.setPrescaleFactor(1);
 sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY);
 //sSTM32Timer.setPeriod(1000000 / IR_INTERRUPT_FREQUENCY);
 sSTM32Timer.attachInterrupt(TIMER_CH1, irmp_timer_ISR);
-sSTM32Timer.refresh(); // Set the timer's count to 0 and update the prescaler and overflow values.
+sSTM32Timer.refresh();// Set the timer's count to 0 and update the prescaler and overflow values.
 
 #elif defined(ARDUINO_ARCH_SAMD)
 REG_GCLK_CLKCTRL = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID_TCC2_TC3); // GCLK1=32kHz,  GCLK0=48MHz
@@ -198,13 +198,13 @@ REG_GCLK_CLKCTRL = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCL
 
 TcCount16* TC = (TcCount16*) TC3;
 
-TC->CTRLA.reg &= ~TC_CTRLA_ENABLE; // Enable write access to CTRLA register
-while (TC->STATUS.bit.SYNCBUSY == 1); // wait for sync
+TC->CTRLA.reg &= ~TC_CTRLA_ENABLE;// Enable write access to CTRLA register
+while (TC->STATUS.bit.SYNCBUSY == 1);// wait for sync
 
 // Set Timer counter Mode to 16 bits, use match mode so that the timer counter resets when the count matches the compare register
 TC->CTRLA.reg |= TC_CTRLA_MODE_COUNT16 | TC_CTRLA_WAVEGEN_MFRQ |TC_CTRLA_PRESCALER_DIV1;
 
-TC->CC[0].reg = (uint16_t) ((F_CPU / IR_INTERRUPT_FREQUENCY)- 1); // ((48MHz / sampleRate) - 1);
+TC->CC[0].reg = (uint16_t) ((F_CPU / IR_INTERRUPT_FREQUENCY)- 1);// ((48MHz / sampleRate) - 1);
 
 // Enable the compare interrupt
 TC->INTENSET.reg = 0;
@@ -217,7 +217,7 @@ TC->CTRLA.reg |= TC_CTRLA_ENABLE;
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
 // Use Timer 3 segment B
-am_hal_ctimer_clear(3, AM_HAL_CTIMER_TIMERB); // reset timer
+am_hal_ctimer_clear(3, AM_HAL_CTIMER_TIMERB);// reset timer
 // only AM_HAL_CTIMER_FN_REPEAT resets counter after match (CTC mode)
 am_hal_ctimer_config_single(3, AM_HAL_CTIMER_TIMERB, (AM_HAL_CTIMER_INT_ENABLE | AM_HAL_CTIMER_HFRC_12MHZ | AM_HAL_CTIMER_FN_REPEAT));
 am_hal_ctimer_compare_set(3, AM_HAL_CTIMER_TIMERB, 0, 12000000 / IR_INTERRUPT_FREQUENCY);
@@ -350,7 +350,8 @@ am_hal_ctimer_compare_set(3, AM_HAL_CTIMER_TIMERB, 0, sTimerCompareCapureValue);
  * NOT used if IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined
  * Initialize timer to generate interrupts at a rate F_INTERRUPTS (15000) per second to poll the input pin.
  */
-void disableIRTimerInterrupt(void) {
+void disableIRTimerInterrupt(void)
+{
 #if defined(__AVR__)
 // Use Timer 2
 #  if defined(__AVR_ATmega16__)
@@ -395,7 +396,8 @@ am_hal_ctimer_int_disable(AM_HAL_CTIMER_INT_TIMERB3);
 #endif
 }
 
-void enableIRTimerInterrupt(void) {
+void enableIRTimerInterrupt(void)
+{
 #if defined(__AVR__)
 // Use Timer 2
 #  if defined(__AVR_ATmega16__)
@@ -528,11 +530,22 @@ digitalWriteFast(IRMP_TIMING_TEST_PIN, HIGH); // 2 clock cycles
 if(irsnd_busy) {
     if (irsnd_is_on)
     {
-#  if defined(digitalToggleFast)
-#    if defined(ALLOW_DYNAMIC_PINS) && defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
-        extern uint_fast8_t irsnd_output_pin; // declaration is required for macro below
+#  if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
+        // declarations are required for macro below
+#    if defined (__AVR__)
+        extern volatile uint8_t * irsnd_output_pin_input_port;
+        extern uint8_t irsnd_output_pin_mask;
+#    else
+        extern uint_fast8_t irsnd_output_pin;
 #    endif
+#  endif // defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
+
+#  if defined(digitalToggleFast)
+#    if defined(ALLOW_DYNAMIC_PINS) && defined (__AVR__)
+        *irsnd_output_pin_input_port |= irsnd_output_pin_mask; // fast toggle for AVR
+#    else
         digitalToggleFast(IRSND_OUTPUT_PIN);
+#    endif // defined(ALLOW_DYNAMIC_PINS)  && defined (__AVR__)
 #  else
         digitalWrite(IRSND_OUTPUT_PIN, !digitalRead(IRSND_OUTPUT_PIN));
 #  endif
