@@ -16,28 +16,10 @@
 #if !defined(IRMP_H) && !defined(IRSND_H)
 #  error please include only irmp.h or irsnd.h, not irmpsystem.h
 #endif
+#if defined(ARDUINO)                                                                // AVR Arduino. Should be first, since it covers multiple platforms
+// to avoid the other includes and defines which ar incompatible with ARDUINO
 
-#if defined(ARDUINO)                                                              // AVR Arduino. Should be first, since it covers multiple platforms
-#  include "Arduino.h"
-#    include "digitalWriteFast.h"                                                     // we use pinModeFast() and digitalReadFast() and digitalWriteFast() in turn
-#  if defined(__AVR__)
-#    define memcpy_P                      memcpy_P                                    // Yes we have a memcpy_P function!!!
-#  else
-#    define uint_fast8_t uint8_t
-#    define uint_fast16_t uint16_t
-#    if defined(ESP8266)
-#      include "ets_sys.h"
-#      include "osapi.h"
-#      include "gpio.h"
-#      include "os_type.h"
-#      include "c_types.h"
-#    elif defined(ESP32)
-#    elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-#    elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-#    endif
-#  endif
-
-#elif defined(__18CXX)                                                                // Microchip PIC C18 compiler
+#elif defined(__18CXX)                                                              // Microchip PIC C18 compiler
 #  define PIC_C18
 
 #elif defined(__XC8)                                                                // PIC XC8 compiler
@@ -111,6 +93,9 @@
 
 #elif defined(IRMP_CHIBIOS_HAL)                                                     // ChibiOS HAL
 #  include "hal.h"
+
+#elif defined(ARDUINO)
+// specified here to avoid else case
 
 #else
 #  define ATMEL_AVR                                                                 // ATMEL AVR

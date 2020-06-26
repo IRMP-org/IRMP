@@ -13,13 +13,15 @@
 #ifndef IRSND_H
 #define IRSND_H
 
-#include "irmpVersion.h"
 #include "irmpsystem.h"
 #ifndef IRSND_USE_AS_LIB
 #  include "irsndconfig.h"
 #endif
 
-#if defined (ARM_STM32)                         // STM32
+#ifdef ARDUINO
+#  include "irsndArduinoExt.h"
+
+#elif defined (ARM_STM32)                         // STM32
 #  define _CONCAT(a,b)                          a##b
 #  define CONCAT(a,b)                           _CONCAT(a,b)
 #  define IRSND_PORT                            CONCAT(GPIO, IRSND_PORT_LETTER)
@@ -136,20 +138,13 @@ extern uint8_t irsnd_send_data(IRMP_DATA *, uint8_t);
 extern void irsnd_stop(void);
 extern uint8_t irsnd_ISR(void);
 
-#ifdef __cplusplus
-}
-#endif
-
-extern void irsnd_LEDFeedback(bool aEnableBlinkLed);
-constexpr auto irsnd_blink13 = irsnd_LEDFeedback; // alias for irmp_blink13
-extern void irsnd_wait_for_not_busy(void);
-
-extern volatile uint8_t irsnd_is_on; // Used by IRTimer.cpp.h
-extern volatile uint8_t irsnd_busy; // Used by IRTimer.cpp.h
 
 #if IRSND_USE_CALLBACK == 1
 extern void                                     irsnd_set_callback_ptr (void (*cb)(uint8_t));
 #endif // IRSND_USE_CALLBACK == 1
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* IRSND_H */

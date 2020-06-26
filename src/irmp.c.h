@@ -25,11 +25,6 @@
 
 #include "irmp.h"
 
-#ifdef ARDUINO
-#undef IRSND_H  // Remove old symbol maybe set from former including irsnd.c.h. We are in IRMP now!
-#include "IRTimer.cpp.h"
-#endif
-
 #if IRMP_SUPPORT_GRUNDIG_PROTOCOL == 1 || IRMP_SUPPORT_NOKIA_PROTOCOL == 1 || IRMP_SUPPORT_IR60_PROTOCOL == 1
 #  define IRMP_SUPPORT_GRUNDIG_NOKIA_IR60_PROTOCOL  1
 #else
@@ -2681,12 +2676,8 @@ static volatile uint_fast16_t irmp_command;
 static volatile uint_fast16_t irmp_id;                // only used for SAMSUNG protocol
 static volatile uint_fast8_t irmp_flags;
 // static volatile uint_fast8_t                 irmp_busy_flag;
-#if defined(ARDUINO)
-static bool irmp_led_feedback;
-#  if defined(ALLOW_DYNAMIC_PINS)
-static uint_fast8_t irmp_input_pin; // global variable to hold input pin number. Is referenced by defining IRMP_INPUT_PIN as irmp_input_pin.
-#  endif
-#endif
+
+
 
 #if defined(__MBED__)
 // DigitalIn inputPin(IRMP_PIN, PullUp);                                // this requires mbed.h and source to be compiled as cpp
@@ -2705,6 +2696,7 @@ static uint_fast8_t radio;
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #ifndef ANALYZE
+#if ! defined(ARDUINO)
 void irmp_init(void)
 {
 #if defined(PIC_CCS) || defined(PIC_C18)                                // PIC: do nothing
@@ -2749,7 +2741,7 @@ void irmp_init(void)
 #elif defined (TEENSY_ARM_CORTEX_M4)                                    // TEENSY
     pinMode(IRMP_PIN, INPUT);
 
-#elif defined(__xtensa__) && !defined(ARDUINO)                          // ESP8266 (for not Arduino IDE)
+#elif defined(__xtensa__)                                               // ESP8266
     pinMode(IRMP_BIT_NUMBER, INPUT);                                    // select pin function
 #  if (IRMP_BIT_NUMBER == 12)
     PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO12);
@@ -2767,28 +2759,14 @@ void irmp_init(void)
 #elif defined(_CHIBIOS_HAL_)
     // ChibiOS HAL automatically initializes all pins according to the board config file, no need to repeat here
 
-#elif defined(ARDUINO)                                                  // ARDUINO IDE
-#  ifdef IRMP_INPUT_PIN
-    pinModeFast(IRMP_INPUT_PIN, INPUT);                                 // set pin to input
-#  else
-    IRMP_PORT &= ~_BV(IRMP_BIT);                                        // deactivate pullup
-    IRMP_DDR &= ~_BV(IRMP_BIT);                                         // set pin to input
-#  endif
-#  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT && (IRMP_ENABLE_PIN_CHANGE_INTERRUPT != 0)
-    initPCIInterrupt();
-#  else
-    initIRReceiveTimer();
-#  endif
-#  ifdef IRMP_MEASURE_TIMING
-    pinModeFast(IRMP_TIMING_TEST_PIN, OUTPUT);
-#  endif
 #endif
 
 #if IRMP_LOGGING == 1
     irmp_uart_init ();
 #endif
 }
-#endif
+#endif // ! defined(ARDUINO)
+#endif // ifndef ANALYZE
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  *  Get IRMP data
  *  @details  gets decoded IRMP data
@@ -3326,9 +3304,6 @@ static void irmp_store_bit(uint_fast8_t value)
     }
 
     irmp_bit++;
-#ifdef IRMP_DEBUG
-    irmp_debug_print(F("B++"));
-#endif
 }
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -3376,6 +3351,9 @@ static uint_fast8_t wait_for_space;                                             
 static uint_fast8_t wait_for_start_space;                                       // flag: wait for start bit space
 static uint_fast8_t repetition_frame_number;
 
+#if defined(ARDUINO)
+#include "irmpArduinoExt.cpp.h" // Must be included after declaration of irmp_start_bit_detected etc.
+#endif
 /*
  * 4us idle, 45 us at start of each pulse @16 MHz ATMega 328p
  */
@@ -5961,170 +5939,6 @@ uint_fast8_t irmp_ISR(void)
 
     return (irmp_ir_detected);
 }
-
-#if defined(ARDUINO)
-
-#if (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
-// Must be included after irmp_ISR to have all the internal variables of irmp_ISR declared
-#include "irmpPinChangeInterrupt.cpp.h"
-#endif // (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
-
-#if defined(ALLOW_DYNAMIC_PINS)
-void irmpInit(uint_fast8_t aIrmpInputPin)
-{
-    irmp_input_pin = aIrmpInputPin;
-    irmp_init();
-}
-#define irmp_init() use_irmpInit_instead_of_irmp_init()
-#endif
-
-/*
- * Echoes the input signal to the built in LED.
- * The name is chosen to enable easy migration from other IR libs.
- * Pin 13 is the pin of the built in LED on the first Arduino boards.
- */
-void irmp_LEDFeedback(bool aEnableBlinkLed)
-{
-    irmp_led_feedback = aEnableBlinkLed;
-    if (aEnableBlinkLed)
-    {
-        pinModeFast(LED_BUILTIN, OUTPUT);
-#if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
-        digitalWriteFast(LED_BUILTIN, HIGH);
-#else
-        digitalWriteFast(LED_BUILTIN, LOW);
-#endif
-    }
-}
-
-#if defined(__AVR__)
-void irmp_debug_print(const __FlashStringHelper * aMessage, bool aDoShortOutput)
-#else
-void irmp_debug_print(const char * aMessage, bool aDoShortOutput)
-#endif
-{
-    Serial.print(aMessage);
-    Serial.print(' ');
-    Serial.print(irmp_ir_detected); // valid IR command detected
-    Serial.print(F(" St"));
-    Serial.print(irmp_start_bit_detected);
-
-    Serial.print(F(" Ws"));
-    Serial.print(wait_for_space); // true if in data/address section and no signal. Now increment pause time.
-    Serial.print(F(" Wss"));
-    Serial.print(wait_for_start_space); // true if we have received start bit
-
-    Serial.print(F(" L"));
-    Serial.print(irmp_param.complete_len); // maximum bit position
-    Serial.print(F(" B"));
-    Serial.print((int8_t) irmp_bit); // current bit position - FF(-1) is start value
-    Serial.print(F(" Pu"));
-    Serial.print(irmp_pulse_time); // bit time for pulse
-    Serial.print(F(" Pa"));
-    Serial.print(irmp_pause_time);
-
-    Serial.print(F(" Sb=0x"));
-    Serial.print(irmp_param.stop_bit, HEX);
-
-    if (!aDoShortOutput)
-    {
-        Serial.print(F(" F"));
-        Serial.print(irmp_flags); // currently only repetition flag
-        Serial.print(F(" K"));
-        Serial.print(key_repetition_len); // the pause after a command to distinguish repetitions from new commands
-        Serial.print(F(" R"));
-        Serial.print(repetition_frame_number); // Number of repetitions
-    }
-
-    Serial.println();
-}
-
-/*
- * Print protocol name or number, address, code and repetition flag
- * needs appr. 2 milliseconds for output
- */
-void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr)
-{
-    /*
-     * Print protocol name or number
-     */
-    aSerial->print(F("P="));
-#if IRMP_PROTOCOL_NAMES == 1
-#  if defined(__AVR__)
-    uint8_t tProtocolNumber = aIRMPDataPtr->protocol;
-    for (uint8_t i = 0; i < sizeof(irmp_used_protocol_index); ++i) {
-        if(pgm_read_byte(&irmp_used_protocol_index[i]) == tProtocolNumber) {
-            const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_used_protocol_names[i]);
-            aSerial->print((__FlashStringHelper *) (tProtocolStringPtr));
-            break;
-        }
-    }
-#  else
-    // no need to save space
-    aSerial->print(irmp_protocol_names[aIRMPDataPtr->protocol]);
-#  endif
-    aSerial->print(' ');
-#else
-    aSerial->print(F("0x"));
-    aSerial->print(aIRMPDataPtr->protocol, HEX);
-#endif
-
-    /*
-     * Print address, code and repetition flag
-     */
-    aSerial->print(F(" A=0x"));
-    aSerial->print(aIRMPDataPtr->address, HEX);
-    aSerial->print(F(" C=0x"));
-    aSerial->print(aIRMPDataPtr->command, HEX);
-    if (aIRMPDataPtr->flags & IRMP_FLAG_REPETITION)
-    {
-        aSerial->print(F(" R"));
-    }
-    aSerial->println();
-}
-
-/*
- * Do not just call irmp_result_print( &Serial, aIRMPDataPtr), since this is not always possible for ATtinies.
- */
-void irmp_result_print(IRMP_DATA * aIRMPDataPtr)
-{
-    /*
-     * Print protocol name or number
-     */
-    Serial.print(F("P="));
-#if IRMP_PROTOCOL_NAMES == 1
-#  if defined(__AVR__)
-    uint8_t tProtocolNumber = aIRMPDataPtr->protocol;
-    for (uint8_t i = 0; i < sizeof(irmp_used_protocol_index); ++i) {
-        if(pgm_read_byte(&irmp_used_protocol_index[i]) == tProtocolNumber) {
-            const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_used_protocol_names[i]);
-            Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
-            break;
-        }
-    }
-#  else
-    Serial.print(irmp_protocol_names[aIRMPDataPtr->protocol]);
-#  endif
-    Serial.print(' ');
-#else
-    Serial.print(F("0x"));
-    Serial.print(aIRMPDataPtr->protocol, HEX);
-#endif
-
-    /*
-     * Print address, code and repetition flag
-     */
-    Serial.print(F(" A=0x"));
-    Serial.print(aIRMPDataPtr->address, HEX);
-    Serial.print(F(" C=0x"));
-    Serial.print(aIRMPDataPtr->command, HEX);
-    if (aIRMPDataPtr->flags & IRMP_FLAG_REPETITION)
-    {
-        Serial.print(F(" R"));
-    }
-    Serial.println();
-}
-#endif // defined(ARDUINO)
 
 #ifdef ANALYZE
 

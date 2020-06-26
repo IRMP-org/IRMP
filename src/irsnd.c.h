@@ -28,18 +28,7 @@
 #  error F_CPU unkown
 #endif
 
-#ifdef ARDUINO
-#undef IRMP_H // Remove old symbol maybe set from former including irmp.c.h. We are in IRSND now!
-#include "IRTimer.cpp.h" // Timer related definitions like OC0A are here
-uint_fast8_t irsnd_output_pin;
-#  if defined (__AVR__)
-volatile uint8_t * irsnd_output_pin_input_port;
-uint8_t irsnd_output_pin_mask;
-#  endif
-#else
-
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * Non Arduino definitions here
  *  ATtiny pin definition of OC0A / OC0B
  *  ATmega pin definition of OC2 / OC2A / OC2B / OC0 / OC0A / OC0B
  *---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -170,7 +159,7 @@ uint8_t irsnd_output_pin_mask;
 #    define IRSND_BIT_NUMBER                        2
 #  endif // IRSND_OCx
 
-#elif defined (__AVR_XMEGA__) || defined(ARDUINO_AVR_MEGA2560)      // ATxmega
+#elif defined (__AVR_XMEGA__)                                       // ATxmega
 #  if IRSND_OCx == IRSND_XMEGA_OC0A
 #    define IRSND_BIT_NUMBER                        0
 #  elif IRSND_OCx == IRSND_XMEGA_OC0B
@@ -205,12 +194,15 @@ uint8_t irsnd_output_pin_mask;
  * #  endif
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
+#elif defined(ARDUINO)
+// specified here to avoid else case
+
 #else
 #  if !defined (unix) && !defined (WIN32)
 #    error mikrocontroller not defined, please fill in definitions here.
 #  endif // unix, WIN32
 #endif // __AVR...
-#endif // ARDUINO
+
 
 #if defined(__AVR_XMEGA__)
 #  define _CONCAT(a,b)                              a##b
@@ -551,13 +543,13 @@ static volatile uint8_t irsnd_buffer[11] = { 0 };
 static volatile uint8_t irsnd_repeat = 0;
 volatile uint8_t irsnd_is_on = FALSE; // Used by IRTimer.cpp.h
 
+#if defined(ARDUINO)
+#include "irsndArduinoExt.cpp.h" // must be after the declarations of irsnd_busy etc.
+#else
+
 #if IRSND_USE_CALLBACK == 1
 static void (*irsnd_callback_ptr) (uint8_t);
 #endif // IRSND_USE_CALLBACK == 1
-
-#if defined(ARDUINO)
-static volatile bool irsnd_led_feedback;
-#endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  *  Switch PWM on
@@ -566,41 +558,6 @@ static volatile bool irsnd_led_feedback;
 static void irsnd_on(void) {
     if (!irsnd_is_on) {
 #ifndef ANALYZE
-#if defined(ARDUINO)
-#  if defined(pinModeFast)
-        if (irsnd_led_feedback) {
-#    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
-            // If the built in LED on the board is active LOW
-            digitalWriteFast(LED_BUILTIN, LOW);
-#    else
-            digitalWriteFast(LED_BUILTIN, HIGH);
-#    endif
-        }
-        pinModeFast(IRSND_OUTPUT_PIN, OUTPUT); // Pin is set to input in ISR if (! irsnd_is_on)
-        // start with LED active
-#    if defined(IR_OUTPUT_IS_ACTIVE_LOW)
-        digitalWriteFast(IRSND_OUTPUT_PIN, LOW);
-#    else
-        digitalWriteFast(IRSND_OUTPUT_PIN, HIGH);
-#    endif
-#  else
-        if (irsnd_led_feedback) {
-            // hope this is fast enough on other platforms
-#    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
-            // If the built in LED on the board is active LOW
-            digitalWrite(LED_BUILTIN, LOW);
-#    else
-            digitalWrite(LED_BUILTIN, HIGH);
-#    endif
-        }
-        pinMode(IRSND_OUTPUT_PIN, OUTPUT); // Pin is set to input in ISR if (! irsnd_is_on)
-#    if defined(IR_OUTPUT_IS_ACTIVE_LOW)
-        digitalWrite(IRSND_OUTPUT_PIN, LOW);
-#    else
-        digitalWrite(IRSND_OUTPUT_PIN, HIGH);
-#    endif
-#  endif
-#else
 #  if defined(PIC_C18)                                  // PIC C18
         PWMon();
         // IRSND_PIN = 0; // output mode -> enable PWM outout pin (0=PWM on, 1=PWM off)
@@ -653,7 +610,6 @@ static void irsnd_on(void) {
 #      error wrong value of IRSND_OCx
 #    endif // IRSND_OCx
 #  endif // C18
-#endif // ARDUINO
 #endif // ANALYZE
 
 #if IRSND_USE_CALLBACK == 1
@@ -678,24 +634,7 @@ static void irsnd_off(void)
     if (irsnd_is_on)
     {
 #ifndef ANALYZE
-#if defined(ARDUINO)
-        // Manage feedback LED
-        if (irsnd_led_feedback)
-        {
-#    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
-            // If the built in LED on the board is active LOW
-            digitalWriteFast(LED_BUILTIN, HIGH);
-#    else
-            digitalWriteFast(LED_BUILTIN, LOW);
-#    endif
-        }
-        // Disable IR-LED
-#    if defined(IR_OUTPUT_IS_ACTIVE_LOW)
-        digitalWriteFast(IRSND_OUTPUT_PIN, HIGH);
-#    else
-        digitalWriteFast(IRSND_OUTPUT_PIN, LOW);
-#    endif
-#else
+
 #  if defined(PIC_C18)                                                                  // PIC C18
         PWMoff();
         // IRSND_PIN = 1; //input mode -> disbale PWM output pin (0=PWM on, 1=PWM off)
@@ -751,7 +690,6 @@ static void irsnd_off(void)
 #    endif // IRSND_OCx
         IRSND_PORT &= ~(1 << IRSND_BIT);                 // set IRSND_BIT to low
 #  endif //C18
-#endif // ! defined (ARDUINO)
 #endif // ANALYZE
 
 #if IRSND_USE_CALLBACK == 1
@@ -775,9 +713,7 @@ extern void pwm_init(uint16_t freq);
 #include <stdio.h>
 #endif
 
-#if defined (ANALYZE) || defined (ARDUINO)
-static void irsnd_set_freq(IRSND_FREQ_TYPE freq __attribute__((unused))) { // to avoid compiler warning
-#else
+#if ! defined (ANALYZE)
 static void irsnd_set_freq(IRSND_FREQ_TYPE freq) {
 #  if defined(PIC_C18)                                                                      // PIC C18 or XC8
 #    if defined(__12F1840)                                                                  // XC8
@@ -902,7 +838,7 @@ static void irsnd_set_freq(IRSND_FREQ_TYPE freq) {
 #      error wrong value of IRSND_OCx
 #    endif
 #  endif //PIC_C18
-#endif // ! defined (ANALYZE) && ! defined (ARDUINO)
+#endif // ! defined (ANALYZE)
 }
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -912,14 +848,7 @@ static void irsnd_set_freq(IRSND_FREQ_TYPE freq) {
  */
 void irsnd_init(void) {
 #ifndef ANALYZE
-#  if defined(ARDUINO)
-#    // Do not call irsnd_init_and_store_timer() here, it is done at irsnd_send_data().
-    pinModeFast(IRSND_OUTPUT_PIN, OUTPUT);
-#    ifdef IRMP_MEASURE_TIMING
-    pinModeFast(IRMP_TIMING_TEST_PIN, OUTPUT);
-#    endif
-
-#  elif defined(PIC_C18)                                                      // PIC C18 or XC8 compiler
+#  if defined(PIC_C18)                                                      // PIC C18 or XC8 compiler
 #    if ! defined(__12F1840)                                                // only C18:
     OpenTimer;
 #    endif
@@ -1046,7 +975,7 @@ void irsnd_init(void) {
 #      error wrong value of IRSND_OCx
 #    endif
     irsnd_set_freq (IRSND_FREQ_36_KHZ);                                         // default frequency
-#  endif // ARDUINO PIC_C18
+#  endif // PIC_C18
 #endif // ANALYZE
 }
 
@@ -1057,6 +986,8 @@ irsnd_set_callback_ptr (void (*cb)(uint8_t))
     irsnd_callback_ptr = cb;
 }
 #endif // IRSND_USE_CALLBACK == 1
+
+#endif // ARDUINO
 
 uint8_t irsnd_is_busy(void) {
     return irsnd_busy;
@@ -1107,12 +1038,11 @@ uint8_t irsnd_send_data(IRMP_DATA * irmp_data_p, uint8_t do_wait) {
             // wait for last command to have ended
         }
     }
-#if ! defined(ARDUINO)
+
     else if (irsnd_busy)
     {
         return (FALSE);
     }
-#endif
 
     irsnd_protocol = irmp_data_p->protocol;
     irsnd_repeat = irmp_data_p->flags & IRSND_REPETITION_MASK;
@@ -1742,7 +1672,7 @@ uint8_t irsnd_send_data(IRMP_DATA * irmp_data_p, uint8_t do_wait) {
 
 #if defined(ARDUINO)
     storeIRTimer(); // store current timer state
-    IRInitSendTimer(); // to enable alternately send and receive with the same timer
+    initIRTimerForSend(); // to enable alternately send and receive with the same timer
     if (do_wait) {
         while (irsnd_busy) {
             // do nothing;
@@ -3149,46 +3079,6 @@ uint8_t irsnd_ISR(void) {
 
     return irsnd_busy;
 }
-
-void irsnd_wait_for_not_busy(void) {
-    while (irsnd_busy) {
-        // just wait
-    }
-}
-
-#if defined(ARDUINO)
-#if defined(ALLOW_DYNAMIC_PINS)
-void irsndInit(uint_fast8_t aIrsndOutputPin)
-{
-    irsnd_output_pin = aIrsndOutputPin;
-#if defined(__AVR__)
-    // store port and pin mask for fast toggle on AVR
-    irsnd_output_pin_input_port = portInputRegister(digitalPinToPort(aIrsndOutputPin));
-    irsnd_output_pin_mask = digitalPinToBitMask(aIrsndOutputPin);
-#endif
-    irsnd_init();
-}
-#define irsnd_init() use_irsndInit_instead_of_irsnd_init()
-
-#endif
-
-/*
- * Echoes the input signal to the built in LED.
- * The name is chosen to enable easy migration from other IR libs.
- * Pin 13 is the pin of the built in LED on the first Arduino boards.
- */
-void irsnd_LEDFeedback(bool aEnableBlinkLed) {
-    irsnd_led_feedback = aEnableBlinkLed;
-    if (aEnableBlinkLed) {
-        pinModeFast(LED_BUILTIN, OUTPUT);
-#if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
-        digitalWriteFast(LED_BUILTIN, HIGH);
-#else
-        digitalWriteFast(LED_BUILTIN, LOW);
-#endif
-    }
-}
-#endif
 
 #ifdef ANALYZE
 

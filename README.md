@@ -2,7 +2,7 @@
 # [IRMP](https://github.com/ukw100/IRMP) - Infrared Multi Protocol Decoder + Encoder
 Available as Arduino library "IRMP"
 
-### [Version 2.3.0](https://github.com/ukw100/IRMP/releases)
+### [Version 3.0.0](https://github.com/ukw100/IRMP/releases)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Commits since latest](https://img.shields.io/github/commits-since/ukw100/irmp/latest)](https://github.com/ukw100/irmp/commits/master)
@@ -46,7 +46,7 @@ It is dated from **30.3.2020**. If you have complains about the data or request 
 | Number of protocols | **50** | Nec + Panasonic + Hash \* | 12 + Hash \* | 13 |
 | 3.Party libs needed| % | PinChangeInterrupt if not pin 2 or 3 | % | % |
 | Timing method receive | Timer2 or interrupt for pin 2 or 3 | **Interrupt** | Timer2 or interrupt for pin 2 or 3 | Timer2 |
-| Timing method send | Timer2 interrupts | Timer2 intgerrupts | Timer2 and blocking wait | ? |
+| Timing method send | Timer2 interrupts | Timer2 interrupts | Timer2 and blocking wait | ? |
 | Send pins| All | All | All ? | ? |
 | Decode method | OnTheFly | OnTheFly | RAM | RAM |
 | Encode method | OnTheFly | ? | OnTheFly | ? |
@@ -96,6 +96,7 @@ If you want to distinguish between more than one remote in one sketch, you may a
 The IRMP **receive** library works by polling the input pin at a rate of 10 to 20 kHz. Default is 15 kHz.<br/>
 Many protocols can be received **without timer usage**, just by using interrupts from the input pin by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. See [Interrupt example](examples/Interrupt/Interrupt.ino).<br/>
 The IRMP **send** library works by bit banging the output pin at a frequency of 38 kHz. This **avoids blocking waits** and allows to choose an **arbitrary pin**, you are not restricted to pin 3 or 11. The interrupts for send pin bit banging require 50% CPU time on a 16 MHz AVR.<br/>
+If both receiving and sending is required, the timer is set up for receiving and reconfigured for the duration of sending data, thus preventing (non interrupt) receiving while sending data.<br/>
 The **tone() library (using timer 2) is still available**. You can use it alternating with IR receive and send, see [ReceiveAndSend example](examples/ReceiveAndSend/ReceiveAndSend.ino).
 
 - For AVR **timer 2 (Tone timer)** is used for receiving **and** sending. For variants, which have no timer 2 like ATtiny85 or ATtiny167, **timer 1** is used.
@@ -107,11 +108,11 @@ The **tone() library (using timer 2) is still available**. You can use it altern
 - In interrupt mode, the `micros()` function is used as timebase.
 
 # Dynamic pins numbers
-if you want to use pin numbers specified at runtime, you must define `ALLOW_DYNAMIC_PINS` and call `irmpInit(aIrmpInputPin)` and `irsndInit(aIrsndOutputPin)` instead of irmp_init() and irsnd_init(). See [ReceiveAndSendDynamicPins example](examples/ReceiveAndSend/ReceiveAndSendDynamicPins.ino).
+if you want to use pin numbers specified at runtime, you must define `ALLOW_DYNAMIC_PINS` and call `irmpInit(aIrmpInputPin)` and `irsndInit(aIrsndOutputPin)` instead of irmp_init() and irsnd_init(). See [ReceiveAndSendDynamicPins example](examples/ReceiveAndSendDynamicPins/ReceiveAndSendDynamicPins.ino).<br/>
 If you specify `ALLOW_DYNAMIC_PINS` and still use the wrong functions, you will get errors like:
 `macro "irmp_init" passed 1 arguments, but takes just 0` or `macro "irsnd_init" passed 1 arguments, but takes just 0`
 
-# AllProtocol example
+# [AllProtocol](examples/AllProtocols/AllProtocols.ino) example
 | Serial LCD output | Arduino Serial Monitor output |
 |-|-|
 | ![LCD start](pictures/Start.jpg) | ![Serial Monitor](pictures/AllProtocol_SerialMonitor.png) |
@@ -135,8 +136,11 @@ If you specify `ALLOW_DYNAMIC_PINS` and still use the wrong functions, you will 
   
   
 # Revision History
-### Version 2.3.0
-- Added `ALLOW_DYNAMIC_PINS` and `irmp_set_input_pin()` to allow pin selection at runtime.
+### Version 3.0.0
+- Mayor refactoring.
+- Added `ALLOW_DYNAMIC_PINS` and `irmp_init(PinNumber)` to allow pin selection at runtime.
+
+### Version 2.2.1
 - Improved pin layout.
 - Fixed bug with stm32duino 1.9.
 - Version number.

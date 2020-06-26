@@ -20,8 +20,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
  */
-#ifndef IRTIMER_H
-#define IRTIMER_H
+
+// NO GUARD here, we have the GUARD below with #ifdef IRSND_H and #ifdef IRMP_H.
 
 #if defined(ARDUINO)
 #if ! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) && defined(IRMP_H) && defined(IRSND_H)
@@ -29,24 +29,22 @@
 #endif
 
 #if defined(IRMP_H)
-extern void     initIRReceiveTimer(void);
-#else
-extern void     IRInitSendTimer(void);
+void initIRTimerForReceive(void);
 #endif
+
+#if defined(IRSND_H)
+extern void initIRTimerForSend(void);
+#endif // defined(IRSND_H)
 
 //#if defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 //extern void     irmp_timer_ISR(HardwareTimer * aDummy __attribute__((unused))); // changed in stm32duino 1.9
 //#else
-extern void     irmp_timer_ISR(void);
+extern void irmp_timer_ISR(void);
 //#endif
 
-extern void     disableIRTimerInterrupt(void);
-extern void     enableIRTimerInterrupt(void);
+extern void disableIRTimerInterrupt(void);
+extern void enableIRTimerInterrupt(void);
 
-extern void     storeIRTimer(void);
-extern void     restoreIRTimer(void);
+extern void storeIRTimer(void);
+extern void restoreIRTimer(void);
 #endif // defined(ARDUINO)
-
-#endif // IRTIMER_CPP_H
-
-#pragma once

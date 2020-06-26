@@ -13,8 +13,6 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#define IRMPCONFIG_H
-
 #ifndef IRMP_H
 #  error please include only irmp.h, not irmpconfig.h
 #endif
@@ -56,25 +54,10 @@
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * Change hardware pin here for Arduino IDE if no IRMP_INPUT_PIN specified
- * Should be first, since it covers multiple platforms
- *---------------------------------------------------------------------------------------------------------------------------------------------------
- */
-#if defined(ARDUINO)                                                    // Arduino IDE for different platforms
-#  if defined(ALLOW_DYNAMIC_PINS)
-#    undef IRMP_INPUT_PIN
-#    define IRMP_INPUT_PIN irmp_input_pin
-#  else // defined(ALLOW_DYNAMIC_PINS)
-#    if !defined (IRMP_INPUT_PIN)                                       // Arduino IDE uses IRMP_INPUT_PIN instead of PORT and BIT
-#      define IRMP_INPUT_PIN 3
-#    endif
-#  endif
-
-/*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change hardware pin here for ATMEL ATMega/ATTiny/XMega
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#elif defined (ATMEL_AVR) || defined (__AVR_XMEGA__)                    // use PD4
+#if defined (ATMEL_AVR) || defined (__AVR_XMEGA__)                    // use PD4
 #  ifndef IRMP_PORT_LETTER
 #    define IRMP_PORT_LETTER                    D                       // Port D is Port for Arduino pin 0 to 7. B is for pin 8 to 13, C is for A0 to A5
 #  endif
@@ -164,6 +147,8 @@
 #  define IRMP_LOGGING_SD                       SD1                     // the ChibiOS HAL Serial Driver instance to log to
                                                                         // (when IRMP_LOGGING is enabled below).
                                                                         // Make sure SERIAL_BUFFERS_SIZE is large enough when enabling logging
+#elif defined(ARDUINO)
+// specified here to avoid else case
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Handling of unknown target system: DON'T CHANGE
@@ -223,19 +208,6 @@
 #  define IRMP_USE_COMPLETE_CALLBACK           0       // 1: use callback. 0: do not. default is 0
 #endif
 
-/*---------------------------------------------------------------------------------------------------------------------------------------------------
- * Enable PinChangeInterrupt add on for irmp_ISR(). Tested for NEC, Kaseiko, Denon, RC6 protocols and Arduino Uno and Arduino ATMega.
- * Receives IR protocol data  by using pin change interrupts and no polling by timer.
- *---------------------------------------------------------------------------------------------------------------------------------------------------
- */
-#ifndef IRMP_ENABLE_PIN_CHANGE_INTERRUPT
-#  define IRMP_ENABLE_PIN_CHANGE_INTERRUPT     0       // 1: enable PCI add on. 0: do not. default is 0
-#endif
-
-#if (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
-#  undef F_INTERRUPTS
-#  define F_INTERRUPTS                          15625   // 15625 interrupts per second gives 64 us period
-#endif
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Use ChibiOS Events to signal that valid IR data was received
  *---------------------------------------------------------------------------------------------------------------------------------------------------

@@ -15,8 +15,6 @@
 #ifndef IRMP_H
 #define IRMP_H
 
-#include "irmpVersion.h"
-
 #ifndef IRMP_USE_AS_LIB
 #  define IRMPCONFIG_STAGE1_H
 #  include "irmpconfig.h"
@@ -31,12 +29,8 @@
 #  undef IRMPCONFIG_STAGE2_H
 #endif
 
-#if defined(ARDUINO)  && defined (IRMP_INPUT_PIN)
-#  if defined (__AVR__)
-#    define input(x)                              digitalReadFast(IRMP_INPUT_PIN)
-#  else
-#    define input(x)                              digitalRead(IRMP_INPUT_PIN)
-#  endif
+#ifdef ARDUINO
+#  include "irmpArduinoExt.h"
 
 #elif defined (__AVR_XMEGA__)
 #  define _CONCAT(a,b)                          a##b
@@ -302,9 +296,6 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 
 #define IRMP_FLAG_REPETITION            0x01
 
-void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr);
-void irmp_result_print(IRMP_DATA * aIRMPDataPtr);
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -314,31 +305,16 @@ extern void irmp_init(void);
 extern uint_fast8_t irmp_get_data(IRMP_DATA *);
 extern uint_fast8_t irmp_ISR(void);
 
-#ifdef __cplusplus
-}
-#endif
-
-#if defined(ARDUINO)
-extern void irmpInit(uint_fast8_t aIrmpInputPin);
-extern void irmp_LEDFeedback(bool aEnableBlinkLed);
-constexpr auto irmp_blink13 = irmp_LEDFeedback; // alias for irmp_blink13
-#  if defined(__AVR__)
-extern void irmp_debug_print(const __FlashStringHelper * aMessage, bool aDoShortOutput);
-#  else
-extern void irmp_debug_print(const char * aMessage, bool aDoShortOutput);
-#  endif
-
-extern void irmp_PCI_ISR(void);
-extern void initPCIInterrupt(void);
-
-#  if IRMP_PROTOCOL_NAMES == 1
+#if IRMP_PROTOCOL_NAMES == 1
 extern const char * const irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM;
-#  endif
 #endif
 
 #if IRMP_USE_CALLBACK == 1
 extern void irmp_set_callback_ptr (void (*cb)(uint_fast8_t));
 #endif // IRMP_USE_CALLBACK == 1
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif // IRMP_H
