@@ -3344,7 +3344,11 @@ irmp_store_bit2 (uint_fast8_t value)
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 static uint_fast8_t irmp_start_bit_detected;                                    // flag: start bit detected
+#if __SIZEOF_INT__ == 4
+static uint_fast16_t irmp_pulse_time;                                            // count bit time for pulse
+#else
 static uint_fast8_t irmp_pulse_time;                                            // count bit time for pulse
+#endif
 static PAUSE_LEN irmp_pause_time;                                               // count bit time for pause
 static uint_fast16_t key_repetition_len;                                        // SIRCS repeats frame 2-5 times with 45 ms pause
 static uint_fast8_t wait_for_space;                                             // flag: wait for data bit space

@@ -47,9 +47,12 @@
 #define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some FLASH
 #define IRMP_USE_COMPLETE_CALLBACK       1 // Enable callback functionality
 
+#if __SIZEOF_INT__ == 4
+#define F_INTERRUPTS                     20000 // Instead of default 15000 to support LEGO + RCMM protocols, but this in turn disables PENTAX and GREE protocols :-(
+#else
 //#define F_INTERRUPTS                     20000 // Instead of default 15000 to support LEGO + RCMM protocols, but this in turn disables PENTAX and GREE protocols :-(
-
-//#define IRMP_32_BIT                       1 // This enables MERLIN protocol, but decreases performance.
+//#define IRMP_32_BIT                       1 // This enables MERLIN protocol, but decreases performance for AVR.
+#endif
 
 #include <irmpSelectAllProtocols.h>  // This enables all possible protocols
 

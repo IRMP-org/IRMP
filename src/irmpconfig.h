@@ -34,7 +34,11 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #ifndef IRMP_32_BIT
+#  if __SIZEOF_INT__ == 4
+#  define IRMP_32_BIT     1                                                                               // use 32 bit command value, 0 or 1
+#  else
 #  define IRMP_32_BIT     0                                                                               // use 32 bit command value, 0 or 1
+#  endif
 #endif
 
 #endif // IRMPCONFIG_STAGE1_H

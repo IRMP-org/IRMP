@@ -276,13 +276,13 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #  define IRMP_SUPPORT_RCMM_PROTOCOL            0
 #endif
 
-#if IRMP_SUPPORT_PENTAX_PROTOCOL == 1 && F_INTERRUPTS > 17000
+#if IRMP_SUPPORT_PENTAX_PROTOCOL == 1 && F_INTERRUPTS > 17000 && __SIZEOF_INT__ < 4
 #  warning F_INTERRUPTS too high, PENTAX protocol disabled (should be max 17000)
 #  undef IRMP_SUPPORT_PENTAX_PROTOCOL
 #  define IRMP_SUPPORT_PENTAX_PROTOCOL          0
 #endif
 
-#if IRMP_SUPPORT_GREE_PROTOCOL == 1 && F_INTERRUPTS > 17000
+#if IRMP_SUPPORT_GREE_PROTOCOL == 1 && F_INTERRUPTS > 17000 && __SIZEOF_INT__ < 4
 #  warning F_INTERRUPTS too high, GREE protocol disabled (should be max 17000)
 #  undef IRMP_SUPPORT_GREE_PROTOCOL
 #  define IRMP_SUPPORT_GREE_PROTOCOL            0

@@ -43,7 +43,7 @@ It is dated from **30.3.2020**. If you have complains about the data or request 
 
 | Subject | [IRMP](https://github.com/ukw100/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**mostly unmaintained** | [IRremote](https://github.com/z3t0/Arduino-IRremote) |
 |---------|------|-----------|--------|----------|
-| Number of protocols | **50** | Nec + Panasonic + Hash \* | 12 + Hash \* | 13 |
+| Number of protocols | **50** | Nec + Panasonic + Hash \* | 12 + Hash \* | 16 |
 | 3.Party libs needed| % | PinChangeInterrupt if not pin 2 or 3 | % | % |
 | Timing method receive | Timer2 or interrupt for pin 2 or 3 | **Interrupt** | Timer2 or interrupt for pin 2 or 3 | Timer2 |
 | Timing method send | Timer2 interrupts | Timer2 interrupts | Timer2 and blocking wait | ? |
