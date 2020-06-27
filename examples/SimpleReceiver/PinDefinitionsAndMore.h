@@ -47,7 +47,7 @@
 #define IRSND_OUTPUT_PIN 12 // D6 - D4/2 is internal LED
 #define tone(a,b) void() // tone() inhibits receive timer
 #define noTone(a) void()
-//#define IRMP_TIMING_TEST_PIN 13 // D7
+#define IRMP_TIMING_TEST_PIN 13 // D7
 
 #elif defined(ESP32)
 #define IRMP_INPUT_PIN   15  // D15
@@ -64,7 +64,7 @@
 #define IRMP_INPUT_PIN   PA6
 #define IRSND_OUTPUT_PIN PA7
 #define TONE_PIN         PA3
-//#define IRMP_TIMING_TEST_PIN PA5
+#define IRMP_TIMING_TEST_PIN PA5
 
 #elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include "ATtinySerialOut.h"
@@ -85,7 +85,7 @@
 //#define IRMP_INPUT_PIN  14 // PB6 / INT0 is connected to USB+ on DigisparkPro boards
 #define IRSND_OUTPUT_PIN 8 // PA2 - on Digispark board labeled as pin 8
 #define TONE_PIN         5 // PA7
-//#define IRMP_TIMING_TEST_PIN 10 // PA4
+#define IRMP_TIMING_TEST_PIN 10 // PA4
 
 #    else
 #define IRMP_INPUT_PIN   3
@@ -103,7 +103,7 @@
 #define IRMP_INPUT_PIN   3 // To be compatible with interrupt example, pin 3 is chosen here (which is default).
 #define IRSND_OUTPUT_PIN 4
 #define TONE_PIN         5
-//#define IRMP_TIMING_TEST_PIN 6
+#define IRMP_TIMING_TEST_PIN 6
 // You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
 //#define IRMP_PORT_LETTER D
 //#define IRMP_BIT_NUMBER 3

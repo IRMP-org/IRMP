@@ -189,6 +189,9 @@ typedef unsigned short                  uint16_t;
 #  define PROGMEM
 #  define memcpy_P                      memcpy
 
+#elif defined(ARDUINO)
+// specified here to avoid else case
+
 #else
 #  if ! defined(PROGMEM)
 #    define PROGMEM

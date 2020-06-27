@@ -31,7 +31,7 @@
 #define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH.
 
 //#define IRMP_SUPPORT_SIRCS_PROTOCOL      1
-#define IRMP_SUPPORT_NEC_PROTOCOL        1
+#define IRMP_SUPPORT_NEC_PROTOCOL        1  // includes APPLE and ONKYO protocols
 //#define IRMP_SUPPORT_SAMSUNG_PROTOCOL    1
 //#define IRMP_SUPPORT_KASEIKYO_PROTOCOL   1
 

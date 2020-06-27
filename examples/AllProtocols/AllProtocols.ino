@@ -48,7 +48,7 @@
 #define IRMP_USE_COMPLETE_CALLBACK       1 // Enable callback functionality
 
 #if __SIZEOF_INT__ == 4
-#define F_INTERRUPTS                     20000 // Instead of default 15000 to support LEGO + RCMM protocols, but this in turn disables PENTAX and GREE protocols :-(
+#define F_INTERRUPTS                     20000 // Instead of default 15000 to support LEGO + RCMM protocols
 #else
 //#define F_INTERRUPTS                     20000 // Instead of default 15000 to support LEGO + RCMM protocols, but this in turn disables PENTAX and GREE protocols :-(
 //#define IRMP_32_BIT                       1 // This enables MERLIN protocol, but decreases performance for AVR.

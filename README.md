@@ -139,6 +139,7 @@ If you specify `ALLOW_DYNAMIC_PINS` and still use the wrong functions, you will 
 ### Version 3.0.0
 - Mayor refactoring.
 - Added `ALLOW_DYNAMIC_PINS` and `irmp_init(PinNumber)` to allow pin selection at runtime.
+- Support more protocols simultaneously on 32 bit CPUs.
 
 ### Version 2.2.1
 - Improved pin layout.

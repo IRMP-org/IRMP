@@ -112,6 +112,359 @@ void irmp_debug_print(const char * aMessage, bool aDoShortOutput)
 }
 
 /*
+ * irmp_used_protocol_index holds the protocol numbers (from irmpprotocols.h)
+ * for the included protocol name entries of the irmp_used_protocol_names array below
+ * E.g. irmp_used_protocol_index=2,7 and irmp_used_protocol_names="NEC","RC5".
+ *
+ * Both arrays together are generally smaller than the complete irmp_protocol_names array
+ * allowing them to be used on ATtinies even if program code for access is bigger.
+ * Flash size is more than 100 bytes less (for 15 protocols) using these arrays.
+ */
+const uint8_t irmp_used_protocol_index[] PROGMEM =
+{
+    IRMP_UNKNOWN_PROTOCOL,
+#if IRMP_SUPPORT_SIRCS_PROTOCOL == 1
+    IRMP_SIRCS_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_NEC_PROTOCOL == 1
+    IRMP_NEC_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_SAMSUNG_PROTOCOL == 1
+    IRMP_SAMSUNG_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_MATSUSHITA_PROTOCOL == 1
+    IRMP_MATSUSHITA_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_KASEIKYO_PROTOCOL == 1
+    IRMP_KASEIKYO_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_RECS80_PROTOCOL == 1
+    IRMP_RECS80_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_RC5_PROTOCOL == 1
+    IRMP_RC5_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_DENON_PROTOCOL == 1
+    IRMP_DENON_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_RC6_PROTOCOL == 1
+    IRMP_RC6_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_SAMSUNG_PROTOCOL == 1
+    IRMP_SAMSUNG32_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_NEC_PROTOCOL == 1
+    IRMP_APPLE_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_RECS80EXT_PROTOCOL == 1
+    IRMP_RECS80EXT_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_NUBERT_PROTOCOL == 1
+    IRMP_NUBERT_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_BANG_OLUFSEN_PROTOCOL == 1
+    IRMP_BANG_OLUFSEN_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_GRUNDIG_PROTOCOL == 1
+    IRMP_GRUNDIG_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_NOKIA_PROTOCOL == 1
+    IRMP_NOKIA_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_SIEMENS_PROTOCOL  == 1
+    IRMP_SIEMENS_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_FDC_PROTOCOL == 1
+    IRMP_FDC_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_RCCAR_PROTOCOL == 1
+    IRMP_RCCAR_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_JVC_PROTOCOL == 1
+    IRMP_JVC_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_RC6_PROTOCOL == 1
+    IRMP_RC6A_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_NIKON_PROTOCOL == 1
+    IRMP_NIKON_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_RUWIDO_PROTOCOL == 1
+    IRMP_RUWIDO_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_IR60_PROTOCOL == 1
+    IRMP_IR60_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_KATHREIN_PROTOCOL == 1
+    IRMP_KATHREIN_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_NETBOX_PROTOCOL == 1
+    IRMP_NETBOX_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_NEC16_PROTOCOL == 1
+    IRMP_NEC16_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_NEC42_PROTOCOL == 1
+    IRMP_NEC42_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_LEGO_PROTOCOL == 1
+    IRMP_LEGO_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_THOMSON_PROTOCOL == 1
+    IRMP_THOMSON_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_BOSE_PROTOCOL == 1
+    IRMP_BOSE_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_A1TVBOX_PROTOCOL == 1
+    IRMP_A1TVBOX_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_ORTEK_PROTOCOL == 1
+    IRMP_ORTEK_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_TELEFUNKEN_PROTOCOL == 1
+    IRMP_TELEFUNKEN_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_ROOMBA_PROTOCOL == 1
+    IRMP_ROOMBA_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_RCMM_PROTOCOL  == 1
+    IRMP_RCMM32_PROTOCOL,
+    IRMP_RCMM24_PROTOCOL,
+    IRMP_RCMM12_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_SPEAKER_PROTOCOL == 1
+    IRMP_SPEAKER_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_LGAIR_PROTOCOL == 1
+    IRMP_LGAIR_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_SAMSUNG48_PROTOCOL == 1
+    IRMP_SAMSUNG48_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_MERLIN_PROTOCOL == 1
+    IRMP_MERLIN_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_PENTAX_PROTOCOL == 1
+    IRMP_PENTAX_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_FAN_PROTOCOL == 1
+    IRMP_FAN_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_S100_PROTOCOL == 1
+    IRMP_S100_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_ACP24_PROTOCOL  == 1
+    IRMP_ACP24_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_TECHNICS_PROTOCOL == 1
+    IRMP_TECHNICS_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_PANASONIC_PROTOCOL == 1
+    IRMP_PANASONIC_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL == 1
+    IRMP_MITSU_HEAVY_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_VINCENT_PROTOCOL == 1
+    IRMP_VINCENT_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_SAMSUNGAH_PROTOCOL == 1
+    IRMP_SAMSUNGAH_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_IRMP16_PROTOCOL == 1
+    IRMP_IRMP16_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_GREE_PROTOCOL == 1
+    IRMP_GREE_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_RCII_PROTOCOL == 1
+    IRMP_RCII_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_METZ_PROTOCOL == 1
+    IRMP_METZ_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_NEC_PROTOCOL == 1
+    IRMP_ONKYO_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_RADIO1_PROTOCOL == 1
+    IRMP_RADIO1_PROTOCOL
+#endif
+};
+
+const char * const irmp_used_protocol_names[] PROGMEM =
+{
+    proto_unknown,
+#if IRMP_SUPPORT_SIRCS_PROTOCOL == 1
+    proto_sircs,
+#endif
+#if IRMP_SUPPORT_NEC_PROTOCOL == 1
+    proto_nec,
+#endif
+#if IRMP_SUPPORT_SAMSUNG_PROTOCOL == 1
+    proto_samsung,
+#endif
+#if IRMP_SUPPORT_MATSUSHITA_PROTOCOL == 1
+    proto_matsushita,
+#endif
+#if IRMP_SUPPORT_KASEIKYO_PROTOCOL == 1
+    proto_kaseikyo,
+#endif
+#if IRMP_SUPPORT_RECS80_PROTOCOL == 1
+    proto_recs80,
+#endif
+#if IRMP_SUPPORT_RC5_PROTOCOL == 1
+    proto_rc5,
+#endif
+#if IRMP_SUPPORT_DENON_PROTOCOL == 1
+    proto_denon,
+#endif
+#if IRMP_SUPPORT_RC6_PROTOCOL == 1
+    proto_rc6,
+#endif
+#if IRMP_SUPPORT_SAMSUNG_PROTOCOL == 1
+    proto_samsung32,
+#endif
+#if IRMP_SUPPORT_NEC_PROTOCOL == 1
+    proto_apple,
+#endif
+#if IRMP_SUPPORT_RECS80EXT_PROTOCOL == 1
+    proto_recs80ext,
+#endif
+#if IRMP_SUPPORT_NUBERT_PROTOCOL == 1
+    proto_nubert,
+#endif
+#if IRMP_SUPPORT_BANG_OLUFSEN_PROTOCOL == 1
+    proto_bang_olufsen,
+#endif
+#if IRMP_SUPPORT_GRUNDIG_PROTOCOL == 1
+    proto_grundig,
+#endif
+#if IRMP_SUPPORT_NOKIA_PROTOCOL == 1
+    proto_nokia,
+#endif
+#if IRMP_SUPPORT_SIEMENS_PROTOCOL  == 1
+    proto_siemens,
+#endif
+#if IRMP_SUPPORT_FDC_PROTOCOL == 1
+    proto_fdc,
+#endif
+#if IRMP_SUPPORT_RCCAR_PROTOCOL == 1
+    proto_rccar,
+#endif
+#if IRMP_SUPPORT_JVC_PROTOCOL == 1
+    proto_jvc,
+#endif
+#if IRMP_SUPPORT_RC6_PROTOCOL == 1
+    proto_rc6a,
+#endif
+#if IRMP_SUPPORT_NIKON_PROTOCOL == 1
+    proto_nikon,
+#endif
+#if IRMP_SUPPORT_RUWIDO_PROTOCOL == 1
+    proto_ruwido,
+#endif
+#if IRMP_SUPPORT_IR60_PROTOCOL == 1
+    proto_ir60,
+#endif
+#if IRMP_SUPPORT_KATHREIN_PROTOCOL == 1
+    proto_kathrein,
+#endif
+#if IRMP_SUPPORT_NETBOX_PROTOCOL == 1
+    proto_netbox,
+#endif
+#if IRMP_SUPPORT_NEC16_PROTOCOL == 1
+    proto_nec16,
+#endif
+#if IRMP_SUPPORT_NEC42_PROTOCOL == 1
+    proto_nec42,
+#endif
+#if IRMP_SUPPORT_LEGO_PROTOCOL == 1
+    proto_lego,
+#endif
+#if IRMP_SUPPORT_THOMSON_PROTOCOL == 1
+    proto_thomson,
+#endif
+#if IRMP_SUPPORT_BOSE_PROTOCOL == 1
+    proto_bose,
+#endif
+#if IRMP_SUPPORT_A1TVBOX_PROTOCOL == 1
+    proto_a1tvbox,
+#endif
+#if IRMP_SUPPORT_ORTEK_PROTOCOL == 1
+    proto_ortek,
+#endif
+#if IRMP_SUPPORT_TELEFUNKEN_PROTOCOL == 1
+    proto_telefunken,
+#endif
+#if IRMP_SUPPORT_ROOMBA_PROTOCOL == 1
+    proto_roomba,
+#endif
+#if IRMP_SUPPORT_RCMM_PROTOCOL  == 1
+    proto_rcmm32,
+    proto_rcmm24,
+    proto_rcmm12,
+#endif
+#if IRMP_SUPPORT_SPEAKER_PROTOCOL == 1
+    proto_speaker,
+#endif
+#if IRMP_SUPPORT_LGAIR_PROTOCOL == 1
+    proto_lgair,
+#endif
+#if IRMP_SUPPORT_SAMSUNG48_PROTOCOL == 1
+    proto_samsung48,
+#endif
+#if IRMP_SUPPORT_MERLIN_PROTOCOL == 1
+    proto_merlin,
+#endif
+#if IRMP_SUPPORT_PENTAX_PROTOCOL == 1
+    proto_pentax,
+#endif
+#if IRMP_SUPPORT_FAN_PROTOCOL == 1
+    proto_fan,
+#endif
+#if IRMP_SUPPORT_S100_PROTOCOL == 1
+    proto_s100,
+#endif
+#if IRMP_SUPPORT_ACP24_PROTOCOL  == 1
+    proto_acp24,
+#endif
+#if IRMP_SUPPORT_TECHNICS_PROTOCOL == 1
+    proto_technics,
+#endif
+#if IRMP_SUPPORT_PANASONIC_PROTOCOL == 1
+    proto_panasonic,
+#endif
+#if IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL == 1
+    proto_mitsu_heavy,
+#endif
+#if IRMP_SUPPORT_VINCENT_PROTOCOL == 1
+    proto_vincent,
+#endif
+#if IRMP_SUPPORT_SAMSUNGAH_PROTOCOL == 1
+    proto_samsungah,
+#endif
+#if IRMP_SUPPORT_IRMP16_PROTOCOL == 1
+    proto_irmp16,
+#endif
+#if IRMP_SUPPORT_GREE_PROTOCOL == 1
+    proto_gree,
+#endif
+#if IRMP_SUPPORT_RCII_PROTOCOL == 1
+    proto_rcii,
+#endif
+#if IRMP_SUPPORT_METZ_PROTOCOL == 1
+    proto_metz,
+#endif
+#if IRMP_SUPPORT_NEC_PROTOCOL == 1
+    proto_onkyo,
+#endif
+#if IRMP_SUPPORT_RADIO1_PROTOCOL == 1
+    proto_radio1
+#endif
+};
+
+/*
  * Print protocol name or number, address, code and repetition flag
  * needs appr. 2 milliseconds for output
  */
@@ -196,4 +549,5 @@ void irmp_result_print(IRMP_DATA * aIRMPDataPtr)
     }
     Serial.println();
 }
+
 #endif // defined(ARDUINO)

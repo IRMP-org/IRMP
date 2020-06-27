@@ -98,5 +98,8 @@ void irmp_debug_print(const char * aMessage, bool aDoShortOutput);
 void irmp_PCI_ISR(void);
 void initPCIInterrupt(void);
 
+extern const uint8_t irmp_used_protocol_index[] PROGMEM;
+extern const char * const irmp_used_protocol_names[] PROGMEM;
+
 #endif // IRMP_ARDUINO_EXT_H
 #endif // ARDUINO
