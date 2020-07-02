@@ -37,6 +37,7 @@ jobs:
         arduino-boards-fqbn:
           - arduino:avr:uno
           - arduino:avr:mega
+          - arduino:megaavr:nona4809:mode=off
           - arduino:samd:arduino_zero_native
           - digistump:avr:digispark-tiny16
           - digistump:avr:digispark-pro

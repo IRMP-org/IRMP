@@ -101,7 +101,7 @@ void loop()
             switch (irmp_data.command)
             {
             case 0x48:
-                digitalWrite(LED_BUILTIN, HIGH); // will be set to low by IR feedback / irmp_blink13()
+                digitalWrite(LED_BUILTIN, HIGH); // will be set to low by IR feedback / irmp_LEDFeedback()
                 delay(4000);
                 break;
             default:

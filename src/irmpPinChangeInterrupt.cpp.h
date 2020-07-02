@@ -209,7 +209,7 @@ void initPCIInterrupt() {
 /*
  * Specify the right INT0, INT1 or PCINT0 interrupt vector according to different pins and cores
  */
-#if defined(__AVR__)
+#if defined(__AVR__) && ! defined(IRMP_USE_ARDUINO_ATTACH_INTERRUPT)
 # if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 ISR(PCINT0_vect)
 #  else

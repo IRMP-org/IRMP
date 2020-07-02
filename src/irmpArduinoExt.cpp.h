@@ -28,7 +28,14 @@ uint_fast8_t irmp_input_pin; // global variable to hold input pin number. Is ref
 void irmp_init(uint_fast8_t aIrmpInputPin)
 {
     irmp_input_pin = aIrmpInputPin;
-    irmp_init();
+#  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT && (IRMP_ENABLE_PIN_CHANGE_INTERRUPT != 0)
+    initPCIInterrupt();
+#  else
+    initIRTimerForReceive();
+#  endif
+#  ifdef IRMP_MEASURE_TIMING
+    pinModeFast(IRMP_TIMING_TEST_PIN, OUTPUT);
+#  endif
 }
 #endif // if defined(ALLOW_DYNAMIC_PINS)
 

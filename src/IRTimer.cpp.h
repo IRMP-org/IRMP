@@ -144,6 +144,12 @@ void initIRTimerForSend(void)
     TCCR1B = _BV(WGM12) | _BV(WGM13) | _BV(CS10);// switch CTC Mode on, set prescaler to 1 / no prescaling
     TIMSK1 = _BV(OCIE1B);                       // enable compare match interrupt
 
+#elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
+    TCB0.CTRLB = TCB_CNTMODE_INT_gc;
+    TCB0.CCMP = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;                   // compare value: 209 for 76 kHz, 221 for 72kHz @16MHz
+    TCB0.INTCTRL = TCB_CAPT_bm;
+    TCB0.CTRLA = TCB_CLKSEL_CLKDIV1_gc | TCB_ENABLE_bm;
+
 #  else // __AVR_ATmega328__ here
     TCCR2A = _BV(WGM21); // CTC mode
 #    if (F_CPU / IR_INTERRUPT_FREQUENCY) <= 256                         // for 8 bit timer
@@ -267,6 +273,13 @@ void storeIRTimer(void)
     sTimerOCRB = OCR1B;
     sTimerTIMSK = TIMSK1;
 
+#elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
+    // store current timer state
+    sTimerTCCRA = TCB0.CTRLA;
+    sTimerTCCRB = TCB0.CTRLB;
+    sTimerOCR = TCB0.CCMP;
+    sTimerTIMSK = TCB0.INTCTRL;
+
 #  elif defined(__AVR__)
 // store current timer state
     sTimerTCCRA = TCCR2A;
@@ -325,6 +338,12 @@ void restoreIRTimer(void)
     OCR1B = sTimerOCRB;
     TIMSK1 = sTimerTIMSK;
 
+#elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
+    TCB0.CTRLA = sTimerTCCRA;
+    TCB0.CTRLB = sTimerTCCRB;
+    TCB0.CCMP = sTimerOCR;
+    TCB0.INTCTRL = sTimerTIMSK;
+
 #  elif defined(__AVR__)
     TCCR2A = sTimerTCCRA;
     TCCR2B = sTimerTCCRB;
@@ -360,96 +379,100 @@ void restoreIRTimer(void)
  * NOT used if IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined
  * Initialize timer to generate interrupts at a rate F_INTERRUPTS (15000) per second to poll the input pin.
  */
-void disableIRTimerInterrupt(void)
-{
+void disableIRTimerInterrupt(void) {
 #if defined(__AVR__)
 // Use Timer 2
 #  if defined(__AVR_ATmega16__)
-TIMSK = 0; // disable interrupt
+    TIMSK = 0; // disable interrupt
 
 #  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 #    if defined(ARDUINO_AVR_DIGISPARK)
-TIMSK &= ~_BV(OCIE0B); // disable interrupt
+    TIMSK &= ~_BV(OCIE0B); // disable interrupt
 #    else
-TIMSK &= ~_BV(OCIE1B); // disable interrupt
+    TIMSK &= ~_BV(OCIE1B); // disable interrupt
 #    endif
 
 #  elif  defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-TIMSK1 &= ~_BV(OCIE1A); // disable interrupt
+    TIMSK1 &= ~_BV(OCIE1A); // disable interrupt
+
+#elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
+    TCB0.INTCTRL &= ~TCB_CAPT_bm;
 
 #  else
     TIMSK2 = 0; // disable interrupt
 #  endif // defined(__AVR_ATmega16__)
 
 #elif defined(ESP8266)
-timer1_detachInterrupt(); // disables interrupt too
+    timer1_detachInterrupt(); // disables interrupt too
 
 #elif defined(ESP32)
-timerAlarmDisable(sESP32Timer);
+    timerAlarmDisable(sESP32Timer);
 
 #elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_DISABLED);
-sSTM32Timer.detachInterrupt();
+    sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_DISABLED);
+    sSTM32Timer.detachInterrupt();
 
 #elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-sSTM32Timer.setMode(TIMER_CH1, TIMER_DISABLED);
-sSTM32Timer.detachInterrupt(TIMER_CH1);
+    sSTM32Timer.setMode(TIMER_CH1, TIMER_DISABLED);
+    sSTM32Timer.detachInterrupt(TIMER_CH1);
 
 #elif defined(ARDUINO_ARCH_SAMD)
-TC3->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;
-while (TC3->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY)
+    TC3->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;
+    while (TC3->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY)
     ; //wait until TC5 is done syncing
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
-am_hal_ctimer_int_disable(AM_HAL_CTIMER_INT_TIMERB3);
+    am_hal_ctimer_int_disable(AM_HAL_CTIMER_INT_TIMERB3);
 
 #endif
 }
 
-void enableIRTimerInterrupt(void)
-{
+void enableIRTimerInterrupt(void) {
 #if defined(__AVR__)
 // Use Timer 2
 #  if defined(__AVR_ATmega16__)
-TIMSK = _BV(OCIE2); // enable interrupt
+    TIMSK = _BV(OCIE2); // enable interrupt
 
 #  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 #    if defined(ARDUINO_AVR_DIGISPARK)
-TIMSK |= _BV(OCIE0B); // enable compare match interrupt
+    TIMSK |= _BV(OCIE0B); // enable compare match interrupt
 #    else
-TIMSK |= _BV(OCIE1B); // enable compare match interrupt
+    TIMSK |= _BV(OCIE1B); // enable compare match interrupt
 #    endif
 
 #  elif  defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-TIMSK1 |= _BV(OCIE1A); // enable compare match interrupt
+    TIMSK1 |= _BV(OCIE1A); // enable compare match interrupt
+
+#elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
+    TCB0.INTCTRL = TCB_CAPT_bm;
 
 #  else
     TIMSK2 = _BV(OCIE2B); // enable interrupt
 #  endif // defined(__AVR_ATmega16__)
 
 #elif defined(ESP8266)
-timer1_attachInterrupt(irmp_timer_ISR); // enables interrupt too
+    timer1_attachInterrupt(irmp_timer_ISR); // enables interrupt too
 
 #elif defined(ESP32)
-timerAlarmEnable(sESP32Timer);
+    timerAlarmEnable(sESP32Timer);
 
 #elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC); // used for generating only interrupts, no pin specified
-sSTM32Timer.attachInterrupt(irmp_timer_ISR);
-sSTM32Timer.refresh();// Set the timer's count to 0 and update the prescaler and overflow values.
+    sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC); // used for generating only interrupts, no pin specified
+    sSTM32Timer.attachInterrupt(irmp_timer_ISR);
+    sSTM32Timer.refresh();// Set the timer's count to 0 and update the prescaler and overflow values.
 
 #elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-sSTM32Timer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
-sSTM32Timer.attachInterrupt(TIMER_CH1, irmp_timer_ISR);
-sSTM32Timer.refresh(); // Set the timer's count to 0 and update the prescaler and overflow values.
+    sSTM32Timer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
+    sSTM32Timer.attachInterrupt(TIMER_CH1, irmp_timer_ISR);
+    sSTM32Timer.refresh(); // Set the timer's count to 0 and update the prescaler and overflow values.
 
 #elif defined(ARDUINO_ARCH_SAMD)
-TC3->COUNT16.CTRLA.reg |= TC_CTRLA_ENABLE;
-while (TC3->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY)
+    TC3->COUNT16.CTRLA.reg |= TC_CTRLA_ENABLE;
+    while (TC3->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY)
     ; //wait until TC5 is done syncing
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
-am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
+    am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
 
 #endif
 }
@@ -498,6 +521,10 @@ ISR(TIMER0_COMPB_vect)
 #    else
 ISR(TIMER1_COMPB_vect)
 #    endif
+
+#elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
+ISR(TCB0_INT_vect)
+
 #  else
 ISR(TIMER2_COMPB_vect)
 #  endif // defined(__AVR_ATmega16__)
@@ -526,68 +553,68 @@ void irmp_timer_ISR(void)
     TC3->COUNT16.INTFLAG.bit.MC0 = 1; // Clear interrupt
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
-     // Clear interrupt
+    // Clear interrupt
 #endif
 
 #  if defined(IRSND_H) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
-static uint8_t sDivider = 4; // IR signal toggle rate is 4 times IRSND call rate
+    static uint8_t sDivider = 4; // IR signal toggle rate is 4 times IRSND call rate
 #  endif
 
 #  ifdef IRMP_MEASURE_TIMING
-digitalWriteFast(IRMP_TIMING_TEST_PIN, HIGH); // 2 clock cycles
+    digitalWriteFast(IRMP_TIMING_TEST_PIN, HIGH); // 2 clock cycles
 #  endif
 
 #  if defined(IRSND_H) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
-/*
- * Send part of ISR
- */
-if(irsnd_busy) {
-    if (irsnd_is_on)
-    {
+    /*
+     * Send part of ISR
+     */
+    if(irsnd_busy) {
+        if (irsnd_is_on)
+        {
 #    if defined(digitalToggleFast)
 #      if defined(ALLOW_DYNAMIC_PINS) && defined (__AVR__)
-        *irsnd_output_pin_input_port |= irsnd_output_pin_mask; // fast toggle for AVR
+            *irsnd_output_pin_input_port |= irsnd_output_pin_mask; // fast toggle for AVR
 #      else
-        digitalToggleFast(IRSND_OUTPUT_PIN);
+            digitalToggleFast(IRSND_OUTPUT_PIN);
 #      endif // defined(ALLOW_DYNAMIC_PINS)  && defined (__AVR__)
 #    else
-        digitalWrite(IRSND_OUTPUT_PIN, !digitalRead(IRSND_OUTPUT_PIN));
-#    endif
-    }
-
-    if (--sDivider == 0)
-    {
-        // empty call needs additional 0.7 us
-        if (!irsnd_ISR())
-        {
-            restoreIRTimer();
-#    if ! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
-// only send active -> disable interrupt
-            disableIRTimerInterrupt();
+            digitalWrite(IRSND_OUTPUT_PIN, !digitalRead(IRSND_OUTPUT_PIN));
 #    endif
         }
-        sDivider = 4;
-    }
-} // if(irsnd_busy)
+
+        if (--sDivider == 0)
+        {
+            // empty call needs additional 0.7 us
+            if (!irsnd_ISR())
+            {
+                restoreIRTimer();
+#    if ! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
+// only send active -> disable interrupt
+                disableIRTimerInterrupt();
+#    endif
+            }
+            sDivider = 4;
+        }
+    } // if(irsnd_busy)
 #  endif // defined(IRSND_H) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
 #  if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
-else
-{ // for receive and send in one ISR
+    else
+    { // for receive and send in one ISR
 #  endif
 
 #  if defined(IRMP_H) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
-    /*
-     * Receive part of ISR
-     */
-    irmp_ISR();
+        /*
+         * Receive part of ISR
+         */
+        irmp_ISR();
 #  endif
 
 #  if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
-} // for receive and send in one ISR
+    } // for receive and send in one ISR
 #  endif
 
 #  ifdef IRMP_MEASURE_TIMING
-digitalWriteFast(IRMP_TIMING_TEST_PIN, LOW); // 2 clock cycles
+    digitalWriteFast(IRMP_TIMING_TEST_PIN, LOW); // 2 clock cycles
 #  endif
 }
 #endif // ISR_DEFINED
