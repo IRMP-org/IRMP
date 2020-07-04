@@ -661,10 +661,6 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #if defined(UNIX_OR_WINDOWS) || IRMP_PROTOCOL_NAMES == 1
-#if !defined(__AVR__)
-#undef PROGMEM
-#define PROGMEM
-#endif
 static const char proto_unknown[] PROGMEM = "UNKNOWN";
 static const char proto_sircs[] PROGMEM = "SIRCS";
 static const char proto_nec[] PROGMEM = "NEC";
