@@ -31,7 +31,7 @@
  * Therefore no (non interrupt) receiving is possible during sending of data.
  */
 
-// NO GUARD here, we have the GUARD below with #ifdef IRSND_H and #ifdef IRMP_H.
+// NO GUARD here, we have the GUARD below with #ifdef _IRSND_H_ and #ifdef _IRMP_H_.
 #include "IRTimer.h"
 
 #ifndef TIMER_DECLARED
@@ -58,12 +58,12 @@ HardwareTimer sSTM32Timer(3);
 #  endif
 #endif // TIMER_DECLARED
 
-#if defined(IRMP_H)
+#if defined(_IRMP_H_)
 // we compile for irmp
 #undef IR_INTERRUPT_FREQUENCY
 #define IR_INTERRUPT_FREQUENCY      F_INTERRUPTS                // define frequency for receive
 
-#elif defined(IRSND_H)
+#elif defined(_IRSND_H_)
 // we compile for irsnd
 #undef IR_INTERRUPT_FREQUENCY
 #define IR_INTERRUPT_FREQUENCY      IRSND_INTERRUPT_FREQUENCY   // define frequency for send
@@ -95,11 +95,11 @@ uint32_t sTimerOverflowValue;
 uint16_t sTimerCompareCapureValue;
 
 #  endif // defined(__AVR__)
-#endif // defined(IRMP_H)
+#endif // defined(_IRMP_H_)
 
-#if defined(IRMP_H)
+#if defined(_IRMP_H_)
 void initIRTimerForReceive(void)
-#elif defined(IRSND_H)
+#elif defined(_IRSND_H_)
 void initIRTimerForSend(void)
 #endif
 {
@@ -145,6 +145,9 @@ void initIRTimerForSend(void)
     TIMSK1 = _BV(OCIE1B);                       // enable compare match interrupt
 
 #elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
+    // TCB1 is used by Tone()
+    // TCB2 is used by Servo
+    // TCB3 is used by millis()
     TCB0.CTRLB = TCB_CNTMODE_INT_gc;
     TCB0.CCMP = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;                   // compare value: 209 for 76 kHz, 221 for 72kHz @16MHz
     TCB0.INTCTRL = TCB_CAPT_bm;
@@ -245,7 +248,7 @@ void initIRTimerForSend(void)
 #endif
 }
 
-#if defined(IRSND_H) // we compile for irsnd
+#if defined(_IRSND_H_) // we compile for irsnd
 void storeIRTimer(void)
 {
 #  if defined(__AVR_ATmega16__)
@@ -371,7 +374,7 @@ void restoreIRTimer(void)
 
 #  endif
 }
-#endif // defined(IRSND_H)
+#endif // defined(_IRSND_H_)
 
 #ifndef TIMER_INTERRUPT_EN_DISABLE_DEFINED
 #define TIMER_INTERRUPT_EN_DISABLE_DEFINED
@@ -418,8 +421,7 @@ void disableIRTimerInterrupt(void) {
 
 #elif defined(ARDUINO_ARCH_SAMD)
     TC3->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;
-    while (TC3->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY)
-    ; //wait until TC5 is done syncing
+//    while (TC3->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY) ; // Not required to wait at end of function
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
     am_hal_ctimer_int_disable(AM_HAL_CTIMER_INT_TIMERB3);
@@ -556,7 +558,7 @@ void irmp_timer_ISR(void)
     // Clear interrupt
 #endif
 
-#  if defined(IRSND_H) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
+#  if defined(_IRSND_H_) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
     static uint8_t sDivider = 4; // IR signal toggle rate is 4 times IRSND call rate
 #  endif
 
@@ -564,7 +566,7 @@ void irmp_timer_ISR(void)
     digitalWriteFast(IRMP_TIMING_TEST_PIN, HIGH); // 2 clock cycles
 #  endif
 
-#  if defined(IRSND_H) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
+#  if defined(_IRSND_H_) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
     /*
      * Send part of ISR
      */
@@ -572,11 +574,11 @@ void irmp_timer_ISR(void)
         if (irsnd_is_on)
         {
 #    if defined(digitalToggleFast)
-#      if defined(ALLOW_DYNAMIC_PINS) && defined (__AVR__)
+#      if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS) && defined (__AVR__)
             *irsnd_output_pin_input_port |= irsnd_output_pin_mask; // fast toggle for AVR
 #      else
             digitalToggleFast(IRSND_OUTPUT_PIN);
-#      endif // defined(ALLOW_DYNAMIC_PINS)  && defined (__AVR__)
+#      endif // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)  && defined (__AVR__)
 #    else
             digitalWrite(IRSND_OUTPUT_PIN, !digitalRead(IRSND_OUTPUT_PIN));
 #    endif
@@ -596,13 +598,13 @@ void irmp_timer_ISR(void)
             sDivider = 4;
         }
     } // if(irsnd_busy)
-#  endif // defined(IRSND_H) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
+#  endif // defined(_IRSND_H_) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
 #  if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
     else
     { // for receive and send in one ISR
 #  endif
 
-#  if defined(IRMP_H) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
+#  if defined(_IRMP_H_) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
         /*
          * Receive part of ISR
          */

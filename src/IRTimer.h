@@ -21,20 +21,20 @@
  *
  */
 
-// NO GUARD here, we have the GUARD below with #ifdef IRSND_H and #ifdef IRMP_H.
+// NO GUARD here, we have the GUARD below with #ifdef _IRSND_H_ and #ifdef _IRMP_H_.
 
 #if defined(ARDUINO)
-#if ! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) && defined(IRMP_H) && defined(IRSND_H)
+#if ! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) && defined(_IRMP_H_) && defined(_IRSND_H_)
 #error "You seem to use receive and send in one sketch but forget to define USE_ONE_TIMER_FOR_IRMP_AND_IRSND. Unfortunately this cannot be done automatically."
 #endif
 
-#if defined(IRMP_H)
+#if defined(_IRMP_H_)
 void initIRTimerForReceive(void);
 #endif
 
-#if defined(IRSND_H)
+#if defined(_IRSND_H_)
 extern void initIRTimerForSend(void);
-#endif // defined(IRSND_H)
+#endif // defined(_IRSND_H_)
 
 //#if defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
 //extern void     irmp_timer_ISR(HardwareTimer * aDummy __attribute__((unused))); // changed in stm32duino 1.9

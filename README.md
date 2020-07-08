@@ -50,12 +50,13 @@ It is dated from **30.3.2020**. If you have complains about the data or request 
 | Send pins| All | All | All ? | ? |
 | Decode method | OnTheFly | OnTheFly | RAM | RAM |
 | Encode method | OnTheFly | ? | OnTheFly | ? |
+| LED feedback | x | % | x | x |
 | FLASH usage (simple NEC example with 5 prints) | 1500<br/>(4300 for 15 main / 8000 for all 40 protocols)<br/>(+200 for callback)<br/>
 (+80 for interrupt at pin 2+3)| **1270**<br/>(1400 for pin 2+3) | 4830 | 3210 |
 | RAM usage | **52**<br/>(73 / 100 for 15 (main) / 40 protocols) | **62** | 334 | 227 |
-| Supported platforms | **avr, attiny, Digispark (Pro), esp8266, ESP32, STM32, SAMD 21, Apollo3<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, SAMD 21, SAMD 51 | avr, attiny, *esp8266*, esp32, arm(some boards) |
+| Supported platforms | **avr, megaAVR, attiny, Digispark (Pro), esp8266, ESP32, STM32, SAMD 21, Apollo3<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, SAMD 21, SAMD 51 | avr, attiny, *esp8266*, esp32, SAM, SAMD |
 | Last library update | 4/2020 | 4/2018 | 9/2019 | 11/2017 |
-| Remarks | LED 13 Feedback.<br/>Decodes 40 protocols concurrently.<br/>39 Protocols to send.<br/>Work in progress. | Only one protocol at a time. | Consists of 5 libraries. LED 13 Feedback. **Project containing bugs - 45 issues, no reaction for at least one year.** | LED 13 Feedback.<br/> Decoding is very basic and timing sensitive.<br/>**213 open issues and therefore an incredible amount of forks.** |
+| Remarks | Decodes 40 protocols concurrently.<br/>39 Protocols to send.<br/>Work in progress. | Only one protocol at a time. | Consists of 5 libraries. **Project containing bugs - 45 issues, no reaction for at least one year.** | Decoding is very basic and timing sensitive.<br/>**213 open issues and therefore an incredible amount of forks.** |
 
 \*The Hash protocol gives you a hash as code, which may be sufficient to distinguish your keys on the remote, but may not work with some protocols like Mitsubishi
 
@@ -108,9 +109,9 @@ The **tone() library (using timer 2) is still available**. You can use it altern
 - In interrupt mode, the `micros()` function is used as timebase.
 
 # Dynamic pins numbers
-if you want to use pin numbers specified at runtime, you must define `ALLOW_DYNAMIC_PINS` and call `irmpInit(aIrmpInputPin)` and `irsndInit(aIrsndOutputPin)` instead of irmp_init() and irsnd_init(). See [ReceiveAndSendDynamicPins example](examples/ReceiveAndSendDynamicPins/ReceiveAndSendDynamicPins.ino).<br/>
-If you specify `ALLOW_DYNAMIC_PINS` and still use the wrong functions, you will get errors like:
-`macro "irmp_init" passed 1 arguments, but takes just 0` or `macro "irsnd_init" passed 1 arguments, but takes just 0`
+if you want to use pin numbers specified at runtime, you must define `IRMP_IRSND_ALLOW_DYNAMIC_PINS` and call `irmp_init(aIrmpInputPin)` and `irsnd_init(aIrsndOutputPin)` instead of irmp_init() and irsnd_init(). See [ReceiveAndSendDynamicPins example](examples/ReceiveAndSendDynamicPins/ReceiveAndSendDynamicPins.ino).<br/>
+If you define `IRMP_IRSND_ALLOW_DYNAMIC_PINS` and still use the wrong functions, you will get errors like:
+`macro "irmp_init" passed 1 arguments, but takes just 0` or `macro "irsnd_init" passed 1 arguments, but takes just 0`.
 
 # [AllProtocol](examples/AllProtocols/AllProtocols.ino) example
 | Serial LCD output | Arduino Serial Monitor output |
@@ -137,10 +138,10 @@ If you specify `ALLOW_DYNAMIC_PINS` and still use the wrong functions, you will 
   
 # Revision History
 ### Version 3.0.0
-- Mayor refactoring.
-- Added `ALLOW_DYNAMIC_PINS` and `irmp_init(PinNumber)` to allow pin selection at runtime.
+- Support of RF (433MHz) remotes. 2 protocols **Generic 24 bit format** and **X10 format** added.
+- MegaAVR (ATmega4809) support.
+- Added `IRMP_IRSND_ALLOW_DYNAMIC_PINS` and `irmp_init(PinNumber)` and `irsnd_init(PinNumber)`to allow pin selection at runtime.
 - Support more protocols simultaneously on 32 bit CPUs.
-- ATmega4809 support.
 
 ### Version 2.2.1
 - Improved pin layout.

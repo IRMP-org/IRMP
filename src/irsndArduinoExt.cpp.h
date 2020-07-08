@@ -23,11 +23,11 @@
 
 #if defined(ARDUINO)
 
-#undef IRMP_H               // We are in IRSND now! Remove old symbol set from former including irmp.c.h if we use receive and send in the same user program.
+#undef _IRMP_H_             // We are in IRSND now! Remove old symbol set from former including irmp.c.h if we use receive and send in the same user program.
 #include "IRTimer.cpp.h"    // include code for timer
 
 static volatile bool irsnd_led_feedback;
-#if defined(ALLOW_DYNAMIC_PINS)
+#if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 uint_fast8_t irsnd_output_pin;
 #  if defined (__AVR__)
 // For fast toggling we additional require port and mask
@@ -52,7 +52,7 @@ void irsnd_init(uint_fast8_t aIrsndOutputPin)
     pinModeFast(IRMP_TIMING_TEST_PIN, OUTPUT);
 #  endif
 }
-#else // defined(ALLOW_DYNAMIC_PINS)
+#else // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 /*
  * Init function for defined pins
  */
@@ -64,7 +64,7 @@ void irsnd_init(void)
     pinModeFast(IRMP_TIMING_TEST_PIN, OUTPUT);
 #  endif
 }
-#endif // defined(ALLOW_DYNAMIC_PINS)
+#endif // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 
 static void irsnd_set_freq(IRSND_FREQ_TYPE freq __attribute__((unused)))
 {

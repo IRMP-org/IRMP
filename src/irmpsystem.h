@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * irmpsystem.h - system specific includes and defines
  *
- * Copyright (c) 2009-2019 Frank Meyer - frank(at)fli4l.de
+ * Copyright (c) 2009-2020 Frank Meyer - frank(at)fli4l.de
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -10,21 +10,25 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifndef IRMPSYSTEM_H
-#define IRMPSYSTEM_H
+#ifndef _IRMPSYSTEM_H_
+#define _IRMPSYSTEM_H_
 
-#if !defined(IRMP_H) && !defined(IRSND_H)
+#if !defined(_IRMP_H_) && !defined(_IRSND_H_)
 #  error please include only irmp.h or irsnd.h, not irmpsystem.h
 #endif
+
 #if defined(ARDUINO)                                                                // AVR Arduino. Should be first, since it covers multiple platforms
 // to avoid the other includes and defines which ar incompatible with ARDUINO
 
-#elif defined(__18CXX)                                                              // Microchip PIC C18 compiler
+#elif defined(__18CXX)                                                                // Microchip PIC C18 compiler
 #  define PIC_C18
 
 #elif defined(__XC8)                                                                // PIC XC8 compiler
 #  include <xc.h>
 #  define PIC_C18
+
+#elif defined(__XC32)                                                               // XC32 or ChipKit compiler
+#  define PIC_XC32
 
 #elif defined(__PCM__) || defined(__PCB__) || defined(__PCH__)                      // CCS PIC compiler
 #  define PIC_CCS
@@ -108,11 +112,9 @@
 #  include <stdlib.h>
 #  define F_CPU 8000000L
 #  define ANALYZE
-#  ifdef unix
-#    include <stdint.h>
-#  else
-typedef unsigned char                   uint8_t;
-typedef unsigned short                  uint16_t;
+#  include <stdint.h>
+#  ifdef _MSC_VER
+#    define IRMP_PACKED_STRUCT
 #  endif
 #endif
 
@@ -224,6 +226,11 @@ typedef unsigned short                  uint_fast16_t;
 #  define FALSE                         0
 #endif
 
+#if defined(PIC_XC32)                                                               // XC32 or ChipKit compiler
+#  include <xc.h>
+#  include <stdint.h>
+#endif
+
 #if IRMP_32_BIT == 1
 
 typedef struct
@@ -237,20 +244,21 @@ typedef struct
 #else // not IRMP_32_BIT == 1
 
 #if defined(PIC_C18)
-#define IRMP_PACKED_STRUCT
+#  define IRMP_PACKED_STRUCT
 #else
-#define IRMP_PACKED_STRUCT              __attribute__ ((__packed__))
+#  ifndef IRMP_PACKED_STRUCT
+#    define IRMP_PACKED_STRUCT          __attribute__ ((__packed__))
+#  endif
 #endif
 
-typedef struct
-    IRMP_PACKED_STRUCT
-    {
-        uint8_t protocol;                                   // protocol, e.g. NEC_PROTOCOL
-        uint16_t address;                                   // address
-        uint16_t command;                                   // command
-        uint8_t flags;                                      // flags, e.g. repetition
-    } IRMP_DATA;
+typedef struct IRMP_PACKED_STRUCT
+{
+    uint8_t                             protocol;                                   // protocol, e.g. NEC_PROTOCOL
+    uint16_t                            address;                                    // address
+    uint16_t                            command;                                    // command
+    uint8_t                             flags;                                      // flags, e.g. repetition
+} IRMP_DATA;
 
 #endif // IRMP_32_BIT == 1
 
-#endif // IRMPSYSTEM_H
+#endif // _IRMPSYSTEM_H_

@@ -5,8 +5,7 @@
  * Depending on the value of F_INTERRUPTS 2 other protocols (LEGO and RCMM or PENTAX and GREE) are disabled too - see F_INTERRUPTS below
  *
  *
- * Copyright (c) 2009-2019 Frank Meyer - frank(at)fli4l.de
- * Extensions for PIC 12F1820 W.Strobl 2014-07-20
+ * Copyright (c) 2009-2020 Frank Meyer - frank(at)fli4l.de
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +18,7 @@
 #define IRMP_SELECT_PROTOCOLS_H
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * Change settings from 1 to 0 (or comment it out) if you want to disable one or more decoders.
+ * Change settings from 1 to 0 if you want to disable one or more decoders.
  * This saves program space.
  *
  * 1 enable  decoder
@@ -34,6 +33,11 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
+ * Protocols Part 1: IR decoders
+ * If you use a RF receiver, deactivate all IR protocols!
+ *---------------------------------------------------------------------------------------------------------------------------------------------------
+ */
 // 4 typical protocols, disable here!           Enable  Remarks                 F_INTERRUPTS            Program Space
 #define IRMP_SUPPORT_SIRCS_PROTOCOL             1       // Sony SIRCS           >= 10000                 ~150 bytes
 #define IRMP_SUPPORT_NEC_PROTOCOL               1       // NEC + APPLE + ONKYO  >= 10000                 ~300 bytes
@@ -90,7 +94,12 @@
 #define IRMP_SUPPORT_RCII_PROTOCOL              0       // RCII T+A             >= 15000                 ~250 bytes     conflicts with GRUNDIG and NOKIA
 #define IRMP_SUPPORT_METZ_PROTOCOL              1
 
-// experimental protocols, enable here!         Enable  Remarks                 F_INTERRUPTS            Program Space
-#define IRMP_SUPPORT_RADIO1_PROTOCOL            1       // RADIO, e.g. TEVION   >= 10000                 ~250 bytes (experimental)
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
+ * Protocols Part 2: RF decoders
+ * If you use an IR sensor, deactivate all RF protocols!
+ *---------------------------------------------------------------------------------------------------------------------------------------------------
+ */
+#define IRMP_SUPPORT_RF_GEN24_PROTOCOL          0       // RF GEN24 (generic)   >= 15000                 ~250 bytes
+#define IRMP_SUPPORT_RF_X10_PROTOCOL            0       // RF PC X10 (Medion)   >= 15000                 ~250 bytes
 
 #endif // IRMP_SELECT_PROTOCOLS_H

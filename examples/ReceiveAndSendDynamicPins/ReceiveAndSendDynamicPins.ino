@@ -57,7 +57,7 @@
  * Requires additional 200 bytes program space.
  * This must be first, it is used in PinDefinitionsAndMore.h
  */
-#define ALLOW_DYNAMIC_PINS
+#define IRMP_IRSND_ALLOW_DYNAMIC_PINS
 
 /*
  * Set library modifiers first to set input and output pin etc.
@@ -67,8 +67,8 @@
 
 #define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH.
 
-#define IRMP_SUPPORT_SAMSUNG_PROTOCOL     1
-#define IRSND_SUPPORT_SAMSUNG_PROTOCOL    1
+#define IRMP_SUPPORT_SAMSUNG_PROTOCOL   1
+#define IRSND_SUPPORT_SAMSUNG_PROTOCOL  1
 
 /*
  * After setting the modifiers we can include the code and compile it.
@@ -111,6 +111,9 @@ void setup()
     digitalWrite(LED_BUILTIN, LOW);
     noTone(TONE_PIN);
 
+    /*
+     * Request pin number from user by serial monitor
+     */
     Serial.println(F("Please enter pin number to use for receiving IR signals."));
     while (Serial.available() == 0)
     {

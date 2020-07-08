@@ -37,7 +37,7 @@
 /*
  * Set hardware pin defaults for Arduino IDE if no IRSND_OUTPUT_PIN specified
  */
-#if defined(ALLOW_DYNAMIC_PINS)
+#if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 extern uint_fast8_t irsnd_output_pin;
 #  if defined (__AVR__)
 extern volatile uint8_t * irsnd_output_pin_input_port;
@@ -46,7 +46,7 @@ extern uint8_t irsnd_output_pin_mask;
 
 #undef IRSND_OUTPUT_PIN
 #define IRSND_OUTPUT_PIN        irsnd_output_pin
-#else // defined(ALLOW_DYNAMIC_PINS)
+#else // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 #  if !defined(IRSND_OUTPUT_PIN)                // Arduino IDE uses IRSND_OUTPUT_PIN instead of PORT and BIT
 #define IRSND_OUTPUT_PIN            4
 #  endif

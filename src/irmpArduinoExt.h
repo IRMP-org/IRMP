@@ -28,17 +28,29 @@
 #include "irmpVersion.h"
 
 #include "digitalWriteFast.h" // we use pinModeFast() and digitalReadFast() and digitalWriteFast() in turn
-
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
+ * Enable dynamic pin configuration in contrast to the static one which is known at compile time and saves program memory and CPU cycles.
+ *---------------------------------------------------------------------------------------------------------------------------------------------------
+ */
+//#define IRMP_IRSND_ALLOW_DYNAMIC_PINS
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Enable PinChangeInterrupt add on for irmp_ISR(). Tested for NEC, Kaseiko, Denon, RC6 protocols and Arduino Uno and Arduino ATMega.
  * Receives IR protocol data  by using pin change interrupts and no polling by timer.
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#ifndef IRMP_ENABLE_PIN_CHANGE_INTERRUPT
-#  define IRMP_ENABLE_PIN_CHANGE_INTERRUPT     0       // 1: enable PCI add on. 0: do not. default is 0
-#endif
+//#define IRMP_ENABLE_PIN_CHANGE_INTERRUPT
+#if defined(IRMP_ENABLE_PIN_CHANGE_INTERRUPT)
+#  if ! (defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)) /* ATtinyX5 */ \
+&& ! ( (defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)) && ( (defined(ARDUINO_AVR_DIGISPARKPRO) && ((IRMP_INPUT_PIN == 3) || (IRMP_INPUT_PIN == 9))) /*ATtinyX7(digisparkpro) and pin 3 or 9 */\
+        || (! defined(ARDUINO_AVR_DIGISPARKPRO) && ((IRMP_INPUT_PIN == 3) || (IRMP_INPUT_PIN == 14)))) ) /*ATtinyX7(ATTinyCore) and pin 3 or 14 */ \
+&& ! ( ( defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) \
+        || defined(__AVR_ATmega16U4__) || defined(__AVR_ATmega32U4__) \
+        || defined(__AVR_ATmega8__) || defined(__AVR_ATmega48__) || defined(__AVR_ATmega48P__) || defined(__AVR_ATmega48PB__) || defined(__AVR_ATmega88P__) || defined(__AVR_ATmega88PB__) \
+        || defined(__AVR_ATmega168__) || defined(__AVR_ATmega168PA__) || defined(__AVR_ATmega168PB__) || defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328PB__)) \
+&& ((IRMP_INPUT_PIN == 2) || (IRMP_INPUT_PIN == 3)) ) /* ATmegas and pin 2 or 3 */
+#  define IRMP_USE_ARDUINO_ATTACH_INTERRUPT // cannot use any static ISR vector here
+#  endif
 
-#if (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
 #  undef F_INTERRUPTS
 #  define F_INTERRUPTS                          15625   // 15625 interrupts per second gives 64 us period
 #endif
@@ -65,12 +77,12 @@
  * Should be first, since it covers multiple platforms
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#if defined(ALLOW_DYNAMIC_PINS)
+#if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 extern uint_fast8_t irmp_input_pin; // global variable to hold input pin number. Is referenced by defining IRMP_INPUT_PIN as irmp_input_pin.
 
 #undef IRMP_INPUT_PIN
 #define IRMP_INPUT_PIN              irmp_input_pin
-#else // defined(ALLOW_DYNAMIC_PINS)
+#else // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 #  if !defined (IRMP_INPUT_PIN)                                       // Arduino IDE uses IRMP_INPUT_PIN instead of PORT and BIT
 #define IRMP_INPUT_PIN              3
 #  endif

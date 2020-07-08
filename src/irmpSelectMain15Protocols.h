@@ -2,8 +2,7 @@
  * irmpSelectMain15Protocols.h
  *
  *
- * Copyright (c) 2009-2019 Frank Meyer - frank(at)fli4l.de
- * Extensions for PIC 12F1820 W.Strobl 2014-07-20
+ * Copyright (c) 2009-2020 Frank Meyer - frank(at)fli4l.de
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

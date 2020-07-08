@@ -14,21 +14,21 @@
 
 //  // Must be included after declaration of irmp_start_bit_detected etc.
 #if defined(ARDUINO)
-#undef IRSND_H              // We are in IRMP now! Remove old symbol maybe set from former including irsnd.c.h.
+#undef _IRSND_H_              // We are in IRMP now! Remove old symbol maybe set from former including irsnd.c.h.
 #include "IRTimer.cpp.h"    // include code for timer
 static bool irmp_led_feedback;
 
-#if (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
+#if defined(IRMP_ENABLE_PIN_CHANGE_INTERRUPT)
 #include "irmpPinChangeInterrupt.cpp.h"
-#endif // (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1)
+#endif // defined(IRMP_ENABLE_PIN_CHANGE_INTERRUPT)
 
-#if defined(ALLOW_DYNAMIC_PINS)
+#if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 uint_fast8_t irmp_input_pin; // global variable to hold input pin number. Is referenced by defining IRMP_INPUT_PIN as irmp_input_pin.
 
 void irmp_init(uint_fast8_t aIrmpInputPin)
 {
     irmp_input_pin = aIrmpInputPin;
-#  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT && (IRMP_ENABLE_PIN_CHANGE_INTERRUPT != 0)
+#  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT
     initPCIInterrupt();
 #  else
     initIRTimerForReceive();
@@ -37,7 +37,7 @@ void irmp_init(uint_fast8_t aIrmpInputPin)
     pinModeFast(IRMP_TIMING_TEST_PIN, OUTPUT);
 #  endif
 }
-#endif // if defined(ALLOW_DYNAMIC_PINS)
+#endif // if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 
 void irmp_init(void)
 {
@@ -47,7 +47,7 @@ void irmp_init(void)
     IRMP_PORT &= ~_BV(IRMP_BIT);                                        // deactivate pullup
     IRMP_DDR &= ~_BV(IRMP_BIT);                                         // set pin to input
 #  endif
-#  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT && (IRMP_ENABLE_PIN_CHANGE_INTERRUPT != 0)
+#  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT
     initPCIInterrupt();
 #  else
     initIRTimerForReceive();
@@ -294,8 +294,11 @@ const uint8_t irmp_used_protocol_index[] PROGMEM =
 #if IRMP_SUPPORT_NEC_PROTOCOL == 1
     IRMP_ONKYO_PROTOCOL,
 #endif
-#if IRMP_SUPPORT_RADIO1_PROTOCOL == 1
-    IRMP_RADIO1_PROTOCOL
+#if IRMP_SUPPORT_RF_GEN24_PROTOCOL == 1
+    RF_GEN24_PROTOCOL,
+#endif
+#if IRMP_SUPPORT_RF_X10_PROTOCOL == 1
+    RF_X10_PROTOCOL
 #endif
 };
 
@@ -466,8 +469,11 @@ const char * const irmp_used_protocol_names[] PROGMEM =
 #if IRMP_SUPPORT_NEC_PROTOCOL == 1
     proto_onkyo,
 #endif
-#if IRMP_SUPPORT_RADIO1_PROTOCOL == 1
-    proto_radio1
+#if IRMP_SUPPORT_RF_GEN24_PROTOCOL == 1
+    proto_rf_gen24,
+#endif
+#if IRMP_SUPPORT_RF_X10_PROTOCOL == 1
+    proto_rf_x10
 #endif
 };
 

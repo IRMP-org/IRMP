@@ -119,7 +119,7 @@
 //#define FEEDBACK_LED_IS_ACTIVE_LOW // The RX LED on the M0-Mini is active LOW
 #endif
 
-#if ! defined(__AVR__) || defined(__AVR_ATmega4809__) // for standard AVR we manage hardware directly in void initPCIInterrupt()
+#if defined(__AVR_ATmega4809__) // for standard AVR we manage hardware directly in void initPCIInterrupt()
 #define IRMP_USE_ARDUINO_ATTACH_INTERRUPT
 #endif
 

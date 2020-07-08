@@ -18,11 +18,10 @@
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change settings from 1 to 0 if you want to disable one or more encoders.
  * This saves program space.
- * 1 enable  decoder
- * 0 disable decoder
+ * 1 enable  encoder
+ * 0 disable encoder
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-
 // typical protocols, disable here!             Enable  Remarks                 F_INTERRUPTS            Program Space
 #define IRSND_SUPPORT_SIRCS_PROTOCOL            1       // Sony SIRCS           >= 10000                 ~200 bytes
 #define IRSND_SUPPORT_NEC_PROTOCOL              1       // NEC + APPLE          >= 10000                 ~100 bytes
@@ -73,5 +72,13 @@
 #define IRSND_SUPPORT_PANASONIC_PROTOCOL        1       // PANASONIC Beamer     >= 10000                 ~150 bytes
 #define IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL      1       // Mitsubishi-Heavy Aircondition, similar Timing to Panasonic beamer
 #define IRSND_SUPPORT_IRMP16_PROTOCOL           1       // IRMP specific        >= 15000                 ~250 bytes
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
+ * Protocols Part 2: RF decoders
+ * If you use an IR sensor, deactivate all RF protocols!
+ *---------------------------------------------------------------------------------------------------------------------------------------------------
+ */
+#define IRMP_SUPPORT_RF_GEN24_PROTOCOL          0       // RF GEN24 (generic)   >= 15000                 ~250 bytes
+#define IRMP_SUPPORT_RF_X10_PROTOCOL            0       // RF PC X10 (Medion)   >= 15000                 ~250 bytes
 
 #endif // IRSND_SELECT_PROTOCOLS_H

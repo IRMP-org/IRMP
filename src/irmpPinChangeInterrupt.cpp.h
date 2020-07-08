@@ -57,29 +57,38 @@ void irmp_PCI_ISR(void)
 #error "F_INTERRUPTS must be 15625 (to avoid a time consuming division)"
 #endif
 
-    if (tTicks != 0) {
+    if (tTicks != 0)
+    {
         tTicks -= 1;
     }
 
-    if (irmp_input) {
+    if (irmp_input)
+    {
         // start of pause -> set pulse width
         irmp_pulse_time += tTicks;
-    } else {
+    }
+    else
+    {
         // start of pulse -> set pause or time between repetitions
-        if (!irmp_start_bit_detected) {
-            if (tTicks > 0xFFFF) {
+        if (!irmp_start_bit_detected)
+        {
+            if (tTicks > 0xFFFF)
+            {
                 // avoid overflow
                 tTicks = 0xFFFF;
             }
             key_repetition_len = tTicks;
-        } else {
+        }
+        else
+        {
             irmp_pause_time += tTicks;
         }
     }
 
     irmp_ISR();
 
-    if (!irmp_ir_detected && irmp_input) {
+    if (!irmp_ir_detected && irmp_input)
+    {
         /*
          * Simulate end for protocols
          * IRMP may be waiting for stop bit, but detects it only at the next call, so do one additional call.
@@ -91,18 +100,21 @@ void irmp_PCI_ISR(void)
             Serial.print(irmp_start_bit_detected);
         }
 #endif
-        if (irmp_start_bit_detected && irmp_bit == irmp_param.complete_len && irmp_param.stop_bit == 1) {
+        if (irmp_start_bit_detected && irmp_bit == irmp_param.complete_len && irmp_param.stop_bit == 1)
+        {
             // call another time to detect a nec repeat
 #ifdef PCI_DEBUG
             Serial.println('R');
 #endif
-            if (irmp_pulse_time > 0) {
+            if (irmp_pulse_time > 0)
+            {
                 irmp_pulse_time--;
             }
             irmp_ISR();
         }
 
-        if (irmp_start_bit_detected && irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
+        if (irmp_start_bit_detected && irmp_bit > 0 && irmp_bit == irmp_param.complete_len)
+        {
 #ifdef PCI_DEBUG
             irmp_debug_print(F("S"));
 #endif
@@ -132,8 +144,9 @@ void irmp_PCI_ISR(void)
     }
 }
 
-void initPCIInterrupt() {
-#ifdef IRMP_USE_ARDUINO_ATTACH_INTERRUPT
+void initPCIInterrupt()
+{
+#if ! defined(__AVR__) || defined(IRMP_USE_ARDUINO_ATTACH_INTERRUPT)
     attachInterrupt(digitalPinToInterrupt(IRMP_INPUT_PIN), irmp_PCI_ISR, CHANGE);
 #else
 #  if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
@@ -160,7 +173,7 @@ void initPCIInterrupt() {
     // enable interrupt on next change
     EIMSK |= 1 << INT1;
 #      else
-#        error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1) IRMP_INPUT_PIN must be 9 or 3."
+#        error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined) IRMP_INPUT_PIN must be 9 or 3."
 #      endif // if (IRMP_INPUT_PIN == 9)
 
 #    else // defined(ARDUINO_AVR_DIGISPARKPRO)
@@ -178,7 +191,7 @@ void initPCIInterrupt() {
     // enable interrupt on next change
     EIMSK |= 1 << INT1;
 #      else
-#        error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1) IRMP_INPUT_PIN must be 14 or 3."
+#        error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined) IRMP_INPUT_PIN must be 14 or 3."
 #      endif // if (IRMP_INPUT_PIN == 14)
 #    endif
 
@@ -200,10 +213,10 @@ void initPCIInterrupt() {
     // enable interrupt on next change
     EIMSK |= 1 << INT1;
 #    else
-#      error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT == 1) IRMP_INPUT_PIN must be 2 or 3."
+#      error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined) IRMP_INPUT_PIN must be 2 or 3."
 #    endif // if (IRMP_INPUT_PIN == 2)
 #  endif // defined(__AVR_ATtiny25__)
-#endif //IRMP_USE_ARDUINO_ATTACH_INTERRUPT
+#endif // ! defined(__AVR__) || defined(IRMP_USE_ARDUINO_ATTACH_INTERRUPT)
 }
 
 /*

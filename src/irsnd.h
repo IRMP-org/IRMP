@@ -1,4 +1,4 @@
-/*---------------------------------------------------------------------------------------------------------------------------------------------------
+ /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * irsnd.h
  *
  * Copyright (c) 2010-2019 Frank Meyer - frank(at)fli4l.de
@@ -10,8 +10,8 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifndef IRSND_H
-#define IRSND_H
+#ifndef _IRSND_H_
+#define _IRSND_H_
 
 #include "irmpsystem.h"
 #ifndef IRSND_USE_AS_LIB
@@ -132,12 +132,11 @@ extern "C"
 {
 #endif
 
-extern void irsnd_init(void);
-extern uint8_t irsnd_is_busy(void);
-extern uint8_t irsnd_send_data(IRMP_DATA *, uint8_t);
-extern void irsnd_stop(void);
-extern uint8_t irsnd_ISR(void);
-
+extern void                                     irsnd_init (void);
+extern uint8_t                                  irsnd_is_busy (void);
+extern uint8_t                                  irsnd_send_data (IRMP_DATA *, uint8_t);
+extern void                                     irsnd_stop (void);
+extern uint8_t                                  irsnd_ISR (void);
 
 #if IRSND_USE_CALLBACK == 1
 extern void                                     irsnd_set_callback_ptr (void (*cb)(uint8_t));
@@ -147,4 +146,4 @@ extern void                                     irsnd_set_callback_ptr (void (*c
 }
 #endif
 
-#endif /* IRSND_H */
+#endif /* _IRSND_H_ */

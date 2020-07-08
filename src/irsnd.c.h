@@ -1,8 +1,7 @@
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * @file irsnd.c.h
  *
- * Copyright (c) 2010-2019 Frank Meyer - frank(at)fli4l.de
- * 2020 Arduino porting by Armin Joachimsmeyer
+ * Copyright (c) 2010-2020 Frank Meyer - frank(at)fli4l.de
  *
  * Supported AVR mikrocontrollers:
  *
@@ -177,13 +176,13 @@
 #  endif // IRSND_OCx
 
 #elif defined (PIC_C18)                                                 // Microchip C18 compiler
-//Nothing here to do here -> See irsndconfig.h
+    //Nothing here to do here -> See irsndconfig.h
 #elif defined (ARM_STM32)                                               // STM32
-//Nothing here to do here -> See irsndconfig.h
+    //Nothing here to do here -> See irsndconfig.h
 #elif defined (ARM_STM32_HAL)                                           // STM32 with Hal Library
-//Nothing here to do here -> See irsndconfig.h
+    //Nothing here to do here -> See irsndconfig.h
 #elif defined (__xtensa__)                                              // ESP8266
-//Nothing here to do here -> See irsndconfig.h
+    //Nothing here to do here -> See irsndconfig.h
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Macro digitalPinHasPWM bothers PIC_C18 compiler, but why?
@@ -194,7 +193,8 @@
  * #  endif
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#elif defined(ARDUINO)
+
+ #elif defined(ARDUINO)
 // specified here to avoid else case
 
 #else
@@ -202,7 +202,6 @@
 #    error mikrocontroller not defined, please fill in definitions here.
 #  endif // unix, WIN32
 #endif // __AVR...
-
 
 #if defined(__AVR_XMEGA__)
 #  define _CONCAT(a,b)                              a##b
@@ -220,9 +219,9 @@
 #endif
 
 #if IRSND_SUPPORT_NIKON_PROTOCOL == 1
-typedef uint16_t IRSND_PAUSE_LEN;
+    typedef uint16_t    IRSND_PAUSE_LEN;
 #else
-typedef uint8_t IRSND_PAUSE_LEN;
+    typedef uint8_t     IRSND_PAUSE_LEN;
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -537,26 +536,31 @@ typedef uint8_t IRSND_PAUSE_LEN;
 #define ACP24_0_PAUSE_LEN                       (uint8_t)(F_INTERRUPTS * ACP24_0_PAUSE_TIME + 0.5)
 #define ACP24_FRAME_REPEAT_PAUSE_LEN            (uint16_t)(F_INTERRUPTS * ACP24_FRAME_REPEAT_PAUSE_TIME + 0.5)                // use uint16_t!
 
-volatile uint8_t irsnd_busy = 0; // Used by IRTimer.cpp.h
-static volatile uint8_t irsnd_protocol = 0;
-static volatile uint8_t irsnd_buffer[11] = { 0 };
-static volatile uint8_t irsnd_repeat = 0;
-volatile uint8_t irsnd_is_on = FALSE; // Used by IRTimer.cpp.h
+// Used for Arduino by IRTimer.cpp.h
+volatile uint8_t                                irsnd_busy = 0;
+volatile uint8_t                                irsnd_is_on = FALSE;
+
+static volatile uint8_t                         irsnd_protocol = 0;
+static volatile uint8_t                         irsnd_buffer[11] = {0};
+static volatile uint8_t                         irsnd_repeat = 0;
 
 #if defined(ARDUINO)
 #include "irsndArduinoExt.cpp.h" // must be after the declarations of irsnd_busy etc.
 #else
 
 #if IRSND_USE_CALLBACK == 1
-static void (*irsnd_callback_ptr) (uint8_t);
+static void                                     (*irsnd_callback_ptr) (uint8_t);
 #endif // IRSND_USE_CALLBACK == 1
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  *  Switch PWM on
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-static void irsnd_on(void) {
-    if (!irsnd_is_on) {
+static void
+irsnd_on (void)
+{
+    if (! irsnd_is_on)
+    {
 #ifndef ANALYZE
 #  if defined(PIC_C18)                                  // PIC C18
         PWMon();
@@ -564,8 +568,8 @@ static void irsnd_on(void) {
 
 #  elif defined (ARM_STM32)                             // STM32
         TIM_SelectOCxM(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_OCMode_PWM1); // enable PWM as OC-mode
-        TIM_CCxCmd(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_CCx_Enable);// enable OC-output (is being disabled in TIM_SelectOCxM())
-        TIM_Cmd(IRSND_TIMER, ENABLE);// enable counter
+        TIM_CCxCmd(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_CCx_Enable);      // enable OC-output (is being disabled in TIM_SelectOCxM())
+        TIM_Cmd(IRSND_TIMER, ENABLE);                   // enable counter
 
 #  elif defined (ARM_STM32_HAL)                         // STM32 with Hal Library
         HAL_TIM_PWM_Start(&IRSND_TIMER_HANDLER, IRSND_TIMER_CHANNEL_NUMBER);
@@ -578,17 +582,17 @@ static void irsnd_on(void) {
 
 #  elif defined (__AVR_XMEGA__)
 #    if (IRSND_OCx == IRSND_XMEGA_OC0A)                                 // use OC0A
-        XMEGA_Timer.CTRLB |= (1<<TC0_CCAEN_bp);                 // Compare A
+                XMEGA_Timer.CTRLB |= (1<<TC0_CCAEN_bp);                 // Compare A
 #    elif (IRSND_OCx == IRSND_XMEGA_OC0B)                               // use OC0B
-        XMEGA_Timer.CTRLB |= (1<<TC0_CCBEN_bp);                 // Compare B
+                XMEGA_Timer.CTRLB |= (1<<TC0_CCBEN_bp);                 // Compare B
 #    elif IRSND_OCx == IRSND_XMEGA_OC0C                                 // use OC0C
-        XMEGA_Timer.CTRLB |= (1<<TC0_CCCEN_bp);                 // Compare C
+                XMEGA_Timer.CTRLB |= (1<<TC0_CCCEN_bp);                 // Compare C
 #    elif IRSND_OCx == IRSND_XMEGA_OC0D                                 // use OC0D
-        XMEGA_Timer.CTRLB |= (1<<TC0_CCDEN_bp);                 // Compare D
+                XMEGA_Timer.CTRLB |= (1<<TC0_CCDEN_bp);                 // Compare D
 #    elif IRSND_OCx == IRSND_XMEGA_OC1A                                 // use OC1A
-        XMEGA_Timer.CTRLB |= (1<<TC1_CCAEN_bp);                 // Compare A
+                XMEGA_Timer.CTRLB |= (1<<TC1_CCAEN_bp);                 // Compare A
 #    elif IRSND_OCx == IRSND_XMEGA_OC1B                                 // use OC1B
-        XMEGA_Timer.CTRLB |= (1<<TC1_CCBEN_bp);                 // Compare B
+                XMEGA_Timer.CTRLB |= (1<<TC1_CCBEN_bp);                 // Compare B
 #    else
 #       error wrong value of IRSND_OCx
 #    endif // IRSND_OCx
@@ -597,15 +601,15 @@ static void irsnd_on(void) {
 #    if   IRSND_OCx == IRSND_OC2                        // use OC2
         TCCR2 |= (1<<COM20)|(1<<WGM21);                 // toggle OC2 on compare match,  clear Timer 2 at compare match OCR2
 #    elif IRSND_OCx == IRSND_OC2A                       // use OC2A
-        TCCR2A |= (1 << COM2A0) | (1 << WGM21);               // toggle OC2A on compare match, clear Timer 2 at compare match OCR2A
+        TCCR2A |= (1<<COM2A0)|(1<<WGM21);               // toggle OC2A on compare match, clear Timer 2 at compare match OCR2A
 #    elif IRSND_OCx == IRSND_OC2B                       // use OC2B
-        TCCR2A |= (1<<COM2B0)|(1<<WGM21);     // toggle OC2B on compare match, clear Timer 2 at compare match OCR2A (yes: A, not B!)
+        TCCR2A |= (1<<COM2B0)|(1<<WGM21);               // toggle OC2B on compare match, clear Timer 2 at compare match OCR2A (yes: A, not B!)
 #    elif IRSND_OCx == IRSND_OC0                        // use OC0
         TCCR0 |= (1<<COM00)|(1<<WGM01);                 // toggle OC0 on compare match,  clear Timer 0 at compare match OCR0
 #    elif IRSND_OCx == IRSND_OC0A                       // use OC0A
         TCCR0A |= (1<<COM0A0)|(1<<WGM01);               // toggle OC0A on compare match, clear Timer 0 at compare match OCR0A
 #    elif IRSND_OCx == IRSND_OC0B                       // use OC0B
-        TCCR0A |= (1<<COM0B0)|(1<<WGM01);     // toggle OC0B on compare match, clear Timer 0 at compare match OCR0A (yes: A, not B!)
+        TCCR0A |= (1<<COM0B0)|(1<<WGM01);               // toggle OC0B on compare match, clear Timer 0 at compare match OCR0A (yes: A, not B!)
 #    else
 #      error wrong value of IRSND_OCx
 #    endif // IRSND_OCx
@@ -629,7 +633,8 @@ static void irsnd_on(void) {
  *  Only called by irsnd_ISR
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-static void irsnd_off(void)
+static void
+irsnd_off (void)
 {
     if (irsnd_is_on)
     {
@@ -641,9 +646,9 @@ static void irsnd_off(void)
 
 #  elif defined (ARM_STM32)                                                             // STM32
         TIM_Cmd(IRSND_TIMER, DISABLE);                                                  // disable counter
-        TIM_SelectOCxM(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_ForcedAction_InActive);// force output inactive
-        TIM_CCxCmd(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_CCx_Enable);// enable OC-output (is being disabled in TIM_SelectOCxM())
-        TIM_SetCounter(IRSND_TIMER, 0);// reset counter value
+        TIM_SelectOCxM(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_ForcedAction_InActive);    // force output inactive
+        TIM_CCxCmd(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_CCx_Enable);                   // enable OC-output (is being disabled in TIM_SelectOCxM())
+        TIM_SetCounter(IRSND_TIMER, 0);                                                 // reset counter value
 
 #  elif defined (ARM_STM32_HAL)                                                         // STM32
         HAL_TIM_PWM_Stop(&IRSND_TIMER_HANDLER, IRSND_TIMER_CHANNEL_NUMBER);
@@ -664,9 +669,9 @@ static void irsnd_off(void)
 #    elif IRSND_OCx == IRSND_XMEGA_OC0D                                                 // use OC0D
         XMEGA_Timer.CTRLB &= ~(1<<TC0_CCDEN_bp);                                        // Compare D disconnected
 #    elif IRSND_OCx == IRSND_XMEGA_OC1A                                                 // use OC1A
-        XMEGA_Timer.CTRLB &= ~(1<<TC1_CCAEN_bp);                                // Compare A disconnected
+                XMEGA_Timer.CTRLB &= ~(1<<TC1_CCAEN_bp);                                // Compare A disconnected
 #    elif IRSND_OCx == IRSND_XMEGA_OC1B                                                 // use OC1B
-        XMEGA_Timer.CTRLB &= ~(1<<TC1_CCBEN_bp);                                // Compare B disconnected
+                XMEGA_Timer.CTRLB &= ~(1<<TC1_CCBEN_bp);                                // Compare B disconnected
 #    else
 #       error wrong value of IRSND_OCx
 #    endif // IRSND_OCx
@@ -676,7 +681,7 @@ static void irsnd_off(void)
 #    if   IRSND_OCx == IRSND_OC2                        // use OC2
         TCCR2 &= ~(1<<COM20);                           // normal port operation, OC2 disconnected.
 #    elif IRSND_OCx == IRSND_OC2A                       // use OC2A
-        TCCR2A &= ~(1 << COM2A0);                         // normal port operation, OC2A disconnected.
+        TCCR2A &= ~(1<<COM2A0);                         // normal port operation, OC2A disconnected.
 #    elif IRSND_OCx == IRSND_OC2B                       // use OC2B
         TCCR2A &= ~(1<<COM2B0);                         // normal port operation, OC2B disconnected.
 #    elif IRSND_OCx == IRSND_OC0                        // use OC0
@@ -688,14 +693,14 @@ static void irsnd_off(void)
 #    else
 #      error wrong value of IRSND_OCx
 #    endif // IRSND_OCx
-        IRSND_PORT &= ~(1 << IRSND_BIT);                 // set IRSND_BIT to low
+        IRSND_PORT  &= ~(1<<IRSND_BIT);                 // set IRSND_BIT to low
 #  endif //C18
 #endif // ANALYZE
 
 #if IRSND_USE_CALLBACK == 1
         if (irsnd_callback_ptr)
         {
-            (*irsnd_callback_ptr) (FALSE);
+           (*irsnd_callback_ptr) (FALSE);
         }
 #endif // IRSND_USE_CALLBACK == 1
 
@@ -713,132 +718,134 @@ extern void pwm_init(uint16_t freq);
 #include <stdio.h>
 #endif
 
-#if ! defined (ANALYZE)
-static void irsnd_set_freq(IRSND_FREQ_TYPE freq) {
+static void
+irsnd_set_freq (IRSND_FREQ_TYPE freq)
+{
+#ifndef ANALYZE
 #  if defined(PIC_C18)                                                                      // PIC C18 or XC8
 #    if defined(__12F1840)                                                                  // XC8
-    TRISA2=0;
-    PR2=freq;
-    CCP1M0=1;
-    CCP1M1=1;
-    CCP1M2=1;
-    CCP1M3=1;
-    DC1B0=1;
-    DC1B1=0;
-    CCPR1L = 0b01101001;
-    TMR2IF = 0;
-    TMR2ON=1;
-    CCP1CON &=(~0b0011); // p 197 "active high"
+        TRISA2=0;
+        PR2=freq;
+        CCP1M0=1;
+        CCP1M1=1;
+        CCP1M2=1;
+        CCP1M3=1;
+        DC1B0=1;
+        DC1B1=0;
+        CCPR1L = 0b01101001;
+        TMR2IF = 0;
+        TMR2ON=1;
+        CCP1CON &=(~0b0011); // p 197 "active high"
 #    else                                                                                   // PIC C18
-    OpenPWM(freq);
-    SetDCPWM( (uint16_t) (freq * 2) + 1); // freq*2 = Duty cycles 50%
+        OpenPWM(freq);
+        SetDCPWM( (uint16_t) (freq * 2) + 1); // freq*2 = Duty cycles 50%
 #    endif
-    PWMoff();
+        PWMoff();
 #  elif defined (ARM_STM32)                                                                 // STM32
-    static uint32_t TimeBaseFreq = 0;
+        static uint32_t      TimeBaseFreq = 0;
 
-    if (TimeBaseFreq == 0)
-    {
-        RCC_ClocksTypeDef RCC_ClocksStructure;
-        /* Get system clocks and store timer clock in variable */
-        RCC_GetClocksFreq(&RCC_ClocksStructure);
+        if (TimeBaseFreq == 0)
+        {
+            RCC_ClocksTypeDef        RCC_ClocksStructure;
+            /* Get system clocks and store timer clock in variable */
+            RCC_GetClocksFreq(&RCC_ClocksStructure);
 #    if ((IRSND_TIMER_NUMBER >= 2) && (IRSND_TIMER_NUMBER <= 5)) || ((IRSND_TIMER_NUMBER >= 12) && (IRSND_TIMER_NUMBER <= 14))
-        if (RCC_ClocksStructure.PCLK1_Frequency == RCC_ClocksStructure.HCLK_Frequency)
-        {
-            TimeBaseFreq = RCC_ClocksStructure.PCLK1_Frequency;
-        }
-        else
-        {
-            TimeBaseFreq = RCC_ClocksStructure.PCLK1_Frequency * 2;
-        }
+            if (RCC_ClocksStructure.PCLK1_Frequency == RCC_ClocksStructure.HCLK_Frequency)
+            {
+               TimeBaseFreq = RCC_ClocksStructure.PCLK1_Frequency;
+            }
+            else
+            {
+               TimeBaseFreq = RCC_ClocksStructure.PCLK1_Frequency * 2;
+            }
 #    else
-        if (RCC_ClocksStructure.PCLK2_Frequency == RCC_ClocksStructure.HCLK_Frequency)
-        {
-            TimeBaseFreq = RCC_ClocksStructure.PCLK2_Frequency;
-        }
-        else
-        {
-            TimeBaseFreq = RCC_ClocksStructure.PCLK2_Frequency * 2;
-        }
+            if (RCC_ClocksStructure.PCLK2_Frequency == RCC_ClocksStructure.HCLK_Frequency)
+            {
+               TimeBaseFreq = RCC_ClocksStructure.PCLK2_Frequency;
+            }
+            else
+            {
+               TimeBaseFreq = RCC_ClocksStructure.PCLK2_Frequency * 2;
+            }
 #    endif
-    }
+        }
 
-    freq = TimeBaseFreq/freq;
+        freq = TimeBaseFreq/freq;
 
-    /* Set frequency */
-    TIM_SetAutoreload(IRSND_TIMER, freq - 1);
-    /* Set duty cycle */
-    TIM_SetCompare1(IRSND_TIMER, (freq + 1) / 2);
+        /* Set frequency */
+        TIM_SetAutoreload(IRSND_TIMER, freq - 1);
+        /* Set duty cycle */
+        TIM_SetCompare1(IRSND_TIMER, (freq + 1) / 2);
 
 #  elif defined (ARM_STM32_HAL)                                                            // STM32 with Hal Library
 
-    TIM_MasterConfigTypeDef sMasterConfig;
-    TIM_OC_InitTypeDef sConfigOC;
+        TIM_MasterConfigTypeDef sMasterConfig;
+        TIM_OC_InitTypeDef sConfigOC;
 
-    uint32_t uwPrescalerValue = (uint32_t) ((IRSND_TIMER_SPEED_APBX) / (freq*10)) - 1; //1kHz
+        uint32_t uwPrescalerValue = (uint32_t) ((IRSND_TIMER_SPEED_APBX) / (freq*10)) - 1; //1kHz
 
-    //IRSND_TIMER_HANDLER.Instance = TIM2;
-    IRSND_TIMER_HANDLER.Init.Prescaler = uwPrescalerValue;
-    IRSND_TIMER_HANDLER.Init.CounterMode = TIM_COUNTERMODE_UP;
-    IRSND_TIMER_HANDLER.Init.Period = 10 -1;
-    IRSND_TIMER_HANDLER.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-    IRSND_TIMER_HANDLER.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+        //IRSND_TIMER_HANDLER.Instance = TIM2;
+        IRSND_TIMER_HANDLER.Init.Prescaler = uwPrescalerValue;
+        IRSND_TIMER_HANDLER.Init.CounterMode = TIM_COUNTERMODE_UP;
+        IRSND_TIMER_HANDLER.Init.Period = 10 -1;
+        IRSND_TIMER_HANDLER.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+        IRSND_TIMER_HANDLER.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 
-    if (HAL_TIM_PWM_Init(&IRSND_TIMER_HANDLER) != HAL_OK)
-    {
-        _Error_Handler(__FILE__, __LINE__);
-    }
+        if (HAL_TIM_PWM_Init(&IRSND_TIMER_HANDLER) != HAL_OK)
+        {
+            _Error_Handler(__FILE__, __LINE__);
+        }
 
-    sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-    sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+        sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+        sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 
-    if (HAL_TIMEx_MasterConfigSynchronization(&IRSND_TIMER_HANDLER, &sMasterConfig) != HAL_OK)
-    {
-        _Error_Handler(__FILE__, __LINE__);
-    }
+        if (HAL_TIMEx_MasterConfigSynchronization(&IRSND_TIMER_HANDLER, &sMasterConfig) != HAL_OK)
+        {
+            _Error_Handler(__FILE__, __LINE__);
+        }
 
-    sConfigOC.OCMode = TIM_OCMODE_PWM1;
-    sConfigOC.Pulse = IRSND_TIMER_HANDLER.Init.Period / 2;
-    sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-    sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+        sConfigOC.OCMode = TIM_OCMODE_PWM1;
+        sConfigOC.Pulse = IRSND_TIMER_HANDLER.Init.Period / 2;
+        sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+        sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
 
-    if (HAL_TIM_PWM_ConfigChannel(&IRSND_TIMER_HANDLER, &sConfigOC, IRSND_TIMER_CHANNEL_NUMBER ) != HAL_OK)
-    {
-        _Error_Handler(__FILE__, __LINE__);
-    }
+        if (HAL_TIM_PWM_ConfigChannel(&IRSND_TIMER_HANDLER, &sConfigOC, IRSND_TIMER_CHANNEL_NUMBER ) != HAL_OK)
+        {
+            _Error_Handler(__FILE__, __LINE__);
+        }
 
 #  elif defined (TEENSY_ARM_CORTEX_M4)
-    analogWriteResolution(8);                                                           // 8 bit
-    analogWriteFrequency(IRSND_PIN, freq);
-    analogWrite(IRSND_PIN, 0);// pwm off, LOW level
+        analogWriteResolution(8);                                                           // 8 bit
+        analogWriteFrequency(IRSND_PIN, freq);
+        analogWrite(IRSND_PIN, 0);                                                          // pwm off, LOW level
 
 #elif defined (__xtensa__)
-    // analogWriteRange(255);
-    analogWriteFreq(freq);
-    analogWrite(IRSND_PIN, 0);// pwm off, LOW level
+        // analogWriteRange(255);
+        analogWriteFreq(freq);
+        analogWrite(IRSND_PIN, 0);                                                          // pwm off, LOW level
 
 #  elif defined (__AVR_XMEGA__)
-    XMEGA_Timer.CCA = freq;
+        XMEGA_Timer.CCA = freq;
 
 #  else                                                                                     // AVR
 
 #    if IRSND_OCx == IRSND_OC2
-    OCR2 = freq;                                                                        // use register OCR2 for OC2
+        OCR2 = freq;                                                                        // use register OCR2 for OC2
 #    elif IRSND_OCx == IRSND_OC2A                                                           // use OC2A
-    OCR2A = freq;                                                                       // use register OCR2A for OC2A and OC2B!
+        OCR2A = freq;                                                                       // use register OCR2A for OC2A and OC2B!
 #    elif IRSND_OCx == IRSND_OC2B                                                           // use OC2B
-    OCR2A = freq;                                                                       // use register OCR2A for OC2A and OC2B!
+        OCR2A = freq;                                                                       // use register OCR2A for OC2A and OC2B!
 #    elif IRSND_OCx == IRSND_OC0                                                            // use OC0
-    OCR0 = freq;                                                                        // use register OCR2 for OC2
+        OCR0 = freq;                                                                        // use register OCR2 for OC2
 #    elif IRSND_OCx == IRSND_OC0A                                                           // use OC0A
-    OCR0A = freq;                                                                       // use register OCR0A for OC0A and OC0B!
+        OCR0A = freq;                                                                       // use register OCR0A for OC0A and OC0B!
 #    elif IRSND_OCx == IRSND_OC0B                                                           // use OC0B
-    OCR0A = freq;                                                                       // use register OCR0A for OC0A and OC0B!
+        OCR0A = freq;                                                                       // use register OCR0A for OC0A and OC0B!
 #    else
 #      error wrong value of IRSND_OCx
 #    endif
 #  endif //PIC_C18
-#endif // ! defined (ANALYZE)
+#endif // ANALYZE
 }
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -846,136 +853,138 @@ static void irsnd_set_freq(IRSND_FREQ_TYPE freq) {
  *  @details  Configures 0CR0A, 0CR0B and 0CR2B as PWM channels
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-void irsnd_init(void) {
+void
+irsnd_init (void)
+{
 #ifndef ANALYZE
 #  if defined(PIC_C18)                                                      // PIC C18 or XC8 compiler
 #    if ! defined(__12F1840)                                                // only C18:
-    OpenTimer;
+        OpenTimer;
 #    endif
-    irsnd_set_freq (IRSND_FREQ_36_KHZ);                                 // default frequency
-    IRSND_PIN = 0;// set IO to outout
-    PWMoff();
+        irsnd_set_freq (IRSND_FREQ_36_KHZ);                                 // default frequency
+        IRSND_PIN = 0;                                                      // set IO to outout
+        PWMoff();
 #  elif defined (ARM_STM32)                                                 // STM32
-    GPIO_InitTypeDef GPIO_InitStructure;
-    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
-    TIM_OCInitTypeDef TIM_OCInitStructure;
+        GPIO_InitTypeDef            GPIO_InitStructure;
+        TIM_TimeBaseInitTypeDef     TIM_TimeBaseStructure;
+        TIM_OCInitTypeDef           TIM_OCInitStructure;
 
-    /* GPIOx clock enable */
+       /* GPIOx clock enable */
 #    if defined (ARM_STM32L1XX)
-    RCC_AHBPeriphClockCmd(IRSND_PORT_RCC, ENABLE);
+        RCC_AHBPeriphClockCmd(IRSND_PORT_RCC, ENABLE);
 #    elif defined (ARM_STM32F10X)
-    RCC_APB2PeriphClockCmd(IRSND_PORT_RCC, ENABLE);
-    // RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE); // only in case of remapping, not necessary for default port-timer mapping
+        RCC_APB2PeriphClockCmd(IRSND_PORT_RCC, ENABLE);
+        // RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE); // only in case of remapping, not necessary for default port-timer mapping
 #    elif defined (ARM_STM32F4XX)
-    RCC_AHB1PeriphClockCmd(IRSND_PORT_RCC, ENABLE);
+        RCC_AHB1PeriphClockCmd(IRSND_PORT_RCC, ENABLE);
 #    endif
 
-    /* GPIO Configuration */
-    GPIO_InitStructure.GPIO_Pin = IRSND_BIT;
+        /* GPIO Configuration */
+        GPIO_InitStructure.GPIO_Pin = IRSND_BIT;
 #    if defined (ARM_STM32L1XX) || defined (ARM_STM32F4XX)
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-    GPIO_Init(IRSND_PORT, &GPIO_InitStructure);
-    GPIO_PinAFConfig(IRSND_PORT, (uint8_t)IRSND_BIT_NUMBER, IRSND_GPIO_AF);
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+        GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+        GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+        GPIO_Init(IRSND_PORT, &GPIO_InitStructure);
+        GPIO_PinAFConfig(IRSND_PORT, (uint8_t)IRSND_BIT_NUMBER, IRSND_GPIO_AF);
 #    elif defined (ARM_STM32F10X)
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-    GPIO_Init(IRSND_PORT, &GPIO_InitStructure);
-    // GPIO_PinRemapConfig(GPIO_*Remap*_TIM[IRSND_TIMER_NUMBER], ENABLE); // only in case of remapping, not necessary for default port-timer mapping
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+        GPIO_Init(IRSND_PORT, &GPIO_InitStructure);
+        // GPIO_PinRemapConfig(GPIO_*Remap*_TIM[IRSND_TIMER_NUMBER], ENABLE); // only in case of remapping, not necessary for default port-timer mapping
 #    endif
 
-    /* TIMx clock enable */
+        /* TIMx clock enable */
 #    if ((IRSND_TIMER_NUMBER >= 2) && (IRSND_TIMER_NUMBER <= 5)) || ((IRSND_TIMER_NUMBER >= 12) && (IRSND_TIMER_NUMBER <= 14))
-    RCC_APB1PeriphClockCmd(IRSND_TIMER_RCC, ENABLE);
+        RCC_APB1PeriphClockCmd(IRSND_TIMER_RCC, ENABLE);
 #    else
-    RCC_APB2PeriphClockCmd(IRSND_TIMER_RCC, ENABLE);
+        RCC_APB2PeriphClockCmd(IRSND_TIMER_RCC, ENABLE);
 #    endif
 
-    /* Time base configuration */
-    TIM_TimeBaseStructure.TIM_Period = -1;     // set dummy value (don't set to 0), will be initialized later
-    TIM_TimeBaseStructure.TIM_Prescaler = 0;
-    TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-    TIM_TimeBaseInit(IRSND_TIMER, &TIM_TimeBaseStructure);
+        /* Time base configuration */
+        TIM_TimeBaseStructure.TIM_Period = -1;     // set dummy value (don't set to 0), will be initialized later
+        TIM_TimeBaseStructure.TIM_Prescaler = 0;
+        TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+        TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+        TIM_TimeBaseInit(IRSND_TIMER, &TIM_TimeBaseStructure);
 
-    /* PWM1 Mode configuration */
-    TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-    TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-    TIM_OCInitStructure.TIM_Pulse = 0;         // will be initialized later
-    TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-    TIM_OC1Init(IRSND_TIMER, &TIM_OCInitStructure);
+        /* PWM1 Mode configuration */
+        TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+        TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+        TIM_OCInitStructure.TIM_Pulse = 0;         // will be initialized later
+        TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+        TIM_OC1Init(IRSND_TIMER, &TIM_OCInitStructure);
 
-    /* Preload configuration */
-    TIM_ARRPreloadConfig(IRSND_TIMER, ENABLE);
-    TIM_OC1PreloadConfig(IRSND_TIMER, TIM_OCPreload_Enable);
+        /* Preload configuration */
+        TIM_ARRPreloadConfig(IRSND_TIMER, ENABLE);
+        TIM_OC1PreloadConfig(IRSND_TIMER, TIM_OCPreload_Enable);
 
-    irsnd_set_freq (IRSND_FREQ_36_KHZ);                                         // set default frequency
+        irsnd_set_freq (IRSND_FREQ_36_KHZ);                                         // set default frequency
 
 #  elif defined (ARM_STM32_HAL)
-    irsnd_set_freq (IRSND_FREQ_36_KHZ);                                         // default frequency
+        irsnd_set_freq (IRSND_FREQ_36_KHZ);                                         // default frequency
 
 #  elif defined (TEENSY_ARM_CORTEX_M4)
-    if (!digitalPinHasPWM(IRSND_PIN))
-    {
-        return;
-    }
+        if (!digitalPinHasPWM(IRSND_PIN))
+        {
+            return;
+        }
 
 #  elif defined (__xtensa__)
-    pinMode(IRSND_PIN, OUTPUT);
-    irsnd_set_freq (IRSND_FREQ_36_KHZ);
+        pinMode(IRSND_PIN, OUTPUT);
+        irsnd_set_freq (IRSND_FREQ_36_KHZ);
 
 #  elif defined (__AVR_XMEGA__)
-    IRSND_PORT &= ~(1<<IRSND_BIT);                                              // set IRSND_BIT to low
-    IRSND_DDR |= (1<<IRSND_BIT);// set IRSND_BIT to output
+        IRSND_PORT &= ~(1<<IRSND_BIT);                                              // set IRSND_BIT to low
+        IRSND_DDR |= (1<<IRSND_BIT);                                                // set IRSND_BIT to output
 
-    XMEGA_Timer.PER = 0xFFFF;    //Topwert
-    XMEGA_Timer.CTRLB |= TC_WGMODE_FRQ_gc;//Modus: Frequenz entspricht CTC
+        XMEGA_Timer.PER = 0xFFFF; //Topwert
+        XMEGA_Timer.CTRLB |= TC_WGMODE_FRQ_gc; //Modus: Frequenz entspricht CTC
 
 #    if AVR_PRESCALER == 8
-    XMEGA_Timer.CTRLA |= TC_CLKSEL_DIV8_gc;                                     // start Timer  prescaler = 8
+        XMEGA_Timer.CTRLA |= TC_CLKSEL_DIV8_gc;                                     // start Timer  prescaler = 8
 #    else
-    XMEGA_Timer.CTRLA |= TC_CLKSEL_DIV1_gc;                                     // start Timer  prescaler = 1
+        XMEGA_Timer.CTRLA |= TC_CLKSEL_DIV1_gc;                                     // start Timer  prescaler = 1
 #    endif
 
 # else                                                                              // AVR
-    IRSND_PORT &= ~(1<<IRSND_BIT);                                              // set IRSND_BIT to low
-    IRSND_DDR |= (1<<IRSND_BIT);// set IRSND_BIT to output
+        IRSND_PORT &= ~(1<<IRSND_BIT);                                              // set IRSND_BIT to low
+        IRSND_DDR |= (1<<IRSND_BIT);                                                // set IRSND_BIT to output
 
 #    if   IRSND_OCx == IRSND_OC2                                                    // use OC2
-    TCCR2 = (1<<WGM21);                                                         // CTC mode
+        TCCR2 = (1<<WGM21);                                                         // CTC mode
 #       if AVR_PRESCALER == 8
-    TCCR2 |= (1<<CS21);                                                       // start Timer 2, prescaler = 8
+          TCCR2 |= (1<<CS21);                                                       // start Timer 2, prescaler = 8
 #       else
-    TCCR2 |= (1<<CS20);                                                       // start Timer 2, prescaler = 1
+          TCCR2 |= (1<<CS20);                                                       // start Timer 2, prescaler = 1
 #       endif
 #    elif IRSND_OCx == IRSND_OC2A || IRSND_OCx == IRSND_OC2B                        // use OC2A or OC2B
-    TCCR2A = (1<<WGM21);                                                        // CTC mode
+        TCCR2A = (1<<WGM21);                                                        // CTC mode
 #       if AVR_PRESCALER == 8
-    TCCR2B = (1<<CS21);                                                       // start Timer 2, prescaler = 8
+          TCCR2B = (1<<CS21);                                                       // start Timer 2, prescaler = 8
 #       else
-    TCCR2B = (1<<CS20);                                                       // start Timer 2, prescaler = 1
+          TCCR2B = (1<<CS20);                                                       // start Timer 2, prescaler = 1
 #       endif
 #    elif IRSND_OCx == IRSND_OC0                                                    // use OC0
-    TCCR0 = (1<<WGM01);                                                         // CTC mode
+        TCCR0 = (1<<WGM01);                                                         // CTC mode
 #       if AVR_PRESCALER == 8
-    TCCR0 |= (1<<CS01);                                                       // start Timer 0, prescaler = 8
+          TCCR0 |= (1<<CS01);                                                       // start Timer 0, prescaler = 8
 #       else
-    TCCR0 |= (1<<CS00);                                                       // start Timer 0, prescaler = 1
+          TCCR0 |= (1<<CS00);                                                       // start Timer 0, prescaler = 1
 #       endif
 #    elif IRSND_OCx == IRSND_OC0A || IRSND_OCx == IRSND_OC0B                        // use OC0A or OC0B
-    TCCR0A = (1<<WGM01);                                                        // CTC mode
+        TCCR0A = (1<<WGM01);                                                        // CTC mode
 #       if AVR_PRESCALER == 8
-    TCCR0B = (1<<CS01);                                                       // start Timer 0, prescaler = 8
+          TCCR0B = (1<<CS01);                                                       // start Timer 0, prescaler = 8
 #       else
-    TCCR0B = (1<<CS00);                                                       // start Timer 0, prescaler = 1
+          TCCR0B = (1<<CS00);                                                       // start Timer 0, prescaler = 1
 #       endif
 #    else
 #      error wrong value of IRSND_OCx
 #    endif
-    irsnd_set_freq (IRSND_FREQ_36_KHZ);                                         // default frequency
-#  endif // PIC_C18
+        irsnd_set_freq (IRSND_FREQ_36_KHZ);                                         // default frequency
+#  endif //PIC_C18
 #endif // ANALYZE
 }
 
@@ -989,16 +998,22 @@ irsnd_set_callback_ptr (void (*cb)(uint8_t))
 
 #endif // ARDUINO
 
-uint8_t irsnd_is_busy(void) {
+uint8_t
+irsnd_is_busy (void)
+{
     return irsnd_busy;
 }
 
-static uint16_t bitsrevervse(uint16_t x, uint8_t len) {
-    uint16_t xx = 0;
+static uint16_t
+bitsrevervse (uint16_t x, uint8_t len)
+{
+    uint16_t    xx = 0;
 
-    while (len) {
+    while(len)
+    {
         xx <<= 1;
-        if (x & 1) {
+        if (x & 1)
+        {
             xx |= 1;
         }
         x >>= 1;
@@ -1007,609 +1022,614 @@ static uint16_t bitsrevervse(uint16_t x, uint8_t len) {
     return xx;
 }
 
+
 #if IRSND_SUPPORT_SIRCS_PROTOCOL == 1
-static uint8_t sircs_additional_bitlen;
+static uint8_t  sircs_additional_bitlen;
 #endif // IRSND_SUPPORT_SIRCS_PROTOCOL == 1
 
 /*
  * @param  do_wait - wait for last command to have ended before sending. For Arduino: Additionally wait for sent command to have ended.
  */
-uint8_t irsnd_send_data(IRMP_DATA * irmp_data_p, uint8_t do_wait) {
+uint8_t
+irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
+{
 #if IRSND_SUPPORT_RECS80_PROTOCOL == 1
-    static uint8_t toggle_bit_recs80;
+    static uint8_t  toggle_bit_recs80;
 #endif
 #if IRSND_SUPPORT_RECS80EXT_PROTOCOL == 1
-    static uint8_t toggle_bit_recs80ext;
+    static uint8_t  toggle_bit_recs80ext;
 #endif
 #if IRSND_SUPPORT_RC5_PROTOCOL == 1
-    static uint8_t toggle_bit_rc5;
+    static uint8_t  toggle_bit_rc5;
 #endif
 #if IRSND_SUPPORT_RC6_PROTOCOL == 1 || IRSND_SUPPORT_RC6A_PROTOCOL == 1
-    static uint8_t toggle_bit_rc6;
+    static uint8_t  toggle_bit_rc6;
 #endif
 #if IRSND_SUPPORT_THOMSON_PROTOCOL == 1
-    static uint8_t toggle_bit_thomson;
+    static uint8_t  toggle_bit_thomson;
 #endif
-    uint16_t address;
-    uint16_t command;
+    uint16_t        address;
+    uint16_t        command;
 
-    if (do_wait) {
-        while (irsnd_busy) {
+    if (do_wait)
+    {
+        while (irsnd_busy)
+        {
             // wait for last command to have ended
         }
     }
-
     else if (irsnd_busy)
     {
         return (FALSE);
     }
 
-    irsnd_protocol = irmp_data_p->protocol;
-    irsnd_repeat = irmp_data_p->flags & IRSND_REPETITION_MASK;
+    irsnd_protocol  = irmp_data_p->protocol;
+    irsnd_repeat    = irmp_data_p->flags & IRSND_REPETITION_MASK;
 
-    switch (irsnd_protocol) {
-#if IRSND_SUPPORT_SIRCS_PROTOCOL == 1
-    case IRMP_SIRCS_PROTOCOL:
+    switch (irsnd_protocol)
     {
-        // uint8_t  sircs_additional_command_len;
-        uint8_t sircs_additional_address_len;
-
-        sircs_additional_bitlen = (irmp_data_p->address & 0xFF00) >> 8;// additional bitlen
-
-        if (sircs_additional_bitlen > 15 - SIRCS_MINIMUM_DATA_LEN)
+#if IRSND_SUPPORT_SIRCS_PROTOCOL == 1
+        case IRMP_SIRCS_PROTOCOL:
         {
-            // sircs_additional_command_len = 15 - SIRCS_MINIMUM_DATA_LEN;
-            sircs_additional_address_len = sircs_additional_bitlen - (15 - SIRCS_MINIMUM_DATA_LEN);
-        }
-        else
-        {
-            // sircs_additional_command_len = sircs_additional_bitlen;
-            sircs_additional_address_len = 0;
-        }
+            // uint8_t  sircs_additional_command_len;
+            uint8_t  sircs_additional_address_len;
 
-        command = bitsrevervse (irmp_data_p->command, 15);
+            sircs_additional_bitlen = (irmp_data_p->address & 0xFF00) >> 8;                             // additional bitlen
 
-        irsnd_buffer[0] = (command & 0x7F80) >> 7;                                                  // CCCCCCCC
-        irsnd_buffer[1] = (command & 0x007F) << 1;// CCCC****
+            if (sircs_additional_bitlen > 15 - SIRCS_MINIMUM_DATA_LEN)
+            {
+                // sircs_additional_command_len = 15 - SIRCS_MINIMUM_DATA_LEN;
+                sircs_additional_address_len = sircs_additional_bitlen - (15 - SIRCS_MINIMUM_DATA_LEN);
+            }
+            else
+            {
+                // sircs_additional_command_len = sircs_additional_bitlen;
+                sircs_additional_address_len = 0;
+            }
 
-        if (sircs_additional_address_len > 0)
-        {
-            address = bitsrevervse (irmp_data_p->address, 5);
-            irsnd_buffer[1] |= (address & 0x0010) >> 4;
-            irsnd_buffer[2] = (address & 0x000F) << 4;
+            command = bitsrevervse (irmp_data_p->command, 15);
+
+            irsnd_buffer[0] = (command & 0x7F80) >> 7;                                                  // CCCCCCCC
+            irsnd_buffer[1] = (command & 0x007F) << 1;                                                  // CCCC****
+
+            if (sircs_additional_address_len > 0)
+            {
+                address = bitsrevervse (irmp_data_p->address, 5);
+                irsnd_buffer[1] |= (address & 0x0010) >> 4;
+                irsnd_buffer[2] =  (address & 0x000F) << 4;
+            }
+            irsnd_busy      = TRUE;
+            break;
         }
-        irsnd_busy = TRUE;
-        break;
-    }
 #endif
 #if IRSND_SUPPORT_NEC_PROTOCOL == 1
-    case IRMP_APPLE_PROTOCOL:
-    {
-        command = irmp_data_p->command | (irmp_data_p->address << 8);                // store address as ID in upper byte of command
-        address = 0x87EE;// set fixed NEC-lookalike address (customer ID of apple)
+        case IRMP_APPLE_PROTOCOL:
+        {
+            command = irmp_data_p->command | (irmp_data_p->address << 8);                               // store address as ID in upper byte of command
+            address = 0x87EE;                                                                           // set fixed NEC-lookalike address (customer ID of apple)
 
-        address = bitsrevervse (address, NEC_ADDRESS_LEN);
-        command = bitsrevervse (command, NEC_COMMAND_LEN);
+            address = bitsrevervse (address, NEC_ADDRESS_LEN);
+            command = bitsrevervse (command, NEC_COMMAND_LEN);
 
-        irsnd_protocol = IRMP_NEC_PROTOCOL;// APPLE protocol is NEC with id instead of inverted command
+            irsnd_protocol = IRMP_NEC_PROTOCOL;                                                         // APPLE protocol is NEC with id instead of inverted command
 
-        irsnd_buffer[0] = (address & 0xFF00) >> 8;// AAAAAAAA
-        irsnd_buffer[1] = (address & 0x00FF);// AAAAAAAA
-        irsnd_buffer[2] = (command & 0xFF00) >> 8;// CCCCCCCC
-        irsnd_buffer[3] = 0x8B;// 10001011 (id)
-        irsnd_busy = TRUE;
-        break;
-    }
-    case IRMP_NEC_PROTOCOL:
-    {
-        address = bitsrevervse (irmp_data_p->address, NEC_ADDRESS_LEN);
-        command = bitsrevervse (irmp_data_p->command, NEC_COMMAND_LEN);
+            irsnd_buffer[0] = (address & 0xFF00) >> 8;                                                          // AAAAAAAA
+            irsnd_buffer[1] = (address & 0x00FF);                                                               // AAAAAAAA
+            irsnd_buffer[2] = (command & 0xFF00) >> 8;                                                          // CCCCCCCC
+            irsnd_buffer[3] = 0x8B;                                                                             // 10001011 (id)
+            irsnd_busy      = TRUE;
+            break;
+        }
+        case IRMP_NEC_PROTOCOL:
+        {
+            address = bitsrevervse (irmp_data_p->address, NEC_ADDRESS_LEN);
+            command = bitsrevervse (irmp_data_p->command, NEC_COMMAND_LEN);
 
-        irsnd_buffer[0] = (address & 0xFF00) >> 8;                                                          // AAAAAAAA
-        irsnd_buffer[1] = (address & 0x00FF);// AAAAAAAA
-        irsnd_buffer[2] = (command & 0xFF00) >> 8;// CCCCCCCC
-        irsnd_buffer[3] = ~((command & 0xFF00) >> 8);// cccccccc
-        irsnd_busy = TRUE;
-        break;
-    }
-    case IRMP_ONKYO_PROTOCOL:
-    {
-        address = bitsrevervse (irmp_data_p->address, NEC_ADDRESS_LEN);
-        command = bitsrevervse (irmp_data_p->command, NEC_COMMAND_LEN);
+            irsnd_buffer[0] = (address & 0xFF00) >> 8;                                                          // AAAAAAAA
+            irsnd_buffer[1] = (address & 0x00FF);                                                               // AAAAAAAA
+            irsnd_buffer[2] = (command & 0xFF00) >> 8;                                                          // CCCCCCCC
+            irsnd_buffer[3] = ~((command & 0xFF00) >> 8);                                                       // cccccccc
+            irsnd_busy      = TRUE;
+            break;
+        }
+        case IRMP_ONKYO_PROTOCOL:
+        {
+            address = bitsrevervse (irmp_data_p->address, NEC_ADDRESS_LEN);
+            command = bitsrevervse (irmp_data_p->command, NEC_COMMAND_LEN);
 
-        irsnd_buffer[0] = (address & 0xFF00) >> 8;                                                          // AAAAAAAA
-        irsnd_buffer[1] = (address & 0x00FF);// AAAAAAAA
-        irsnd_buffer[2] = (command & 0xFF00) >> 8;// CCCCCCCC
-        irsnd_buffer[3] = (command & 0x00FF);// CCCCCCCC
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = (address & 0xFF00) >> 8;                                                          // AAAAAAAA
+            irsnd_buffer[1] = (address & 0x00FF);                                                               // AAAAAAAA
+            irsnd_buffer[2] = (command & 0xFF00) >> 8;                                                          // CCCCCCCC
+            irsnd_buffer[3] = (command & 0x00FF);                                                               // CCCCCCCC
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_NEC16_PROTOCOL == 1
-    case IRMP_NEC16_PROTOCOL:
-    {
-        address = bitsrevervse (irmp_data_p->address, NEC16_ADDRESS_LEN);
-        command = bitsrevervse (irmp_data_p->command, NEC16_COMMAND_LEN);
+        case IRMP_NEC16_PROTOCOL:
+        {
+            address = bitsrevervse (irmp_data_p->address, NEC16_ADDRESS_LEN);
+            command = bitsrevervse (irmp_data_p->command, NEC16_COMMAND_LEN);
 
-        irsnd_buffer[0] = (address & 0x00FF);                                                               // AAAAAAAA
-        irsnd_buffer[1] = (command & 0x00FF);// CCCCCCCC
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = (address & 0x00FF);                                                               // AAAAAAAA
+            irsnd_buffer[1] = (command & 0x00FF);                                                               // CCCCCCCC
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_NEC42_PROTOCOL == 1
-    case IRMP_NEC42_PROTOCOL:
-    {
-        address = bitsrevervse (irmp_data_p->address, NEC42_ADDRESS_LEN);
-        command = bitsrevervse (irmp_data_p->command, NEC42_COMMAND_LEN);
+        case IRMP_NEC42_PROTOCOL:
+        {
+            address = bitsrevervse (irmp_data_p->address, NEC42_ADDRESS_LEN);
+            command = bitsrevervse (irmp_data_p->command, NEC42_COMMAND_LEN);
 
-        irsnd_buffer[0] = ( (address & 0x1FE0) >> 5);                                                       // AAAAAAAA
-        irsnd_buffer[1] = ( (address & 0x001F) << 3) | ((~address & 0x1C00) >> 10);// AAAAAaaa
-        irsnd_buffer[2] = ((~address & 0x03FC) >> 2);// aaaaaaaa
-        irsnd_buffer[3] = ((~address & 0x0003) << 6) | ( (command & 0x00FC) >> 2);// aaCCCCCC
-        irsnd_buffer[4] = ( (command & 0x0003) << 6) | ((~command & 0x00FC) >> 2);// CCcccccc
-        irsnd_buffer[5] = ((~command & 0x0003) << 6);// cc
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = ( (address & 0x1FE0) >> 5);                                                       // AAAAAAAA
+            irsnd_buffer[1] = ( (address & 0x001F) << 3) | ((~address & 0x1C00) >> 10);                         // AAAAAaaa
+            irsnd_buffer[2] =                              ((~address & 0x03FC) >> 2);                          // aaaaaaaa
+            irsnd_buffer[3] = ((~address & 0x0003) << 6) | ( (command & 0x00FC) >> 2);                          // aaCCCCCC
+            irsnd_buffer[4] = ( (command & 0x0003) << 6) | ((~command & 0x00FC) >> 2);                          // CCcccccc
+            irsnd_buffer[5] = ((~command & 0x0003) << 6);                                                       // cc
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_LGAIR_PROTOCOL == 1
-    case IRMP_LGAIR_PROTOCOL:
-    {
-        address = irmp_data_p->address;
-        command = irmp_data_p->command;
+        case IRMP_LGAIR_PROTOCOL:
+        {
+            address = irmp_data_p->address;
+            command = irmp_data_p->command;
 
-        irsnd_buffer[0] = ( (address & 0x00FF));                                                            // AAAAAAAA
-        irsnd_buffer[1] = ( (command & 0xFF00) >> 8);// CCCCCCCC
-        irsnd_buffer[2] = ( (command & 0x00FF));     // CCCCCCCC
-        irsnd_buffer[3] = (( ((command & 0xF000) >> 12) +// checksum
-                        ((command & 0x0F00) >> 8) +
-                        ((command & 0x00F0) >>4 ) +
-                        ((command & 0x000F))) & 0x000F) << 4;
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = ( (address & 0x00FF));                                                            // AAAAAAAA
+            irsnd_buffer[1] = ( (command & 0xFF00) >> 8);                                                       // CCCCCCCC
+            irsnd_buffer[2] = ( (command & 0x00FF));                                                            // CCCCCCCC
+            irsnd_buffer[3] = (( ((command & 0xF000) >> 12) +                                                   // checksum
+                                 ((command & 0x0F00) >> 8) +
+                                 ((command & 0x00F0) >>4 ) +
+                                 ((command & 0x000F))) & 0x000F) << 4;
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_SAMSUNG_PROTOCOL == 1
-    case IRMP_SAMSUNG_PROTOCOL:
-    {
-        address = bitsrevervse (irmp_data_p->address, SAMSUNG_ADDRESS_LEN);
-        command = bitsrevervse (irmp_data_p->command, SAMSUNG_COMMAND_LEN);
+        case IRMP_SAMSUNG_PROTOCOL:
+        {
+            address = bitsrevervse (irmp_data_p->address, SAMSUNG_ADDRESS_LEN);
+            command = bitsrevervse (irmp_data_p->command, SAMSUNG_COMMAND_LEN);
 
-        irsnd_buffer[0] = (address & 0xFF00) >> 8;                                                         // AAAAAAAA
-        irsnd_buffer[1] = (address & 0x00FF);// AAAAAAAA
-        irsnd_buffer[2] = (command & 0x00F0) | ((command & 0xF000) >> 12);// IIIICCCC
-        irsnd_buffer[3] = ((command & 0x0F00) >> 4) | ((~(command & 0xF000) >> 12) & 0x0F);// CCCCcccc
-        irsnd_buffer[4] = (~(command & 0x0F00) >> 4) & 0xF0;// cccc0000
-        irsnd_busy = TRUE;
-        break;
-    }
-    case IRMP_SAMSUNG32_PROTOCOL:
-    {
-        address = bitsrevervse (irmp_data_p->address, SAMSUNG_ADDRESS_LEN);
-        command = bitsrevervse (irmp_data_p->command, SAMSUNG32_COMMAND_LEN);
+            irsnd_buffer[0] =  (address & 0xFF00) >> 8;                                                         // AAAAAAAA
+            irsnd_buffer[1] =  (address & 0x00FF);                                                              // AAAAAAAA
+            irsnd_buffer[2] =  (command & 0x00F0) | ((command & 0xF000) >> 12);                                 // IIIICCCC
+            irsnd_buffer[3] = ((command & 0x0F00) >> 4) | ((~(command & 0xF000) >> 12) & 0x0F);                 // CCCCcccc
+            irsnd_buffer[4] = (~(command & 0x0F00) >> 4) & 0xF0;                                                // cccc0000
+            irsnd_busy      = TRUE;
+            break;
+        }
+        case IRMP_SAMSUNG32_PROTOCOL:
+        {
+            address = bitsrevervse (irmp_data_p->address, SAMSUNG_ADDRESS_LEN);
+            command = bitsrevervse (irmp_data_p->command, SAMSUNG32_COMMAND_LEN);
 
-        irsnd_buffer[0] = (address & 0xFF00) >> 8;                                                          // AAAAAAAA
-        irsnd_buffer[1] = (address & 0x00FF);// AAAAAAAA
-        irsnd_buffer[2] = (command & 0xFF00) >> 8;// CCCCCCCC
-        irsnd_buffer[3] = (command & 0x00FF);// CCCCCCCC
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = (address & 0xFF00) >> 8;                                                          // AAAAAAAA
+            irsnd_buffer[1] = (address & 0x00FF);                                                               // AAAAAAAA
+            irsnd_buffer[2] = (command & 0xFF00) >> 8;                                                          // CCCCCCCC
+            irsnd_buffer[3] = (command & 0x00FF);                                                               // CCCCCCCC
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_SAMSUNG48_PROTOCOL == 1
-    case IRMP_SAMSUNG48_PROTOCOL:
-    {
-        address = bitsrevervse (irmp_data_p->address, SAMSUNG_ADDRESS_LEN);
-        command = bitsrevervse (irmp_data_p->command, 16);
+        case IRMP_SAMSUNG48_PROTOCOL:
+        {
+            address = bitsrevervse (irmp_data_p->address, SAMSUNG_ADDRESS_LEN);
+            command = bitsrevervse (irmp_data_p->command, 16);
 
-        irsnd_buffer[0] = (address & 0xFF00) >> 8;                                                          // AAAAAAAA
-        irsnd_buffer[1] = (address & 0x00FF);// AAAAAAAA
-        irsnd_buffer[2] = ((command & 0xFF00) >> 8);// CCCCCCCC
-        irsnd_buffer[3] = ~((command & 0xFF00) >> 8);// cccccccc
-        irsnd_buffer[4] = (command & 0x00FF);// CCCCCCCC
-        irsnd_buffer[5] = ~(command & 0x00FF);// cccccccc
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = (address & 0xFF00) >> 8;                                                          // AAAAAAAA
+            irsnd_buffer[1] = (address & 0x00FF);                                                               // AAAAAAAA
+            irsnd_buffer[2] = ((command & 0xFF00) >> 8);                                                        // CCCCCCCC
+            irsnd_buffer[3] = ~((command & 0xFF00) >> 8);                                                       // cccccccc
+            irsnd_buffer[4] = (command & 0x00FF);                                                               // CCCCCCCC
+            irsnd_buffer[5] = ~(command & 0x00FF);                                                              // cccccccc
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_MATSUSHITA_PROTOCOL == 1
-    case IRMP_MATSUSHITA_PROTOCOL:
-    {
-        address = bitsrevervse (irmp_data_p->address, MATSUSHITA_ADDRESS_LEN);
-        command = bitsrevervse (irmp_data_p->command, MATSUSHITA_COMMAND_LEN);
+        case IRMP_MATSUSHITA_PROTOCOL:
+        {
+            address = bitsrevervse (irmp_data_p->address, MATSUSHITA_ADDRESS_LEN);
+            command = bitsrevervse (irmp_data_p->command, MATSUSHITA_COMMAND_LEN);
 
-        irsnd_buffer[0] = (command & 0x0FF0) >> 4;                                                          // CCCCCCCC
-        irsnd_buffer[1] = ((command & 0x000F) << 4) | ((address & 0x0F00) >> 8);// CCCCAAAA
-        irsnd_buffer[2] = (address & 0x00FF);// AAAAAAAA
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = (command & 0x0FF0) >> 4;                                                          // CCCCCCCC
+            irsnd_buffer[1] = ((command & 0x000F) << 4) | ((address & 0x0F00) >> 8);                            // CCCCAAAA
+            irsnd_buffer[2] = (address & 0x00FF);                                                               // AAAAAAAA
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_TECHNICS_PROTOCOL == 1
-    case IRMP_TECHNICS_PROTOCOL:
-    {
-        command = bitsrevervse (irmp_data_p->command, TECHNICS_COMMAND_LEN);
+        case IRMP_TECHNICS_PROTOCOL:
+        {
+            command = bitsrevervse (irmp_data_p->command, TECHNICS_COMMAND_LEN);
 
-        irsnd_buffer[0] = (command & 0x07FC) >> 3;                                                          // CCCCCCCC
-        irsnd_buffer[1] = ((command & 0x0007) << 5) | ((~command & 0x07C0) >> 6);// CCCccccc
-        irsnd_buffer[2] = (~command & 0x003F) << 2;// cccccc
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = (command & 0x07FC) >> 3;                                                          // CCCCCCCC
+            irsnd_buffer[1] = ((command & 0x0007) << 5) | ((~command & 0x07C0) >> 6);                           // CCCccccc
+            irsnd_buffer[2] = (~command & 0x003F) << 2;                                                         // cccccc
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_KASEIKYO_PROTOCOL == 1
-    case IRMP_KASEIKYO_PROTOCOL:
-    {
-        uint8_t xor_value;
-        uint16_t genre2;
+        case IRMP_KASEIKYO_PROTOCOL:
+        {
+            uint8_t xor_value;
+            uint16_t genre2;
 
-        address = bitsrevervse (irmp_data_p->address, KASEIKYO_ADDRESS_LEN);
-        command = bitsrevervse (irmp_data_p->command, KASEIKYO_COMMAND_LEN + 4);
-        genre2 = bitsrevervse ((irmp_data_p->flags & ~IRSND_REPETITION_MASK) >> 4, 4);
+            address = bitsrevervse (irmp_data_p->address, KASEIKYO_ADDRESS_LEN);
+            command = bitsrevervse (irmp_data_p->command, KASEIKYO_COMMAND_LEN + 4);
+            genre2 = bitsrevervse ((irmp_data_p->flags & ~IRSND_REPETITION_MASK) >> 4, 4);
 
-        xor_value = ((address & 0x000F) ^ ((address & 0x00F0) >> 4) ^ ((address & 0x0F00) >> 8) ^ ((address & 0xF000) >> 12)) & 0x0F;
+            xor_value = ((address & 0x000F) ^ ((address & 0x00F0) >> 4) ^ ((address & 0x0F00) >> 8) ^ ((address & 0xF000) >> 12)) & 0x0F;
 
-        irsnd_buffer[0] = (address & 0xFF00) >> 8;                                                          // AAAAAAAA
-        irsnd_buffer[1] = (address & 0x00FF);// AAAAAAAA
-        irsnd_buffer[2] = xor_value << 4 | (command & 0x000F);// XXXXCCCC
-        irsnd_buffer[3] = (genre2 << 4) | (command & 0xF000) >> 12;// ggggCCCC
-        irsnd_buffer[4] = (command & 0x0FF0) >> 4;// CCCCCCCC
+            irsnd_buffer[0] = (address & 0xFF00) >> 8;                                                          // AAAAAAAA
+            irsnd_buffer[1] = (address & 0x00FF);                                                               // AAAAAAAA
+            irsnd_buffer[2] = xor_value << 4 | (command & 0x000F);                                              // XXXXCCCC
+            irsnd_buffer[3] = (genre2 << 4) | (command & 0xF000) >> 12;                                         // ggggCCCC
+            irsnd_buffer[4] = (command & 0x0FF0) >> 4;                                                          // CCCCCCCC
 
-        xor_value = irsnd_buffer[2] ^ irsnd_buffer[3] ^ irsnd_buffer[4];
+            xor_value = irsnd_buffer[2] ^ irsnd_buffer[3] ^ irsnd_buffer[4];
 
-        irsnd_buffer[5] = xor_value;
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[5] = xor_value;
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_PANASONIC_PROTOCOL == 1
-    case IRMP_PANASONIC_PROTOCOL:
-    {
-        address = bitsrevervse (irmp_data_p->address, PANASONIC_ADDRESS_LEN);
-        command = bitsrevervse (irmp_data_p->command, PANASONIC_COMMAND_LEN);
+        case IRMP_PANASONIC_PROTOCOL:
+        {
+            address = bitsrevervse (irmp_data_p->address, PANASONIC_ADDRESS_LEN);
+            command = bitsrevervse (irmp_data_p->command, PANASONIC_COMMAND_LEN);
 
-        irsnd_buffer[0] = 0x40;                                                                             // 01000000
-        irsnd_buffer[1] = 0x04;// 00000100
-        irsnd_buffer[2] = 0x01;// 00000001
-        irsnd_buffer[3] = (address & 0xFF00) >> 8;// AAAAAAAA
-        irsnd_buffer[4] = (address & 0x00FF);// AAAAAAAA
-        irsnd_buffer[5] = (command & 0xFF00) >> 8;// CCCCCCCC
-        irsnd_buffer[6] = (command & 0x00FF);// CCCCCCCC
+            irsnd_buffer[0] = 0x40;                                                                             // 01000000
+            irsnd_buffer[1] = 0x04;                                                                             // 00000100
+            irsnd_buffer[2] = 0x01;                                                                             // 00000001
+            irsnd_buffer[3] = (address & 0xFF00) >> 8;                                                          // AAAAAAAA
+            irsnd_buffer[4] = (address & 0x00FF);                                                               // AAAAAAAA
+            irsnd_buffer[5] = (command & 0xFF00) >> 8;                                                          // CCCCCCCC
+            irsnd_buffer[6] = (command & 0x00FF);                                                               // CCCCCCCC
 
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL == 1
-    case IRMP_MITSU_HEAVY_PROTOCOL:
-    {
-        address = irmp_data_p->address;
-        command = irmp_data_p->command;
+        case IRMP_MITSU_HEAVY_PROTOCOL:
+        {
+            address = irmp_data_p->address;
+            command = irmp_data_p->command;
 
-        irsnd_buffer[0] = 0x4A;
-        irsnd_buffer[1] = 0x75;
-        irsnd_buffer[2] = 0xC3;
-        irsnd_buffer[3] = 0x64;
-        irsnd_buffer[4] = 0x9B;
-        irsnd_buffer[5] = ~(address & 0xFF00) >> 8;
-        irsnd_buffer[6] = (address & 0xFF00) >> 8;
-        irsnd_buffer[7] = ~(address & 0x00FF);
-        irsnd_buffer[8] = (address & 0x00FF);
-        irsnd_buffer[9] = ~(command & 0x00FF);
-        irsnd_buffer[10] = (command & 0x00FF);
+            irsnd_buffer[0] = 0x4A;
+            irsnd_buffer[1] = 0x75;
+            irsnd_buffer[2] = 0xC3;
+            irsnd_buffer[3] = 0x64;
+            irsnd_buffer[4] = 0x9B;
+            irsnd_buffer[5] = ~(address & 0xFF00) >> 8;
+            irsnd_buffer[6] = (address & 0xFF00) >> 8;
+            irsnd_buffer[7] = ~(address & 0x00FF);
+            irsnd_buffer[8] = (address & 0x00FF);
+            irsnd_buffer[9] = ~(command & 0x00FF);
+            irsnd_buffer[10] = (command & 0x00FF);
 
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_RECS80_PROTOCOL == 1
-    case IRMP_RECS80_PROTOCOL:
-    {
-        toggle_bit_recs80 = toggle_bit_recs80 ? 0x00 : 0x80;
+        case IRMP_RECS80_PROTOCOL:
+        {
+            toggle_bit_recs80 = toggle_bit_recs80 ? 0x00 : 0x80;
 
-        irsnd_buffer[0] = toggle_bit_recs80 | ((irmp_data_p->address & 0x000F) << 4) |
-        ((irmp_data_p->command & 0x003C) >> 2);                                           // TAAACCCC
-        irsnd_buffer[1] = (irmp_data_p->command & 0x03) << 6;// CC000000
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = toggle_bit_recs80 | ((irmp_data_p->address & 0x000F) << 4) |
+                              ((irmp_data_p->command & 0x003C) >> 2);                                           // TAAACCCC
+            irsnd_buffer[1] = (irmp_data_p->command & 0x03) << 6;                                               // CC000000
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_RECS80EXT_PROTOCOL == 1
-    case IRMP_RECS80EXT_PROTOCOL:
-    {
-        toggle_bit_recs80ext = toggle_bit_recs80ext ? 0x00 : 0x40;
+        case IRMP_RECS80EXT_PROTOCOL:
+        {
+            toggle_bit_recs80ext = toggle_bit_recs80ext ? 0x00 : 0x40;
 
-        irsnd_buffer[0] = 0x80 | toggle_bit_recs80ext | ((irmp_data_p->address & 0x000F) << 2) |
-        ((irmp_data_p->command & 0x0030) >> 4);                                         // STAAAACC
-        irsnd_buffer[1] = (irmp_data_p->command & 0x0F) << 4;// CCCC0000
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = 0x80 | toggle_bit_recs80ext | ((irmp_data_p->address & 0x000F) << 2) |
+                                ((irmp_data_p->command & 0x0030) >> 4);                                         // STAAAACC
+            irsnd_buffer[1] = (irmp_data_p->command & 0x0F) << 4;                                               // CCCC0000
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_RC5_PROTOCOL == 1
-    case IRMP_RC5_PROTOCOL:
-    {
-        toggle_bit_rc5 = toggle_bit_rc5 ? 0x00 : 0x40;
+        case IRMP_RC5_PROTOCOL:
+        {
+            toggle_bit_rc5 = toggle_bit_rc5 ? 0x00 : 0x40;
 
-        irsnd_buffer[0] = ((irmp_data_p->command & 0x40) ? 0x00 : 0x80) | toggle_bit_rc5 |
-        ((irmp_data_p->address & 0x001F) << 1) | ((irmp_data_p->command & 0x20) >> 5);  // CTAAAAAC
-        irsnd_buffer[1] = (irmp_data_p->command & 0x1F) << 3;// CCCCC000
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = ((irmp_data_p->command & 0x40) ? 0x00 : 0x80) | toggle_bit_rc5 |
+                                ((irmp_data_p->address & 0x001F) << 1) | ((irmp_data_p->command & 0x20) >> 5);  // CTAAAAAC
+            irsnd_buffer[1] = (irmp_data_p->command & 0x1F) << 3;                                               // CCCCC000
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_RC6_PROTOCOL == 1
-    case IRMP_RC6_PROTOCOL:
-    {
-        toggle_bit_rc6 = toggle_bit_rc6 ? 0x00 : 0x08;
+        case IRMP_RC6_PROTOCOL:
+        {
+            toggle_bit_rc6 = toggle_bit_rc6 ? 0x00 : 0x08;
 
-        irsnd_buffer[0] = 0x80 | toggle_bit_rc6 | ((irmp_data_p->address & 0x00E0) >> 5);                   // 1MMMTAAA, MMM = 000
-        irsnd_buffer[1] = ((irmp_data_p->address & 0x001F) << 3) | ((irmp_data_p->command & 0xE0) >> 5);// AAAAACCC
-        irsnd_buffer[2] = (irmp_data_p->command & 0x1F) << 3;// CCCCC
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = 0x80 | toggle_bit_rc6 | ((irmp_data_p->address & 0x00E0) >> 5);                   // 1MMMTAAA, MMM = 000
+            irsnd_buffer[1] = ((irmp_data_p->address & 0x001F) << 3) | ((irmp_data_p->command & 0xE0) >> 5);    // AAAAACCC
+            irsnd_buffer[2] = (irmp_data_p->command & 0x1F) << 3;                                               // CCCCC
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_RC6A_PROTOCOL == 1
-    case IRMP_RC6A_PROTOCOL:
-    {
-        toggle_bit_rc6 = toggle_bit_rc6 ? 0x00 : 0x08;
+        case IRMP_RC6A_PROTOCOL:
+        {
+            toggle_bit_rc6 = toggle_bit_rc6 ? 0x00 : 0x08;
 
-        irsnd_buffer[0] = 0x80 | 0x60 | ((irmp_data_p->address & 0x3000) >> 12);                              // 1MMMT0AA, MMM = 110
-        irsnd_buffer[1] = ((irmp_data_p->address & 0x0FFF) >> 4);// AAAAAAAA
-        irsnd_buffer[2] = ((irmp_data_p->address & 0x000F) << 4) | ((irmp_data_p->command & 0xF000) >> 12) | toggle_bit_rc6;// AAAACCCC
-        irsnd_buffer[3] = (irmp_data_p->command & 0x0FF0) >> 4;// CCCCCCCC
-        irsnd_buffer[4] = (irmp_data_p->command & 0x000F) << 4;// CCCC
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = 0x80 | 0x60 | ((irmp_data_p->address & 0x3000) >> 12);                                                // 1MMMT0AA, MMM = 110
+            irsnd_buffer[1] = ((irmp_data_p->address & 0x0FFF) >> 4) ;                                                              // AAAAAAAA
+            irsnd_buffer[2] = ((irmp_data_p->address & 0x000F) << 4) | ((irmp_data_p->command & 0xF000) >> 12) | toggle_bit_rc6;    // AAAACCCC
+            irsnd_buffer[3] = (irmp_data_p->command & 0x0FF0) >> 4;                                                                 // CCCCCCCC
+            irsnd_buffer[4] = (irmp_data_p->command & 0x000F) << 4;                                                                 // CCCC
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_DENON_PROTOCOL == 1
-    case IRMP_DENON_PROTOCOL:
-    {
-        irsnd_buffer[0] = ((irmp_data_p->address & 0x1F) << 3) | ((irmp_data_p->command & 0x0380) >> 7);    // AAAAACCC (1st frame)
-        irsnd_buffer[1] = (irmp_data_p->command & 0x7F) << 1;// CCCCCCC
-        irsnd_buffer[2] = ((irmp_data_p->address & 0x1F) << 3) | (((~irmp_data_p->command) & 0x0380) >> 7);// AAAAAccc (2nd frame)
-        irsnd_buffer[3] = (~(irmp_data_p->command) & 0x7F) << 1;// ccccccc
-        irsnd_busy = TRUE;
-        break;
-    }
+        case IRMP_DENON_PROTOCOL:
+        {
+            irsnd_buffer[0] = ((irmp_data_p->address & 0x1F) << 3) | ((irmp_data_p->command & 0x0380) >> 7);    // AAAAACCC (1st frame)
+            irsnd_buffer[1] = (irmp_data_p->command & 0x7F) << 1;                                               // CCCCCCC
+            irsnd_buffer[2] = ((irmp_data_p->address & 0x1F) << 3) | (((~irmp_data_p->command) & 0x0380) >> 7); // AAAAAccc (2nd frame)
+            irsnd_buffer[3] = (~(irmp_data_p->command) & 0x7F) << 1;                                            // ccccccc
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_THOMSON_PROTOCOL == 1
-    case IRMP_THOMSON_PROTOCOL:
-    {
-        toggle_bit_thomson = toggle_bit_thomson ? 0x00 : 0x08;
+        case IRMP_THOMSON_PROTOCOL:
+        {
+            toggle_bit_thomson = toggle_bit_thomson ? 0x00 : 0x08;
 
-        irsnd_buffer[0] = ((irmp_data_p->address & 0x0F) << 4) | toggle_bit_thomson | ((irmp_data_p->command & 0x0070) >> 4); // AAAATCCC (1st frame)
-        irsnd_buffer[1] = (irmp_data_p->command & 0x0F) << 4;// CCCC
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = ((irmp_data_p->address & 0x0F) << 4) | toggle_bit_thomson | ((irmp_data_p->command & 0x0070) >> 4);   // AAAATCCC (1st frame)
+            irsnd_buffer[1] = (irmp_data_p->command & 0x0F) << 4;                                                                   // CCCC
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_BOSE_PROTOCOL == 1
-    case IRMP_BOSE_PROTOCOL:
-    {
-        command = bitsrevervse (irmp_data_p->command, BOSE_COMMAND_LEN);
+        case IRMP_BOSE_PROTOCOL:
+        {
+            command = bitsrevervse (irmp_data_p->command, BOSE_COMMAND_LEN);
 
-        irsnd_buffer[0] = (command & 0xFF00) >> 8;                                                                      // CCCCCCCC
-        irsnd_buffer[1] = ~((command & 0xFF00) >> 8);// cccccccc
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = (command & 0xFF00) >> 8;                                                                      // CCCCCCCC
+            irsnd_buffer[1] = ~((command & 0xFF00) >> 8);                                                                   // cccccccc
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_NUBERT_PROTOCOL == 1
-    case IRMP_NUBERT_PROTOCOL:
-    {
-        irsnd_buffer[0] = irmp_data_p->command >> 2;                                                        // CCCCCCCC
-        irsnd_buffer[1] = (irmp_data_p->command & 0x0003) << 6;// CC000000
-        irsnd_busy = TRUE;
-        break;
-    }
+        case IRMP_NUBERT_PROTOCOL:
+        {
+            irsnd_buffer[0] = irmp_data_p->command >> 2;                                                        // CCCCCCCC
+            irsnd_buffer[1] = (irmp_data_p->command & 0x0003) << 6;                                             // CC000000
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_FAN_PROTOCOL == 1
-    case IRMP_FAN_PROTOCOL:
-    {
-        irsnd_buffer[0] = irmp_data_p->command >> 3;                                                        // CCCCCCCC
-        irsnd_buffer[1] = (irmp_data_p->command & 0x0007) << 5;// CCC00000
-        irsnd_busy = TRUE;
-        break;
-    }
+        case IRMP_FAN_PROTOCOL:
+        {
+            irsnd_buffer[0] = irmp_data_p->command >> 3;                                                        // CCCCCCCC
+            irsnd_buffer[1] = (irmp_data_p->command & 0x0007) << 5;                                             // CCC00000
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_SPEAKER_PROTOCOL == 1
-    case IRMP_SPEAKER_PROTOCOL:
-    {
-        irsnd_buffer[0] = irmp_data_p->command >> 2;                                                        // CCCCCCCC
-        irsnd_buffer[1] = (irmp_data_p->command & 0x0003) << 6;// CC000000
-        irsnd_busy = TRUE;
-        break;
-    }
+        case IRMP_SPEAKER_PROTOCOL:
+        {
+            irsnd_buffer[0] = irmp_data_p->command >> 2;                                                        // CCCCCCCC
+            irsnd_buffer[1] = (irmp_data_p->command & 0x0003) << 6;                                             // CC000000
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_BANG_OLUFSEN_PROTOCOL == 1
-    case IRMP_BANG_OLUFSEN_PROTOCOL:
-    {
-        irsnd_buffer[0] = irmp_data_p->command >> 11;                                                       // SXSCCCCC
-        irsnd_buffer[1] = irmp_data_p->command >> 3;// CCCCCCCC
-        irsnd_buffer[2] = (irmp_data_p->command & 0x0007) << 5;// CCC00000
-        irsnd_busy = TRUE;
-        break;
-    }
+        case IRMP_BANG_OLUFSEN_PROTOCOL:
+        {
+            irsnd_buffer[0] = irmp_data_p->command >> 11;                                                       // SXSCCCCC
+            irsnd_buffer[1] = irmp_data_p->command >> 3;                                                        // CCCCCCCC
+            irsnd_buffer[2] = (irmp_data_p->command & 0x0007) << 5;                                             // CCC00000
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_GRUNDIG_PROTOCOL == 1
-    case IRMP_GRUNDIG_PROTOCOL:
-    {
-        command = bitsrevervse (irmp_data_p->command, TELEFUNKEN_COMMAND_LEN);
+        case IRMP_GRUNDIG_PROTOCOL:
+        {
+            command = bitsrevervse (irmp_data_p->command, TELEFUNKEN_COMMAND_LEN);
 
-        irsnd_buffer[0] = 0xFF;                                                                             // S1111111 (1st frame)
-        irsnd_buffer[1] = 0xC0;// 11
-        irsnd_buffer[2] = 0x80 | (command >> 2);// SCCCCCCC (2nd frame)
-        irsnd_buffer[3] = (command << 6) & 0xC0;// CC
+            irsnd_buffer[0] = 0xFF;                                                                             // S1111111 (1st frame)
+            irsnd_buffer[1] = 0xC0;                                                                             // 11
+            irsnd_buffer[2] = 0x80 | (command >> 2);                                                            // SCCCCCCC (2nd frame)
+            irsnd_buffer[3] = (command << 6) & 0xC0;                                                            // CC
 
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_TELEFUNKEN_PROTOCOL == 1
-    case IRMP_TELEFUNKEN_PROTOCOL:
-    {
-        irsnd_buffer[0] = irmp_data_p->command >> 7;                                                        // CCCCCCCC
-        irsnd_buffer[1] = (irmp_data_p->command << 1) & 0xff;// CCCCCCC
+        case IRMP_TELEFUNKEN_PROTOCOL:
+        {
+            irsnd_buffer[0] = irmp_data_p->command >> 7;                                                        // CCCCCCCC
+            irsnd_buffer[1] = (irmp_data_p->command << 1) & 0xff;                                               // CCCCCCC
 
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_IR60_PROTOCOL == 1
-    case IRMP_IR60_PROTOCOL:
-    {
-        command = (bitsrevervse (0x7d, IR60_COMMAND_LEN) << 7) | bitsrevervse (irmp_data_p->command, IR60_COMMAND_LEN);
+        case IRMP_IR60_PROTOCOL:
+        {
+            command = (bitsrevervse (0x7d, IR60_COMMAND_LEN) << 7) | bitsrevervse (irmp_data_p->command, IR60_COMMAND_LEN);
 #if 0
-        irsnd_buffer[0] = command >> 6 | 0x01;                                                 // 1011111S (start instruction frame)
-        irsnd_buffer[1] = (command & 0x7F) << 1;// CCCCCCC_ (2nd frame)
+            irsnd_buffer[0] = command >> 6 | 0x01;                                                              // 1011111S (start instruction frame)
+            irsnd_buffer[1] = (command & 0x7F) << 1;                                                            // CCCCCCC_ (2nd frame)
 #else
-        irsnd_buffer[0] = ((command & 0x7F) << 1) | 0x01;                                                   // CCCCCCCS (1st frame)
-        irsnd_buffer[1] = command >> 6;// 1011111_ (start instruction frame)
+            irsnd_buffer[0] = ((command & 0x7F) << 1) | 0x01;                                                   // CCCCCCCS (1st frame)
+            irsnd_buffer[1] = command >> 6;                                                                     // 1011111_ (start instruction frame)
 #endif
 
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_NOKIA_PROTOCOL == 1
-    case IRMP_NOKIA_PROTOCOL:
-    {
-        address = bitsrevervse (irmp_data_p->address, NOKIA_ADDRESS_LEN);
-        command = bitsrevervse (irmp_data_p->command, NOKIA_COMMAND_LEN);
+        case IRMP_NOKIA_PROTOCOL:
+        {
+            address = bitsrevervse (irmp_data_p->address, NOKIA_ADDRESS_LEN);
+            command = bitsrevervse (irmp_data_p->command, NOKIA_COMMAND_LEN);
 
-        irsnd_buffer[0] = 0xBF;                                                                        // S0111111 (1st + 3rd frame)
-        irsnd_buffer[1] = 0xFF;// 11111111
-        irsnd_buffer[2] = 0x80;// 1
-        irsnd_buffer[3] = 0x80 | command >> 1;// SCCCCCCC (2nd frame)
-        irsnd_buffer[4] = (command << 7) | (address >> 1);// CAAAAAAA
-        irsnd_buffer[5] = (address << 7);// A
+            irsnd_buffer[0] = 0xBF;                                                                             // S0111111 (1st + 3rd frame)
+            irsnd_buffer[1] = 0xFF;                                                                             // 11111111
+            irsnd_buffer[2] = 0x80;                                                                             // 1
+            irsnd_buffer[3] = 0x80 | command >> 1;                                                              // SCCCCCCC (2nd frame)
+            irsnd_buffer[4] = (command << 7) | (address >> 1);                                                  // CAAAAAAA
+            irsnd_buffer[5] = (address << 7);                                                                   // A
 
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_SIEMENS_PROTOCOL == 1
-    case IRMP_SIEMENS_PROTOCOL:
-    {
-        irsnd_buffer[0] = ((irmp_data_p->address & 0x07FF) >> 3);                                           // AAAAAAAA
-        irsnd_buffer[1] = ((irmp_data_p->address & 0x0007) << 5) | ((irmp_data_p->command >> 5) & 0x1F);// AAACCCCC
-        irsnd_buffer[2] = ((irmp_data_p->command & 0x001F) << 3) | ((~irmp_data_p->command & 0x01) << 2);// CCCCCc
+        case IRMP_SIEMENS_PROTOCOL:
+        {
+            irsnd_buffer[0] = ((irmp_data_p->address & 0x07FF) >> 3);                                           // AAAAAAAA
+            irsnd_buffer[1] = ((irmp_data_p->address & 0x0007) << 5) | ((irmp_data_p->command >> 5) & 0x1F);    // AAACCCCC
+            irsnd_buffer[2] = ((irmp_data_p->command & 0x001F) << 3) | ((~irmp_data_p->command & 0x01) << 2);   // CCCCCc
 
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_RUWIDO_PROTOCOL == 1
-    case IRMP_RUWIDO_PROTOCOL:
-    {
-        irsnd_buffer[0] = ((irmp_data_p->address & 0x01FF) >> 1);                                           // AAAAAAAA
-        irsnd_buffer[1] = ((irmp_data_p->address & 0x0001) << 7) | ((irmp_data_p->command & 0x7F));// ACCCCCCC
-        irsnd_buffer[2] = ((~irmp_data_p->command & 0x01) << 7);// c
-        irsnd_busy = TRUE;
-        break;
-    }
+        case IRMP_RUWIDO_PROTOCOL:
+        {
+            irsnd_buffer[0] = ((irmp_data_p->address & 0x01FF) >> 1);                                           // AAAAAAAA
+            irsnd_buffer[1] = ((irmp_data_p->address & 0x0001) << 7) | ((irmp_data_p->command & 0x7F));         // ACCCCCCC
+            irsnd_buffer[2] = ((~irmp_data_p->command & 0x01) << 7);                                            // c
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_FDC_PROTOCOL == 1
-    case IRMP_FDC_PROTOCOL:
-    {
-        address = bitsrevervse (irmp_data_p->address, FDC_ADDRESS_LEN);
-        command = bitsrevervse (irmp_data_p->command, FDC_COMMAND_LEN);
+        case IRMP_FDC_PROTOCOL:
+        {
+            address = bitsrevervse (irmp_data_p->address, FDC_ADDRESS_LEN);
+            command = bitsrevervse (irmp_data_p->command, FDC_COMMAND_LEN);
 
-        irsnd_buffer[0] = (address & 0xFF);                                                                 // AAAAAAAA
-        irsnd_buffer[1] = 0;// 00000000
-        irsnd_buffer[2] = 0;// 0000RRRR
-        irsnd_buffer[3] = (command & 0xFF);// CCCCCCCC
-        irsnd_buffer[4] = ~(command & 0xFF);// cccccccc
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = (address & 0xFF);                                                                 // AAAAAAAA
+            irsnd_buffer[1] = 0;                                                                                // 00000000
+            irsnd_buffer[2] = 0;                                                                                // 0000RRRR
+            irsnd_buffer[3] = (command & 0xFF);                                                                 // CCCCCCCC
+            irsnd_buffer[4] = ~(command & 0xFF);                                                                // cccccccc
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_RCCAR_PROTOCOL == 1
-    case IRMP_RCCAR_PROTOCOL:
-    {
-        address = bitsrevervse (irmp_data_p->address, 2);                                        //                            A0 A1
-        command = bitsrevervse (irmp_data_p->command, RCCAR_COMMAND_LEN - 2);// D0 D1 D2 D3 D4 D5 D6 D7 C0 C1 V
+        case IRMP_RCCAR_PROTOCOL:
+        {
+            address = bitsrevervse (irmp_data_p->address, 2);                                                   //                            A0 A1
+            command = bitsrevervse (irmp_data_p->command, RCCAR_COMMAND_LEN - 2);                               // D0 D1 D2 D3 D4 D5 D6 D7 C0 C1 V
 
-        irsnd_buffer[0] = ((command & 0x06) << 5) | ((address & 0x0003) << 4) | ((command & 0x0780) >> 7);//          C0 C1 A0 A1 D0 D1 D2 D3
-        irsnd_buffer[1] = ((command & 0x78) << 1) | ((command & 0x0001) << 3);//          D4 D5 D6 D7 V  0  0  0
+            irsnd_buffer[0] = ((command & 0x06) << 5) | ((address & 0x0003) << 4) | ((command & 0x0780) >> 7);  //          C0 C1 A0 A1 D0 D1 D2 D3
+            irsnd_buffer[1] = ((command & 0x78) << 1) | ((command & 0x0001) << 3);                              //          D4 D5 D6 D7 V  0  0  0
 
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_JVC_PROTOCOL == 1
-    case IRMP_JVC_PROTOCOL:
-    {
-        address = bitsrevervse (irmp_data_p->address, JVC_ADDRESS_LEN);
-        command = bitsrevervse (irmp_data_p->command, JVC_COMMAND_LEN);
+        case IRMP_JVC_PROTOCOL:
+        {
+            address = bitsrevervse (irmp_data_p->address, JVC_ADDRESS_LEN);
+            command = bitsrevervse (irmp_data_p->command, JVC_COMMAND_LEN);
 
-        irsnd_buffer[0] = ((address & 0x000F) << 4) | (command & 0x0F00) >> 8;                              // AAAACCCC
-        irsnd_buffer[1] = (command & 0x00FF);// CCCCCCCC
+            irsnd_buffer[0] = ((address & 0x000F) << 4) | (command & 0x0F00) >> 8;                              // AAAACCCC
+            irsnd_buffer[1] = (command & 0x00FF);                                                               // CCCCCCCC
 
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_NIKON_PROTOCOL == 1
-    case IRMP_NIKON_PROTOCOL:
-    {
-        irsnd_buffer[0] = (irmp_data_p->command & 0x0003) << 6;                                             // CC
-        irsnd_busy = TRUE;
-        break;
-    }
+        case IRMP_NIKON_PROTOCOL:
+        {
+            irsnd_buffer[0] = (irmp_data_p->command & 0x0003) << 6;                                             // CC
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_LEGO_PROTOCOL == 1
-    case IRMP_LEGO_PROTOCOL:
-    {
-        uint8_t crc = 0x0F ^ ((irmp_data_p->command & 0x0F00) >> 8) ^ ((irmp_data_p->command & 0x00F0) >> 4) ^ (irmp_data_p->command & 0x000F);
+        case IRMP_LEGO_PROTOCOL:
+        {
+            uint8_t crc = 0x0F ^ ((irmp_data_p->command & 0x0F00) >> 8) ^ ((irmp_data_p->command & 0x00F0) >> 4) ^ (irmp_data_p->command & 0x000F);
 
-        irsnd_buffer[0] = (irmp_data_p->command & 0x0FF0) >> 4;                                             // CCCCCCCC
-        irsnd_buffer[1] = ((irmp_data_p->command & 0x000F) << 4) | crc;// CCCCcccc
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = (irmp_data_p->command & 0x0FF0) >> 4;                                             // CCCCCCCC
+            irsnd_buffer[1] = ((irmp_data_p->command & 0x000F) << 4) | crc;                                     // CCCCcccc
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_IRMP16_PROTOCOL == 1
-    case IRMP_IRMP16_PROTOCOL:
-    {
-        command = bitsrevervse (irmp_data_p->command, IRMP16_COMMAND_LEN);
+        case IRMP_IRMP16_PROTOCOL:
+        {
+            command = bitsrevervse (irmp_data_p->command, IRMP16_COMMAND_LEN);
 
-        irsnd_buffer[0] = (command & 0xFF00) >> 8;                                                          // CCCCCCCC
-        irsnd_buffer[1] = (command & 0x00FF);// CCCCCCCC
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_buffer[0] = (command & 0xFF00) >> 8;                                                          // CCCCCCCC
+            irsnd_buffer[1] = (command & 0x00FF);                                                               // CCCCCCCC
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_A1TVBOX_PROTOCOL == 1
-    case IRMP_A1TVBOX_PROTOCOL:
-    {
-        irsnd_buffer[0] = 0x80 | (irmp_data_p->address >> 2);                                               // 10AAAAAA
-        irsnd_buffer[1] = (irmp_data_p->address << 6) | (irmp_data_p->command >> 2);// AACCCCCC
-        irsnd_buffer[2] = (irmp_data_p->command << 6);// CC
+        case IRMP_A1TVBOX_PROTOCOL:
+        {
+            irsnd_buffer[0] = 0x80 | (irmp_data_p->address >> 2);                                               // 10AAAAAA
+            irsnd_buffer[1] = (irmp_data_p->address << 6) | (irmp_data_p->command >> 2);                        // AACCCCCC
+            irsnd_buffer[2] = (irmp_data_p->command << 6);                                                      // CC
 
-        irsnd_busy = TRUE;
-        break;
-    }
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_ROOMBA_PROTOCOL == 1
-    case IRMP_ROOMBA_PROTOCOL:
-    {
-        irsnd_buffer[0] = (irmp_data_p->command & 0x7F) << 1;                                               // CCCCCCC.
-        irsnd_busy = TRUE;
-        break;
-    }
+        case IRMP_ROOMBA_PROTOCOL:
+        {
+            irsnd_buffer[0] = (irmp_data_p->command & 0x7F) << 1;                                               // CCCCCCC.
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_PENTAX_PROTOCOL == 1
-    case IRMP_PENTAX_PROTOCOL:
-    {
-        irsnd_buffer[0] = (irmp_data_p->command & 0x3F) << 2;                                               // CCCCCC..
-        irsnd_busy = TRUE;
-        break;
-    }
+        case IRMP_PENTAX_PROTOCOL:
+        {
+            irsnd_buffer[0] = (irmp_data_p->command & 0x3F) << 2;                                               // CCCCCC..
+            irsnd_busy      = TRUE;
+            break;
+        }
 #endif
 #if IRSND_SUPPORT_ACP24_PROTOCOL == 1
 #       define ACP_SET_BIT(acp24_bitno, c, irmp_bitno)                                          \
@@ -1621,53 +1641,54 @@ uint8_t irsnd_send_data(IRMP_DATA * irmp_data_p, uint8_t do_wait) {
             }                                                                                   \
         } while (0)
 
-    case IRMP_ACP24_PROTOCOL:
-    {
-        uint16_t cmd = irmp_data_p->command;
-        uint8_t i;
-
-        address = bitsrevervse (irmp_data_p->address, ACP24_ADDRESS_LEN);
-
-        for (i = 0; i < 8; i++)
+        case IRMP_ACP24_PROTOCOL:
         {
-            irsnd_buffer[i] = 0x00;                                                                         // CCCCCCCC
+            uint16_t    cmd = irmp_data_p->command;
+            uint8_t     i;
+
+            address = bitsrevervse (irmp_data_p->address, ACP24_ADDRESS_LEN);
+
+            for (i = 0; i < 8; i++)
+            {
+                irsnd_buffer[i] = 0x00;                                                                         // CCCCCCCC
+            }
+
+            // ACP24-Frame:
+            //           1         2         3         4         5         6
+            // 0123456789012345678901234567890123456789012345678901234567890123456789
+            // N VVMMM    ? ???    t vmA x                 y                     TTTT
+            //
+            // irmp_data_p->command:
+            //
+            //         5432109876543210
+            //         NAVVvMMMmtxyTTTT
+
+            ACP_SET_BIT( 0, cmd, 15);
+            ACP_SET_BIT(24, cmd, 14);
+            ACP_SET_BIT( 2, cmd, 13);
+            ACP_SET_BIT( 3, cmd, 12);
+            ACP_SET_BIT(22, cmd, 11);
+            ACP_SET_BIT( 4, cmd, 10);
+            ACP_SET_BIT( 5, cmd,  9);
+            ACP_SET_BIT( 6, cmd,  8);
+            ACP_SET_BIT(23, cmd,  7);
+            ACP_SET_BIT(20, cmd,  6);
+            ACP_SET_BIT(26, cmd,  5);
+            ACP_SET_BIT(44, cmd,  4);
+            ACP_SET_BIT(66, cmd,  3);
+            ACP_SET_BIT(67, cmd,  2);
+            ACP_SET_BIT(68, cmd,  1);
+            ACP_SET_BIT(69, cmd,  0);
+
+            irsnd_busy      = TRUE;
+            break;
         }
-
-        // ACP24-Frame:
-        //           1         2         3         4         5         6
-        // 0123456789012345678901234567890123456789012345678901234567890123456789
-        // N VVMMM    ? ???    t vmA x                 y                     TTTT
-        //
-        // irmp_data_p->command:
-        //
-        //         5432109876543210
-        //         NAVVvMMMmtxyTTTT
-
-        ACP_SET_BIT( 0, cmd, 15);
-        ACP_SET_BIT(24, cmd, 14);
-        ACP_SET_BIT( 2, cmd, 13);
-        ACP_SET_BIT( 3, cmd, 12);
-        ACP_SET_BIT(22, cmd, 11);
-        ACP_SET_BIT( 4, cmd, 10);
-        ACP_SET_BIT( 5, cmd, 9);
-        ACP_SET_BIT( 6, cmd, 8);
-        ACP_SET_BIT(23, cmd, 7);
-        ACP_SET_BIT(20, cmd, 6);
-        ACP_SET_BIT(26, cmd, 5);
-        ACP_SET_BIT(44, cmd, 4);
-        ACP_SET_BIT(66, cmd, 3);
-        ACP_SET_BIT(67, cmd, 2);
-        ACP_SET_BIT(68, cmd, 1);
-        ACP_SET_BIT(69, cmd, 0);
-
-        irsnd_busy = TRUE;
-        break;
-    }
 #endif
 
-    default: {
-        break;
-    }
+        default:
+        {
+            break;
+        }
     }
 
 #if defined(ARDUINO)
@@ -1683,7 +1704,9 @@ uint8_t irsnd_send_data(IRMP_DATA * irmp_data_p, uint8_t do_wait) {
     return irsnd_busy;
 }
 
-void irsnd_stop(void) {
+void
+irsnd_stop (void)
+{
     irsnd_repeat = 0;
 }
 
@@ -1692,48 +1715,53 @@ void irsnd_stop(void) {
  *  @details  ISR routine, called from 10000 to 20000, typically 15000 times per second
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-uint8_t irsnd_ISR(void) {
-    static uint8_t send_trailer = FALSE;
-    static uint8_t current_bit = 0xFF;
-    static uint8_t pulse_counter = 0;
-    static IRSND_PAUSE_LEN pause_counter = 0;
-    static uint8_t startbit_pulse_len = 0;
-    static IRSND_PAUSE_LEN startbit_pause_len = 0;
-    static uint8_t pulse_1_len = 0;
-    static uint8_t pause_1_len = 0;
-    static uint8_t pulse_0_len = 0;
-    static uint8_t pause_0_len = 0;
-    static uint8_t has_stop_bit = 0;
-    static uint8_t new_frame = TRUE;
-    static uint8_t complete_data_len = 0;
-    static uint8_t n_repeat_frames = 0;                                // number of repetition frames
-    static uint8_t n_auto_repetitions = 0;                             // number of auto_repetitions
-    static uint8_t auto_repetition_counter = 0;                        // auto_repetition counter
-    static uint16_t auto_repetition_pause_len = 0;                     // pause before auto_repetition, uint16_t!
-    static uint16_t auto_repetition_pause_counter = 0;                 // pause before auto_repetition, uint16_t!
-    static uint8_t repeat_counter = 0;                                 // repeat counter
-    static uint16_t repeat_frame_pause_len = 0;                        // pause before repeat, uint16_t!
-    static uint16_t packet_repeat_pause_counter = 0;                   // pause before repeat, uint16_t!
+uint8_t
+irsnd_ISR (void)
+{
+    static uint8_t              send_trailer                    = FALSE;
+    static uint8_t              current_bit                     = 0xFF;
+    static uint8_t              pulse_counter                   = 0;
+    static IRSND_PAUSE_LEN      pause_counter                   = 0;
+    static uint8_t              startbit_pulse_len              = 0;
+    static IRSND_PAUSE_LEN      startbit_pause_len              = 0;
+    static uint8_t              pulse_1_len                     = 0;
+    static uint8_t              pause_1_len                     = 0;
+    static uint8_t              pulse_0_len                     = 0;
+    static uint8_t              pause_0_len                     = 0;
+    static uint8_t              has_stop_bit                    = 0;
+    static uint8_t              new_frame                       = TRUE;
+    static uint8_t              complete_data_len               = 0;
+    static uint8_t              n_repeat_frames                 = 0;                                // number of repetition frames
+    static uint8_t              n_auto_repetitions              = 0;                                // number of auto_repetitions
+    static uint8_t              auto_repetition_counter         = 0;                                // auto_repetition counter
+    static uint16_t             auto_repetition_pause_len       = 0;                                // pause before auto_repetition, uint16_t!
+    static uint16_t             auto_repetition_pause_counter   = 0;                                // pause before auto_repetition, uint16_t!
+    static uint8_t              repeat_counter                  = 0;                                // repeat counter
+    static uint16_t             repeat_frame_pause_len          = 0;                                // pause before repeat, uint16_t!
+    static uint16_t             packet_repeat_pause_counter     = 0;                                // pause before repeat, uint16_t!
 #if IRSND_SUPPORT_BANG_OLUFSEN_PROTOCOL == 1
-    static uint8_t last_bit_value;
+    static uint8_t              last_bit_value;
 #endif
-    static uint8_t pulse_len = 0xFF;
-    static IRSND_PAUSE_LEN pause_len = 0xFF;
+    static uint8_t              pulse_len = 0xFF;
+    static IRSND_PAUSE_LEN      pause_len = 0xFF;
 
-    if (irsnd_busy) {
+    if (irsnd_busy)
+    {
         if (current_bit == 0xFF && new_frame)                                       // start of transmission...
-                {
-            if (auto_repetition_counter > 0) {
+        {
+            if (auto_repetition_counter > 0)
+            {
                 auto_repetition_pause_counter++;
 
-                if (auto_repetition_pause_counter >= auto_repetition_pause_len) {
+                if (auto_repetition_pause_counter >= auto_repetition_pause_len)
+                {
                     auto_repetition_pause_counter = 0;
 
 #if IRSND_SUPPORT_DENON_PROTOCOL == 1
                     if (irsnd_protocol == IRMP_DENON_PROTOCOL)                              // n'th denon frame
                     {
                         current_bit = 16;
-                        complete_data_len = 2 * DENON_COMPLETE_DATA_LEN + 1;
+                        complete_data_len   = 2 * DENON_COMPLETE_DATA_LEN + 1;
                     }
                     else
 #endif
@@ -1741,7 +1769,7 @@ uint8_t irsnd_ISR(void) {
                     if (irsnd_protocol == IRMP_GRUNDIG_PROTOCOL)                            // n'th grundig frame
                     {
                         current_bit = 15;
-                        complete_data_len = 16 + GRUNDIG_COMPLETE_DATA_LEN;
+                        complete_data_len   = 16 + GRUNDIG_COMPLETE_DATA_LEN;
                     }
                     else
 #endif
@@ -1749,7 +1777,7 @@ uint8_t irsnd_ISR(void) {
                     if (irsnd_protocol == IRMP_IR60_PROTOCOL)                               // n'th IR60 frame
                     {
                         current_bit = 7;
-                        complete_data_len = 2 * IR60_COMPLETE_DATA_LEN + 1;
+                        complete_data_len   = 2 * IR60_COMPLETE_DATA_LEN + 1;
                     }
                     else
 #endif
@@ -1759,12 +1787,12 @@ uint8_t irsnd_ISR(void) {
                         if (auto_repetition_counter + 1 < n_auto_repetitions)
                         {
                             current_bit = 23;
-                            complete_data_len = 24 + NOKIA_COMPLETE_DATA_LEN;
+                            complete_data_len   = 24 + NOKIA_COMPLETE_DATA_LEN;
                         }
                         else                                                                // nokia stop frame
                         {
                             current_bit = 0xFF;
-                            complete_data_len = NOKIA_COMPLETE_DATA_LEN;
+                            complete_data_len   = NOKIA_COMPLETE_DATA_LEN;
                         }
                     }
                     else
@@ -1772,7 +1800,9 @@ uint8_t irsnd_ISR(void) {
                     {
                         ;
                     }
-                } else {
+                }
+                else
+                {
 #ifdef ANALYZE
                     if (irsnd_is_on)
                     {
@@ -1785,7 +1815,9 @@ uint8_t irsnd_ISR(void) {
 #endif
                     return irsnd_busy;
                 }
-            } else if (packet_repeat_pause_counter < repeat_frame_pause_len) {
+            }
+            else if (packet_repeat_pause_counter < repeat_frame_pause_len)
+            {
                 packet_repeat_pause_counter++;
 #ifdef ANALYZE
                 if (irsnd_is_on)
@@ -1798,851 +1830,874 @@ uint8_t irsnd_ISR(void) {
                 }
 #endif
                 return irsnd_busy;
-            } else {
-                if (send_trailer) {
+            }
+            else
+            {
+                if (send_trailer)
+                {
                     irsnd_busy = FALSE;
                     send_trailer = FALSE;
                     return irsnd_busy;
                 }
 
-                n_repeat_frames = irsnd_repeat;
+                n_repeat_frames             = irsnd_repeat;
 
-                if (n_repeat_frames == IRSND_ENDLESS_REPETITION) {
+                if (n_repeat_frames == IRSND_ENDLESS_REPETITION)
+                {
                     n_repeat_frames = 255;
                 }
 
                 packet_repeat_pause_counter = 0;
-                pulse_counter = 0;
-                pause_counter = 0;
+                pulse_counter               = 0;
+                pause_counter               = 0;
 
-                switch (irsnd_protocol) {
-#if IRSND_SUPPORT_SIRCS_PROTOCOL == 1
-                case IRMP_SIRCS_PROTOCOL:
+                switch (irsnd_protocol)
                 {
-                    startbit_pulse_len = SIRCS_START_BIT_PULSE_LEN;
-                    startbit_pause_len = SIRCS_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = SIRCS_1_PULSE_LEN;
-                    pause_1_len = SIRCS_PAUSE_LEN - 1;
-                    pulse_0_len = SIRCS_0_PULSE_LEN;
-                    pause_0_len = SIRCS_PAUSE_LEN - 1;
-                    has_stop_bit = SIRCS_STOP_BIT;
-                    complete_data_len = SIRCS_MINIMUM_DATA_LEN + sircs_additional_bitlen;
-                    n_auto_repetitions = (repeat_counter == 0) ? SIRCS_FRAMES : 1;     // 3 frames auto repetition if first frame
-                    auto_repetition_pause_len = SIRCS_AUTO_REPETITION_PAUSE_LEN;// 25ms pause
-                    repeat_frame_pause_len = SIRCS_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_40_KHZ);
-                    break;
-                }
+#if IRSND_SUPPORT_SIRCS_PROTOCOL == 1
+                    case IRMP_SIRCS_PROTOCOL:
+                    {
+                        startbit_pulse_len          = SIRCS_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = SIRCS_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = SIRCS_1_PULSE_LEN;
+                        pause_1_len                 = SIRCS_PAUSE_LEN - 1;
+                        pulse_0_len                 = SIRCS_0_PULSE_LEN;
+                        pause_0_len                 = SIRCS_PAUSE_LEN - 1;
+                        has_stop_bit                = SIRCS_STOP_BIT;
+                        complete_data_len           = SIRCS_MINIMUM_DATA_LEN + sircs_additional_bitlen;
+                        n_auto_repetitions          = (repeat_counter == 0) ? SIRCS_FRAMES : 1;     // 3 frames auto repetition if first frame
+                        auto_repetition_pause_len   = SIRCS_AUTO_REPETITION_PAUSE_LEN;              // 25ms pause
+                        repeat_frame_pause_len      = SIRCS_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_40_KHZ);
+                        break;
+                    }
 #endif
 #if IRSND_SUPPORT_NEC_PROTOCOL == 1
-                case IRMP_NEC_PROTOCOL:
-                case IRMP_ONKYO_PROTOCOL:
-                {
-                    startbit_pulse_len = NEC_START_BIT_PULSE_LEN;
-
-                    if (repeat_counter > 0)
+                    case IRMP_NEC_PROTOCOL:
+                    case IRMP_ONKYO_PROTOCOL:
                     {
-                        startbit_pause_len = NEC_REPEAT_START_BIT_PAUSE_LEN - 1;
-                        complete_data_len = 0;
-                    }
-                    else
-                    {
-                        startbit_pause_len = NEC_START_BIT_PAUSE_LEN - 1;
-                        complete_data_len = NEC_COMPLETE_DATA_LEN;
-                    }
+                        startbit_pulse_len          = NEC_START_BIT_PULSE_LEN;
 
-                    pulse_1_len = NEC_PULSE_LEN;
-                    pause_1_len = NEC_1_PAUSE_LEN - 1;
-                    pulse_0_len = NEC_PULSE_LEN;
-                    pause_0_len = NEC_0_PAUSE_LEN - 1;
-                    has_stop_bit = NEC_STOP_BIT;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = NEC_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
+                        if (repeat_counter > 0)
+                        {
+                            startbit_pause_len      = NEC_REPEAT_START_BIT_PAUSE_LEN - 1;
+                            complete_data_len       = 0;
+                        }
+                        else
+                        {
+                            startbit_pause_len      = NEC_START_BIT_PAUSE_LEN - 1;
+                            complete_data_len       = NEC_COMPLETE_DATA_LEN;
+                        }
+
+                        pulse_1_len                 = NEC_PULSE_LEN;
+                        pause_1_len                 = NEC_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = NEC_PULSE_LEN;
+                        pause_0_len                 = NEC_0_PAUSE_LEN - 1;
+                        has_stop_bit                = NEC_STOP_BIT;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = NEC_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
 #endif
 #if IRSND_SUPPORT_NEC16_PROTOCOL == 1
-                case IRMP_NEC16_PROTOCOL:
-                {
-                    startbit_pulse_len = NEC_START_BIT_PULSE_LEN;
-                    startbit_pause_len = NEC_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = NEC_PULSE_LEN;
-                    pause_1_len = NEC_1_PAUSE_LEN - 1;
-                    pulse_0_len = NEC_PULSE_LEN;
-                    pause_0_len = NEC_0_PAUSE_LEN - 1;
-                    has_stop_bit = NEC_STOP_BIT;
-                    complete_data_len = NEC16_COMPLETE_DATA_LEN + 1;                  // 1 more: sync bit
-                    n_auto_repetitions = 1;// 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = NEC_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
+                    case IRMP_NEC16_PROTOCOL:
+                    {
+                        startbit_pulse_len          = NEC_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = NEC_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = NEC_PULSE_LEN;
+                        pause_1_len                 = NEC_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = NEC_PULSE_LEN;
+                        pause_0_len                 = NEC_0_PAUSE_LEN - 1;
+                        has_stop_bit                = NEC_STOP_BIT;
+                        complete_data_len           = NEC16_COMPLETE_DATA_LEN + 1;                  // 1 more: sync bit
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = NEC_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
 #endif
 #if IRSND_SUPPORT_NEC42_PROTOCOL == 1
-                case IRMP_NEC42_PROTOCOL:
-                {
-                    startbit_pulse_len = NEC_START_BIT_PULSE_LEN;
-                    startbit_pause_len = NEC_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = NEC_PULSE_LEN;
-                    pause_1_len = NEC_1_PAUSE_LEN - 1;
-                    pulse_0_len = NEC_PULSE_LEN;
-                    pause_0_len = NEC_0_PAUSE_LEN - 1;
-                    has_stop_bit = NEC_STOP_BIT;
-                    complete_data_len = NEC42_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = NEC_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
+                    case IRMP_NEC42_PROTOCOL:
+                    {
+                        startbit_pulse_len          = NEC_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = NEC_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = NEC_PULSE_LEN;
+                        pause_1_len                 = NEC_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = NEC_PULSE_LEN;
+                        pause_0_len                 = NEC_0_PAUSE_LEN - 1;
+                        has_stop_bit                = NEC_STOP_BIT;
+                        complete_data_len           = NEC42_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = NEC_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
 #endif
 #if IRSND_SUPPORT_LGAIR_PROTOCOL == 1
-                case IRMP_LGAIR_PROTOCOL:
-                {
-                    startbit_pulse_len = NEC_START_BIT_PULSE_LEN;
-                    startbit_pause_len = NEC_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = NEC_PULSE_LEN;
-                    pause_1_len = NEC_1_PAUSE_LEN - 1;
-                    pulse_0_len = NEC_PULSE_LEN;
-                    pause_0_len = NEC_0_PAUSE_LEN - 1;
-                    has_stop_bit = NEC_STOP_BIT;
-                    complete_data_len = LGAIR_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = NEC_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
+                    case IRMP_LGAIR_PROTOCOL:
+                    {
+                        startbit_pulse_len          = NEC_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = NEC_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = NEC_PULSE_LEN;
+                        pause_1_len                 = NEC_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = NEC_PULSE_LEN;
+                        pause_0_len                 = NEC_0_PAUSE_LEN - 1;
+                        has_stop_bit                = NEC_STOP_BIT;
+                        complete_data_len           = LGAIR_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = NEC_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
 #endif
 #if IRSND_SUPPORT_SAMSUNG_PROTOCOL == 1
-                case IRMP_SAMSUNG_PROTOCOL:
-                {
-                    startbit_pulse_len = SAMSUNG_START_BIT_PULSE_LEN;
-                    startbit_pause_len = SAMSUNG_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = SAMSUNG_PULSE_LEN;
-                    pause_1_len = SAMSUNG_1_PAUSE_LEN - 1;
-                    pulse_0_len = SAMSUNG_PULSE_LEN;
-                    pause_0_len = SAMSUNG_0_PAUSE_LEN - 1;
-                    has_stop_bit = SAMSUNG_STOP_BIT;
-                    complete_data_len = SAMSUNG_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = SAMSUNG_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
-
-                case IRMP_SAMSUNG32_PROTOCOL:
-                {
-                    startbit_pulse_len = SAMSUNG_START_BIT_PULSE_LEN;
-                    startbit_pause_len = SAMSUNG_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = SAMSUNG_PULSE_LEN;
-                    pause_1_len = SAMSUNG_1_PAUSE_LEN - 1;
-                    pulse_0_len = SAMSUNG_PULSE_LEN;
-                    pause_0_len = SAMSUNG_0_PAUSE_LEN - 1;
-                    has_stop_bit = SAMSUNG_STOP_BIT;
-                    complete_data_len = SAMSUNG32_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = SAMSUNG32_FRAMES;                             // 1 frame
-                    auto_repetition_pause_len = SAMSUNG32_AUTO_REPETITION_PAUSE_LEN;// 47 ms pause
-                    repeat_frame_pause_len = SAMSUNG32_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_SAMSUNG48_PROTOCOL == 1
-                case IRMP_SAMSUNG48_PROTOCOL:
-                {
-                    startbit_pulse_len = SAMSUNG_START_BIT_PULSE_LEN;
-                    startbit_pause_len = SAMSUNG_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = SAMSUNG_PULSE_LEN;
-                    pause_1_len = SAMSUNG_1_PAUSE_LEN - 1;
-                    pulse_0_len = SAMSUNG_PULSE_LEN;
-                    pause_0_len = SAMSUNG_0_PAUSE_LEN - 1;
-                    has_stop_bit = SAMSUNG_STOP_BIT;
-                    complete_data_len = SAMSUNG48_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = SAMSUNG48_FRAMES;                             // 1 frame
-                    auto_repetition_pause_len = SAMSUNG48_AUTO_REPETITION_PAUSE_LEN;// 47 ms pause
-                    repeat_frame_pause_len = SAMSUNG48_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_MATSUSHITA_PROTOCOL == 1
-                case IRMP_MATSUSHITA_PROTOCOL:
-                {
-                    startbit_pulse_len = MATSUSHITA_START_BIT_PULSE_LEN;
-                    startbit_pause_len = MATSUSHITA_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = MATSUSHITA_PULSE_LEN;
-                    pause_1_len = MATSUSHITA_1_PAUSE_LEN - 1;
-                    pulse_0_len = MATSUSHITA_PULSE_LEN;
-                    pause_0_len = MATSUSHITA_0_PAUSE_LEN - 1;
-                    has_stop_bit = MATSUSHITA_STOP_BIT;
-                    complete_data_len = MATSUSHITA_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = MATSUSHITA_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_36_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_TECHNICS_PROTOCOL == 1
-                case IRMP_TECHNICS_PROTOCOL:
-                {
-                    startbit_pulse_len = MATSUSHITA_START_BIT_PULSE_LEN;
-                    startbit_pause_len = MATSUSHITA_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = MATSUSHITA_PULSE_LEN;
-                    pause_1_len = MATSUSHITA_1_PAUSE_LEN - 1;
-                    pulse_0_len = MATSUSHITA_PULSE_LEN;
-                    pause_0_len = MATSUSHITA_0_PAUSE_LEN - 1;
-                    has_stop_bit = MATSUSHITA_STOP_BIT;
-                    complete_data_len = TECHNICS_COMPLETE_DATA_LEN;                   // here TECHNICS
-                    n_auto_repetitions = 1;// 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = MATSUSHITA_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_36_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_KASEIKYO_PROTOCOL == 1
-                case IRMP_KASEIKYO_PROTOCOL:
-                {
-                    startbit_pulse_len = KASEIKYO_START_BIT_PULSE_LEN;
-                    startbit_pause_len = KASEIKYO_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = KASEIKYO_PULSE_LEN;
-                    pause_1_len = KASEIKYO_1_PAUSE_LEN - 1;
-                    pulse_0_len = KASEIKYO_PULSE_LEN;
-                    pause_0_len = KASEIKYO_0_PAUSE_LEN - 1;
-                    has_stop_bit = KASEIKYO_STOP_BIT;
-                    complete_data_len = KASEIKYO_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = (repeat_counter == 0) ? KASEIKYO_FRAMES : 1;  // 2 frames auto repetition if first frame
-                    auto_repetition_pause_len = KASEIKYO_AUTO_REPETITION_PAUSE_LEN;// 75 ms pause
-                    repeat_frame_pause_len = KASEIKYO_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_PANASONIC_PROTOCOL == 1
-                case IRMP_PANASONIC_PROTOCOL:
-                {
-                    startbit_pulse_len = PANASONIC_START_BIT_PULSE_LEN;
-                    startbit_pause_len = PANASONIC_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = PANASONIC_PULSE_LEN;
-                    pause_1_len = PANASONIC_1_PAUSE_LEN - 1;
-                    pulse_0_len = PANASONIC_PULSE_LEN;
-                    pause_0_len = PANASONIC_0_PAUSE_LEN - 1;
-                    has_stop_bit = PANASONIC_STOP_BIT;
-                    complete_data_len = PANASONIC_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = PANASONIC_FRAMES;                             // 1 frame
-                    auto_repetition_pause_len = PANASONIC_AUTO_REPETITION_PAUSE_LEN;// 40 ms pause
-                    repeat_frame_pause_len = PANASONIC_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL == 1
-                case IRMP_MITSU_HEAVY_PROTOCOL:
-                {
-                    startbit_pulse_len = MITSU_HEAVY_START_BIT_PULSE_LEN;
-                    startbit_pause_len = MITSU_HEAVY_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = MITSU_HEAVY_PULSE_LEN;
-                    pause_1_len = MITSU_HEAVY_1_PAUSE_LEN - 1;
-                    pulse_0_len = MITSU_HEAVY_PULSE_LEN;
-                    pause_0_len = MITSU_HEAVY_0_PAUSE_LEN - 1;
-                    has_stop_bit = MITSU_HEAVY_STOP_BIT;
-                    complete_data_len = MITSU_HEAVY_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = MITSU_HEAVY_FRAMES;                             // 1 frame
-                    auto_repetition_pause_len = 0;;
-                    repeat_frame_pause_len = MITSU_HEAVY_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_40_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_RECS80_PROTOCOL == 1
-                case IRMP_RECS80_PROTOCOL:
-                {
-                    startbit_pulse_len = RECS80_START_BIT_PULSE_LEN;
-                    startbit_pause_len = RECS80_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = RECS80_PULSE_LEN;
-                    pause_1_len = RECS80_1_PAUSE_LEN - 1;
-                    pulse_0_len = RECS80_PULSE_LEN;
-                    pause_0_len = RECS80_0_PAUSE_LEN - 1;
-                    has_stop_bit = RECS80_STOP_BIT;
-                    complete_data_len = RECS80_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = RECS80_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_RECS80EXT_PROTOCOL == 1
-                case IRMP_RECS80EXT_PROTOCOL:
-                {
-                    startbit_pulse_len = RECS80EXT_START_BIT_PULSE_LEN;
-                    startbit_pause_len = RECS80EXT_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = RECS80EXT_PULSE_LEN;
-                    pause_1_len = RECS80EXT_1_PAUSE_LEN - 1;
-                    pulse_0_len = RECS80EXT_PULSE_LEN;
-                    pause_0_len = RECS80EXT_0_PAUSE_LEN - 1;
-                    has_stop_bit = RECS80EXT_STOP_BIT;
-                    complete_data_len = RECS80EXT_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = RECS80EXT_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_TELEFUNKEN_PROTOCOL == 1
-                case IRMP_TELEFUNKEN_PROTOCOL:
-                {
-                    startbit_pulse_len = TELEFUNKEN_START_BIT_PULSE_LEN;
-                    startbit_pause_len = TELEFUNKEN_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = TELEFUNKEN_PULSE_LEN;
-                    pause_1_len = TELEFUNKEN_1_PAUSE_LEN - 1;
-                    pulse_0_len = TELEFUNKEN_PULSE_LEN;
-                    pause_0_len = TELEFUNKEN_0_PAUSE_LEN - 1;
-                    has_stop_bit = TELEFUNKEN_STOP_BIT;
-                    complete_data_len = TELEFUNKEN_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = 1;                                            // 1 frames
-                    auto_repetition_pause_len = 0;// TELEFUNKEN_AUTO_REPETITION_PAUSE_LEN;         // xx ms pause
-                    repeat_frame_pause_len = TELEFUNKEN_FRAME_REPEAT_PAUSE_LEN;// 117 msec pause
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_RC5_PROTOCOL == 1
-                case IRMP_RC5_PROTOCOL:
-                {
-                    startbit_pulse_len = RC5_BIT_LEN;
-                    startbit_pause_len = RC5_BIT_LEN;
-                    pulse_len = RC5_BIT_LEN;
-                    pause_len = RC5_BIT_LEN;
-                    has_stop_bit = RC5_STOP_BIT;
-                    complete_data_len = RC5_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = RC5_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_36_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_RC6_PROTOCOL == 1 || IRSND_SUPPORT_RC6A_PROTOCOL == 1
-                case IRMP_RC6_PROTOCOL:
-                case IRMP_RC6A_PROTOCOL:
-                {
-                    startbit_pulse_len = RC6_START_BIT_PULSE_LEN;
-                    startbit_pause_len = RC6_START_BIT_PAUSE_LEN - 1;
-                    pulse_len = RC6_BIT_LEN;
-                    pause_len = RC6_BIT_LEN;
-                    has_stop_bit = RC6_STOP_BIT;
-                    complete_data_len = RC6_COMPLETE_DATA_LEN_LONG;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = RC6_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_36_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_DENON_PROTOCOL == 1
-                case IRMP_DENON_PROTOCOL:
-                {
-                    startbit_pulse_len = 0x00;
-                    startbit_pause_len = 0x00;
-                    pulse_1_len = DENON_PULSE_LEN;
-                    pause_1_len = DENON_1_PAUSE_LEN - 1;
-                    pulse_0_len = DENON_PULSE_LEN;
-                    pause_0_len = DENON_0_PAUSE_LEN - 1;
-                    has_stop_bit = DENON_STOP_BIT;
-                    complete_data_len = DENON_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = DENON_FRAMES;                                 // 2 frames, 2nd with inverted command
-                    auto_repetition_pause_len = DENON_AUTO_REPETITION_PAUSE_LEN;// 65 ms pause after 1st frame
-                    repeat_frame_pause_len = DENON_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_36_KHZ);// in theory 32kHz, in practice 36kHz is better
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_THOMSON_PROTOCOL == 1
-                case IRMP_THOMSON_PROTOCOL:
-                {
-                    startbit_pulse_len = 0x00;
-                    startbit_pause_len = 0x00;
-                    pulse_1_len = THOMSON_PULSE_LEN;
-                    pause_1_len = THOMSON_1_PAUSE_LEN - 1;
-                    pulse_0_len = THOMSON_PULSE_LEN;
-                    pause_0_len = THOMSON_0_PAUSE_LEN - 1;
-                    has_stop_bit = THOMSON_STOP_BIT;
-                    complete_data_len = THOMSON_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = THOMSON_FRAMES;                               // only 1 frame
-                    auto_repetition_pause_len = THOMSON_AUTO_REPETITION_PAUSE_LEN;
-                    repeat_frame_pause_len = THOMSON_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_BOSE_PROTOCOL == 1
-                case IRMP_BOSE_PROTOCOL:
-                {
-                    startbit_pulse_len = BOSE_START_BIT_PULSE_LEN;
-                    startbit_pause_len = BOSE_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = BOSE_PULSE_LEN;
-                    pause_1_len = BOSE_1_PAUSE_LEN - 1;
-                    pulse_0_len = BOSE_PULSE_LEN;
-                    pause_0_len = BOSE_0_PAUSE_LEN - 1;
-                    has_stop_bit = BOSE_STOP_BIT;
-                    complete_data_len = BOSE_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = BOSE_FRAMES;                                // 1 frame
-                    auto_repetition_pause_len = BOSE_AUTO_REPETITION_PAUSE_LEN;// 40 ms pause
-                    repeat_frame_pause_len = BOSE_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_36_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_NUBERT_PROTOCOL == 1
-                case IRMP_NUBERT_PROTOCOL:
-                {
-                    startbit_pulse_len = NUBERT_START_BIT_PULSE_LEN;
-                    startbit_pause_len = NUBERT_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = NUBERT_1_PULSE_LEN;
-                    pause_1_len = NUBERT_1_PAUSE_LEN - 1;
-                    pulse_0_len = NUBERT_0_PULSE_LEN;
-                    pause_0_len = NUBERT_0_PAUSE_LEN - 1;
-                    has_stop_bit = NUBERT_STOP_BIT;
-                    complete_data_len = NUBERT_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = NUBERT_FRAMES;                                // 2 frames
-                    auto_repetition_pause_len = NUBERT_AUTO_REPETITION_PAUSE_LEN;// 35 ms pause
-                    repeat_frame_pause_len = NUBERT_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_36_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_FAN_PROTOCOL == 1
-                case IRMP_FAN_PROTOCOL:
-                {
-                    startbit_pulse_len = FAN_START_BIT_PULSE_LEN;
-                    startbit_pause_len = FAN_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = FAN_1_PULSE_LEN;
-                    pause_1_len = FAN_1_PAUSE_LEN - 1;
-                    pulse_0_len = FAN_0_PULSE_LEN;
-                    pause_0_len = FAN_0_PAUSE_LEN - 1;
-                    has_stop_bit = FAN_STOP_BIT;
-                    complete_data_len = FAN_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = FAN_FRAMES;                                   // only 1 frame
-                    auto_repetition_pause_len = FAN_AUTO_REPETITION_PAUSE_LEN;// 35 ms pause
-                    repeat_frame_pause_len = FAN_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_36_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_SPEAKER_PROTOCOL == 1
-                case IRMP_SPEAKER_PROTOCOL:
-                {
-                    startbit_pulse_len = SPEAKER_START_BIT_PULSE_LEN;
-                    startbit_pause_len = SPEAKER_START_BIT_PAUSE_LEN - 1;
-                    pulse_1_len = SPEAKER_1_PULSE_LEN;
-                    pause_1_len = SPEAKER_1_PAUSE_LEN - 1;
-                    pulse_0_len = SPEAKER_0_PULSE_LEN;
-                    pause_0_len = SPEAKER_0_PAUSE_LEN - 1;
-                    has_stop_bit = SPEAKER_STOP_BIT;
-                    complete_data_len = SPEAKER_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = SPEAKER_FRAMES;                                // 2 frames
-                    auto_repetition_pause_len = SPEAKER_AUTO_REPETITION_PAUSE_LEN;// 35 ms pause
-                    repeat_frame_pause_len = SPEAKER_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_BANG_OLUFSEN_PROTOCOL == 1
-                case IRMP_BANG_OLUFSEN_PROTOCOL:
-                {
-                    startbit_pulse_len = BANG_OLUFSEN_START_BIT1_PULSE_LEN;
-                    startbit_pause_len = BANG_OLUFSEN_START_BIT1_PAUSE_LEN - 1;
-                    pulse_1_len = BANG_OLUFSEN_PULSE_LEN;
-                    pause_1_len = BANG_OLUFSEN_1_PAUSE_LEN - 1;
-                    pulse_0_len = BANG_OLUFSEN_PULSE_LEN;
-                    pause_0_len = BANG_OLUFSEN_0_PAUSE_LEN - 1;
-                    has_stop_bit = BANG_OLUFSEN_STOP_BIT;
-                    complete_data_len = BANG_OLUFSEN_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = BANG_OLUFSEN_FRAME_REPEAT_PAUSE_LEN;
-                    last_bit_value = 0;
-                    irsnd_set_freq (IRSND_FREQ_455_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_GRUNDIG_PROTOCOL == 1
-                case IRMP_GRUNDIG_PROTOCOL:
-                {
-                    startbit_pulse_len = GRUNDIG_NOKIA_IR60_BIT_LEN;
-                    startbit_pause_len = GRUNDIG_NOKIA_IR60_PRE_PAUSE_LEN - 1;
-                    pulse_len = GRUNDIG_NOKIA_IR60_BIT_LEN;
-                    pause_len = GRUNDIG_NOKIA_IR60_BIT_LEN;
-                    has_stop_bit = GRUNDIG_NOKIA_IR60_STOP_BIT;
-                    complete_data_len = GRUNDIG_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = GRUNDIG_FRAMES;                               // 2 frames
-                    auto_repetition_pause_len = GRUNDIG_AUTO_REPETITION_PAUSE_LEN;// 20m sec pause
-                    repeat_frame_pause_len = GRUNDIG_NOKIA_IR60_FRAME_REPEAT_PAUSE_LEN;// 117 msec pause
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_IR60_PROTOCOL == 1
-                case IRMP_IR60_PROTOCOL:
-                {
-                    startbit_pulse_len = GRUNDIG_NOKIA_IR60_BIT_LEN;
-                    startbit_pause_len = GRUNDIG_NOKIA_IR60_PRE_PAUSE_LEN - 1;
-                    pulse_len = GRUNDIG_NOKIA_IR60_BIT_LEN;
-                    pause_len = GRUNDIG_NOKIA_IR60_BIT_LEN;
-                    has_stop_bit = GRUNDIG_NOKIA_IR60_STOP_BIT;
-                    complete_data_len = IR60_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = IR60_FRAMES;                                  // 2 frames
-                    auto_repetition_pause_len = IR60_AUTO_REPETITION_PAUSE_LEN;// 20m sec pause
-                    repeat_frame_pause_len = GRUNDIG_NOKIA_IR60_FRAME_REPEAT_PAUSE_LEN;// 117 msec pause
-                    irsnd_set_freq (IRSND_FREQ_30_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_NOKIA_PROTOCOL == 1
-                case IRMP_NOKIA_PROTOCOL:
-                {
-                    startbit_pulse_len = GRUNDIG_NOKIA_IR60_BIT_LEN;
-                    startbit_pause_len = GRUNDIG_NOKIA_IR60_PRE_PAUSE_LEN - 1;
-                    pulse_len = GRUNDIG_NOKIA_IR60_BIT_LEN;
-                    pause_len = GRUNDIG_NOKIA_IR60_BIT_LEN;
-                    has_stop_bit = GRUNDIG_NOKIA_IR60_STOP_BIT;
-                    complete_data_len = NOKIA_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = NOKIA_FRAMES;                                 // 2 frames
-                    auto_repetition_pause_len = NOKIA_AUTO_REPETITION_PAUSE_LEN;// 20 msec pause
-                    repeat_frame_pause_len = GRUNDIG_NOKIA_IR60_FRAME_REPEAT_PAUSE_LEN;// 117 msec pause
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_SIEMENS_PROTOCOL == 1
-                case IRMP_SIEMENS_PROTOCOL:
-                {
-                    startbit_pulse_len = SIEMENS_BIT_LEN;
-                    startbit_pause_len = SIEMENS_BIT_LEN;
-                    pulse_len = SIEMENS_BIT_LEN;
-                    pause_len = SIEMENS_BIT_LEN;
-                    has_stop_bit = SIEMENS_OR_RUWIDO_STOP_BIT;
-                    complete_data_len = SIEMENS_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = SIEMENS_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_36_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_RUWIDO_PROTOCOL == 1
-                case IRMP_RUWIDO_PROTOCOL:
-                {
-                    startbit_pulse_len = RUWIDO_START_BIT_PULSE_LEN;
-                    startbit_pause_len = RUWIDO_START_BIT_PAUSE_LEN;
-                    pulse_len = RUWIDO_BIT_PULSE_LEN;
-                    pause_len = RUWIDO_BIT_PAUSE_LEN;
-                    has_stop_bit = SIEMENS_OR_RUWIDO_STOP_BIT;
-                    complete_data_len = RUWIDO_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = RUWIDO_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_36_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_FDC_PROTOCOL == 1
-                case IRMP_FDC_PROTOCOL:
-                {
-                    startbit_pulse_len = FDC_START_BIT_PULSE_LEN;
-                    startbit_pause_len = FDC_START_BIT_PAUSE_LEN - 1;
-                    complete_data_len = FDC_COMPLETE_DATA_LEN;
-                    pulse_1_len = FDC_PULSE_LEN;
-                    pause_1_len = FDC_1_PAUSE_LEN - 1;
-                    pulse_0_len = FDC_PULSE_LEN;
-                    pause_0_len = FDC_0_PAUSE_LEN - 1;
-                    has_stop_bit = FDC_STOP_BIT;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = FDC_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_RCCAR_PROTOCOL == 1
-                case IRMP_RCCAR_PROTOCOL:
-                {
-                    startbit_pulse_len = RCCAR_START_BIT_PULSE_LEN;
-                    startbit_pause_len = RCCAR_START_BIT_PAUSE_LEN - 1;
-                    complete_data_len = RCCAR_COMPLETE_DATA_LEN;
-                    pulse_1_len = RCCAR_PULSE_LEN;
-                    pause_1_len = RCCAR_1_PAUSE_LEN - 1;
-                    pulse_0_len = RCCAR_PULSE_LEN;
-                    pause_0_len = RCCAR_0_PAUSE_LEN - 1;
-                    has_stop_bit = RCCAR_STOP_BIT;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = RCCAR_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
-#endif
-#if IRSND_SUPPORT_JVC_PROTOCOL == 1
-                case IRMP_JVC_PROTOCOL:
-                {
-                    if (repeat_counter != 0)                                               // skip start bit if repetition frame
+                    case IRMP_SAMSUNG_PROTOCOL:
                     {
-                        current_bit = 0;
+                        startbit_pulse_len          = SAMSUNG_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = SAMSUNG_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = SAMSUNG_PULSE_LEN;
+                        pause_1_len                 = SAMSUNG_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = SAMSUNG_PULSE_LEN;
+                        pause_0_len                 = SAMSUNG_0_PAUSE_LEN - 1;
+                        has_stop_bit                = SAMSUNG_STOP_BIT;
+                        complete_data_len           = SAMSUNG_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = SAMSUNG_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
                     }
 
-                    startbit_pulse_len = JVC_START_BIT_PULSE_LEN;
-                    startbit_pause_len = JVC_START_BIT_PAUSE_LEN - 1;
-                    complete_data_len = JVC_COMPLETE_DATA_LEN;
-                    pulse_1_len = JVC_PULSE_LEN;
-                    pause_1_len = JVC_1_PAUSE_LEN - 1;
-                    pulse_0_len = JVC_PULSE_LEN;
-                    pause_0_len = JVC_0_PAUSE_LEN - 1;
-                    has_stop_bit = JVC_STOP_BIT;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = JVC_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
+                    case IRMP_SAMSUNG32_PROTOCOL:
+                    {
+                        startbit_pulse_len          = SAMSUNG_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = SAMSUNG_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = SAMSUNG_PULSE_LEN;
+                        pause_1_len                 = SAMSUNG_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = SAMSUNG_PULSE_LEN;
+                        pause_0_len                 = SAMSUNG_0_PAUSE_LEN - 1;
+                        has_stop_bit                = SAMSUNG_STOP_BIT;
+                        complete_data_len           = SAMSUNG32_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = SAMSUNG32_FRAMES;                             // 1 frame
+                        auto_repetition_pause_len   = SAMSUNG32_AUTO_REPETITION_PAUSE_LEN;          // 47 ms pause
+                        repeat_frame_pause_len      = SAMSUNG32_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_SAMSUNG48_PROTOCOL == 1
+                    case IRMP_SAMSUNG48_PROTOCOL:
+                    {
+                        startbit_pulse_len          = SAMSUNG_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = SAMSUNG_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = SAMSUNG_PULSE_LEN;
+                        pause_1_len                 = SAMSUNG_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = SAMSUNG_PULSE_LEN;
+                        pause_0_len                 = SAMSUNG_0_PAUSE_LEN - 1;
+                        has_stop_bit                = SAMSUNG_STOP_BIT;
+                        complete_data_len           = SAMSUNG48_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = SAMSUNG48_FRAMES;                             // 1 frame
+                        auto_repetition_pause_len   = SAMSUNG48_AUTO_REPETITION_PAUSE_LEN;          // 47 ms pause
+                        repeat_frame_pause_len      = SAMSUNG48_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_MATSUSHITA_PROTOCOL == 1
+                    case IRMP_MATSUSHITA_PROTOCOL:
+                    {
+                        startbit_pulse_len          = MATSUSHITA_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = MATSUSHITA_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = MATSUSHITA_PULSE_LEN;
+                        pause_1_len                 = MATSUSHITA_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = MATSUSHITA_PULSE_LEN;
+                        pause_0_len                 = MATSUSHITA_0_PAUSE_LEN - 1;
+                        has_stop_bit                = MATSUSHITA_STOP_BIT;
+                        complete_data_len           = MATSUSHITA_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = MATSUSHITA_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_36_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_TECHNICS_PROTOCOL == 1
+                    case IRMP_TECHNICS_PROTOCOL:
+                    {
+                        startbit_pulse_len          = MATSUSHITA_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = MATSUSHITA_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = MATSUSHITA_PULSE_LEN;
+                        pause_1_len                 = MATSUSHITA_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = MATSUSHITA_PULSE_LEN;
+                        pause_0_len                 = MATSUSHITA_0_PAUSE_LEN - 1;
+                        has_stop_bit                = MATSUSHITA_STOP_BIT;
+                        complete_data_len           = TECHNICS_COMPLETE_DATA_LEN;                   // here TECHNICS
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = MATSUSHITA_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_36_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_KASEIKYO_PROTOCOL == 1
+                    case IRMP_KASEIKYO_PROTOCOL:
+                    {
+                        startbit_pulse_len          = KASEIKYO_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = KASEIKYO_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = KASEIKYO_PULSE_LEN;
+                        pause_1_len                 = KASEIKYO_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = KASEIKYO_PULSE_LEN;
+                        pause_0_len                 = KASEIKYO_0_PAUSE_LEN - 1;
+                        has_stop_bit                = KASEIKYO_STOP_BIT;
+                        complete_data_len           = KASEIKYO_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = (repeat_counter == 0) ? KASEIKYO_FRAMES : 1;  // 2 frames auto repetition if first frame
+                        auto_repetition_pause_len   = KASEIKYO_AUTO_REPETITION_PAUSE_LEN;           // 75 ms pause
+                        repeat_frame_pause_len      = KASEIKYO_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_PANASONIC_PROTOCOL == 1
+                    case IRMP_PANASONIC_PROTOCOL:
+                    {
+                        startbit_pulse_len          = PANASONIC_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = PANASONIC_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = PANASONIC_PULSE_LEN;
+                        pause_1_len                 = PANASONIC_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = PANASONIC_PULSE_LEN;
+                        pause_0_len                 = PANASONIC_0_PAUSE_LEN - 1;
+                        has_stop_bit                = PANASONIC_STOP_BIT;
+                        complete_data_len           = PANASONIC_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = PANASONIC_FRAMES;                             // 1 frame
+                        auto_repetition_pause_len   = PANASONIC_AUTO_REPETITION_PAUSE_LEN;          // 40 ms pause
+                        repeat_frame_pause_len      = PANASONIC_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL == 1
+                    case IRMP_MITSU_HEAVY_PROTOCOL:
+                    {
+                        startbit_pulse_len          = MITSU_HEAVY_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = MITSU_HEAVY_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = MITSU_HEAVY_PULSE_LEN;
+                        pause_1_len                 = MITSU_HEAVY_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = MITSU_HEAVY_PULSE_LEN;
+                        pause_0_len                 = MITSU_HEAVY_0_PAUSE_LEN - 1;
+                        has_stop_bit                = MITSU_HEAVY_STOP_BIT;
+                        complete_data_len           = MITSU_HEAVY_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = MITSU_HEAVY_FRAMES;                             // 1 frame
+                        auto_repetition_pause_len   = 0;;
+                        repeat_frame_pause_len      = MITSU_HEAVY_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_40_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_RECS80_PROTOCOL == 1
+                    case IRMP_RECS80_PROTOCOL:
+                    {
+                        startbit_pulse_len          = RECS80_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = RECS80_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = RECS80_PULSE_LEN;
+                        pause_1_len                 = RECS80_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = RECS80_PULSE_LEN;
+                        pause_0_len                 = RECS80_0_PAUSE_LEN - 1;
+                        has_stop_bit                = RECS80_STOP_BIT;
+                        complete_data_len           = RECS80_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = RECS80_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_RECS80EXT_PROTOCOL == 1
+                    case IRMP_RECS80EXT_PROTOCOL:
+                    {
+                        startbit_pulse_len          = RECS80EXT_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = RECS80EXT_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = RECS80EXT_PULSE_LEN;
+                        pause_1_len                 = RECS80EXT_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = RECS80EXT_PULSE_LEN;
+                        pause_0_len                 = RECS80EXT_0_PAUSE_LEN - 1;
+                        has_stop_bit                = RECS80EXT_STOP_BIT;
+                        complete_data_len           = RECS80EXT_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = RECS80EXT_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_TELEFUNKEN_PROTOCOL == 1
+                    case IRMP_TELEFUNKEN_PROTOCOL:
+                    {
+                        startbit_pulse_len          = TELEFUNKEN_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = TELEFUNKEN_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = TELEFUNKEN_PULSE_LEN;
+                        pause_1_len                 = TELEFUNKEN_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = TELEFUNKEN_PULSE_LEN;
+                        pause_0_len                 = TELEFUNKEN_0_PAUSE_LEN - 1;
+                        has_stop_bit                = TELEFUNKEN_STOP_BIT;
+                        complete_data_len           = TELEFUNKEN_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = 1;                                            // 1 frames
+                        auto_repetition_pause_len   = 0;                                            // TELEFUNKEN_AUTO_REPETITION_PAUSE_LEN;         // xx ms pause
+                        repeat_frame_pause_len      = TELEFUNKEN_FRAME_REPEAT_PAUSE_LEN;            // 117 msec pause
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_RC5_PROTOCOL == 1
+                    case IRMP_RC5_PROTOCOL:
+                    {
+                        startbit_pulse_len          = RC5_BIT_LEN;
+                        startbit_pause_len          = RC5_BIT_LEN;
+                        pulse_len                   = RC5_BIT_LEN;
+                        pause_len                   = RC5_BIT_LEN;
+                        has_stop_bit                = RC5_STOP_BIT;
+                        complete_data_len           = RC5_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = RC5_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_36_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_RC6_PROTOCOL == 1
+                    case IRMP_RC6_PROTOCOL:
+                    {
+                        startbit_pulse_len          = RC6_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = RC6_START_BIT_PAUSE_LEN - 1;
+                        pulse_len                   = RC6_BIT_LEN;
+                        pause_len                   = RC6_BIT_LEN;
+                        has_stop_bit                = RC6_STOP_BIT;
+                        complete_data_len           = RC6_COMPLETE_DATA_LEN_SHORT;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = RC6_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_36_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_RC6A_PROTOCOL == 1
+                    case IRMP_RC6A_PROTOCOL:
+                    {
+                        startbit_pulse_len          = RC6_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = RC6_START_BIT_PAUSE_LEN - 1;
+                        pulse_len                   = RC6_BIT_LEN;
+                        pause_len                   = RC6_BIT_LEN;
+                        has_stop_bit                = RC6_STOP_BIT;
+                        complete_data_len           = RC6_COMPLETE_DATA_LEN_LONG;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = RC6_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_36_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_DENON_PROTOCOL == 1
+                    case IRMP_DENON_PROTOCOL:
+                    {
+                        startbit_pulse_len          = 0x00;
+                        startbit_pause_len          = 0x00;
+                        pulse_1_len                 = DENON_PULSE_LEN;
+                        pause_1_len                 = DENON_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = DENON_PULSE_LEN;
+                        pause_0_len                 = DENON_0_PAUSE_LEN - 1;
+                        has_stop_bit                = DENON_STOP_BIT;
+                        complete_data_len           = DENON_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = DENON_FRAMES;                                 // 2 frames, 2nd with inverted command
+                        auto_repetition_pause_len   = DENON_AUTO_REPETITION_PAUSE_LEN;              // 65 ms pause after 1st frame
+                        repeat_frame_pause_len      = DENON_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_36_KHZ);                                         // in theory 32kHz, in practice 36kHz is better
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_THOMSON_PROTOCOL == 1
+                    case IRMP_THOMSON_PROTOCOL:
+                    {
+                        startbit_pulse_len          = 0x00;
+                        startbit_pause_len          = 0x00;
+                        pulse_1_len                 = THOMSON_PULSE_LEN;
+                        pause_1_len                 = THOMSON_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = THOMSON_PULSE_LEN;
+                        pause_0_len                 = THOMSON_0_PAUSE_LEN - 1;
+                        has_stop_bit                = THOMSON_STOP_BIT;
+                        complete_data_len           = THOMSON_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = THOMSON_FRAMES;                               // only 1 frame
+                        auto_repetition_pause_len   = THOMSON_AUTO_REPETITION_PAUSE_LEN;
+                        repeat_frame_pause_len      = THOMSON_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_BOSE_PROTOCOL == 1
+                    case IRMP_BOSE_PROTOCOL:
+                    {
+                        startbit_pulse_len          = BOSE_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = BOSE_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = BOSE_PULSE_LEN;
+                        pause_1_len                 = BOSE_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = BOSE_PULSE_LEN;
+                        pause_0_len                 = BOSE_0_PAUSE_LEN - 1;
+                        has_stop_bit                = BOSE_STOP_BIT;
+                        complete_data_len           = BOSE_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = BOSE_FRAMES;                                // 1 frame
+                        auto_repetition_pause_len   = BOSE_AUTO_REPETITION_PAUSE_LEN;             // 40 ms pause
+                        repeat_frame_pause_len      = BOSE_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_36_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_NUBERT_PROTOCOL == 1
+                    case IRMP_NUBERT_PROTOCOL:
+                    {
+                        startbit_pulse_len          = NUBERT_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = NUBERT_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = NUBERT_1_PULSE_LEN;
+                        pause_1_len                 = NUBERT_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = NUBERT_0_PULSE_LEN;
+                        pause_0_len                 = NUBERT_0_PAUSE_LEN - 1;
+                        has_stop_bit                = NUBERT_STOP_BIT;
+                        complete_data_len           = NUBERT_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = NUBERT_FRAMES;                                // 2 frames
+                        auto_repetition_pause_len   = NUBERT_AUTO_REPETITION_PAUSE_LEN;             // 35 ms pause
+                        repeat_frame_pause_len      = NUBERT_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_36_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_FAN_PROTOCOL == 1
+                    case IRMP_FAN_PROTOCOL:
+                    {
+                        startbit_pulse_len          = FAN_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = FAN_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = FAN_1_PULSE_LEN;
+                        pause_1_len                 = FAN_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = FAN_0_PULSE_LEN;
+                        pause_0_len                 = FAN_0_PAUSE_LEN - 1;
+                        has_stop_bit                = FAN_STOP_BIT;
+                        complete_data_len           = FAN_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = FAN_FRAMES;                                   // only 1 frame
+                        auto_repetition_pause_len   = FAN_AUTO_REPETITION_PAUSE_LEN;                // 35 ms pause
+                        repeat_frame_pause_len      = FAN_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_36_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_SPEAKER_PROTOCOL == 1
+                    case IRMP_SPEAKER_PROTOCOL:
+                    {
+                        startbit_pulse_len          = SPEAKER_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = SPEAKER_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = SPEAKER_1_PULSE_LEN;
+                        pause_1_len                 = SPEAKER_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = SPEAKER_0_PULSE_LEN;
+                        pause_0_len                 = SPEAKER_0_PAUSE_LEN - 1;
+                        has_stop_bit                = SPEAKER_STOP_BIT;
+                        complete_data_len           = SPEAKER_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = SPEAKER_FRAMES;                                // 2 frames
+                        auto_repetition_pause_len   = SPEAKER_AUTO_REPETITION_PAUSE_LEN;             // 35 ms pause
+                        repeat_frame_pause_len      = SPEAKER_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_BANG_OLUFSEN_PROTOCOL == 1
+                    case IRMP_BANG_OLUFSEN_PROTOCOL:
+                    {
+                        startbit_pulse_len          = BANG_OLUFSEN_START_BIT1_PULSE_LEN;
+                        startbit_pause_len          = BANG_OLUFSEN_START_BIT1_PAUSE_LEN - 1;
+                        pulse_1_len                 = BANG_OLUFSEN_PULSE_LEN;
+                        pause_1_len                 = BANG_OLUFSEN_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = BANG_OLUFSEN_PULSE_LEN;
+                        pause_0_len                 = BANG_OLUFSEN_0_PAUSE_LEN - 1;
+                        has_stop_bit                = BANG_OLUFSEN_STOP_BIT;
+                        complete_data_len           = BANG_OLUFSEN_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = BANG_OLUFSEN_FRAME_REPEAT_PAUSE_LEN;
+                        last_bit_value              = 0;
+                        irsnd_set_freq (IRSND_FREQ_455_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_GRUNDIG_PROTOCOL == 1
+                    case IRMP_GRUNDIG_PROTOCOL:
+                    {
+                        startbit_pulse_len          = GRUNDIG_NOKIA_IR60_BIT_LEN;
+                        startbit_pause_len          = GRUNDIG_NOKIA_IR60_PRE_PAUSE_LEN - 1;
+                        pulse_len                   = GRUNDIG_NOKIA_IR60_BIT_LEN;
+                        pause_len                   = GRUNDIG_NOKIA_IR60_BIT_LEN;
+                        has_stop_bit                = GRUNDIG_NOKIA_IR60_STOP_BIT;
+                        complete_data_len           = GRUNDIG_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = GRUNDIG_FRAMES;                               // 2 frames
+                        auto_repetition_pause_len   = GRUNDIG_AUTO_REPETITION_PAUSE_LEN;            // 20m sec pause
+                        repeat_frame_pause_len      = GRUNDIG_NOKIA_IR60_FRAME_REPEAT_PAUSE_LEN;    // 117 msec pause
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_IR60_PROTOCOL == 1
+                    case IRMP_IR60_PROTOCOL:
+                    {
+                        startbit_pulse_len          = GRUNDIG_NOKIA_IR60_BIT_LEN;
+                        startbit_pause_len          = GRUNDIG_NOKIA_IR60_PRE_PAUSE_LEN - 1;
+                        pulse_len                   = GRUNDIG_NOKIA_IR60_BIT_LEN;
+                        pause_len                   = GRUNDIG_NOKIA_IR60_BIT_LEN;
+                        has_stop_bit                = GRUNDIG_NOKIA_IR60_STOP_BIT;
+                        complete_data_len           = IR60_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = IR60_FRAMES;                                  // 2 frames
+                        auto_repetition_pause_len   = IR60_AUTO_REPETITION_PAUSE_LEN;               // 20m sec pause
+                        repeat_frame_pause_len      = GRUNDIG_NOKIA_IR60_FRAME_REPEAT_PAUSE_LEN;    // 117 msec pause
+                        irsnd_set_freq (IRSND_FREQ_30_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_NOKIA_PROTOCOL == 1
+                    case IRMP_NOKIA_PROTOCOL:
+                    {
+                        startbit_pulse_len          = GRUNDIG_NOKIA_IR60_BIT_LEN;
+                        startbit_pause_len          = GRUNDIG_NOKIA_IR60_PRE_PAUSE_LEN - 1;
+                        pulse_len                   = GRUNDIG_NOKIA_IR60_BIT_LEN;
+                        pause_len                   = GRUNDIG_NOKIA_IR60_BIT_LEN;
+                        has_stop_bit                = GRUNDIG_NOKIA_IR60_STOP_BIT;
+                        complete_data_len           = NOKIA_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = NOKIA_FRAMES;                                 // 2 frames
+                        auto_repetition_pause_len   = NOKIA_AUTO_REPETITION_PAUSE_LEN;              // 20 msec pause
+                        repeat_frame_pause_len      = GRUNDIG_NOKIA_IR60_FRAME_REPEAT_PAUSE_LEN;    // 117 msec pause
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_SIEMENS_PROTOCOL == 1
+                    case IRMP_SIEMENS_PROTOCOL:
+                    {
+                        startbit_pulse_len          = SIEMENS_BIT_LEN;
+                        startbit_pause_len          = SIEMENS_BIT_LEN;
+                        pulse_len                   = SIEMENS_BIT_LEN;
+                        pause_len                   = SIEMENS_BIT_LEN;
+                        has_stop_bit                = SIEMENS_OR_RUWIDO_STOP_BIT;
+                        complete_data_len           = SIEMENS_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = SIEMENS_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_36_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_RUWIDO_PROTOCOL == 1
+                    case IRMP_RUWIDO_PROTOCOL:
+                    {
+                        startbit_pulse_len          = RUWIDO_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = RUWIDO_START_BIT_PAUSE_LEN;
+                        pulse_len                   = RUWIDO_BIT_PULSE_LEN;
+                        pause_len                   = RUWIDO_BIT_PAUSE_LEN;
+                        has_stop_bit                = SIEMENS_OR_RUWIDO_STOP_BIT;
+                        complete_data_len           = RUWIDO_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = RUWIDO_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_36_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_FDC_PROTOCOL == 1
+                    case IRMP_FDC_PROTOCOL:
+                    {
+                        startbit_pulse_len          = FDC_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = FDC_START_BIT_PAUSE_LEN - 1;
+                        complete_data_len           = FDC_COMPLETE_DATA_LEN;
+                        pulse_1_len                 = FDC_PULSE_LEN;
+                        pause_1_len                 = FDC_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = FDC_PULSE_LEN;
+                        pause_0_len                 = FDC_0_PAUSE_LEN - 1;
+                        has_stop_bit                = FDC_STOP_BIT;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = FDC_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_RCCAR_PROTOCOL == 1
+                    case IRMP_RCCAR_PROTOCOL:
+                    {
+                        startbit_pulse_len          = RCCAR_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = RCCAR_START_BIT_PAUSE_LEN - 1;
+                        complete_data_len           = RCCAR_COMPLETE_DATA_LEN;
+                        pulse_1_len                 = RCCAR_PULSE_LEN;
+                        pause_1_len                 = RCCAR_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = RCCAR_PULSE_LEN;
+                        pause_0_len                 = RCCAR_0_PAUSE_LEN - 1;
+                        has_stop_bit                = RCCAR_STOP_BIT;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = RCCAR_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_JVC_PROTOCOL == 1
+                    case IRMP_JVC_PROTOCOL:
+                    {
+                        if (repeat_counter != 0)                                                    // skip start bit if repetition frame
+                        {
+                            current_bit = 0;
+                        }
+
+                        startbit_pulse_len          = JVC_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = JVC_START_BIT_PAUSE_LEN - 1;
+                        complete_data_len           = JVC_COMPLETE_DATA_LEN;
+                        pulse_1_len                 = JVC_PULSE_LEN;
+                        pause_1_len                 = JVC_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = JVC_PULSE_LEN;
+                        pause_0_len                 = JVC_0_PAUSE_LEN - 1;
+                        has_stop_bit                = JVC_STOP_BIT;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = JVC_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
 #endif
 #if IRSND_SUPPORT_NIKON_PROTOCOL == 1
-                case IRMP_NIKON_PROTOCOL:
-                {
-                    startbit_pulse_len = NIKON_START_BIT_PULSE_LEN;
-                    startbit_pause_len = NIKON_START_BIT_PAUSE_LEN;
-                    complete_data_len = NIKON_COMPLETE_DATA_LEN;
-                    pulse_1_len = NIKON_PULSE_LEN;
-                    pause_1_len = NIKON_1_PAUSE_LEN - 1;
-                    pulse_0_len = NIKON_PULSE_LEN;
-                    pause_0_len = NIKON_0_PAUSE_LEN - 1;
-                    has_stop_bit = NIKON_STOP_BIT;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = NIKON_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
+                    case IRMP_NIKON_PROTOCOL:
+                    {
+                        startbit_pulse_len          = NIKON_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = NIKON_START_BIT_PAUSE_LEN;
+                        complete_data_len           = NIKON_COMPLETE_DATA_LEN;
+                        pulse_1_len                 = NIKON_PULSE_LEN;
+                        pause_1_len                 = NIKON_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = NIKON_PULSE_LEN;
+                        pause_0_len                 = NIKON_0_PAUSE_LEN - 1;
+                        has_stop_bit                = NIKON_STOP_BIT;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = NIKON_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
 #endif
 #if IRSND_SUPPORT_LEGO_PROTOCOL == 1
-                case IRMP_LEGO_PROTOCOL:
-                {
-                    startbit_pulse_len = LEGO_START_BIT_PULSE_LEN;
-                    startbit_pause_len = LEGO_START_BIT_PAUSE_LEN - 1;
-                    complete_data_len = LEGO_COMPLETE_DATA_LEN;
-                    pulse_1_len = LEGO_PULSE_LEN;
-                    pause_1_len = LEGO_1_PAUSE_LEN - 1;
-                    pulse_0_len = LEGO_PULSE_LEN;
-                    pause_0_len = LEGO_0_PAUSE_LEN - 1;
-                    has_stop_bit = LEGO_STOP_BIT;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = LEGO_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
+                    case IRMP_LEGO_PROTOCOL:
+                    {
+                        startbit_pulse_len          = LEGO_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = LEGO_START_BIT_PAUSE_LEN - 1;
+                        complete_data_len           = LEGO_COMPLETE_DATA_LEN;
+                        pulse_1_len                 = LEGO_PULSE_LEN;
+                        pause_1_len                 = LEGO_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = LEGO_PULSE_LEN;
+                        pause_0_len                 = LEGO_0_PAUSE_LEN - 1;
+                        has_stop_bit                = LEGO_STOP_BIT;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = LEGO_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
 #endif
 #if IRSND_SUPPORT_IRMP16_PROTOCOL == 1
-                case IRMP_IRMP16_PROTOCOL:
-                {
-                    startbit_pulse_len = IRMP16_START_BIT_PULSE_LEN;
-                    startbit_pause_len = IRMP16_START_BIT_PAUSE_LEN - 1;
-                    complete_data_len = IRMP16_COMPLETE_DATA_LEN;
-                    pulse_1_len = IRMP16_PULSE_LEN;
-                    pause_1_len = IRMP16_1_PAUSE_LEN - 1;
-                    pulse_0_len = IRMP16_PULSE_LEN;
-                    pause_0_len = IRMP16_0_PAUSE_LEN - 1;
-                    has_stop_bit = IRMP16_STOP_BIT;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = IRMP16_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
+                    case IRMP_IRMP16_PROTOCOL:
+                    {
+                        startbit_pulse_len          = IRMP16_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = IRMP16_START_BIT_PAUSE_LEN - 1;
+                        complete_data_len           = IRMP16_COMPLETE_DATA_LEN;
+                        pulse_1_len                 = IRMP16_PULSE_LEN;
+                        pause_1_len                 = IRMP16_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = IRMP16_PULSE_LEN;
+                        pause_0_len                 = IRMP16_0_PAUSE_LEN - 1;
+                        has_stop_bit                = IRMP16_STOP_BIT;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = IRMP16_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
 #endif
 #if IRSND_SUPPORT_A1TVBOX_PROTOCOL == 1
-                case IRMP_A1TVBOX_PROTOCOL:
-                {
-                    startbit_pulse_len = A1TVBOX_BIT_PULSE_LEN;                        // don't use A1TVBOX_START_BIT_PULSE_LEN
-                    startbit_pause_len = A1TVBOX_BIT_PAUSE_LEN;// don't use A1TVBOX_START_BIT_PAUSE_LEN
-                    pulse_len = A1TVBOX_BIT_PULSE_LEN;
-                    pause_len = A1TVBOX_BIT_PAUSE_LEN;
-                    has_stop_bit = A1TVBOX_STOP_BIT;
-                    complete_data_len = A1TVBOX_COMPLETE_DATA_LEN + 1;// we send stop bit as data
-                    n_auto_repetitions = 1;// 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = A1TVBOX_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
+                    case IRMP_A1TVBOX_PROTOCOL:
+                    {
+                        startbit_pulse_len          = A1TVBOX_BIT_PULSE_LEN;                        // don't use A1TVBOX_START_BIT_PULSE_LEN
+                        startbit_pause_len          = A1TVBOX_BIT_PAUSE_LEN;                        // don't use A1TVBOX_START_BIT_PAUSE_LEN
+                        pulse_len                   = A1TVBOX_BIT_PULSE_LEN;
+                        pause_len                   = A1TVBOX_BIT_PAUSE_LEN;
+                        has_stop_bit                = A1TVBOX_STOP_BIT;
+                        complete_data_len           = A1TVBOX_COMPLETE_DATA_LEN + 1;                // we send stop bit as data
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = A1TVBOX_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
 #endif
 #if IRSND_SUPPORT_ROOMBA_PROTOCOL == 1
-                case IRMP_ROOMBA_PROTOCOL:
-                {
-                    startbit_pulse_len = ROOMBA_START_BIT_PULSE_LEN;
-                    startbit_pause_len = ROOMBA_START_BIT_PAUSE_LEN;
-                    pulse_1_len = ROOMBA_1_PULSE_LEN;
-                    pause_1_len = ROOMBA_1_PAUSE_LEN - 1;
-                    pulse_0_len = ROOMBA_0_PULSE_LEN;
-                    pause_0_len = ROOMBA_0_PAUSE_LEN - 1;
-                    has_stop_bit = ROOMBA_STOP_BIT;
-                    complete_data_len = ROOMBA_COMPLETE_DATA_LEN;
-                    n_auto_repetitions = ROOMBA_FRAMES;                                // 8 frames
-                    auto_repetition_pause_len = ROOMBA_FRAME_REPEAT_PAUSE_LEN;
-                    repeat_frame_pause_len = ROOMBA_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
+                    case IRMP_ROOMBA_PROTOCOL:
+                    {
+                        startbit_pulse_len          = ROOMBA_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = ROOMBA_START_BIT_PAUSE_LEN;
+                        pulse_1_len                 = ROOMBA_1_PULSE_LEN;
+                        pause_1_len                 = ROOMBA_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = ROOMBA_0_PULSE_LEN;
+                        pause_0_len                 = ROOMBA_0_PAUSE_LEN - 1;
+                        has_stop_bit                = ROOMBA_STOP_BIT;
+                        complete_data_len           = ROOMBA_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = ROOMBA_FRAMES;                                // 8 frames
+                        auto_repetition_pause_len   = ROOMBA_FRAME_REPEAT_PAUSE_LEN;
+                        repeat_frame_pause_len      = ROOMBA_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
 #endif
 #if IRSND_SUPPORT_PENTAX_PROTOCOL == 1
-                case IRMP_PENTAX_PROTOCOL:
-                {
-                    startbit_pulse_len = PENTAX_START_BIT_PULSE_LEN;
-                    startbit_pause_len = PENTAX_START_BIT_PAUSE_LEN;
-                    complete_data_len = PENTAX_COMPLETE_DATA_LEN;
-                    pulse_1_len = PENTAX_PULSE_LEN;
-                    pause_1_len = PENTAX_1_PAUSE_LEN - 1;
-                    pulse_0_len = PENTAX_PULSE_LEN;
-                    pause_0_len = PENTAX_0_PAUSE_LEN - 1;
-                    has_stop_bit = PENTAX_STOP_BIT;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = PENTAX_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
+                    case IRMP_PENTAX_PROTOCOL:
+                    {
+                        startbit_pulse_len          = PENTAX_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = PENTAX_START_BIT_PAUSE_LEN;
+                        complete_data_len           = PENTAX_COMPLETE_DATA_LEN;
+                        pulse_1_len                 = PENTAX_PULSE_LEN;
+                        pause_1_len                 = PENTAX_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = PENTAX_PULSE_LEN;
+                        pause_0_len                 = PENTAX_0_PAUSE_LEN - 1;
+                        has_stop_bit                = PENTAX_STOP_BIT;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = PENTAX_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
 #endif
 #if IRSND_SUPPORT_ACP24_PROTOCOL == 1
-                case IRMP_ACP24_PROTOCOL:
-                {
-                    startbit_pulse_len = ACP24_START_BIT_PULSE_LEN;
-                    startbit_pause_len = ACP24_START_BIT_PAUSE_LEN - 1;
-                    complete_data_len = ACP24_COMPLETE_DATA_LEN;
-                    pulse_1_len = ACP24_PULSE_LEN;
-                    pause_1_len = ACP24_1_PAUSE_LEN - 1;
-                    pulse_0_len = ACP24_PULSE_LEN;
-                    pause_0_len = ACP24_0_PAUSE_LEN - 1;
-                    has_stop_bit = ACP24_STOP_BIT;
-                    n_auto_repetitions = 1;                                            // 1 frame
-                    auto_repetition_pause_len = 0;
-                    repeat_frame_pause_len = ACP24_FRAME_REPEAT_PAUSE_LEN;
-                    irsnd_set_freq (IRSND_FREQ_38_KHZ);
-                    break;
-                }
+                    case IRMP_ACP24_PROTOCOL:
+                    {
+                        startbit_pulse_len          = ACP24_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = ACP24_START_BIT_PAUSE_LEN - 1;
+                        complete_data_len           = ACP24_COMPLETE_DATA_LEN;
+                        pulse_1_len                 = ACP24_PULSE_LEN;
+                        pause_1_len                 = ACP24_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = ACP24_PULSE_LEN;
+                        pause_0_len                 = ACP24_0_PAUSE_LEN - 1;
+                        has_stop_bit                = ACP24_STOP_BIT;
+                        n_auto_repetitions          = 1;                                            // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = ACP24_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
 #endif
-                default: {
-                    irsnd_busy = FALSE;
-                    break;
-                }
+                    default:
+                    {
+                        irsnd_busy = FALSE;
+                        break;
+                    }
                 }
             }
         }
 
-        if (irsnd_busy) {
+        if (irsnd_busy)
+        {
             new_frame = FALSE;
 
-            switch (irsnd_protocol) {
+            switch (irsnd_protocol)
+            {
 #if IRSND_SUPPORT_SIRCS_PROTOCOL == 1
-            case IRMP_SIRCS_PROTOCOL:
+                case IRMP_SIRCS_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_NEC_PROTOCOL == 1
-            case IRMP_NEC_PROTOCOL:
-            case IRMP_ONKYO_PROTOCOL:
+                case IRMP_NEC_PROTOCOL:
+                case IRMP_ONKYO_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_NEC16_PROTOCOL == 1
-            case IRMP_NEC16_PROTOCOL:
+                case IRMP_NEC16_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_NEC42_PROTOCOL == 1
-            case IRMP_NEC42_PROTOCOL:
+                case IRMP_NEC42_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_LGAIR_PROTOCOL == 1
-            case IRMP_LGAIR_PROTOCOL:
+                case IRMP_LGAIR_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_SAMSUNG_PROTOCOL == 1
-            case IRMP_SAMSUNG_PROTOCOL:
-            case IRMP_SAMSUNG32_PROTOCOL:
+                case IRMP_SAMSUNG_PROTOCOL:
+                case IRMP_SAMSUNG32_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_SAMSUNG48_PROTOCOL == 1
-            case IRMP_SAMSUNG48_PROTOCOL:
+                case IRMP_SAMSUNG48_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_MATSUSHITA_PROTOCOL == 1
-            case IRMP_MATSUSHITA_PROTOCOL:
+                case IRMP_MATSUSHITA_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_MATSUSHITA_PROTOCOL == 1
-            case IRMP_TECHNICS_PROTOCOL:
+                case IRMP_TECHNICS_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_KASEIKYO_PROTOCOL == 1
-            case IRMP_KASEIKYO_PROTOCOL:
+                case IRMP_KASEIKYO_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_PANASONIC_PROTOCOL == 1
-            case IRMP_PANASONIC_PROTOCOL:
+                case IRMP_PANASONIC_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL == 1
-            case IRMP_MITSU_HEAVY_PROTOCOL:
+                case IRMP_MITSU_HEAVY_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_RECS80_PROTOCOL == 1
-            case IRMP_RECS80_PROTOCOL:
+                case IRMP_RECS80_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_RECS80EXT_PROTOCOL == 1
-            case IRMP_RECS80EXT_PROTOCOL:
+                case IRMP_RECS80EXT_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_TELEFUNKEN_PROTOCOL == 1
-            case IRMP_TELEFUNKEN_PROTOCOL:
+                case IRMP_TELEFUNKEN_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_DENON_PROTOCOL == 1
-            case IRMP_DENON_PROTOCOL:
+                case IRMP_DENON_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_BOSE_PROTOCOL == 1
-            case IRMP_BOSE_PROTOCOL:
+                case IRMP_BOSE_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_NUBERT_PROTOCOL == 1
-            case IRMP_NUBERT_PROTOCOL:
+                case IRMP_NUBERT_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_FAN_PROTOCOL == 1
-            case IRMP_FAN_PROTOCOL:
+                case IRMP_FAN_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_SPEAKER_PROTOCOL == 1
-            case IRMP_SPEAKER_PROTOCOL:
+                case IRMP_SPEAKER_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_BANG_OLUFSEN_PROTOCOL == 1
-            case IRMP_BANG_OLUFSEN_PROTOCOL:
+                case IRMP_BANG_OLUFSEN_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_FDC_PROTOCOL == 1
-            case IRMP_FDC_PROTOCOL:
+                case IRMP_FDC_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_RCCAR_PROTOCOL == 1
-            case IRMP_RCCAR_PROTOCOL:
+                case IRMP_RCCAR_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_JVC_PROTOCOL == 1
-            case IRMP_JVC_PROTOCOL:
+                case IRMP_JVC_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_NIKON_PROTOCOL == 1
-            case IRMP_NIKON_PROTOCOL:
+                case IRMP_NIKON_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_LEGO_PROTOCOL == 1
-            case IRMP_LEGO_PROTOCOL:
+                case IRMP_LEGO_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_IRMP16_PROTOCOL == 1
-            case IRMP_IRMP16_PROTOCOL:
+                case IRMP_IRMP16_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_THOMSON_PROTOCOL == 1
-            case IRMP_THOMSON_PROTOCOL:
+                case IRMP_THOMSON_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_ROOMBA_PROTOCOL == 1
-            case IRMP_ROOMBA_PROTOCOL:
+                case IRMP_ROOMBA_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_PENTAX_PROTOCOL == 1
-            case IRMP_PENTAX_PROTOCOL:
+                case IRMP_PENTAX_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_ACP24_PROTOCOL == 1
-            case IRMP_ACP24_PROTOCOL:
+                case IRMP_ACP24_PROTOCOL:
 #endif
 
 #if IRSND_SUPPORT_SIRCS_PROTOCOL == 1  || IRSND_SUPPORT_NEC_PROTOCOL == 1 || IRSND_SUPPORT_NEC16_PROTOCOL == 1 || IRSND_SUPPORT_NEC42_PROTOCOL == 1 || \
@@ -2653,201 +2708,201 @@ uint8_t irsnd_ISR(void) {
     IRSND_SUPPORT_LEGO_PROTOCOL == 1 || IRSND_SUPPORT_THOMSON_PROTOCOL == 1 || IRSND_SUPPORT_ROOMBA_PROTOCOL == 1 || IRSND_SUPPORT_TELEFUNKEN_PROTOCOL == 1 || \
     IRSND_SUPPORT_PENTAX_PROTOCOL == 1 || IRSND_SUPPORT_ACP24_PROTOCOL == 1 || IRSND_SUPPORT_PANASONIC_PROTOCOL == 1 || IRSND_SUPPORT_BOSE_PROTOCOL == 1 || \
     IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL == 1 || IRSND_SUPPORT_IRMP16_PROTOCOL == 1
-            {
-                if (pulse_counter == 0)
-                {
-                    if (current_bit == 0xFF)                                                    // send start bit
-                    {
-                        pulse_len = startbit_pulse_len;
-                        pause_len = startbit_pause_len;
-                    }
-                    else if (current_bit < complete_data_len)                                   // send n'th bit
-                    {
-#if IRSND_SUPPORT_SAMSUNG_PROTOCOL == 1
-                        if (irsnd_protocol == IRMP_SAMSUNG_PROTOCOL)
-                        {
-                            if (current_bit < SAMSUNG_ADDRESS_LEN)                              // send address bits
-                            {
-                                pulse_len = SAMSUNG_PULSE_LEN;
-                                pause_len = (irsnd_buffer[current_bit >> 3] & (1<<(7-(current_bit & 7)))) ?
-                                (SAMSUNG_1_PAUSE_LEN - 1) : (SAMSUNG_0_PAUSE_LEN - 1);
-                            }
-                            else if (current_bit == SAMSUNG_ADDRESS_LEN)                        // send SYNC bit (16th bit)
-                            {
-                                pulse_len = SAMSUNG_PULSE_LEN;
-                                pause_len = SAMSUNG_START_BIT_PAUSE_LEN - 1;
-                            }
-                            else if (current_bit < SAMSUNG_COMPLETE_DATA_LEN)                   // send n'th bit
-                            {
-                                uint8_t cur_bit = current_bit - 1;                              // sync skipped, offset = -1 !
-
-                                pulse_len = SAMSUNG_PULSE_LEN;
-                                pause_len = (irsnd_buffer[cur_bit >> 3] & (1<<(7-(cur_bit & 7)))) ?
-                                (SAMSUNG_1_PAUSE_LEN - 1) : (SAMSUNG_0_PAUSE_LEN - 1);
-                            }
-                        }
-                        else
-#endif
-
-#if IRSND_SUPPORT_NEC16_PROTOCOL == 1
-                        if (irsnd_protocol == IRMP_NEC16_PROTOCOL)
-                        {
-                            if (current_bit < NEC16_ADDRESS_LEN)                                // send address bits
-                            {
-                                pulse_len = NEC_PULSE_LEN;
-                                pause_len = (irsnd_buffer[current_bit >> 3] & (1<<(7-(current_bit & 7)))) ?
-                                (NEC_1_PAUSE_LEN - 1) : (NEC_0_PAUSE_LEN - 1);
-                            }
-                            else if (current_bit == NEC16_ADDRESS_LEN)                          // send SYNC bit (8th bit)
-                            {
-                                pulse_len = NEC_PULSE_LEN;
-                                pause_len = NEC_START_BIT_PAUSE_LEN - 1;
-                            }
-                            else if (current_bit < NEC16_COMPLETE_DATA_LEN + 1)                 // send n'th bit
-                            {
-                                uint8_t cur_bit = current_bit - 1;                              // sync skipped, offset = -1 !
-
-                                pulse_len = NEC_PULSE_LEN;
-                                pause_len = (irsnd_buffer[cur_bit >> 3] & (1<<(7-(cur_bit & 7)))) ?
-                                (NEC_1_PAUSE_LEN - 1) : (NEC_0_PAUSE_LEN - 1);
-                            }
-                        }
-                        else
-#endif
-
-#if IRSND_SUPPORT_BANG_OLUFSEN_PROTOCOL == 1
-                        if (irsnd_protocol == IRMP_BANG_OLUFSEN_PROTOCOL)
-                        {
-                            if (current_bit == 0)                                               // send 2nd start bit
-                            {
-                                pulse_len = BANG_OLUFSEN_START_BIT2_PULSE_LEN;
-                                pause_len = BANG_OLUFSEN_START_BIT2_PAUSE_LEN - 1;
-                            }
-                            else if (current_bit == 1)                                          // send 3rd start bit
-                            {
-                                pulse_len = BANG_OLUFSEN_START_BIT3_PULSE_LEN;
-                                pause_len = BANG_OLUFSEN_START_BIT3_PAUSE_LEN - 1;
-                            }
-                            else if (current_bit == 2)                                          // send 4th start bit
-                            {
-                                pulse_len = BANG_OLUFSEN_START_BIT2_PULSE_LEN;
-                                pause_len = BANG_OLUFSEN_START_BIT2_PAUSE_LEN - 1;
-                            }
-                            else if (current_bit == 19)                                          // send trailer bit
-                            {
-                                pulse_len = BANG_OLUFSEN_PULSE_LEN;
-                                pause_len = BANG_OLUFSEN_TRAILER_BIT_PAUSE_LEN - 1;
-                            }
-                            else if (current_bit < BANG_OLUFSEN_COMPLETE_DATA_LEN)              // send n'th bit
-                            {
-                                uint8_t cur_bit_value = (irsnd_buffer[current_bit >> 3] & (1<<(7-(current_bit & 7)))) ? 1 : 0;
-                                pulse_len = BANG_OLUFSEN_PULSE_LEN;
-
-                                if (cur_bit_value == last_bit_value)
-                                {
-                                    pause_len = BANG_OLUFSEN_R_PAUSE_LEN - 1;
-                                }
-                                else
-                                {
-                                    pause_len = cur_bit_value ? (BANG_OLUFSEN_1_PAUSE_LEN - 1) : (BANG_OLUFSEN_0_PAUSE_LEN - 1);
-                                    last_bit_value = cur_bit_value;
-                                }
-                            }
-                        }
-                        else
-#endif
-                        if (irsnd_buffer[current_bit >> 3] & (1<<(7-(current_bit & 7))))
-                        {
-                            pulse_len = pulse_1_len;
-                            pause_len = pause_1_len;
-                        }
-                        else
-                        {
-                            pulse_len = pulse_0_len;
-                            pause_len = pause_0_len;
-                        }
-                    }
-                    else if (has_stop_bit)                                                                      // send stop bit
-                    {
-                        pulse_len = pulse_0_len;
-
-                        if (auto_repetition_counter < n_auto_repetitions)
-                        {
-                            pause_len = pause_0_len;
-                        }
-                        else
-                        {
-                            pause_len = 255;                                        // last frame: pause of 255
-                        }
-                    }
-                }
-
-                if (pulse_counter < pulse_len)
                 {
                     if (pulse_counter == 0)
                     {
-                        irsnd_on ();
-                    }
-                    pulse_counter++;
-                }
-                else if (pause_counter < pause_len)
-                {
-                    if (pause_counter == 0)
-                    {
-                        irsnd_off ();
-                    }
-                    pause_counter++;
-                }
-                else
-                {
-                    current_bit++;
-
-                    if (current_bit >= complete_data_len + has_stop_bit)
-                    {
-                        current_bit = 0xFF;
-                        auto_repetition_counter++;
-
-                        if (auto_repetition_counter == n_auto_repetitions)
+                        if (current_bit == 0xFF)                                                    // send start bit
                         {
-                            irsnd_busy = FALSE;
-                            auto_repetition_counter = 0;
+                            pulse_len = startbit_pulse_len;
+                            pause_len = startbit_pause_len;
                         }
-                        new_frame = TRUE;
+                        else if (current_bit < complete_data_len)                                   // send n'th bit
+                        {
+#if IRSND_SUPPORT_SAMSUNG_PROTOCOL == 1
+                            if (irsnd_protocol == IRMP_SAMSUNG_PROTOCOL)
+                            {
+                                if (current_bit < SAMSUNG_ADDRESS_LEN)                              // send address bits
+                                {
+                                    pulse_len = SAMSUNG_PULSE_LEN;
+                                    pause_len = (irsnd_buffer[current_bit >> 3] & (1<<(7-(current_bit & 7)))) ?
+                                                    (SAMSUNG_1_PAUSE_LEN - 1) : (SAMSUNG_0_PAUSE_LEN - 1);
+                                }
+                                else if (current_bit == SAMSUNG_ADDRESS_LEN)                        // send SYNC bit (16th bit)
+                                {
+                                    pulse_len = SAMSUNG_PULSE_LEN;
+                                    pause_len = SAMSUNG_START_BIT_PAUSE_LEN - 1;
+                                }
+                                else if (current_bit < SAMSUNG_COMPLETE_DATA_LEN)                   // send n'th bit
+                                {
+                                    uint8_t cur_bit = current_bit - 1;                              // sync skipped, offset = -1 !
+
+                                    pulse_len = SAMSUNG_PULSE_LEN;
+                                    pause_len = (irsnd_buffer[cur_bit >> 3] & (1<<(7-(cur_bit & 7)))) ?
+                                                    (SAMSUNG_1_PAUSE_LEN - 1) : (SAMSUNG_0_PAUSE_LEN - 1);
+                                }
+                            }
+                            else
+#endif
+
+#if IRSND_SUPPORT_NEC16_PROTOCOL == 1
+                            if (irsnd_protocol == IRMP_NEC16_PROTOCOL)
+                            {
+                                if (current_bit < NEC16_ADDRESS_LEN)                                // send address bits
+                                {
+                                    pulse_len = NEC_PULSE_LEN;
+                                    pause_len = (irsnd_buffer[current_bit >> 3] & (1<<(7-(current_bit & 7)))) ?
+                                                    (NEC_1_PAUSE_LEN - 1) : (NEC_0_PAUSE_LEN - 1);
+                                }
+                                else if (current_bit == NEC16_ADDRESS_LEN)                          // send SYNC bit (8th bit)
+                                {
+                                    pulse_len = NEC_PULSE_LEN;
+                                    pause_len = NEC_START_BIT_PAUSE_LEN - 1;
+                                }
+                                else if (current_bit < NEC16_COMPLETE_DATA_LEN + 1)                 // send n'th bit
+                                {
+                                    uint8_t cur_bit = current_bit - 1;                              // sync skipped, offset = -1 !
+
+                                    pulse_len = NEC_PULSE_LEN;
+                                    pause_len = (irsnd_buffer[cur_bit >> 3] & (1<<(7-(cur_bit & 7)))) ?
+                                                    (NEC_1_PAUSE_LEN - 1) : (NEC_0_PAUSE_LEN - 1);
+                                }
+                            }
+                            else
+#endif
+
+#if IRSND_SUPPORT_BANG_OLUFSEN_PROTOCOL == 1
+                            if (irsnd_protocol == IRMP_BANG_OLUFSEN_PROTOCOL)
+                            {
+                                if (current_bit == 0)                                               // send 2nd start bit
+                                {
+                                    pulse_len = BANG_OLUFSEN_START_BIT2_PULSE_LEN;
+                                    pause_len = BANG_OLUFSEN_START_BIT2_PAUSE_LEN - 1;
+                                }
+                                else if (current_bit == 1)                                          // send 3rd start bit
+                                {
+                                    pulse_len = BANG_OLUFSEN_START_BIT3_PULSE_LEN;
+                                    pause_len = BANG_OLUFSEN_START_BIT3_PAUSE_LEN - 1;
+                                }
+                                else if (current_bit == 2)                                          // send 4th start bit
+                                {
+                                    pulse_len = BANG_OLUFSEN_START_BIT2_PULSE_LEN;
+                                    pause_len = BANG_OLUFSEN_START_BIT2_PAUSE_LEN - 1;
+                                }
+                                else if (current_bit == 19)                                          // send trailer bit
+                                {
+                                    pulse_len = BANG_OLUFSEN_PULSE_LEN;
+                                    pause_len = BANG_OLUFSEN_TRAILER_BIT_PAUSE_LEN - 1;
+                                }
+                                else if (current_bit < BANG_OLUFSEN_COMPLETE_DATA_LEN)              // send n'th bit
+                                {
+                                    uint8_t cur_bit_value = (irsnd_buffer[current_bit >> 3] & (1<<(7-(current_bit & 7)))) ? 1 : 0;
+                                    pulse_len = BANG_OLUFSEN_PULSE_LEN;
+
+                                    if (cur_bit_value == last_bit_value)
+                                    {
+                                        pause_len = BANG_OLUFSEN_R_PAUSE_LEN - 1;
+                                    }
+                                    else
+                                    {
+                                        pause_len = cur_bit_value ? (BANG_OLUFSEN_1_PAUSE_LEN - 1) : (BANG_OLUFSEN_0_PAUSE_LEN - 1);
+                                        last_bit_value = cur_bit_value;
+                                    }
+                                }
+                            }
+                            else
+#endif
+                            if (irsnd_buffer[current_bit >> 3] & (1<<(7-(current_bit & 7))))
+                            {
+                                pulse_len = pulse_1_len;
+                                pause_len = pause_1_len;
+                            }
+                            else
+                            {
+                                pulse_len = pulse_0_len;
+                                pause_len = pause_0_len;
+                            }
+                        }
+                        else if (has_stop_bit)                                                                      // send stop bit
+                        {
+                            pulse_len = pulse_0_len;
+
+                            if (auto_repetition_counter < n_auto_repetitions)
+                            {
+                                pause_len = pause_0_len;
+                            }
+                            else
+                            {
+                                pause_len = 255;                                        // last frame: pause of 255
+                            }
+                        }
                     }
 
-                    pulse_counter = 0;
-                    pause_counter = 0;
+                    if (pulse_counter < pulse_len)
+                    {
+                        if (pulse_counter == 0)
+                        {
+                            irsnd_on ();
+                        }
+                        pulse_counter++;
+                    }
+                    else if (pause_counter < pause_len)
+                    {
+                        if (pause_counter == 0)
+                        {
+                            irsnd_off ();
+                        }
+                        pause_counter++;
+                    }
+                    else
+                    {
+                        current_bit++;
+
+                        if (current_bit >= complete_data_len + has_stop_bit)
+                        {
+                            current_bit = 0xFF;
+                            auto_repetition_counter++;
+
+                            if (auto_repetition_counter == n_auto_repetitions)
+                            {
+                                irsnd_busy = FALSE;
+                                auto_repetition_counter = 0;
+                            }
+                            new_frame = TRUE;
+                        }
+
+                        pulse_counter = 0;
+                        pause_counter = 0;
+                    }
+                    break;
                 }
-                break;
-            }
 #endif
 
 #if IRSND_SUPPORT_RC5_PROTOCOL == 1
-            case IRMP_RC5_PROTOCOL:
+                case IRMP_RC5_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_RC6_PROTOCOL == 1
-            case IRMP_RC6_PROTOCOL:
+                case IRMP_RC6_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_RC6A_PROTOCOL == 1
-            case IRMP_RC6A_PROTOCOL:
+                case IRMP_RC6A_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_SIEMENS_PROTOCOL == 1
-            case IRMP_SIEMENS_PROTOCOL:
+                case IRMP_SIEMENS_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_RUWIDO_PROTOCOL == 1
-            case IRMP_RUWIDO_PROTOCOL:
+                case IRMP_RUWIDO_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_GRUNDIG_PROTOCOL == 1
-            case IRMP_GRUNDIG_PROTOCOL:
+                case IRMP_GRUNDIG_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_IR60_PROTOCOL == 1
-            case IRMP_IR60_PROTOCOL:
+                case IRMP_IR60_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_NOKIA_PROTOCOL == 1
-            case IRMP_NOKIA_PROTOCOL:
+                case IRMP_NOKIA_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_A1TVBOX_PROTOCOL == 1
-            case IRMP_A1TVBOX_PROTOCOL:
+                case IRMP_A1TVBOX_PROTOCOL:
 #endif
 
 #if IRSND_SUPPORT_RC5_PROTOCOL      == 1 || \
@@ -2859,196 +2914,199 @@ uint8_t irsnd_ISR(void) {
     IRSND_SUPPORT_IR60_PROTOCOL     == 1 || \
     IRSND_SUPPORT_NOKIA_PROTOCOL    == 1 || \
     IRSND_SUPPORT_A1TVBOX_PROTOCOL  == 1
-            {
-                if (pulse_counter == pulse_len && pause_counter == pause_len)
                 {
-                    current_bit++;
-
-                    if (current_bit >= complete_data_len)
+                    if (pulse_counter == pulse_len && pause_counter == pause_len)
                     {
-                        current_bit = 0xFF;
+                        current_bit++;
+
+                        if (current_bit >= complete_data_len)
+                        {
+                            current_bit = 0xFF;
+
+#if IRSND_SUPPORT_GRUNDIG_PROTOCOL == 1 || IRSND_SUPPORT_IR60_PROTOCOL == 1 || IRSND_SUPPORT_NOKIA_PROTOCOL == 1
+                            if (irsnd_protocol == IRMP_GRUNDIG_PROTOCOL || irsnd_protocol == IRMP_IR60_PROTOCOL || irsnd_protocol == IRMP_NOKIA_PROTOCOL)
+                            {
+                                auto_repetition_counter++;
+
+                                if (repeat_counter > 0)
+                                {                                       // set 117 msec pause time
+                                    auto_repetition_pause_len = GRUNDIG_NOKIA_IR60_FRAME_REPEAT_PAUSE_LEN;
+                                }
+
+                                if (repeat_counter < n_repeat_frames)       // tricky: repeat n info frames per auto repetition before sending last stop frame
+                                {
+                                    n_auto_repetitions++;                   // increment number of auto repetitions
+                                    repeat_counter++;
+                                }
+                                else if (auto_repetition_counter == n_auto_repetitions)
+                                {
+                                    irsnd_busy = FALSE;
+                                    auto_repetition_counter = 0;
+                                }
+                            }
+                            else
+#endif
+                            {
+                                irsnd_busy  = FALSE;
+                            }
+
+                            new_frame = TRUE;
+                            irsnd_off ();
+                        }
+
+                        pulse_counter = 0;
+                        pause_counter = 0;
+                    }
+
+                    if (! new_frame)
+                    {
+                        uint8_t first_pulse;
 
 #if IRSND_SUPPORT_GRUNDIG_PROTOCOL == 1 || IRSND_SUPPORT_IR60_PROTOCOL == 1 || IRSND_SUPPORT_NOKIA_PROTOCOL == 1
                         if (irsnd_protocol == IRMP_GRUNDIG_PROTOCOL || irsnd_protocol == IRMP_IR60_PROTOCOL || irsnd_protocol == IRMP_NOKIA_PROTOCOL)
                         {
-                            auto_repetition_counter++;
-
-                            if (repeat_counter > 0)
-                            {                                       // set 117 msec pause time
-                                auto_repetition_pause_len = GRUNDIG_NOKIA_IR60_FRAME_REPEAT_PAUSE_LEN;
-                            }
-
-                            if (repeat_counter < n_repeat_frames) // tricky: repeat n info frames per auto repetition before sending last stop frame
-                            {
-                                n_auto_repetitions++;                   // increment number of auto repetitions
-                                repeat_counter++;
-                            }
-                            else if (auto_repetition_counter == n_auto_repetitions)
-                            {
-                                irsnd_busy = FALSE;
-                                auto_repetition_counter = 0;
-                            }
-                        }
-                        else
-#endif
-                        {
-                            irsnd_busy = FALSE;
-                        }
-
-                        new_frame = TRUE;
-                        irsnd_off ();
-                    }
-
-                    pulse_counter = 0;
-                    pause_counter = 0;
-                }
-
-                if (! new_frame)
-                {
-                    uint8_t first_pulse;
-
-#if IRSND_SUPPORT_GRUNDIG_PROTOCOL == 1 || IRSND_SUPPORT_IR60_PROTOCOL == 1 || IRSND_SUPPORT_NOKIA_PROTOCOL == 1
-                    if (irsnd_protocol == IRMP_GRUNDIG_PROTOCOL || irsnd_protocol == IRMP_IR60_PROTOCOL || irsnd_protocol == IRMP_NOKIA_PROTOCOL)
-                    {
-                        if (current_bit == 0xFF ||                                                   // start bit of start-frame
-                                (irsnd_protocol == IRMP_GRUNDIG_PROTOCOL && current_bit == 15) ||// start bit of info-frame (Grundig)
-                                (irsnd_protocol == IRMP_IR60_PROTOCOL && current_bit == 7) ||// start bit of data frame (IR60)
-                                (irsnd_protocol == IRMP_NOKIA_PROTOCOL && (current_bit == 23 || current_bit == 47)))// start bit of info- or stop-frame (Nokia)
-                        {
-                            pulse_len = startbit_pulse_len;
-                            pause_len = startbit_pause_len;
-                            first_pulse = TRUE;
-                        }
-                        else                                                                        // send n'th bit
-                        {
-                            pulse_len = GRUNDIG_NOKIA_IR60_BIT_LEN;
-                            pause_len = GRUNDIG_NOKIA_IR60_BIT_LEN;
-                            first_pulse = (irsnd_buffer[current_bit >> 3] & (1<<(7-(current_bit & 7)))) ? TRUE : FALSE;
-                        }
-                    }
-                    else // if (irsnd_protocol == IRMP_RC5_PROTOCOL || irsnd_protocol == IRMP_RC6_PROTOCOL || irsnd_protocol == IRMP_RC6A_PROTOCOL ||
-                         //     irsnd_protocol == IRMP_SIEMENS_PROTOCOL || irsnd_protocol == IRMP_RUWIDO_PROTOCOL)
-#endif
-                    {
-                        if (current_bit == 0xFF)                                                    // 1 start bit
-                        {
-#if IRSND_SUPPORT_RC6_PROTOCOL == 1 || IRSND_SUPPORT_RC6A_PROTOCOL == 1
-                            if (irsnd_protocol == IRMP_RC6_PROTOCOL || irsnd_protocol == IRMP_RC6A_PROTOCOL)
+                            if (current_bit == 0xFF ||                                                                  // start bit of start-frame
+                                (irsnd_protocol == IRMP_GRUNDIG_PROTOCOL && current_bit == 15) ||                       // start bit of info-frame (Grundig)
+                                (irsnd_protocol == IRMP_IR60_PROTOCOL && current_bit == 7) ||                           // start bit of data frame (IR60)
+                                (irsnd_protocol == IRMP_NOKIA_PROTOCOL && (current_bit == 23 || current_bit == 47)))    // start bit of info- or stop-frame (Nokia)
                             {
                                 pulse_len = startbit_pulse_len;
                                 pause_len = startbit_pause_len;
+                                first_pulse = TRUE;
                             }
-                            else
+                            else                                                                        // send n'th bit
+                            {
+                                pulse_len = GRUNDIG_NOKIA_IR60_BIT_LEN;
+                                pause_len = GRUNDIG_NOKIA_IR60_BIT_LEN;
+                                first_pulse = (irsnd_buffer[current_bit >> 3] & (1<<(7-(current_bit & 7)))) ? TRUE : FALSE;
+                            }
+                        }
+                        else // if (irsnd_protocol == IRMP_RC5_PROTOCOL || irsnd_protocol == IRMP_RC6_PROTOCOL || irsnd_protocol == IRMP_RC6A_PROTOCOL ||
+                             //     irsnd_protocol == IRMP_SIEMENS_PROTOCOL || irsnd_protocol == IRMP_RUWIDO_PROTOCOL)
+#endif
+                        {
+                            if (current_bit == 0xFF)                                                    // 1 start bit
+                            {
+#if IRSND_SUPPORT_RC6_PROTOCOL == 1 || IRSND_SUPPORT_RC6A_PROTOCOL == 1
+                                if (irsnd_protocol == IRMP_RC6_PROTOCOL || irsnd_protocol == IRMP_RC6A_PROTOCOL)
+                                {
+                                    pulse_len = startbit_pulse_len;
+                                    pause_len = startbit_pause_len;
+                                }
+                                else
 #endif
 #if IRSND_SUPPORT_A1TVBOX_PROTOCOL == 1
-                            if (irsnd_protocol == IRMP_A1TVBOX_PROTOCOL)
-                            {
-                                current_bit = 0;
-                            }
-                            else
+                                if (irsnd_protocol == IRMP_A1TVBOX_PROTOCOL)
+                                {
+                                    current_bit = 0;
+                                }
+                                else
 #endif
-                            {
-                                ;
-                            }
+                                {
+                                    ;
+                                }
 
-                            first_pulse = TRUE;
-                        }
-                        else                                                                        // send n'th bit
-                        {
+                                first_pulse = TRUE;
+                            }
+                            else                                                                        // send n'th bit
+                            {
 #if IRSND_SUPPORT_RC6_PROTOCOL == 1 || IRSND_SUPPORT_RC6A_PROTOCOL == 1
-                            if (irsnd_protocol == IRMP_RC6_PROTOCOL || irsnd_protocol == IRMP_RC6A_PROTOCOL)
-                            {
-                                pulse_len = RC6_BIT_LEN;
-                                pause_len = RC6_BIT_LEN;
+                                if (irsnd_protocol == IRMP_RC6_PROTOCOL || irsnd_protocol == IRMP_RC6A_PROTOCOL)
+                                {
+                                    pulse_len = RC6_BIT_LEN;
+                                    pause_len = RC6_BIT_LEN;
 
-                                if (irsnd_protocol == IRMP_RC6_PROTOCOL)
-                                {
-                                    if (current_bit == 4)                                           // toggle bit (double len)
+                                    if (irsnd_protocol == IRMP_RC6_PROTOCOL)
                                     {
-                                        pulse_len = RC6_BIT_2_LEN;                                  // = 2 * RC_BIT_LEN
-                                        pause_len = RC6_BIT_2_LEN;// = 2 * RC_BIT_LEN
+                                        if (current_bit == 4)                                           // toggle bit (double len)
+                                        {
+                                            pulse_len = RC6_BIT_2_LEN;                                  // = 2 * RC_BIT_LEN
+                                            pause_len = RC6_BIT_2_LEN;                                  // = 2 * RC_BIT_LEN
+                                        }
+                                    }
+                                    else // if (irsnd_protocol == IRMP_RC6A_PROTOCOL)
+                                    {
+                                        if (current_bit == 4)                                           // toggle bit (double len)
+                                        {
+                                            pulse_len = RC6_BIT_3_LEN;                                  // = 3 * RC6_BIT_LEN
+                                            pause_len = RC6_BIT_2_LEN;                                  // = 2 * RC6_BIT_LEN
+                                        }
+                                        else if (current_bit == 5)                                      // toggle bit (double len)
+                                        {
+                                            pause_len = RC6_BIT_2_LEN;                                  // = 2 * RC6_BIT_LEN
+                                        }
                                     }
                                 }
-                                else // if (irsnd_protocol == IRMP_RC6A_PROTOCOL)
-                                {
-                                    if (current_bit == 4)                                           // toggle bit (double len)
-                                    {
-                                        pulse_len = RC6_BIT_3_LEN;                                  // = 3 * RC6_BIT_LEN
-                                        pause_len = RC6_BIT_2_LEN;// = 2 * RC6_BIT_LEN
-                                    }
-                                    else if (current_bit == 5)                                      // toggle bit (double len)
-                                    {
-                                        pause_len = RC6_BIT_2_LEN;                                  // = 2 * RC6_BIT_LEN
-                                    }
-                                }
-                            }
 #endif
-                            first_pulse = (irsnd_buffer[current_bit >> 3] & (1<<(7-(current_bit & 7)))) ? TRUE : FALSE;
+                                first_pulse = (irsnd_buffer[current_bit >> 3] & (1<<(7-(current_bit & 7)))) ? TRUE : FALSE;
+                            }
+
+                            if (irsnd_protocol == IRMP_RC5_PROTOCOL)
+                            {
+                                first_pulse = first_pulse ? FALSE : TRUE;
+                            }
                         }
 
-                        if (irsnd_protocol == IRMP_RC5_PROTOCOL)
+                        if (first_pulse)
                         {
-                            first_pulse = first_pulse ? FALSE : TRUE;
+                            // printf ("first_pulse: current_bit: %d  %d < %d  %d < %d\n", current_bit, pause_counter, pause_len, pulse_counter, pulse_len);
+
+                            if (pulse_counter < pulse_len)
+                            {
+                                if (pulse_counter == 0)
+                                {
+                                    irsnd_on ();
+                                }
+                                pulse_counter++;
+                            }
+                            else // if (pause_counter < pause_len)
+                            {
+                                if (pause_counter == 0)
+                                {
+                                    irsnd_off ();
+                                }
+                                pause_counter++;
+                            }
+                        }
+                        else
+                        {
+                            // printf ("first_pause: current_bit: %d  %d < %d  %d < %d\n", current_bit, pause_counter, pause_len, pulse_counter, pulse_len);
+
+                            if (pause_counter < pause_len)
+                            {
+                                if (pause_counter == 0)
+                                {
+                                    irsnd_off ();
+                                }
+                                pause_counter++;
+                            }
+                            else // if (pulse_counter < pulse_len)
+                            {
+                                if (pulse_counter == 0)
+                                {
+                                    irsnd_on ();
+                                }
+                                pulse_counter++;
+                            }
                         }
                     }
-
-                    if (first_pulse)
-                    {
-                        // printf ("first_pulse: current_bit: %d  %d < %d  %d < %d\n", current_bit, pause_counter, pause_len, pulse_counter, pulse_len);
-
-                        if (pulse_counter < pulse_len)
-                        {
-                            if (pulse_counter == 0)
-                            {
-                                irsnd_on ();
-                            }
-                            pulse_counter++;
-                        }
-                        else // if (pause_counter < pause_len)
-                        {
-                            if (pause_counter == 0)
-                            {
-                                irsnd_off ();
-                            }
-                            pause_counter++;
-                        }
-                    }
-                    else
-                    {
-                        // printf ("first_pause: current_bit: %d  %d < %d  %d < %d\n", current_bit, pause_counter, pause_len, pulse_counter, pulse_len);
-
-                        if (pause_counter < pause_len)
-                        {
-                            if (pause_counter == 0)
-                            {
-                                irsnd_off ();
-                            }
-                            pause_counter++;
-                        }
-                        else // if (pulse_counter < pulse_len)
-                        {
-                            if (pulse_counter == 0)
-                            {
-                                irsnd_on ();
-                            }
-                            pulse_counter++;
-                        }
-                    }
+                    break;
                 }
-                break;
-            }
 #endif // IRSND_SUPPORT_RC5_PROTOCOL == 1 || IRSND_SUPPORT_RC6_PROTOCOL == 1 || || IRSND_SUPPORT_RC6A_PROTOCOL == 1 || IRSND_SUPPORT_SIEMENS_PROTOCOL == 1 ||
-            // IRSND_SUPPORT_RUWIDO_PROTOCOL == 1 || IRSND_SUPPORT_GRUNDIG_PROTOCOL == 1 || IRSND_SUPPORT_IR60_PROTOCOL == 1 || IRSND_SUPPORT_NOKIA_PROTOCOL == 1
+       // IRSND_SUPPORT_RUWIDO_PROTOCOL == 1 || IRSND_SUPPORT_GRUNDIG_PROTOCOL == 1 || IRSND_SUPPORT_IR60_PROTOCOL == 1 || IRSND_SUPPORT_NOKIA_PROTOCOL == 1
 
-            default: {
-                irsnd_busy = FALSE;
-                break;
-            }
+                default:
+                {
+                    irsnd_busy = FALSE;
+                    break;
+                }
             }
         }
 
-        if (!irsnd_busy) {
-            if (repeat_counter < n_repeat_frames) {
+        if (! irsnd_busy)
+        {
+            if (repeat_counter < n_repeat_frames)
+            {
 #if IRSND_SUPPORT_FDC_PROTOCOL == 1
                 if (irsnd_protocol == IRMP_FDC_PROTOCOL)
                 {
@@ -3057,7 +3115,9 @@ uint8_t irsnd_ISR(void) {
 #endif
                 repeat_counter++;
                 irsnd_busy = TRUE;
-            } else {
+            }
+            else
+            {
                 irsnd_busy = TRUE; //Rainer
                 send_trailer = TRUE;
                 n_repeat_frames = 0;
@@ -3092,10 +3152,10 @@ uint8_t irsnd_ISR(void) {
 int
 main (int argc, char ** argv)
 {
-    int protocol;
-    int address;
-    int command;
-    IRMP_DATA irmp_data;
+    int         protocol;
+    int         address;
+    int         command;
+    IRMP_DATA   irmp_data;
 
     if (argc != 4 && argc != 5)
     {
@@ -3104,8 +3164,8 @@ main (int argc, char ** argv)
     }
 
     if (sscanf (argv[1], "%d", &protocol) == 1 &&
-            sscanf (argv[2], "%x", &address) == 1 &&
-            sscanf (argv[3], "%x", &command) == 1)
+        sscanf (argv[2], "%x", &address) == 1 &&
+        sscanf (argv[3], "%x", &command) == 1)
     {
         irmp_data.protocol = protocol;
         irmp_data.address = address;

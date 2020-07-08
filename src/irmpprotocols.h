@@ -3,7 +3,7 @@
  *
  * DO NOT INCLUDE THIS FILE, WILL BE INCLUDED BY IRMP.H or IRSND.H!
  *
- * Copyright (c) 2013-2019 Frank Meyer - frank(at)fli4l.de
+ * Copyright (c) 2013-2020 Frank Meyer - frank(at)fli4l.de
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,10 +12,10 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifndef IRMP_PROTOCOLS_H
-#define IRMP_PROTOCOLS_H
+#ifndef _IRMP_PROTOCOLS_H_
+#define _IRMP_PROTOCOLS_H_
 
-#if !defined(IRMP_H) && !defined(IRSND_H)
+#if !defined(_IRMP_H_) && !defined(_IRSND_H_)
 #  error please include only irmp.h or irsnd.h, not irmpprotocols.h
 #endif
 
@@ -81,9 +81,10 @@
 #define IRMP_METZ_PROTOCOL                      55              // METZ
 #define IRMP_ONKYO_PROTOCOL                     56
 
-#define IRMP_RADIO1_PROTOCOL                    57              // Radio protocol (experimental status), do not use it yet!
+#define RF_GEN24_PROTOCOL                       57              // RF Generic, 24 Bits (Pollin 550666, EAN 4049702006022 and many other similar RF remote controls))
+#define RF_X10_PROTOCOL                         58              // RF PC X10 Remote Control (Medion, Pollin 721815)
 
-#define IRMP_N_PROTOCOLS                        57              // number of supported protocols
+#define IRMP_N_PROTOCOLS                        58              // number of supported protocols
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * timing constants:
@@ -889,20 +890,36 @@ typedef uint8_t     PAUSE_LEN;
  * TELEFUNKEN:
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#define TELEFUNKEN_START_BIT_PULSE_TIME          600.0e-6                       //  600 usec pulse
-#define TELEFUNKEN_START_BIT_PAUSE_TIME         1500.0e-6                       // 1500 usec pause
-#define TELEFUNKEN_PULSE_TIME                    600.0e-6                       //  600 usec pulse
-#define TELEFUNKEN_1_PAUSE_TIME                 1500.0e-6                       // 1500 usec pause
-#define TELEFUNKEN_0_PAUSE_TIME                  600.0e-6                       //  600 usec pause
-#define TELEFUNKEN_FRAME_REPEAT_PAUSE_TIME        22.0e-3                       // frame repeat after XX ms ?????
-#define TELEFUNKEN_ADDRESS_OFFSET                0                              // skip 0 bits
-#define TELEFUNKEN_ADDRESS_LEN                   0                              // read 0 address bits
-#define TELEFUNKEN_COMMAND_OFFSET                0                              // skip 0 bits
-#define TELEFUNKEN_COMMAND_LEN                  15                              // read 15 bits
-#define TELEFUNKEN_COMPLETE_DATA_LEN            15                              // complete length
+#define TELEFUNKEN_START_BIT_PULSE_TIME         3960.0e-6                       // 4 ms usec pulse
+#define TELEFUNKEN_START_BIT_PAUSE_TIME         610.0e-6                        // 610 usec pause
+#define TELEFUNKEN_PULSE_TIME                   570.0e-6                        //  560 usec pulse
+#define TELEFUNKEN_1_PAUSE_TIME                 1700.0e-6                       // 1700 usec pause
+#define TELEFUNKEN_0_PAUSE_TIME                 560.0e-6                        //  560 usec pause
+#define TELEFUNKEN_FRAME_REPEAT_PAUSE_TIME      5000.0e-6                       // frame repeat after 5 ms
+#define TELEFUNKEN_ADDRESS_OFFSET               8                               // skip 0 bits
+#define TELEFUNKEN_ADDRESS_LEN                  12                              // read 12 address bits
+#define TELEFUNKEN_COMMAND_OFFSET               0                               // skip 8 bits
+#define TELEFUNKEN_COMMAND_LEN                  8                               // read 8 bits
+#define TELEFUNKEN_COMPLETE_DATA_LEN            20                              // complete length
 #define TELEFUNKEN_STOP_BIT                     1                               // has stop bit
 #define TELEFUNKEN_LSB                          0                               // LSB...MSB
 #define TELEFUNKEN_FLAGS                        0                               // flags
+
+
+//#define TELEFUNKEN_START_BIT_PULSE_TIME          600.0e-6                       //  600 usec pulse
+//#define TELEFUNKEN_START_BIT_PAUSE_TIME         1500.0e-6                       // 1500 usec pause
+//#define TELEFUNKEN_PULSE_TIME                    600.0e-6                       //  600 usec pulse
+//#define TELEFUNKEN_1_PAUSE_TIME                 1500.0e-6                       // 1500 usec pause
+//#define TELEFUNKEN_0_PAUSE_TIME                  600.0e-6                       //  600 usec pause
+//#define TELEFUNKEN_FRAME_REPEAT_PAUSE_TIME        22.0e-3                       // frame repeat after XX ms ?????
+//#define TELEFUNKEN_ADDRESS_OFFSET                0                              // skip 0 bits
+//#define TELEFUNKEN_ADDRESS_LEN                   0                              // read 0 address bits
+//#define TELEFUNKEN_COMMAND_OFFSET                0                              // skip 0 bits
+//#define TELEFUNKEN_COMMAND_LEN                  15                              // read 15 bits
+//#define TELEFUNKEN_COMPLETE_DATA_LEN            15                              // complete length
+//#define TELEFUNKEN_STOP_BIT                     1                               // has stop bit
+//#define TELEFUNKEN_LSB                          0                               // LSB...MSB
+//#define TELEFUNKEN_FLAGS                        0                               // flags
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * ROOMBA
@@ -1043,25 +1060,54 @@ typedef uint8_t     PAUSE_LEN;
 #define METZ_FLAGS                               0                              // flags
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * RADIO1 - e.g. Tevion
+ * RF GEN24 generic remote control (Pollin 550666, EAN 4049702006022 and many other similar RF remote controls)
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#define RADIO1_START_BIT_PULSE_TIME            3000.0e-6                        // 3000 usec pulse
-#define RADIO1_START_BIT_PAUSE_TIME            7000.0e-6                        // 7000 usec pulse
-#define RADIO1_0_PULSE_TIME                     500.0e-6                        //  500 usec pulse
-#define RADIO1_0_PAUSE_TIME                    1000.0e-6                        // 1000 usec pause
-#define RADIO1_1_PULSE_TIME                    1000.0e-6                        // 1000 usec pulse
-#define RADIO1_1_PAUSE_TIME                     500.0e-6                        //  500 usec pause
+#define RF_GEN24_0_PULSE_TIME                   400.0e-6                        //  400 usec pulse
+#define RF_GEN24_0_PAUSE_TIME                  1066.0e-6                        // 1066 usec pause
+#define RF_GEN24_1_PULSE_TIME                  1066.0e-6                        // 1066 usec pulse
+#define RF_GEN24_1_PAUSE_TIME                   400.0e-6                        //  400 usec pause
 
-#define RADIO1_FRAME_REPEAT_PAUSE_TIME           25.0e-3                        // frame repeat after 25ms
-#define RADIO1_ADDRESS_OFFSET                   4                               // skip 4 bits
-#define RADIO1_ADDRESS_LEN                     16                               // read 16 address bits
-#define RADIO1_COMMAND_OFFSET                  20                               // skip 4 + 16 bits
-#define RADIO1_COMMAND_LEN                      3                               // read 3 command bits
-#define RADIO1_COMPLETE_DATA_LEN               23                               // complete length
-#define RADIO1_STOP_BIT                        1                                // has stop bit
-#define RADIO1_LSB                             1                                // LSB...MSB?
-#define RADIO1_FLAGS                           0                                // flags
+#define RF_GEN24_FRAME_REPEAT_PAUSE_TIME         10.0e-3                        // frame repeat after 10 msec
+#define RF_GEN24_ADDRESS_OFFSET                  0                              // skip 0 bits
+#define RF_GEN24_ADDRESS_LEN                    10                              // read 10 address bits
+#define RF_GEN24_COMMAND_OFFSET                 10                              // skip 0 + 10 bits
+#define RF_GEN24_COMMAND_LEN                    14                              // read 14 command bits
+#define RF_GEN24_COMPLETE_DATA_LEN              24                              // complete length
+#define RF_GEN24_STOP_BIT                        1                              // has stop bit
+#define RF_GEN24_LSB                             0                              // MSB...LSB
+#define RF_GEN24_FLAGS                           0                              // flags
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
+ * RF X10 remote control (MEDION, Pollin 721815)
+ *
+ * Frame:
+ * 1 toggle bit + 7 command bits + 1 toggle bit + 7 alternative command bits + 4 0-bits
+ *
+ * Rule:
+ * If command >= 0x0055, then alternative command = command - 0x0055, else alternative command = command + 0x002B
+ *
+ * Here we store command in address, alternative command incl. 4 0-bits in command
+ *
+ * In irmp_get_data(), we check if alternative command correspondents with command value and return address = 0x0000 with cmd = command
+ *---------------------------------------------------------------------------------------------------------------------------------------------------
+ */
+#define RF_X10_START_BIT_PULSE_TIME             2850.0e-6                        // 2850 usec pulse
+#define RF_X10_START_BIT_PAUSE_TIME             1710.0e-6                        // 1710 usec pulse
+#define RF_X10_0_PULSE_TIME                      570.0e-6                        //  570 usec pulse
+#define RF_X10_0_PAUSE_TIME                      570.0e-6                        // 1000 usec pause
+#define RF_X10_1_PULSE_TIME                      570.0e-6                        // 1000 usec pulse
+#define RF_X10_1_PAUSE_TIME                     1710.0e-6                        //  500 usec pause
+
+#define RF_X10_FRAME_REPEAT_PAUSE_TIME          4456.0e-6                        // frame repeat after 4460 usec
+#define RF_X10_ADDRESS_OFFSET                    1                               // skip 1 bit (1st toggle bit9
+#define RF_X10_ADDRESS_LEN                       7                               // store 7 command bits in address
+#define RF_X10_COMMAND_OFFSET                    9                               // skip 1st toggle bit + 7 command bits + 2nd toggle bit
+#define RF_X10_COMMAND_LEN                      11                               // read 7 alternative command bits plus 4 0-bits
+#define RF_X10_COMPLETE_DATA_LEN                20                               // complete length
+#define RF_X10_STOP_BIT                          1                               // has stop bit
+#define RF_X10_LSB                               0                               // MSB...LSB
+#define RF_X10_FLAGS                             0                               // flags
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Frame Repetitions:
@@ -1069,4 +1115,4 @@ typedef uint8_t     PAUSE_LEN;
  */
 #define AUTO_FRAME_REPETITION_TIME              80.0e-3                         // SIRCS/SAMSUNG32/NUBERT: automatic repetition after 25-50ms
 
-#endif // IRMP_PROTOCOLS_H
+#endif // _IRMP_PROTOCOLS_H_
