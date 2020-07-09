@@ -890,36 +890,20 @@ typedef uint8_t     PAUSE_LEN;
  * TELEFUNKEN:
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#define TELEFUNKEN_START_BIT_PULSE_TIME         3960.0e-6                       // 4 ms usec pulse
-#define TELEFUNKEN_START_BIT_PAUSE_TIME         610.0e-6                        // 610 usec pause
-#define TELEFUNKEN_PULSE_TIME                   570.0e-6                        //  560 usec pulse
-#define TELEFUNKEN_1_PAUSE_TIME                 1700.0e-6                       // 1700 usec pause
-#define TELEFUNKEN_0_PAUSE_TIME                 560.0e-6                        //  560 usec pause
-#define TELEFUNKEN_FRAME_REPEAT_PAUSE_TIME      5000.0e-6                       // frame repeat after 5 ms
-#define TELEFUNKEN_ADDRESS_OFFSET               8                               // skip 0 bits
-#define TELEFUNKEN_ADDRESS_LEN                  12                              // read 12 address bits
-#define TELEFUNKEN_COMMAND_OFFSET               0                               // skip 8 bits
-#define TELEFUNKEN_COMMAND_LEN                  8                               // read 8 bits
-#define TELEFUNKEN_COMPLETE_DATA_LEN            20                              // complete length
+#define TELEFUNKEN_START_BIT_PULSE_TIME          600.0e-6                       //  600 usec pulse
+#define TELEFUNKEN_START_BIT_PAUSE_TIME         1500.0e-6                       // 1500 usec pause
+#define TELEFUNKEN_PULSE_TIME                    600.0e-6                       //  600 usec pulse
+#define TELEFUNKEN_1_PAUSE_TIME                 1500.0e-6                       // 1500 usec pause
+#define TELEFUNKEN_0_PAUSE_TIME                  600.0e-6                       //  600 usec pause
+#define TELEFUNKEN_FRAME_REPEAT_PAUSE_TIME        22.0e-3                       // frame repeat after XX ms ?????
+#define TELEFUNKEN_ADDRESS_OFFSET                0                              // skip 0 bits
+#define TELEFUNKEN_ADDRESS_LEN                   0                              // read 0 address bits
+#define TELEFUNKEN_COMMAND_OFFSET                0                              // skip 0 bits
+#define TELEFUNKEN_COMMAND_LEN                  15                              // read 15 bits
+#define TELEFUNKEN_COMPLETE_DATA_LEN            15                              // complete length
 #define TELEFUNKEN_STOP_BIT                     1                               // has stop bit
 #define TELEFUNKEN_LSB                          0                               // LSB...MSB
 #define TELEFUNKEN_FLAGS                        0                               // flags
-
-
-//#define TELEFUNKEN_START_BIT_PULSE_TIME          600.0e-6                       //  600 usec pulse
-//#define TELEFUNKEN_START_BIT_PAUSE_TIME         1500.0e-6                       // 1500 usec pause
-//#define TELEFUNKEN_PULSE_TIME                    600.0e-6                       //  600 usec pulse
-//#define TELEFUNKEN_1_PAUSE_TIME                 1500.0e-6                       // 1500 usec pause
-//#define TELEFUNKEN_0_PAUSE_TIME                  600.0e-6                       //  600 usec pause
-//#define TELEFUNKEN_FRAME_REPEAT_PAUSE_TIME        22.0e-3                       // frame repeat after XX ms ?????
-//#define TELEFUNKEN_ADDRESS_OFFSET                0                              // skip 0 bits
-//#define TELEFUNKEN_ADDRESS_LEN                   0                              // read 0 address bits
-//#define TELEFUNKEN_COMMAND_OFFSET                0                              // skip 0 bits
-//#define TELEFUNKEN_COMMAND_LEN                  15                              // read 15 bits
-//#define TELEFUNKEN_COMPLETE_DATA_LEN            15                              // complete length
-//#define TELEFUNKEN_STOP_BIT                     1                               // has stop bit
-//#define TELEFUNKEN_LSB                          0                               // LSB...MSB
-//#define TELEFUNKEN_FLAGS                        0                               // flags
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * ROOMBA
