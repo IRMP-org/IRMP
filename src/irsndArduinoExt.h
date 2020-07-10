@@ -66,9 +66,6 @@ extern uint8_t irsnd_output_pin_mask;
 #  undef  F_INTERRUPTS
 #  define F_INTERRUPTS              (IRSND_IR_FREQUENCY / 2)   // 19000 interrupts per second
 
-void irsnd_LEDFeedback(bool aEnableBlinkLed);
-constexpr auto irsnd_blink13 = irsnd_LEDFeedback;   // alias for irmp_blink13
-
 extern volatile uint8_t irsnd_is_on;                // Used by IRTimer.cpp.h
 extern volatile uint8_t irsnd_busy;                 // Used by IRTimer.cpp.h
 

@@ -3167,22 +3167,7 @@ uint_fast8_t irmp_ISR(void)
 #endif // IRMP_USE_CALLBACK == 1
 
 #if defined(ARDUINO)
-#  if defined(__AVR__)
-    if (irmp_led_feedback)
-    {
-        digitalWriteFast(LED_BUILTIN, !irmp_input);
-    }
-#  else
-    if (irmp_led_feedback) {
-        // hope this is fast enough on other platforms
-#    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
-        // If the built in LED on the board is active LOW
-        digitalWrite(LED_BUILTIN, irmp_input);
-#    else
-        digitalWrite(LED_BUILTIN, !irmp_input);
-#    endif
-    }
-#  endif
+    irmp_DoLEDFeedback(irmp_input);
 #endif
 
     irmp_log(irmp_input);                                                       // log ir signal, if IRMP_LOGGING defined

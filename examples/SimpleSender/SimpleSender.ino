@@ -67,7 +67,7 @@ void setup()
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
     irsnd_init();
-    irsnd_LEDFeedback(true); // Enable send signal feedback at LED_BUILTIN
+    irmp_irsnd_LEDFeedback(true); // Enable send signal feedback at LED_BUILTIN
 
 #if defined(STM32F1xx)
     Serial.println(F("Ready to send IR signals at pin PA5")); // the internal pin numbers are crazy for the STM32 Boards library

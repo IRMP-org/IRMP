@@ -98,7 +98,7 @@ void setup()
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
     irmp_init();
-    irmp_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN
+    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN
     irmp_register_complete_callback_function(&handleReceivedIRData);
 
 #if defined(STM32F1xx)

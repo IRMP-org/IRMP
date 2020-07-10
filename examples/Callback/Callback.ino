@@ -72,7 +72,7 @@ void setup() {
 
     //Enable auto resume and pass it the address of your extra buffer
     irmp_init();
-    irmp_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN
+    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN
     irmp_register_complete_callback_function(&handleReceivedIRData);
 
 #if defined(STM32F1xx)

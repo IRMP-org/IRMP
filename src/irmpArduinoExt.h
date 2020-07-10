@@ -28,11 +28,14 @@
 #include "irmpVersion.h"
 
 #include "digitalWriteFast.h" // we use pinModeFast() and digitalReadFast() and digitalWriteFast() in turn
+
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Enable dynamic pin configuration in contrast to the static one which is known at compile time and saves program memory and CPU cycles.
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 //#define IRMP_IRSND_ALLOW_DYNAMIC_PINS
+//
+//
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Enable PinChangeInterrupt add on for irmp_ISR(). Tested for NEC, Kaseiko, Denon, RC6 protocols and Arduino Uno and Arduino ATMega.
  * Receives IR protocol data  by using pin change interrupts and no polling by timer.
@@ -78,10 +81,10 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
-extern uint_fast8_t irmp_input_pin; // global variable to hold input pin number. Is referenced by defining IRMP_INPUT_PIN as irmp_input_pin.
+extern uint_fast8_t irmp_InputPin; // global variable to hold input pin number. Is referenced by defining IRMP_INPUT_PIN as irmp_InputPin.
 
 #undef IRMP_INPUT_PIN
-#define IRMP_INPUT_PIN              irmp_input_pin
+#define IRMP_INPUT_PIN              irmp_InputPin
 #else // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 #  if !defined (IRMP_INPUT_PIN)                                       // Arduino IDE uses IRMP_INPUT_PIN instead of PORT and BIT
 #define IRMP_INPUT_PIN              3
@@ -97,8 +100,9 @@ extern uint_fast8_t irmp_input_pin; // global variable to hold input pin number.
 #endif
 
 void irmp_init(uint_fast8_t aIrmpInputPin);
-void irmp_LEDFeedback(bool aEnableBlinkLed);
-constexpr auto irmp_blink13 = irmp_LEDFeedback; // alias for irmp_blink13
+void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin);
+void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow);
+
 #  if defined(__AVR__)
 void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr);
 void irmp_result_print(IRMP_DATA * aIRMPDataPtr);

@@ -46,7 +46,7 @@
 
 #define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some FLASH. Must before #include <irmp*>
 #define IRMP_USE_COMPLETE_CALLBACK       1 // Enable callback functionality
-#define IRMP_ENABLE_PIN_CHANGE_INTERRUPT 1 // Enable interrupt functionality
+#define IRMP_ENABLE_PIN_CHANGE_INTERRUPT   // Enable interrupt functionality
 
 //#define SIZE_TEST
 #ifdef SIZE_TEST
@@ -78,7 +78,7 @@ void setup()
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
     irmp_init();
-    irmp_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN
+    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN
     irmp_register_complete_callback_function(&handleReceivedIRData);
 
 #if defined(STM32F1xx)

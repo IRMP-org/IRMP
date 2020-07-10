@@ -101,10 +101,9 @@ void setup() {
     noTone(TONE_PIN);
 
     irmp_init();
-    irmp_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN for receive
+    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN for receive and send
 
     irsnd_init();
-    irsnd_LEDFeedback(true); // Enable LED feedback for send
 
 #if defined(STM32F1xx)
     Serial.println(F("Ready to receive IR signals at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library

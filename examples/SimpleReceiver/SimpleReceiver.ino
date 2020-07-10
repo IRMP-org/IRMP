@@ -77,7 +77,7 @@ void setup()
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
     irmp_init();
-    irmp_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN
+    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN
 
     Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
     yield();

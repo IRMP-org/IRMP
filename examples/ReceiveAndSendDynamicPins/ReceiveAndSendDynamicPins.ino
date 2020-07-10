@@ -126,8 +126,7 @@ void setup()
     }
     Serial.print(F("Ready to receive IR signals at pin "));
     Serial.println(sIRMPInputPin);
-    irmp_init(sIRMPInputPin);
-    irmp_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN for receive
+    irmp_init(sIRMPInputPin, LED_BUILTIN); // Enable receive signal feedback at LED_BUILTIN for receive (and send)
 
     Serial.println(F("Please enter pin number to use for sending IR signals."));
     while (Serial.available() == 0)
@@ -137,8 +136,7 @@ void setup()
     uint8_t tIRSNDOutputPin = Serial.parseInt();
     Serial.print(F("Ready to send IR signals at pin "));
     Serial.println(tIRSNDOutputPin);
-    irsnd_init(tIRSNDOutputPin);
-    irsnd_LEDFeedback(true); // Enable LED feedback for send
+    irsnd_init(tIRSNDOutputPin); // feedback LED is specified at irmp_init()
 
     irsnd_data.protocol = IRMP_SAMSUNG32_PROTOCOL;
     irsnd_data.address = 0x0707;

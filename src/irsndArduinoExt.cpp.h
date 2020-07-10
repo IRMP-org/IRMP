@@ -23,10 +23,10 @@
 
 #if defined(ARDUINO)
 
-#undef _IRMP_H_             // We are in IRSND now! Remove old symbol set from former including irmp.c.h if we use receive and send in the same user program.
-#include "IRTimer.cpp.h"    // include code for timer
+#undef _IRMP_H_                 // We are in IRSND now! Remove old symbol set from former including irmp.c.h if we use receive and send in the same user program.
+#include "IRTimer.cpp.h"        // include code for timer
+#include "IRFeedbackLed.cpp.h"  // include code for Feedback LED
 
-static volatile bool irsnd_led_feedback;
 #if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 uint_fast8_t irsnd_output_pin;
 #  if defined (__AVR__)
@@ -34,10 +34,11 @@ uint_fast8_t irsnd_output_pin;
 volatile uint8_t * irsnd_output_pin_input_port;
 uint8_t irsnd_output_pin_mask;
 #  endif
+
 /*
- * Init function for dynamic pins
+ * Initialize, and activate feedback LED function
  */
-void irsnd_init(uint_fast8_t aIrsndOutputPin)
+void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow)
 {
     irsnd_output_pin = aIrsndOutputPin;
 #  if defined(__AVR__)
@@ -46,12 +47,49 @@ void irsnd_init(uint_fast8_t aIrsndOutputPin)
     irsnd_output_pin_mask = digitalPinToBitMask(aIrsndOutputPin);
 #  endif
 
+    irmp_irsnd_LedFeedbackPin = aFeedbackLedPin;
+    irmp_irsnd_LedFeedbackPinIsActiveLow = aIrmpLedFeedbackPinIsActiveLow;
+
+    /*
+     * enable feedback LED if (aFeedbackLedPin != 0)
+     */
+    irmp_irsnd_LEDFeedback(aFeedbackLedPin);
+
     // Do not call irsnd_init_and_store_timer() here, it is done at irsnd_send_data().
     pinModeFast(IRSND_OUTPUT_PIN, OUTPUT);
 #  ifdef IRMP_MEASURE_TIMING
     pinModeFast(IRMP_TIMING_TEST_PIN, OUTPUT);
 #  endif
 }
+
+/*
+ * Initialize, and activate feedback LED function
+ */
+void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin)
+{
+#  if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
+    irsnd_init(aIrsndOutputPin, aFeedbackLedPin, true);
+#  else
+    irsnd_init(aIrsndOutputPin, aFeedbackLedPin, false);
+#  endif
+}
+
+/*
+ * Initialize, but avoid activating feedback LED by using 0 as led pin
+ */
+void irsnd_init(uint_fast8_t aIrsndOutputPin)
+{
+#  if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
+    irmp_init(aIrsndOutputPin, 0, true); // avoid activating feedback LED by using 0 as led pin
+#  else
+    irmp_init(aIrsndOutputPin, 0, false);
+#  endif
+#  if defined(LED_BUILTIN)
+    // set pin if we have one at hand
+    irmp_irsnd_LedFeedbackPin = LED_BUILTIN;
+#  endif
+}
+
 #else // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 /*
  * Init function for defined pins
@@ -75,40 +113,25 @@ static void irsnd_on(void)
 {
     if (!irsnd_is_on)
     {
-#if defined(pinModeFast)
-        if (irsnd_led_feedback) {
+        if (irmp_irsnd_LedFeedbackEnabled)
+        {
+#if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
+            irmp_irsnd_SetFeedbackLED(true);
+#else
 #  if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
             // If the built in LED on the board is active LOW
             digitalWriteFast(LED_BUILTIN, LOW);
 #  else
             digitalWriteFast(LED_BUILTIN, HIGH);
 #  endif
+#endif
         }
-        pinModeFast(IRSND_OUTPUT_PIN, OUTPUT); // Pin is set to input in ISR if (! irsnd_is_on)
-        // start with LED active
+        // Activate IR-LED
 #  if defined(IR_OUTPUT_IS_ACTIVE_LOW)
         digitalWriteFast(IRSND_OUTPUT_PIN, LOW);
 #  else
         digitalWriteFast(IRSND_OUTPUT_PIN, HIGH);
 #  endif
-#else // defined(pinModeFast)
-        if (irsnd_led_feedback)
-        {
-            // hope this is fast enough on other platforms
-#  if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
-            // If the built in LED on the board is active LOW
-            digitalWrite(LED_BUILTIN, LOW);
-#  else
-            digitalWrite(LED_BUILTIN, HIGH);
-#  endif
-        }
-        pinMode(IRSND_OUTPUT_PIN, OUTPUT); // Pin is set to input in ISR if (! irsnd_is_on)
-#  if defined(IR_OUTPUT_IS_ACTIVE_LOW)
-        digitalWrite(IRSND_OUTPUT_PIN, LOW);
-#  else
-        digitalWrite(IRSND_OUTPUT_PIN, HIGH);
-#  endif
-#endif // defined(pinModeFast)
         irsnd_is_on = TRUE;
     }
 }
@@ -118,41 +141,27 @@ static void irsnd_off(void)
     if (irsnd_is_on)
     {
         // Manage feedback LED
-        if (irsnd_led_feedback)
+
+        if (irmp_irsnd_LedFeedbackEnabled)
         {
-#if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
+#if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
+            irmp_irsnd_SetFeedbackLED(false);
+#else
+#  if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
             // If the built in LED on the board is active LOW
             digitalWriteFast(LED_BUILTIN, HIGH);
-#else
+#  else
             digitalWriteFast(LED_BUILTIN, LOW);
+#  endif
 #endif
         }
-        // Disable IR-LED
+        // Deactivate IR-LED
 #if defined(IR_OUTPUT_IS_ACTIVE_LOW)
         digitalWriteFast(IRSND_OUTPUT_PIN, HIGH);
 #else
         digitalWriteFast(IRSND_OUTPUT_PIN, LOW);
 #endif
         irsnd_is_on = FALSE;
-    }
-}
-
-/*
- * Echoes the input signal to the built in LED.
- * The name is chosen to enable easy migration from other IR libs.
- * Pin 13 is the pin of the built in LED on the first Arduino boards.
- */
-void irsnd_LEDFeedback(bool aEnableBlinkLed)
-{
-    irsnd_led_feedback = aEnableBlinkLed;
-    if (aEnableBlinkLed)
-    {
-        pinModeFast(LED_BUILTIN, OUTPUT);
-#if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
-        digitalWriteFast(LED_BUILTIN, HIGH);
-#else
-        digitalWriteFast(LED_BUILTIN, LOW);
-#endif
     }
 }
 
