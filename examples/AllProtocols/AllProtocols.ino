@@ -39,6 +39,27 @@
 #define USE_1602_LCD
 //#define USE_2004_LCD
 
+/*
+ * Imports and definitions for LCD
+ */
+#if defined (USE_SERIAL_LCD)
+#include <LiquidCrystal_I2C.h> // Use an up to date library version which has the init method
+#endif
+#if defined (USE_PARALELL_LCD)
+#include <LiquidCrystal.h>
+#endif
+
+#if defined (USE_1602_LCD)
+// definitions for a 1602 LCD
+#define LCD_COLUMNS 16
+#define LCD_ROWS 2
+#endif
+#if defined (USE_2004_LCD)
+// definitions for a 2004 LCD
+#define LCD_COLUMNS 20
+#define LCD_ROWS 4
+#endif
+
 #include "PinDefinitionsAndMore.h"
 
 /*

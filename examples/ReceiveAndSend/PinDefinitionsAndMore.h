@@ -128,24 +128,3 @@
  */
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
-
-/*
- * Imports and definitions for LCD used in AllProtocols.h
- */
-#if defined (USE_SERIAL_LCD)
-#include <LiquidCrystal_I2C.h>
-#endif
-#if defined (USE_PARALELL_LCD)
-#include <LiquidCrystal.h>
-#endif
-
-#if defined (USE_1602_LCD)
-// definitions for a 1602 LCD
-#define LCD_COLUMNS 16
-#define LCD_ROWS 2
-#endif
-#if defined (USE_2004_LCD)
-// definitions for a 2004 LCD
-#define LCD_COLUMNS 20
-#define LCD_ROWS 4
-#endif

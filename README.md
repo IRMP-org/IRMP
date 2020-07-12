@@ -109,9 +109,9 @@ The **tone() library (using timer 2) is still available**. You can use it altern
 - In interrupt mode, the `micros()` function is used as timebase.
 
 # Dynamic pins numbers
-if you want to use pin numbers specified at runtime, you must define `IRMP_IRSND_ALLOW_DYNAMIC_PINS` and call `irmp_init(aIrmpInputPin)` and `irsnd_init(aIrsndOutputPin)` instead of irmp_init() and irsnd_init(). See [ReceiveAndSendDynamicPins example](examples/ReceiveAndSendDynamicPins/ReceiveAndSendDynamicPins.ino).<br/>
-If you define `IRMP_IRSND_ALLOW_DYNAMIC_PINS` and still use the wrong functions, you will get errors like:
-`macro "irmp_init" passed 1 arguments, but takes just 0` or `macro "irsnd_init" passed 1 arguments, but takes just 0`.
+if you want to use pin numbers for input, output and LED feedback specified at runtime, you must define `IRMP_IRSND_ALLOW_DYNAMIC_PINS`. See [ReceiveAndSendDynamicPins example](examples/ReceiveAndSendDynamicPins/ReceiveAndSendDynamicPins.ino).<br/>
+The `irmp_init` and `irsnd_init` function then allows up to 3 parameters `uint_fast8_t aIrmpInputPin/aIrsndOutputPin, uint_fast8_t aIrmpFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow`.<br/>
+Be aware, only one pin and enable flag for receive and send feedback LED is supported.
 
 # [AllProtocol](examples/AllProtocols/AllProtocols.ino) example
 | Serial LCD output | Arduino Serial Monitor output |
@@ -140,8 +140,9 @@ If you define `IRMP_IRSND_ALLOW_DYNAMIC_PINS` and still use the wrong functions,
 ### Version 3.0.0
 - Support of RF (433MHz) remotes. 2 protocols **Generic 24 bit format** and **X10 format** added.
 - MegaAVR (ATmega4809) support.
-- Added `IRMP_IRSND_ALLOW_DYNAMIC_PINS` and `irmp_init(PinNumber)` and `irsnd_init(PinNumber)`to allow pin selection at runtime.
+- Added `IRMP_IRSND_ALLOW_DYNAMIC_PINS` and extended `irmp_init()` and `irsnd_init()`to allow input, output and LED feedback pin selection at runtime.
 - Support more protocols simultaneously on 32 bit CPUs.
+- Only one pin and enable flag for receive and send feedback LED.
 
 ### Version 2.2.1
 - Improved pin layout.
