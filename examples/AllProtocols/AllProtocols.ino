@@ -36,7 +36,7 @@
 /*
  * Define the size of your LCD
  */
-//#define USE_1602_LCD
+#define USE_1602_LCD
 //#define USE_2004_LCD
 
 #include "PinDefinitionsAndMore.h"

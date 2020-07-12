@@ -46,6 +46,11 @@ extern uint8_t irsnd_output_pin_mask;
 
 #undef IRSND_OUTPUT_PIN
 #define IRSND_OUTPUT_PIN        irsnd_output_pin
+
+void irsnd_init(uint_fast8_t aIrsndOutputPin);
+void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin);
+void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow);
+
 #else // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 #  if !defined(IRSND_OUTPUT_PIN)                // Arduino IDE uses IRSND_OUTPUT_PIN instead of PORT and BIT
 #define IRSND_OUTPUT_PIN            4
