@@ -25,6 +25,8 @@
 #ifndef IRMP_ARDUINO_EXT_H
 #define IRMP_ARDUINO_EXT_H
 
+#include <Arduino.h>  // for Print
+
 #include "irmpVersion.h"
 
 #include "digitalWriteFast.h" // we use pinModeFast() and digitalReadFast() and digitalWriteFast() in turn

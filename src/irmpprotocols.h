@@ -109,6 +109,9 @@ typedef uint8_t     PAUSE_LEN;
 
 #define IRMP_TIMEOUT_LEN                        (PAUSE_LEN)(F_INTERRUPTS * IRMP_TIMEOUT_TIME + 0.5)
 
+#define IRMP_KEY_RELEASE_TIME                   25.0e-3                  // key release timeout detection after 25.0 ms darkness
+#define IRMP_KEY_RELEASE_LEN                    (uint16_t)(F_INTERRUPTS * IRMP_KEY_RELEASE_TIME + 0.5)
+
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * flags of struct IRMP_PARAMETER:
  *---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1066,14 +1069,16 @@ typedef uint8_t     PAUSE_LEN;
  * RF X10 remote control (MEDION, Pollin 721815)
  *
  * Frame:
- * 1 toggle bit + 7 command bits + 1 toggle bit + 7 alternative command bits + 4 0-bits
+ * 1 toggle bit + 7 checksum bits + 1 toggle bit + 7 command bits + 4 channel bits
  *
  * Rule:
- * If command >= 0x0055, then alternative command = command - 0x0055, else alternative command = command + 0x002B
+ * checksum = (command + 0x0055 + (channel << 4)) & 0x7F
  *
- * Here we store command in address, alternative command incl. 4 0-bits in command
+ * Here we store checksum in address, command incl. 4 channel bits in command
  *
- * In irmp_get_data(), we check if alternative command correspondents with command value and return address = 0x0000 with cmd = command
+ * In irmp_get_data():
+ *  irmp_command = command << 4
+ *  irmp_address = channel + 1
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #define RF_X10_START_BIT_PULSE_TIME             2850.0e-6                        // 2850 usec pulse
@@ -1084,7 +1089,7 @@ typedef uint8_t     PAUSE_LEN;
 #define RF_X10_1_PAUSE_TIME                     1710.0e-6                        //  500 usec pause
 
 #define RF_X10_FRAME_REPEAT_PAUSE_TIME          4456.0e-6                        // frame repeat after 4460 usec
-#define RF_X10_ADDRESS_OFFSET                    1                               // skip 1 bit (1st toggle bit9
+#define RF_X10_ADDRESS_OFFSET                    1                               // skip 1st toggle bit
 #define RF_X10_ADDRESS_LEN                       7                               // store 7 command bits in address
 #define RF_X10_COMMAND_OFFSET                    9                               // skip 1st toggle bit + 7 command bits + 2nd toggle bit
 #define RF_X10_COMMAND_LEN                      11                               // read 7 alternative command bits plus 4 0-bits
