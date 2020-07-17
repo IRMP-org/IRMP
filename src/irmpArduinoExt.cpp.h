@@ -150,6 +150,7 @@ void irmp_debug_print(const char * aMessage, bool aDoShortOutput)
     Serial.println();
 }
 
+#if IRMP_PROTOCOL_NAMES == 1
 /*
  * irmp_used_protocol_index holds the protocol numbers (from irmpprotocols.h)
  * for the included protocol name entries of the irmp_used_protocol_names array below
@@ -508,6 +509,22 @@ const char * const irmp_used_protocol_names[] PROGMEM =
     proto_rf_x10
 #endif
 };
+
+void irmp_print_active_protocols(Print * aSerial)
+{
+    // skip protocol 0 = UNKNOWN
+    for (uint8_t i = 1; i < sizeof(irmp_used_protocol_index); ++i)
+    {
+#  if defined(__AVR__)
+        const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_used_protocol_names[i]);
+        aSerial->print((__FlashStringHelper *) (tProtocolStringPtr));
+#  else
+        aSerial->print(irmp_used_protocol_names[i]);
+#  endif
+        aSerial->print(", ");
+    }
+}
+#endif // IRMP_PROTOCOL_NAMES == 1
 
 /*
  * Print protocol name or number, address, code and repetition flag

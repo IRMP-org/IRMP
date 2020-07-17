@@ -105,9 +105,10 @@ void irmp_init(uint_fast8_t aIrmpInputPin);
 void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin);
 void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow);
 
-#  if defined(__AVR__)
+
 void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr);
 void irmp_result_print(IRMP_DATA * aIRMPDataPtr);
+#  if defined(__AVR__)
 void irmp_debug_print(const __FlashStringHelper * aMessage, bool aDoShortOutput);
 #  else
 void irmp_debug_print(const char * aMessage, bool aDoShortOutput);
@@ -116,6 +117,9 @@ void irmp_debug_print(const char * aMessage, bool aDoShortOutput);
 void irmp_PCI_ISR(void);
 void initPCIInterrupt(void);
 
+#if IRMP_PROTOCOL_NAMES == 1
+void irmp_print_active_protocols(Print * aSerial);
+#endif
 extern const uint8_t irmp_used_protocol_index[] PROGMEM;
 extern const char * const irmp_used_protocol_names[] PROGMEM;
 

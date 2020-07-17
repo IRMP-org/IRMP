@@ -74,7 +74,8 @@ IRMP_DATA irsnd_data;
 void sendSamsungSmartHubMacro(bool aDoSelect);
 void IRSendWithDelay(uint16_t aCommand, uint16_t aDelayMillis);
 
-void setup() {
+void setup()
+{
 #if defined(MCUSR)
     MCUSR = 0; // To reset old boot flags for next boot
 #endif
@@ -106,10 +107,14 @@ void setup() {
     irsnd_init();
 
 #if defined(STM32F1xx)
-    Serial.println(F("Ready to receive IR signals at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library
+    Serial.print(F("Ready to receive IR signals  of protocols: "));
+    irmp_print_active_protocols(&Serial);
+    Serial.println(F("at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library
     Serial.println(F("Ready to send IR signals at pin PA5"));// the internal pin numbers are crazy for the STM32 Boards library
 #else
-    Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
+    Serial.print(F("Ready to receive IR signals of protocols: "));
+    irmp_print_active_protocols(&Serial);
+    Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
     Serial.println(F("Ready to send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
 #endif
 
@@ -118,17 +123,20 @@ void setup() {
     irsnd_data.flags = 1; // repeat frame 1 time
 }
 
-void loop() {
+void loop()
+{
     /*
      * Check if new data available and get them
      */
-    if (irmp_get_data(&irmp_data)) {
+    if (irmp_get_data(&irmp_data))
+    {
         irmp_result_print(&irmp_data);
 
         /*
          * Here data is available -> evaluate IR command
          */
-        switch (irmp_data.command) {
+        switch (irmp_data.command)
+        {
         case 0xB847: // The play key on the bottom of my Samsung remote
             Serial.println(F("Play key detected, open Netflix"));
             sendSamsungSmartHubMacro(true);
@@ -147,7 +155,8 @@ void loop() {
     }
 }
 
-void IRSendWithDelay(uint16_t aCommand, uint16_t aDelayMillis) {
+void IRSendWithDelay(uint16_t aCommand, uint16_t aDelayMillis)
+{
     irsnd_data.command = aCommand;
     irsnd_send_data(&irsnd_data, true); // true = wait for frame to end. This stores timer state and restores it after sending
     delay(aDelayMillis);
@@ -163,15 +172,20 @@ bool sMacroWasCalledBefore = false;
  * @param aDoSelect - if true select the current app (needs longer initial wait time) else show smarthub menu
  *
  */
-void sendSamsungSmartHubMacro(bool aDoSelect) {
+void sendSamsungSmartHubMacro(bool aDoSelect)
+{
     uint32_t tWaitTimeAfterBoot;
-    if (aDoSelect) {
+    if (aDoSelect)
+    {
         tWaitTimeAfterBoot = INITIAL_WAIT_TIME_APPS_READY_MILLIS;
-    } else {
+    }
+    else
+    {
         tWaitTimeAfterBoot = INITIAL_WAIT_TIME_SMARTHUB_READY_MILLIS;
     }
 
-    if (millis() < tWaitTimeAfterBoot) {
+    if (millis() < tWaitTimeAfterBoot)
+    {
         // division by 1000 and printing requires much (8%) program space
         Serial.print(F("It is "));
         Serial.print(millis() / 1000);
@@ -187,7 +201,8 @@ void sendSamsungSmartHubMacro(bool aDoSelect) {
         delay(100);
         noTone(TONE_PIN);
 
-        while (millis() < tWaitTimeAfterBoot) {
+        while (millis() < tWaitTimeAfterBoot)
+        {
             delay(10); // blocking wait
         }
     }
@@ -206,23 +221,27 @@ void sendSamsungSmartHubMacro(bool aDoSelect) {
     IRSendWithDelay(0xE51A, 2000); // Menu and wait for the Menu to pop up
 
     Serial.println(F("Wait for the menu to pop up"));
-    if (!sMacroWasCalledBefore) {
+    if (!sMacroWasCalledBefore)
+    {
         delay(2000); // wait additional time for the Menu load
     }
 
-    for (uint8_t i = 0; i < 4; ++i) {
+    for (uint8_t i = 0; i < 4; ++i)
+    {
         IRSendWithDelay(0x9E61, 250); // Down arrow
     }
 
     IRSendWithDelay(0x9D62, 400); // Right arrow
-    for (uint8_t i = 0; i < 2; ++i) {
+    for (uint8_t i = 0; i < 2; ++i)
+    {
         IRSendWithDelay(0x9E61, 250); // Down arrow
     }
 
     delay(250);
     IRSendWithDelay(0x9768, 1); // Enter for SmartHub
 
-    if (aDoSelect) {
+    if (aDoSelect)
+    {
         Serial.println(F("Wait for SmartHub to show up, before entering current application"));
         delay(10000); // Wait not longer than 12 seconds, because smarthub menu then disappears
         IRSendWithDelay(0x9768, 1); // Enter for last application (e.g. Netflix or Amazon)

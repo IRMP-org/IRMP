@@ -79,7 +79,9 @@ void setup()
     irmp_init();
     irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN
 
-    Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
+    Serial.print(F("Ready to receive IR signals of protocols: "));
+    irmp_print_active_protocols(&Serial);
+    Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
     yield();
 }
 

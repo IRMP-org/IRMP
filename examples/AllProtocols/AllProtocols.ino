@@ -85,7 +85,7 @@
 IRMP_DATA irmp_data;
 
 #if defined (USE_SERIAL_LCD) && defined (USE_PARALELL_LCD)
-#error "Cannot use paralell and serial LCD simultaneously"
+#error "Cannot use parallel and serial LCD simultaneously"
 #endif
 
 #if defined (USE_SERIAL_LCD)
@@ -123,9 +123,13 @@ void setup()
     irmp_register_complete_callback_function(&handleReceivedIRData);
 
 #if defined(STM32F1xx)
-    Serial.println(F("Ready to receive IR signals at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library
+    Serial.print(F("Ready to receive IR signals  of protocols: "));
+    irmp_print_active_protocols(&Serial);
+    Serial.println(F("at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library
 #else
-    Serial.println(F("Ready to receive IR signals at pin " STR(IRMP_INPUT_PIN)));
+    Serial.print(F("Ready to receive IR signals of protocols: "));
+    irmp_print_active_protocols(&Serial);
+    Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
 #endif
 
 #if defined(__AVR__) && (! defined(__AVR_ATmega4809__))

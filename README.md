@@ -142,7 +142,8 @@ Be aware, only one pin and enable flag for receive and send feedback LED is supp
 - MegaAVR (ATmega4809) support.
 - Added `IRMP_IRSND_ALLOW_DYNAMIC_PINS` and extended `irmp_init()` and `irsnd_init()`to allow input, output and LED feedback pin selection at runtime.
 - Support more protocols simultaneously on 32 bit CPUs.
-- Only one pin and enable flag for receive and send feedback LED.
+- Use same pin and enable flag for receive and send feedback LED.
+- New function `irmp_print_active_protocols()`.
 
 ### Version 2.2.1
 - Improved pin layout.

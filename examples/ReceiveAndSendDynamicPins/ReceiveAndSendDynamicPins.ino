@@ -124,7 +124,9 @@ void setup()
     {
         Serial.read(); // read rest of line and CR/LF from buffer to enable for next input
     }
-    Serial.print(F("Ready to receive IR signals at pin "));
+    Serial.print(F("Ready to receive IR signals of protocols: "));
+    irmp_print_active_protocols(&Serial);
+    Serial.println(F("at pin "));
     Serial.println(sIRMPInputPin);
     irmp_init(sIRMPInputPin, LED_BUILTIN); // Enable receive signal feedback at LED_BUILTIN for receive (and send)
 
