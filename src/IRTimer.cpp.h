@@ -178,8 +178,9 @@ void initIRTimerForSend(void)
     timer1_write((F_CPU / 16) / IR_INTERRUPT_FREQUENCY);
 
 #elif defined(ESP32)
-// Use Timer1 with 1 microsecond resolution, main clock is 80MHZ
-    sESP32Timer = timerBegin(1, 80, true);
+    // Tasmota requires timer 3 (last of 4 timers)
+    // Use timer with 1 microsecond resolution, main clock is 80MHZ
+    sESP32Timer = timerBegin(3, 80, true);
     timerAttachInterrupt(sESP32Timer, irmp_timer_ISR, true);
     timerAlarmWrite(sESP32Timer, (getApbFrequency() / 80) / IR_INTERRUPT_FREQUENCY, true);
     timerAlarmEnable(sESP32Timer);
