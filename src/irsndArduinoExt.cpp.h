@@ -80,9 +80,9 @@ void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin)
 void irsnd_init(uint_fast8_t aIrsndOutputPin)
 {
 #  if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
-    irmp_init(aIrsndOutputPin, 0, true); // avoid activating feedback LED by using 0 as led pin
+    irsnd_init(aIrsndOutputPin, 0, true); // avoid activating feedback LED by using 0 as led pin
 #  else
-    irmp_init(aIrsndOutputPin, 0, false);
+    irsnd_init(aIrsndOutputPin, 0, false);
 #  endif
 #  if defined(LED_BUILTIN)
     // set pin if we have one at hand
