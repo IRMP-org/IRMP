@@ -55,9 +55,9 @@
 #if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include <Arduino.h>
 
-#define VERSION_ATTINY_SERIAL_OUT "1.1.0"
+#define VERSION_ATTINY_SERIAL_OUT "1.2.0"
 #define VERSION_ATTINY_SERIAL_OUT_MAJOR 1
-#define VERSION_ATTINY_SERIAL_OUT_MINOR 1
+#define VERSION_ATTINY_SERIAL_OUT_MINOR 2
 
 #if (F_CPU != 1000000) &&  (F_CPU != 8000000) &&  (F_CPU != 16000000)
 #error "F_CPU value must be 1000000, 8000000 or 16000000."
@@ -73,6 +73,27 @@
 #  endif
 #endif
 
+/*
+ * Define or comment this out, if you want to save 10 bytes code size and if you can live
+ * with 87 micro seconds intervals of disabled interrupts for each sent byte @115200 baud.
+ */
+//#define USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
+
+/*
+ * @1 MHz use bigger (+120 bytes for unrolled loop) but faster code. Otherwise only 38400 baud is possible.
+ * @8/16 MHz use 115200 baud instead of 230400 baud.
+ */
+//#define TINY_SERIAL_DO_NOT_USE_115200BAUD
+#ifndef TINY_SERIAL_DO_NOT_USE_115200BAUD  // define this to force using other baud rates
+#define USE_115200BAUD
+#endif
+
+// The same class definition as for plain arduino
+#if not defined(F)
+class __FlashStringHelper;
+#define F(string_literal) (reinterpret_cast<const __FlashStringHelper *>(PSTR(string_literal)))
+#endif
+
 extern bool sUseCliSeiForWrite; // default is true
 void useCliSeiForStrings(bool aUseCliSeiForWrite); // might be useful to set to false if output is done from ISR, to avoid to call unwanted sei().
 
@@ -80,19 +101,6 @@ void initTXPin();
 void write1Start8Data1StopNoParity(uint8_t aValue);
 void write1Start8Data1StopNoParityWithCliSei(uint8_t aValue);
 void writeValue(uint8_t aValue);
-
-// The same class definition as for plain arduino
-#if defined(ARDUINO_AVR_DIGISPARK)
-// The digispark library defines (2/2019) F but not __FlashStringHelper
-//# define F(string_literal) ((fstr_t*)PSTR(string_literal))
-#  if ! defined(__FlashStringHelper)
-#define __FlashStringHelper fstr_t
-#  endif
-#endif
-#if not defined(F)
-class __FlashStringHelper;
-#define F(string_literal) (reinterpret_cast<const __FlashStringHelper *>(PSTR(string_literal)))
-#endif
 
 void writeString(const char * aStringPtr);
 void writeString(const __FlashStringHelper * aStringPtr);

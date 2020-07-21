@@ -363,8 +363,7 @@
 #define __digitalPinToPortReg(P) (&PORTB)
 #define __digitalPinToDDRReg(P)  (&DDRB)
 #define __digitalPinToPINReg(P)  (&PINB)
-#define __digitalPinToBit(P) \
-(((P) >= 0 && (P) <= 7) ? (P) : (((P) >= 8 && (P) <= 13) ? (P) - 8 : (P) - 14))
+#define __digitalPinToBit(P) (( (P) <= 7) ? (P) : (((P) >= 8 && (P) <= 13) ? (P) - 8 : (P) - 14))
 
 
 // --- ATtiny88 ---
