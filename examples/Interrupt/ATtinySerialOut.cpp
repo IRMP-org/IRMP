@@ -34,8 +34,7 @@
 
 #if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include <Arduino.h>
-#include "ATtinySerialOut.h"
-#include <avr/eeprom.h>     // for eeprom_read_byte()
+#include <avr/eeprom.h>     // for eeprom_read_byte() in writeString_E()
 
 #ifndef _NOP
 #define _NOP()  __asm__ volatile ("nop")
@@ -46,9 +45,73 @@
 #endif
 
 /*
+ * Define or comment this out, if you want to save code size and if you can live with 87 micro seconds intervals of disabled interrupts for each sent byte.
+ */
+//#define USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
+
+/*
+ * @1 MHz use bigger (+120 bytes for unrolled loop) but faster code. Otherwise only 38400 baud is possible.
+ * @8/16 MHz use 115200 baud instead of 230400 baud.
+ */
+//#define TINY_SERIAL_DO_NOT_USE_115200BAUD
+#ifndef TINY_SERIAL_DO_NOT_USE_115200BAUD  // define this to force using other baud rates
+#define USE_115200BAUD
+#endif
+
+/*
+ * Change this, if you need another pin as serial output
+ * or set it as Symbol like "-DTX_PIN PB1"
+ * or when switching port (e.g. for ATiny167), then we need more Symbols like "-DTX_PIN PB1 -DTX_PORT PORTB -DTX_PORT_ADDR 0x05 -TX_DDR DDRB"
+ */
+#if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#  ifndef TX_PIN
+#define TX_PIN PA1 // (package pin 2 / TXD on Tiny167) - can use one of PA0 to PA7 here
+#  endif
+#  ifndef TX_PORT
+#define TX_PORT PORTA
+#define TX_PORT_ADDR 0x02 // PORTA
+#define TX_DDR DDRA
+
+//#define TX_PORT PORTB
+//#define TX_PORT_ADDR 0x05
+//#define TX_DDR DDRB
+#  endif
+
+#else // defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#  ifndef TX_PIN
+#define TX_PIN PB2 // (package pin 7 on Tiny85) - can use one of PB0 to PB4 (+PB5) here
+#  endif
+#define TX_PORT PORTB
+#define TX_PORT_ADDR 0x18 // PORTB
+#define TX_DDR DDRB
+#endif // defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+
+
+void write1Start8Data1StopNoParity(uint8_t aValue);
+
+bool sUseCliSeiForWrite = true;
+
+inline void initTXPin() {
+    // TX_PIN is active LOW, so set it to HIGH initially
+    TX_PORT |= (1 << TX_PIN);
+    // set pin direction to output
+    TX_DDR |= (1 << TX_PIN);
+}
+
+inline void write1Start8Data1StopNoParityWithCliSei(uint8_t aValue) {
+    uint8_t oldSREG = SREG;
+    cli();
+    write1Start8Data1StopNoParity(aValue);
+    SREG = oldSREG;
+}
+
+inline void writeValue(uint8_t aValue) {
+    write1Start8Data1StopNoParity(aValue);
+}
+
+/*
  * Used for writeString() and therefore all write<type>() and print<type>
  */
-bool sUseCliSeiForWrite = true;
 void useCliSeiForStrings(bool aUseCliSeiForWrite) {
     sUseCliSeiForWrite = aUseCliSeiForWrite;
 }
@@ -193,23 +256,6 @@ void writeUnsignedByte(uint8_t aByte) {
 }
 
 /*
- * 2 Byte Hex output with 2 Byte prefix "0x"
- */
-void writeUnsignedByteHexWithPrefix(uint8_t aByte) {
-    writeBinary('0');
-    writeBinary('x');
-    writeUnsignedByteHex(aByte);
-}
-
-char nibbleToHex(uint8_t aByte) {
-    aByte = aByte & 0x0F;
-    if (aByte < 10) {
-        return aByte + '0';
-    }
-    return aByte + 'A' - 10;
-}
-
-/*
  * 2 Byte Hex output
  */
 void writeUnsignedByteHex(uint8_t aByte) {
@@ -225,6 +271,23 @@ void writeUnsignedByteHex(uint8_t aByte) {
         tStringBuffer[0] = '0';
     }
     writeString(tStringBuffer);
+}
+
+/*
+ * 2 Byte Hex output with 2 Byte prefix "0x"
+ */
+void writeUnsignedByteHexWithPrefix(uint8_t aByte) {
+    writeBinary('0');
+    writeBinary('x');
+    writeUnsignedByteHex(aByte);
+}
+
+char nibbleToHex(uint8_t aByte) {
+    aByte = aByte & 0x0F;
+    if (aByte < 10) {
+        return aByte + '0';
+    }
+    return aByte + 'A' - 10;
 }
 
 void writeByte(int8_t aByte) {
@@ -269,6 +332,219 @@ void writeFloat(double aFloat, uint8_t aDigits) {
     writeStringSkipLeadingSpaces(tStringBuffer);
 }
 
+/******************************************************
+ * The Class which implements the Serial functions
+ * + printHex() and printlnHex() functions
+ *
+ * Must implement as free functions (not defined in class body)
+ * since all member functions defined inside
+ * class definition are inline according to C++ standard
+ ******************************************************/
+// Do this here to avoid including ATtinySerialOut.h
+class TinySerialOut
+{
+public:
+
+    void begin(long);
+    void end();
+    void flush(void);
+
+    void printHex(uint8_t aByte); // with 0x prefix
+    void printHex(uint16_t aWord); // with 0x prefix
+    void printlnHex(uint8_t aByte); // with 0x prefix
+    void printlnHex(uint16_t aWord); // with 0x prefix
+
+    // virtual functions of Print class
+    size_t write(uint8_t aByte);
+    operator bool() { return true; }; // To support "while (!Serial); // wait for serial port to connect. Needed for Leonardo only
+
+    void print(const __FlashStringHelper * aStringPtr);
+    void print(const char* aStringPtr);
+    void print(char aChar);
+    void print(uint8_t aByte, uint8_t aBase = 10);
+    void print(int16_t aInteger, uint8_t aBase = 10);
+    void print(uint16_t aInteger, uint8_t aBase = 10);
+    void print(int32_t aLong, uint8_t aBase = 10);
+    void print(uint32_t aLong, uint8_t aBase = 10);
+    void print(double aFloat, uint8_t aDigits = 2);
+
+    void println(const char* aStringPtr);
+    void println(const __FlashStringHelper * aStringPtr);
+    void println(char aChar);
+    void println(uint8_t aByte, uint8_t aBase = 10);
+    void println(int16_t aInteger, uint8_t aBase = 10);
+    void println(uint16_t aInteger, uint8_t aBase = 10);
+    void println(int32_t aLong, uint8_t aBase = 10);
+    void println(uint32_t aLong, uint8_t aBase = 10);
+    void println(double aFloat, uint8_t aDigits = 2);
+
+    void println(void);
+
+};
+
+    /*
+     * An alternative way to call the init function :-)
+     */
+    void TinySerialOut::begin(long aBaudrate) {
+        initTXPin();
+#if defined(USE_115200BAUD) // else smaller code, but only 38400 baud at 1 MHz
+        if (aBaudrate != 115200) {
+            println(F("Only 115200 supported!"));
+        }
+#else
+#if (F_CPU == 1000000)
+        if (aBaudrate != 38400) {
+            println(F("Only 38400 supported!"));
+        }
+#else
+        if (aBaudrate != 230400) {
+            println(F("Only 230400 supported!"));
+        }
+#endif
+#endif
+    }
+
+    void TinySerialOut::end() {
+        // no action needed
+    }
+
+    void TinySerialOut::flush() {
+        // no action needed, since we do not use a buffer
+    }
+
+    /*
+     * 2 Byte Hex output with 2 Byte prefix "0x"
+     */
+    void TinySerialOut::printHex(uint8_t aByte) {
+        writeUnsignedByteHexWithPrefix(aByte);
+    }
+
+    void TinySerialOut::printHex(uint16_t aWord) {
+        writeUnsignedByteHexWithPrefix(aWord >> 8);
+        writeUnsignedByteHex(aWord);
+    }
+
+    void TinySerialOut::printlnHex(uint8_t aByte) {
+        printHex(aByte);
+        println();
+    }
+
+    void TinySerialOut::printlnHex(uint16_t aWord) {
+        printHex(aWord);
+        println();
+    }
+
+// virtual functions of Print class
+    size_t TinySerialOut::write(uint8_t aByte) {
+        writeBinary(aByte);
+        return 1;
+    }
+
+    void TinySerialOut::print(const char* aStringPtr) {
+        writeString(aStringPtr);
+    }
+
+    void TinySerialOut::print(const __FlashStringHelper * aStringPtr) {
+        writeString(aStringPtr);
+    }
+
+    void TinySerialOut::print(char aChar) {
+        writeBinary(aChar);
+    }
+
+    void TinySerialOut::print(uint8_t aByte, uint8_t aBase) {
+        if (aBase == 16) {
+            /*
+             * Print Hex always with two characters
+             */
+            writeUnsignedByteHex(aByte);
+        } else {
+            char tStringBuffer[4];
+            utoa(aByte, tStringBuffer, aBase);
+            writeStringSkipLeadingSpaces(tStringBuffer);
+        }
+    }
+
+    void TinySerialOut::print(int16_t aInteger, uint8_t aBase) {
+        char tStringBuffer[7];
+        itoa(aInteger, tStringBuffer, aBase);
+        writeStringSkipLeadingSpaces(tStringBuffer);
+    }
+
+    void TinySerialOut::print(uint16_t aInteger, uint8_t aBase) {
+        char tStringBuffer[6];
+        utoa(aInteger, tStringBuffer, aBase);
+        writeStringSkipLeadingSpaces(tStringBuffer);
+    }
+
+    void TinySerialOut::print(int32_t aLong, uint8_t aBase) {
+        char tStringBuffer[12];
+        ltoa(aLong, tStringBuffer, aBase);
+        writeStringSkipLeadingSpaces(tStringBuffer);
+    }
+
+    void TinySerialOut::print(uint32_t aLong, uint8_t aBase) {
+        char tStringBuffer[11];
+        ultoa(aLong, tStringBuffer, aBase);
+        writeStringSkipLeadingSpaces(tStringBuffer);
+    }
+
+    void TinySerialOut::print(double aFloat, uint8_t aDigits) {
+        char tStringBuffer[11];
+        dtostrf(aFloat, 10, aDigits, tStringBuffer);
+        writeStringSkipLeadingSpaces(tStringBuffer);
+    }
+
+    void TinySerialOut::println(char aChar) {
+        print(aChar);
+        println();
+    }
+
+    void TinySerialOut::println(const char* aStringPtr) {
+        print(aStringPtr);
+        println();
+    }
+
+    void TinySerialOut::println(const __FlashStringHelper * aStringPtr) {
+        print(aStringPtr);
+        println();
+    }
+
+    void TinySerialOut::println(uint8_t aByte, uint8_t aBase) {
+        print(aByte, aBase);
+        println();
+    }
+
+    void TinySerialOut::println(int16_t aInteger, uint8_t aBase) {
+        print(aInteger, aBase);
+        println();
+    }
+
+    void TinySerialOut::println(uint16_t aInteger, uint8_t aBase) {
+        print(aInteger, aBase);
+        println();
+    }
+
+    void TinySerialOut::println(int32_t aLong, uint8_t aBase) {
+        print(aLong, aBase);
+        println();
+    }
+
+    void TinySerialOut::println(uint32_t aLong, uint8_t aBase) {
+        print(aLong, aBase);
+        println();
+    }
+
+    void TinySerialOut::println(double aFloat, uint8_t aDigits) {
+        print(aFloat, aDigits);
+        println();
+    }
+
+    void TinySerialOut::println() {
+        print('\r');
+        print('\n');
+    }
+
 /*
  * The Serial Instance!!!
  */
@@ -280,176 +556,12 @@ void writeFloat(double aFloat, uint8_t aDigits) {
 // or line 71 in HardwareSerial.h included in ATTinyCores/src/tiny/Arduino.h at line 227 for ATTinyCores
 // or line 627ff TinyDebugSerial.h included in AttinyDigisparkCores/src/tiny/WProgram.h at line 18 for AttinyDigisparkCores
 TinySerialOut SerialOut;
+#define Serial SerialOut
 #else
 TinySerialOut Serial;
 #endif
 
-/*
- * Member functions for TinySerialOut
- */
-
-/*
- * An alternative way to call the init function :-)
- */
-void TinySerialOut::begin(long aBaudrate) {
-    initTXPin();
-#if defined(USE_115200BAUD) //else smaller code, but only 38400 baud at 1 MHz
-    if (aBaudrate != 115200) {
-        println(F("Only 115200 supported!"));
-    }
-#else
-#if (F_CPU == 1000000)
-    if (aBaudrate != 38400) {
-        println(F("Only 38400 supported!"));
-    }
-#else
-    if (aBaudrate != 230400) {
-        println(F("Only 230400 supported!"));
-    }
-#endif
-#endif
-}
-
-void TinySerialOut::end() {
-    // no action needed
-}
-
-void TinySerialOut::flush() {
-    // no action needed, since we do not use a buffer
-}
-
-/*
- * 2 Byte Hex output with 2 Byte prefix "0x"
- */
-void TinySerialOut::printHex(uint8_t aByte) {
-    writeUnsignedByteHexWithPrefix(aByte);
-}
-
-void TinySerialOut::printHex(uint16_t aWord) {
-    writeUnsignedByteHexWithPrefix(aWord >> 8);
-    writeUnsignedByteHex(aWord);
-}
-
-void TinySerialOut::printlnHex(uint8_t aByte) {
-    printHex(aByte);
-    println();
-}
-
-void TinySerialOut::printlnHex(uint16_t aWord) {
-    printHex(aWord);
-    println();
-}
-
-// virtual functions of Print class
-size_t TinySerialOut::write(uint8_t aByte) {
-    writeBinary(aByte);
-    return 1;
-}
-
-void TinySerialOut::print(const char* aStringPtr) {
-    writeString(aStringPtr);
-}
-
-void TinySerialOut::print(const __FlashStringHelper * aStringPtr) {
-    writeString(aStringPtr);
-}
-
-void TinySerialOut::print(char aChar) {
-    writeBinary(aChar);
-}
-
-void TinySerialOut::print(uint8_t aByte, uint8_t aBase) {
-    if (aBase == 16) {
-        /*
-         * Print Hex always with two characters
-         */
-        writeUnsignedByteHex(aByte);
-    } else {
-        char tStringBuffer[4];
-        utoa(aByte, tStringBuffer, aBase);
-        writeStringSkipLeadingSpaces(tStringBuffer);
-    }
-}
-
-void TinySerialOut::print(int16_t aInteger, uint8_t aBase) {
-    char tStringBuffer[7];
-    itoa(aInteger, tStringBuffer, aBase);
-    writeStringSkipLeadingSpaces(tStringBuffer);
-}
-
-void TinySerialOut::print(uint16_t aInteger, uint8_t aBase) {
-    char tStringBuffer[6];
-    utoa(aInteger, tStringBuffer, aBase);
-    writeStringSkipLeadingSpaces(tStringBuffer);
-}
-
-void TinySerialOut::print(int32_t aLong, uint8_t aBase) {
-    char tStringBuffer[12];
-    ltoa(aLong, tStringBuffer, aBase);
-    writeStringSkipLeadingSpaces(tStringBuffer);
-}
-
-void TinySerialOut::print(uint32_t aLong, uint8_t aBase) {
-    char tStringBuffer[11];
-    ultoa(aLong, tStringBuffer, aBase);
-    writeStringSkipLeadingSpaces(tStringBuffer);
-}
-
-void TinySerialOut::print(double aFloat, uint8_t aDigits) {
-    char tStringBuffer[11];
-    dtostrf(aFloat, 10, aDigits, tStringBuffer);
-    writeStringSkipLeadingSpaces(tStringBuffer);
-}
-
-void TinySerialOut::println(char aChar) {
-    print(aChar);
-    println();
-}
-
-void TinySerialOut::println(const char* aStringPtr) {
-    print(aStringPtr);
-    println();
-}
-
-void TinySerialOut::println(const __FlashStringHelper * aStringPtr) {
-    print(aStringPtr);
-    println();
-}
-
-void TinySerialOut::println(uint8_t aByte, uint8_t aBase) {
-    print(aByte, aBase);
-    println();
-}
-
-void TinySerialOut::println(int16_t aInteger, uint8_t aBase) {
-    print(aInteger, aBase);
-    println();
-}
-
-void TinySerialOut::println(uint16_t aInteger, uint8_t aBase) {
-    print(aInteger, aBase);
-    println();
-}
-
-void TinySerialOut::println(int32_t aLong, uint8_t aBase) {
-    print(aLong, aBase);
-    println();
-}
-
-void TinySerialOut::println(uint32_t aLong, uint8_t aBase) {
-    print(aLong, aBase);
-    println();
-}
-
-void TinySerialOut::println(double aFloat, uint8_t aDigits) {
-    print(aFloat, aDigits);
-    println();
-}
-
-void TinySerialOut::println() {
-    print('\r');
-    print('\n');
-}
+#define Print TinySerialOut
 
 /********************************
  * Basic serial output function

@@ -24,8 +24,6 @@
  *
  */
 
-#include <Arduino.h>
-
 /*
  * Pin mapping table for different platforms
  *

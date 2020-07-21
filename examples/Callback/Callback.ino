@@ -24,6 +24,8 @@
  *
  */
 
+#include <Arduino.h>
+
 /*
  * Set library modifiers first to set input pin etc.
  */
@@ -59,7 +61,8 @@ IRMP_DATA irmp_data;
 
 void handleReceivedIRData();
 
-void setup() {
+void setup()
+{
     Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__)
     while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
@@ -87,7 +90,8 @@ void setup() {
 
 }
 
-void loop() {
+void loop()
+{
     /*
      * Put your code here
      */
@@ -98,22 +102,33 @@ void loop() {
  * Since this function is executed in Interrupt handler context, make it short and do not use delay() etc.
  * In order to enable other interrupts you can call sei() (enable interrupt again) after getting data.
  */
-void handleReceivedIRData() {
+#if defined(ESP8266)
+void ICACHE_RAM_ATTR handleReceivedIRData()
+#elif defined(ESP32)
+void IRAM_ATTR handleReceivedIRData()
+#else
+void handleReceivedIRData()
+#endif
+{
     irmp_get_data(&irmp_data);
-    interrupts(); // Enable interrupts
+    interrupts();
+    // Enable interrupts
 
     /*
      * Filter for commands from the WM010 IR Remote
      */
-    if (irmp_data.address == 0xF708) {
+    if (irmp_data.address == 0xF708)
+    {
         /*
          * Skip repetitions of command
          */
-        if (!(irmp_data.flags & IRMP_FLAG_REPETITION)) {
+        if (!(irmp_data.flags & IRMP_FLAG_REPETITION))
+        {
             /*
              * Evaluate IR command
              */
-            switch (irmp_data.command) {
+            switch (irmp_data.command)
+            {
             case 0x48:
                 digitalWrite(LED_BUILTIN, HIGH);
                 break;

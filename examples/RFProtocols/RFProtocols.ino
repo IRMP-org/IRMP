@@ -23,6 +23,8 @@
  *
  */
 
+#include <Arduino.h>
+
 /*
  * Set library modifiers first to set input pin etc.
  */

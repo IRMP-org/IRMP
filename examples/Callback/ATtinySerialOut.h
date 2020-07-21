@@ -63,66 +63,23 @@
 #error "F_CPU value must be 1000000, 8000000 or 16000000."
 #endif
 
-/*
- * Change this, if you need another pin as serial output
- * or set it as Symbol like "-DTX_PIN PB1"
- * or when switching port (e.g. for ATiny167), then we need more Symbols like "-DTX_PIN PB1 -DTX_PORT PORTB -DTX_PORT_ADDR 0x05 -TX_DDR DDRB"
- */
 #if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#ifndef TX_PIN
+#  ifndef TX_PIN
 #define TX_PIN PA1 // (package pin 2 / TXD on Tiny167) - can use one of PA0 to PA7 here
-#endif
-#ifndef TX_PORT
-#define TX_PORT PORTA
-#define TX_PORT_ADDR 0x02 // PORTA
-#define TX_DDR DDRA
-
-//#define TX_PORT PORTB
-//#define TX_PORT_ADDR 0x05
-//#define TX_DDR DDRB
-#endif
-
+#  endif
 #else // defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#ifndef TX_PIN
+#  ifndef TX_PIN
 #define TX_PIN PB2 // (package pin 7 on Tiny85) - can use one of PB0 to PB4 (+PB5) here
-#endif
-#define TX_PORT PORTB
-#define TX_PORT_ADDR 0x18 // PORTB
-#define TX_DDR DDRB
-#endif // defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-/*
- * @1 MHz use bigger (+120 bytes for unrolled loop) but faster code. Otherwise only 38400 baud is possible.
- * @8/16 MHz use 115200 baud instead of 230400 baud.
- */
-#ifndef TINY_SERIAL_DO_NOT_USE_115200BAUD  // define this to force using other baud rates
-#define USE_115200BAUD
+#  endif
 #endif
 
-/*
- * Define or comment this out, if you want to save code size and if you can live with 87 micro seconds intervals of disabled interrupts for each sent byte.
- */
-//#define USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
 extern bool sUseCliSeiForWrite; // default is true
 void useCliSeiForStrings(bool aUseCliSeiForWrite); // might be useful to set to false if output is done from ISR, to avoid to call unwanted sei().
 
-inline void initTXPin() {
-    // TX_PIN is active LOW, so set it to HIGH initially
-    TX_PORT |= (1 << TX_PIN);
-    // set pin direction to output
-    TX_DDR |= (1 << TX_PIN);
-}
-
+void initTXPin();
 void write1Start8Data1StopNoParity(uint8_t aValue);
-inline void write1Start8Data1StopNoParityWithCliSei(uint8_t aValue) {
-    uint8_t oldSREG = SREG;
-    cli();
-    write1Start8Data1StopNoParity(aValue);
-    SREG = oldSREG;
-}
-
-inline void writeValue(uint8_t aValue) {
-    write1Start8Data1StopNoParity(aValue);
-}
+void write1Start8Data1StopNoParityWithCliSei(uint8_t aValue);
+void writeValue(uint8_t aValue);
 
 // The same class definition as for plain arduino
 #if defined(ARDUINO_AVR_DIGISPARK)
@@ -176,7 +133,7 @@ public:
 
     // virtual functions of Print class
     size_t write(uint8_t aByte);
-    operator bool() { return true; } // To support "while (!Serial); // wait for serial port to connect. Needed for Leonardo only
+    operator bool(); // To support "while (!Serial); // wait for serial port to connect. Needed for Leonardo only
 
     void print(const __FlashStringHelper * aStringPtr);
     void print(const char* aStringPtr);

@@ -60,6 +60,8 @@
 #define LCD_ROWS 4
 #endif
 
+#include <Arduino.h>
+
 #include "PinDefinitionsAndMore.h"
 
 /*
@@ -207,7 +209,13 @@ void loop()
  * Since this function is executed in Interrupt handler context, make it short and do not use delay() etc.
  * In order to enable other interrupts you can call interrupts() (enable interrupt again) after getting data.
  */
+#if defined(ESP8266)
+void ICACHE_RAM_ATTR handleReceivedIRData()
+#elif defined(ESP32)
+void IRAM_ATTR handleReceivedIRData()
+#else
 void handleReceivedIRData()
+#endif
 {
     /*
      * Just print the data to Serial and LCD

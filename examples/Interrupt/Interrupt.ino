@@ -39,6 +39,8 @@
  *
  */
 
+#include <Arduino.h>
+
 /*
  * Set library modifiers first to set input pin etc.
  */
@@ -104,7 +106,13 @@ void loop()
  * Since this function is executed in Interrupt handler context, make it short and do not use delay() etc.
  * In order to enable other interrupts you can call sei() (enable interrupt again) after getting data.
  */
+#if defined(ESP8266)
+void ICACHE_RAM_ATTR handleReceivedIRData()
+#elif defined(ESP32)
+void IRAM_ATTR handleReceivedIRData()
+#else
 void handleReceivedIRData()
+#endif
 {
     irmp_get_data(&irmp_data);
     interrupts();

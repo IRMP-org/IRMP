@@ -59,6 +59,8 @@
  */
 #define IRMP_IRSND_ALLOW_DYNAMIC_PINS
 
+#include <Arduino.h>
+
 /*
  * Set library modifiers first to set input and output pin etc.
  */
