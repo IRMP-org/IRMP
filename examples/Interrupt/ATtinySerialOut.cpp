@@ -482,12 +482,11 @@ void TinySerialOut::println() {
  * The Serial Instance!!!
  */
 // #if ... to be compatible with ATTinyCores and AttinyDigisparkCores
-#if ((!defined(UBRRH) && !defined(UBRR0H)) || (defined(USE_SOFTWARE_SERIAL) && (USE_SOFTWARE_SERIAL != 0))) || defined(TINY_DEBUG_SERIAL_SUPPORTED) || ((defined(UBRRH) || defined(UBRR0H) || defined(LINBRRH)) && (defined(USE_SOFTWARE_SERIAL) && (USE_SOFTWARE_SERIAL == 0)))
-// name the instance SerialOut since Serial is already defined.
-// or comment out
-// at line 54 in TinySoftwareSerial.h included in in ATTinyCores/src/tiny/Arduino.h at line 228  for ATTinyCores
-// or line 71 in HardwareSerial.h included in ATTinyCores/src/tiny/Arduino.h at line 227 for ATTinyCores
-// or line 627ff TinyDebugSerial.h included in AttinyDigisparkCores/src/tiny/WProgram.h at line 18 for AttinyDigisparkCores
+#if (!defined(UBRRH) && !defined(UBRR0H)) /*AttinyDigisparkCore and AttinyDigisparkCore condition*/ \
+    || USE_SOFTWARE_SERIAL /*AttinyDigisparkCore condition*/\
+    || ((defined(UBRRH) || defined(UBRR0H) || defined(UBRR1H) || defined(LINBRRH)) && !USE_SOFTWARE_SERIAL)/*AttinyDigisparkCore condition for HardwareSerial*/
+// Switch to SerialOut since Serial is already defined
+// or comment out line 745 in TinyDebugSerial.h included in AttinyDigisparkCores/src/tiny/WProgram.h at line 24 for AttinyDigisparkCores
 TinySerialOut SerialOut;
 #else
 TinySerialOut Serial;

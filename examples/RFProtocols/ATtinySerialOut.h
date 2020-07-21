@@ -55,87 +55,52 @@
 #if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include <Arduino.h>
 
-#define VERSION_ATTINY_SERIAL_OUT "1.1.0"
+#define VERSION_ATTINY_SERIAL_OUT "1.2.0"
 #define VERSION_ATTINY_SERIAL_OUT_MAJOR 1
-#define VERSION_ATTINY_SERIAL_OUT_MINOR 1
+#define VERSION_ATTINY_SERIAL_OUT_MINOR 2
 
 #if (F_CPU != 1000000) &&  (F_CPU != 8000000) &&  (F_CPU != 16000000)
 #error "F_CPU value must be 1000000, 8000000 or 16000000."
 #endif
 
-/*
- * Change this, if you need another pin as serial output
- * or set it as Symbol like "-DTX_PIN PB1"
- * or when switching port (e.g. for ATiny167), then we need more Symbols like "-DTX_PIN PB1 -DTX_PORT PORTB -DTX_PORT_ADDR 0x05 -TX_DDR DDRB"
- */
 #if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#ifndef TX_PIN
+#  ifndef TX_PIN
 #define TX_PIN PA1 // (package pin 2 / TXD on Tiny167) - can use one of PA0 to PA7 here
-#endif
-#ifndef TX_PORT
-#define TX_PORT PORTA
-#define TX_PORT_ADDR 0x02 // PORTA
-#define TX_DDR DDRA
-
-//#define TX_PORT PORTB
-//#define TX_PORT_ADDR 0x05
-//#define TX_DDR DDRB
-#endif
-
+#  endif
 #else // defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#ifndef TX_PIN
+#  ifndef TX_PIN
 #define TX_PIN PB2 // (package pin 7 on Tiny85) - can use one of PB0 to PB4 (+PB5) here
+#  endif
 #endif
-#define TX_PORT PORTB
-#define TX_PORT_ADDR 0x18 // PORTB
-#define TX_DDR DDRB
-#endif // defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+
+/*
+ * Define or comment this out, if you want to save 10 bytes code size and if you can live
+ * with 87 micro seconds intervals of disabled interrupts for each sent byte @115200 baud.
+ */
+//#define USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
+
 /*
  * @1 MHz use bigger (+120 bytes for unrolled loop) but faster code. Otherwise only 38400 baud is possible.
  * @8/16 MHz use 115200 baud instead of 230400 baud.
  */
+//#define TINY_SERIAL_DO_NOT_USE_115200BAUD
 #ifndef TINY_SERIAL_DO_NOT_USE_115200BAUD  // define this to force using other baud rates
 #define USE_115200BAUD
 #endif
 
-/*
- * Define or comment this out, if you want to save code size and if you can live with 87 micro seconds intervals of disabled interrupts for each sent byte.
- */
-//#define USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
-extern bool sUseCliSeiForWrite; // default is true
-void useCliSeiForStrings(bool aUseCliSeiForWrite); // might be useful to set to false if output is done from ISR, to avoid to call unwanted sei().
-
-inline void initTXPin() {
-    // TX_PIN is active LOW, so set it to HIGH initially
-    TX_PORT |= (1 << TX_PIN);
-    // set pin direction to output
-    TX_DDR |= (1 << TX_PIN);
-}
-
-void write1Start8Data1StopNoParity(uint8_t aValue);
-inline void write1Start8Data1StopNoParityWithCliSei(uint8_t aValue) {
-    uint8_t oldSREG = SREG;
-    cli();
-    write1Start8Data1StopNoParity(aValue);
-    SREG = oldSREG;
-}
-
-inline void writeValue(uint8_t aValue) {
-    write1Start8Data1StopNoParity(aValue);
-}
-
 // The same class definition as for plain arduino
-#if defined(ARDUINO_AVR_DIGISPARK)
-// The digispark library defines (2/2019) F but not __FlashStringHelper
-//# define F(string_literal) ((fstr_t*)PSTR(string_literal))
-#  if ! defined(__FlashStringHelper)
-#define __FlashStringHelper fstr_t
-#  endif
-#endif
 #if not defined(F)
 class __FlashStringHelper;
 #define F(string_literal) (reinterpret_cast<const __FlashStringHelper *>(PSTR(string_literal)))
 #endif
+
+extern bool sUseCliSeiForWrite; // default is true
+void useCliSeiForStrings(bool aUseCliSeiForWrite); // might be useful to set to false if output is done from ISR, to avoid to call unwanted sei().
+
+void initTXPin();
+void write1Start8Data1StopNoParity(uint8_t aValue);
+void write1Start8Data1StopNoParityWithCliSei(uint8_t aValue);
+void writeValue(uint8_t aValue);
 
 void writeString(const char * aStringPtr);
 void writeString(const __FlashStringHelper * aStringPtr);
@@ -176,7 +141,7 @@ public:
 
     // virtual functions of Print class
     size_t write(uint8_t aByte);
-    operator bool() { return true; } // To support "while (!Serial); // wait for serial port to connect. Needed for Leonardo only
+    operator bool(); // To support "while (!Serial); // wait for serial port to connect. Needed for Leonardo only
 
     void print(const __FlashStringHelper * aStringPtr);
     void print(const char* aStringPtr);
@@ -203,11 +168,11 @@ public:
 };
 
 // #if ... to be compatible with ATTinyCores and AttinyDigisparkCores
-#if ((!defined(UBRRH) && !defined(UBRR0H)) || (defined(USE_SOFTWARE_SERIAL) && (USE_SOFTWARE_SERIAL != 0))) || defined(TINY_DEBUG_SERIAL_SUPPORTED) || ((defined(UBRRH) || defined(UBRR0H) || defined(LINBRRH)) && (defined(USE_SOFTWARE_SERIAL) && (USE_SOFTWARE_SERIAL == 0)))
-// Switch to SerialOut since Serial is already defined or comment out
-// at line 54 in TinySoftwareSerial.h included in in ATTinyCores/src/tiny/Arduino.h at line 228  for ATTinyCores
-// or line 71 in HardwareSerial.h included in ATTinyCores/src/tiny/Arduino.h at line 227 for ATTinyCores
-// or line 627ff TinyDebugSerial.h included in AttinyDigisparkCores/src/tiny/WProgram.h at line 18 for AttinyDigisparkCores
+#if (!defined(UBRRH) && !defined(UBRR0H)) /*AttinyDigisparkCore and AttinyDigisparkCore condition*/ \
+    || USE_SOFTWARE_SERIAL /*AttinyDigisparkCore condition*/\
+    || ((defined(UBRRH) || defined(UBRR0H) || defined(UBRR1H) || defined(LINBRRH)) && !USE_SOFTWARE_SERIAL)/*AttinyDigisparkCore condition for HardwareSerial*/
+// Switch to SerialOut since Serial is already defined
+// or comment out line 745 in TinyDebugSerial.h included in AttinyDigisparkCores/src/tiny/WProgram.h at line 24 for AttinyDigisparkCores
 extern TinySerialOut SerialOut;
 #define Serial SerialOut
 #else

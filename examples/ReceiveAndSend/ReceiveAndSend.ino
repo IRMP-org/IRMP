@@ -50,6 +50,8 @@
  * APOLLO3      11          12          5
  */
 
+#include <Arduino.h>
+
 /*
  * Set library modifiers first to set input and output pin etc.
  */

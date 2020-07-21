@@ -33,9 +33,8 @@
  */
 
 #if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#include <Arduino.h>
 #include "ATtinySerialOut.h"
-#include <avr/eeprom.h>     // for eeprom_read_byte()
+#include <avr/eeprom.h>     // for eeprom_read_byte() in writeString_E()
 
 #ifndef _NOP
 #define _NOP()  __asm__ volatile ("nop")
@@ -45,10 +44,53 @@
 #define PORTB (*(volatile uint8_t *)((0x18) + 0x20))
 #endif
 
+#if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#  ifndef TX_PORT
+#define TX_PORT PORTA
+#define TX_PORT_ADDR 0x02 // PORTA
+#define TX_DDR DDRA
+
+//#define TX_PORT PORTB
+//#define TX_PORT_ADDR 0x05
+//#define TX_DDR DDRB
+#  endif
+
+#else
+//  ATtinyX5 here
+#define TX_PORT PORTB
+#define TX_PORT_ADDR 0x18 // PORTB
+#define TX_DDR DDRB
+#endif // defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+
+#if defined(Serial)
+#undef Serial
+#endif
+
+void write1Start8Data1StopNoParity(uint8_t aValue);
+
+bool sUseCliSeiForWrite = true;
+
+void initTXPin() {
+    // TX_PIN is active LOW, so set it to HIGH initially
+    TX_PORT |= (1 << TX_PIN);
+    // set pin direction to output
+    TX_DDR |= (1 << TX_PIN);
+}
+
+void write1Start8Data1StopNoParityWithCliSei(uint8_t aValue) {
+    uint8_t oldSREG = SREG;
+    cli();
+    write1Start8Data1StopNoParity(aValue);
+    SREG = oldSREG;
+}
+
+void writeValue(uint8_t aValue) {
+    write1Start8Data1StopNoParity(aValue);
+}
+
 /*
  * Used for writeString() and therefore all write<type>() and print<type>
  */
-bool sUseCliSeiForWrite = true;
 void useCliSeiForStrings(bool aUseCliSeiForWrite) {
     sUseCliSeiForWrite = aUseCliSeiForWrite;
 }
@@ -57,13 +99,13 @@ void useCliSeiForStrings(bool aUseCliSeiForWrite) {
  * Write String residing in RAM
  */
 void writeString(const char * aStringPtr) {
-#ifndef  USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
+#ifndef USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
     if (sUseCliSeiForWrite) {
 #endif
         while (*aStringPtr != 0) {
             write1Start8Data1StopNoParityWithCliSei(*aStringPtr++);
         }
-#ifndef  USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
+#ifndef USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
     } else {
         while (*aStringPtr != 0) {
             write1Start8Data1StopNoParity(*aStringPtr++);
@@ -79,7 +121,7 @@ void writeString_P(const char * aStringPtr) {
     uint8_t tChar = pgm_read_byte((const uint8_t * ) aStringPtr);
 // Comparing with 0xFF is safety net for wrong string pointer
     while (tChar != 0 && tChar != 0xFF) {
-#ifdef  USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
+#ifdef USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
         write1Start8Data1StopNoParityWithCliSei(tChar);
 #else
         if (sUseCliSeiForWrite) {
@@ -100,7 +142,7 @@ void writeString(const __FlashStringHelper * aStringPtr) {
     uint8_t tChar = pgm_read_byte((const uint8_t * ) aStringPtr);
 // Comparing with 0xFF is safety net for wrong string pointer
     while (tChar != 0 && tChar != 0xFF) {
-#ifdef  USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
+#ifdef USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
         write1Start8Data1StopNoParityWithCliSei(tChar);
 #else
         if (sUseCliSeiForWrite) {
@@ -120,7 +162,7 @@ void writeString_E(const char * aStringPtr) {
     uint8_t tChar = eeprom_read_byte((const uint8_t *) aStringPtr);
     // Comparing with 0xFF is safety net for wrong string pointer
     while (tChar != 0 && tChar != 0xFF) {
-#ifdef  USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
+#ifdef USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
         write1Start8Data1StopNoParityWithCliSei(tChar);
 #else
         if (sUseCliSeiForWrite) {
@@ -150,13 +192,13 @@ void writeStringSkipLeadingSpaces(const char * aStringPtr) {
     while (*aStringPtr == ' ' && *aStringPtr != 0) {
         aStringPtr++;
     }
-#ifndef  USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
+#ifndef USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
     if (sUseCliSeiForWrite) {
 #endif
         while (*aStringPtr != 0) {
             write1Start8Data1StopNoParityWithCliSei(*aStringPtr++);
         }
-#ifndef  USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
+#ifndef USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
     } else {
         while (*aStringPtr != 0) {
             write1Start8Data1StopNoParity(*aStringPtr++);
@@ -166,7 +208,7 @@ void writeStringSkipLeadingSpaces(const char * aStringPtr) {
 }
 
 void writeBinary(uint8_t aByte) {
-#ifdef  USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
+#ifdef USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
     write1Start8Data1StopNoParityWithCliSei(aByte);
 #else
     if (sUseCliSeiForWrite) {
@@ -193,23 +235,6 @@ void writeUnsignedByte(uint8_t aByte) {
 }
 
 /*
- * 2 Byte Hex output with 2 Byte prefix "0x"
- */
-void writeUnsignedByteHexWithPrefix(uint8_t aByte) {
-    writeBinary('0');
-    writeBinary('x');
-    writeUnsignedByteHex(aByte);
-}
-
-char nibbleToHex(uint8_t aByte) {
-    aByte = aByte & 0x0F;
-    if (aByte < 10) {
-        return aByte + '0';
-    }
-    return aByte + 'A' - 10;
-}
-
-/*
  * 2 Byte Hex output
  */
 void writeUnsignedByteHex(uint8_t aByte) {
@@ -225,6 +250,23 @@ void writeUnsignedByteHex(uint8_t aByte) {
         tStringBuffer[0] = '0';
     }
     writeString(tStringBuffer);
+}
+
+/*
+ * 2 Byte Hex output with 2 Byte prefix "0x"
+ */
+void writeUnsignedByteHexWithPrefix(uint8_t aByte) {
+    writeBinary('0');
+    writeBinary('x');
+    writeUnsignedByteHex(aByte);
+}
+
+char nibbleToHex(uint8_t aByte) {
+    aByte = aByte & 0x0F;
+    if (aByte < 10) {
+        return aByte + '0';
+    }
+    return aByte + 'A' - 10;
 }
 
 void writeByte(int8_t aByte) {
@@ -269,31 +311,16 @@ void writeFloat(double aFloat, uint8_t aDigits) {
     writeStringSkipLeadingSpaces(tStringBuffer);
 }
 
-/*
- * The Serial Instance!!!
- */
-
-// #if ... to be compatible with ATTinyCores and AttinyDigisparkCores
-#if ((!defined(UBRRH) && !defined(UBRR0H)) || (defined(USE_SOFTWARE_SERIAL) && (USE_SOFTWARE_SERIAL != 0))) || defined(TINY_DEBUG_SERIAL_SUPPORTED) || ((defined(UBRRH) || defined(UBRR0H) || defined(LINBRRH)) && (defined(USE_SOFTWARE_SERIAL) && (USE_SOFTWARE_SERIAL == 0)))
-// Switch to SerialOut since Serial is already defined or comment out
-// at line 54 in TinySoftwareSerial.h included in in ATTinyCores/src/tiny/Arduino.h at line 228  for ATTinyCores
-// or line 71 in HardwareSerial.h included in ATTinyCores/src/tiny/Arduino.h at line 227 for ATTinyCores
-// or line 627ff TinyDebugSerial.h included in AttinyDigisparkCores/src/tiny/WProgram.h at line 18 for AttinyDigisparkCores
-TinySerialOut SerialOut;
-#else
-TinySerialOut Serial;
-#endif
-
-/*
- * Member functions for TinySerialOut
- */
-
+/******************************************************
+ * The TinySerialOut class fuctions which implements
+ * the Serial + printHex() and printlnHex() functions
+ ******************************************************/
 /*
  * An alternative way to call the init function :-)
  */
 void TinySerialOut::begin(long aBaudrate) {
     initTXPin();
-#if defined(USE_115200BAUD) //else smaller code, but only 38400 baud at 1 MHz
+#if defined(USE_115200BAUD) // else smaller code, but only 38400 baud at 1 MHz
     if (aBaudrate != 115200) {
         println(F("Only 115200 supported!"));
     }
@@ -450,6 +477,20 @@ void TinySerialOut::println() {
     print('\r');
     print('\n');
 }
+
+/*
+ * The Serial Instance!!!
+ */
+// #if ... to be compatible with ATTinyCores and AttinyDigisparkCores
+#if (!defined(UBRRH) && !defined(UBRR0H)) /*AttinyDigisparkCore and AttinyDigisparkCore condition*/ \
+    || USE_SOFTWARE_SERIAL /*AttinyDigisparkCore condition*/\
+    || ((defined(UBRRH) || defined(UBRR0H) || defined(UBRR1H) || defined(LINBRRH)) && !USE_SOFTWARE_SERIAL)/*AttinyDigisparkCore condition for HardwareSerial*/
+// Switch to SerialOut since Serial is already defined
+// or comment out line 745 in TinyDebugSerial.h included in AttinyDigisparkCores/src/tiny/WProgram.h at line 24 for AttinyDigisparkCores
+TinySerialOut SerialOut;
+#else
+TinySerialOut Serial;
+#endif
 
 /********************************
  * Basic serial output function
