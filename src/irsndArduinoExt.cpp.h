@@ -109,7 +109,16 @@ static void irsnd_set_freq(IRSND_FREQ_TYPE freq __attribute__((unused)))
     // not supported by now
 }
 
-static void irsnd_on(void)
+/*
+ * Called from irsnd_ISR to set the IR output
+ */
+#if defined(ESP8266)
+void ICACHE_RAM_ATTR irsnd_on(void)
+#elif defined(ESP32)
+void IRAM_ATTR irsnd_on(void)
+#else
+void irsnd_on(void)
+#endif
 {
     if (!irsnd_is_on)
     {
@@ -136,7 +145,13 @@ static void irsnd_on(void)
     }
 }
 
-static void irsnd_off(void)
+#if defined(ESP8266)
+void ICACHE_RAM_ATTR irsnd_off(void)
+#elif defined(ESP32)
+void IRAM_ATTR irsnd_off(void)
+#else
+void irsnd_off(void)
+#endif
 {
     if (irsnd_is_on)
     {

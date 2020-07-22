@@ -100,7 +100,13 @@ void irmp_init(void)
  * Called from the receiver ISR IRMP_ISR() with the raw input value. Receiver signal input is active low!
  * With -oS it is taken as inline function
  */
+#if defined(ESP8266)
+void ICACHE_RAM_ATTR irmp_DoLEDFeedback(bool aSwitchLedOff)
+#elif defined(ESP32)
+void IRAM_ATTR irmp_DoLEDFeedback(bool aSwitchLedOff)
+#else
 void irmp_DoLEDFeedback(bool aSwitchLedOff)
+#endif
 {
     if (irmp_irsnd_LedFeedbackEnabled)
     {
