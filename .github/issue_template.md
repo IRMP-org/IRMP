@@ -1,0 +1,81 @@
+---
+name: 🐛 Bug Report
+about: If something isn't working as expected 🤔.
+assignees: ArminJo
+---
+
+
+## Bug Report
+
+### Arduino Platform
+* [ ] Arduino ATmega328* board (UNO, Nano)
+* [ ] Arduino ATmega2560 board (Mega)
+* [ ] Arduino ATmega32U4 board (Leonardo)
+* [ ] Arduino megaAVR board (NanoEvery)
+* [ ] Arduino SAM board (Due)
+* [ ] Arduino SAMD board (Zero, MKR*)
+* [ ] ESP8266 board
+* [ ] ESP32 board
+* [ ] Apollo3 board
+* [ ] Teensy board
+* [ ] Other - please specify
+
+
+### IDE
+* [ ] Arduino IDE
+* [ ] Arduino Pro IDE
+* [ ] Sloeber IDE
+* [ ] PlatformIO IDE
+* [ ] Other - please specify
+
+### IR-Protocol
+* [ ] Unknown
+* [ ] Sony
+* [ ] NEC
+* [ ] Samsung
+* [ ] RC5, RC6
+* [ ] Kaseikyo
+* [ ] Denon
+* [ ] JVC
+* [ ] Lego
+* [ ] Matsushita
+* [ ] Mitsubishi
+* [ ] Panasonic
+* [ ] Sanyo
+* [ ] Sharp
+* [ ] Telefunken
+* [ ] Other - please specify
+
+### Example to reproduce the issue
+* [ ] AllProtocols
+* [ ] Callback
+* [ ] Interrupt
+* [ ] OneProtocol
+* [ ] ReceiveAndSend
+* [ ] ReceiveAndSendDynamicPins
+* [ ] RFProtocols
+* [ ] SimpleReceiver
+* [ ] SimpleSender
+* [ ] Other
+
+### Pin(s) used for IR-receive, if not default
+
+### Version
+* [ ] Yes I use the [latest release](https://github.com/ukw100/IRMP/releases)
+* [ ] Other - please specify
+
+### Current behavior
+<!-- Paste the code and output you run -->
+
+
+<!-- Add a clear and concise description of the behavior. -->
+
+
+### Expected behavior
+<!-- Add a clear and concise description of what you expected to happen. -->
+
+### Error output
+<!-- Add a the serial output which indicates the error happened. -->
+
+### Additional context
+<!-- (Optional) Add any other context about the problem here. -->
