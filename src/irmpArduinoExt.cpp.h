@@ -108,12 +108,15 @@ void IRAM_ATTR irmp_DoLEDFeedback(bool aSwitchLedOff)
 void irmp_DoLEDFeedback(bool aSwitchLedOff)
 #endif
 {
+#ifndef __AVR_ATtiny85__
     if (irmp_irsnd_LedFeedbackEnabled)
     {
         irmp_irsnd_SetFeedbackLED(!aSwitchLedOff);
     }
+#endif // __AVR_ATtiny85__
 }
 
+#ifndef __AVR_ATtiny85__
 #if defined(__AVR__)
 void irmp_debug_print(const __FlashStringHelper * aMessage, bool aDoShortOutput)
 #else
@@ -617,5 +620,6 @@ void irmp_result_print(IRMP_DATA * aIRMPDataPtr)
     }
     Serial.println();
 }
+#endif // __AVR_ATtiny85__
 
 #endif // defined(ARDUINO)

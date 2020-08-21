@@ -108,11 +108,13 @@ void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin, boo
 
 void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr);
 void irmp_result_print(IRMP_DATA * aIRMPDataPtr);
+#ifndef __AVR_ATtiny85__
 #  if defined(__AVR__)
 void irmp_debug_print(const __FlashStringHelper * aMessage, bool aDoShortOutput);
 #  else
 void irmp_debug_print(const char * aMessage, bool aDoShortOutput);
 #  endif
+#endif // __AVR_ATtiny85__
 
 void irmp_PCI_ISR(void);
 void initPCIInterrupt(void);

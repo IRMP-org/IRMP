@@ -23,6 +23,7 @@
 
 // NO GUARD here, we have the GUARD below with #ifdef _IRSND_H_ and #ifdef _IRMP_H_.
 
+#ifndef __AVR_ATtiny85__
 #if defined(ARDUINO)
 #ifndef IR_FEEDBACL_LED_H
 #define IR_FEEDBACL_LED_H
@@ -35,3 +36,4 @@ constexpr auto irsnd_LEDFeedback = irmp_irsnd_LEDFeedback; // alias for irsnd_LE
 
 #endif // IR_FEEDBACL_LED_H
 #endif // defined(ARDUINO)
+#endif // __AVR_ATtiny85__

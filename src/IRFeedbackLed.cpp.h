@@ -12,6 +12,7 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
+#ifndef __AVR_ATtiny85__
 #if defined(ARDUINO)
 #ifndef IR_FEEDBACL_LED_CPP_H
 #define IR_FEEDBACL_LED_CPP_H
@@ -115,3 +116,4 @@ void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
 
 #endif // IR_FEEDBACL_LED_CPP_H
 #endif // defined(ARDUINO)
+#endif // __AVR_ATtiny85__
