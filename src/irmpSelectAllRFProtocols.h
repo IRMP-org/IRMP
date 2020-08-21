@@ -29,6 +29,7 @@
  */
 #define IRMP_SUPPORT_RF_GEN24_PROTOCOL          1       // RF GEN24 (generic)   >= 15000                 ~250 bytes
 #define IRMP_SUPPORT_RF_X10_PROTOCOL            1       // RF PC X10 (Medion)   >= 15000                 ~250 bytes
+#define IRMP_SUPPORT_RF_MEDION_PROTOCOL         1       // RF PC Medion         >= 15000                 ~250 bytes
 
 // Usually IR sensors are low active, RF receivers are high active.
 #define IRMP_HIGH_ACTIVE                        1       // set to 1 if you use a RF receiver!

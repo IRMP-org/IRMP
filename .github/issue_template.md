@@ -16,6 +16,7 @@ assignees: ArminJo
 * [ ] Arduino SAMD board (Zero, MKR*)
 * [ ] ESP8266 board
 * [ ] ESP32 board
+* [ ] STM32 board
 * [ ] Apollo3 board
 * [ ] Teensy board
 * [ ] Other - please specify
@@ -61,7 +62,7 @@ assignees: ArminJo
 ### Pin(s) used for IR-receive, if not default
 
 ### Version
-* [ ] Yes I use the [latest release](https://github.com/ukw100/IRMP/releases)
+* [ ] Yes I use the [latest release](https://github.com/ukw100/IRMP/releases) and verified this!
 * [ ] Other - please specify
 
 ### Current behavior

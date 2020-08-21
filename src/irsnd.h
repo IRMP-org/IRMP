@@ -30,6 +30,8 @@
 #    define IRSND_GPIO_AF                       CONCAT(GPIO_AF_TIM, IRSND_TIMER_NUMBER)
 #  elif defined (ARM_STM32F10X)
 #    define IRSND_PORT_RCC                      CONCAT(RCC_APB2Periph_GPIO, IRSND_PORT_LETTER)
+#  elif  defined (ARM_STM32F30X)
+#    define IRSND_PORT_RCC                      CONCAT(RCC_AHBPeriph_GPIO, IRSND_PORT_LETTER)
 #  elif defined (ARM_STM32F4XX)
 #    define IRSND_PORT_RCC                      CONCAT(RCC_AHB1Periph_GPIO, IRSND_PORT_LETTER)
 #    define IRSND_GPIO_AF                       CONCAT(GPIO_AF_TIM, IRSND_TIMER_NUMBER)

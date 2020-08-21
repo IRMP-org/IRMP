@@ -875,6 +875,8 @@ irsnd_init (void)
 #    elif defined (ARM_STM32F10X)
         RCC_APB2PeriphClockCmd(IRSND_PORT_RCC, ENABLE);
         // RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE); // only in case of remapping, not necessary for default port-timer mapping
+#    elif defined (ARM_STM32F30X)
+        RCC_AHBPeriphClockCmd(IRSND_PORT_RCC, ENABLE);
 #    elif defined (ARM_STM32F4XX)
         RCC_AHB1PeriphClockCmd(IRSND_PORT_RCC, ENABLE);
 #    endif
@@ -893,6 +895,14 @@ irsnd_init (void)
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
         GPIO_Init(IRSND_PORT, &GPIO_InitStructure);
         // GPIO_PinRemapConfig(GPIO_*Remap*_TIM[IRSND_TIMER_NUMBER], ENABLE); // only in case of remapping, not necessary for default port-timer mapping
+#    elif defined (ARM_STM32F30X)
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+        GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+        GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+        GPIO_Init(IRSND_PORT, &GPIO_InitStructure);
+        // GPIO_PinRemapConfig(GPIO_*Remap*_TIM[IRSND_TIMER_NUMBER], ENABLE); // only in case of remapping, not necessary for default port-timer mapping
+
 #    endif
 
         /* TIMx clock enable */
@@ -1116,7 +1126,7 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
             irsnd_buffer[0] = (address & 0xFF00) >> 8;                                                          // AAAAAAAA
             irsnd_buffer[1] = (address & 0x00FF);                                                               // AAAAAAAA
             irsnd_buffer[2] = (command & 0xFF00) >> 8;                                                          // CCCCCCCC
-            irsnd_buffer[3] = 0x8B;                                                                             // 10001011 (id)
+            irsnd_buffer[3] = (command & 0x00FF);                                                               // cccccccc (ID)
             irsnd_busy      = TRUE;
             break;
         }

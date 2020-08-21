@@ -83,8 +83,9 @@
 
 #define RF_GEN24_PROTOCOL                       57              // RF Generic, 24 Bits (Pollin 550666, EAN 4049702006022 and many other similar RF remote controls))
 #define RF_X10_PROTOCOL                         58              // RF PC X10 Remote Control (Medion, Pollin 721815)
+#define RF_MEDION_PROTOCOL                      59              // RF PC Medion Remote Control (Medion)
 
-#define IRMP_N_PROTOCOLS                        58              // number of supported protocols
+#define IRMP_N_PROTOCOLS                        59              // number of supported protocols
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * timing constants:
@@ -1084,9 +1085,9 @@ typedef uint8_t     PAUSE_LEN;
 #define RF_X10_START_BIT_PULSE_TIME             2850.0e-6                        // 2850 usec pulse
 #define RF_X10_START_BIT_PAUSE_TIME             1710.0e-6                        // 1710 usec pulse
 #define RF_X10_0_PULSE_TIME                      570.0e-6                        //  570 usec pulse
-#define RF_X10_0_PAUSE_TIME                      570.0e-6                        // 1000 usec pause
-#define RF_X10_1_PULSE_TIME                      570.0e-6                        // 1000 usec pulse
-#define RF_X10_1_PAUSE_TIME                     1710.0e-6                        //  500 usec pause
+#define RF_X10_0_PAUSE_TIME                      570.0e-6                        //  570 usec pause
+#define RF_X10_1_PULSE_TIME                      570.0e-6                        //  570 usec pulse
+#define RF_X10_1_PAUSE_TIME                     1710.0e-6                        // 1710 usec pause
 
 #define RF_X10_FRAME_REPEAT_PAUSE_TIME          4456.0e-6                        // frame repeat after 4460 usec
 #define RF_X10_ADDRESS_OFFSET                    1                               // skip 1st toggle bit
@@ -1097,6 +1098,31 @@ typedef uint8_t     PAUSE_LEN;
 #define RF_X10_STOP_BIT                          1                               // has stop bit
 #define RF_X10_LSB                               0                               // MSB...LSB
 #define RF_X10_FLAGS                             0                               // flags
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
+ * RF MEDION PC remote control (MEDION)
+ *
+ * Frame is simular to RF_X10, see above. Only the start bit timing differs.
+ *---------------------------------------------------------------------------------------------------------------------------------------------------
+ */
+#define RF_MEDION_START_BIT_PULSE_TIME          3960.0e-6                        // 3960 usec pulse
+#define RF_MEDION_START_BIT_PAUSE_TIME           610.0e-6                        //  610 usec pulse
+#define RF_MEDION_0_PULSE_TIME                   570.0e-6                        //  570 usec pulse
+#define RF_MEDION_0_PAUSE_TIME                   570.0e-6                        //  570 usec pause
+#define RF_MEDION_1_PULSE_TIME                   570.0e-6                        //  570 usec pulse
+#define RF_MEDION_1_PAUSE_TIME                  1710.0e-6                        // 1710 usec pause
+
+#define RF_MEDION_FRAME_REPEAT_PAUSE_TIME       5000.0e-6                        // frame repeat after 5000 usec
+#define RF_MEDION_ADDRESS_OFFSET                 1                               // skip 1st toggle bit
+#define RF_MEDION_ADDRESS_LEN                    7                               // store 7 command bits in address
+#define RF_MEDION_COMMAND_OFFSET                 9                               // skip 1st toggle bit + 7 command bits + 2nd toggle bit
+#define RF_MEDION_COMMAND_LEN                   11                               // read 7 alternative command bits plus 4 0-bits
+#define RF_MEDION_COMPLETE_DATA_LEN             20                               // complete length
+#define RF_MEDION_STOP_BIT                       1                               // has stop bit
+#define RF_MEDION_LSB                            0                               // MSB...LSB
+#define RF_MEDION_FLAGS                          0                               // flags
+
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Frame Repetitions:

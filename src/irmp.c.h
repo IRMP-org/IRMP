@@ -632,7 +632,23 @@
 #define RF_X10_0_PAUSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * RF_X10_0_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
 #define RF_X10_0_PAUSE_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * RF_X10_0_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
 
-#define AUTO_FRAME_REPETITION_LEN               (uint_fast16_t)(F_INTERRUPTS * AUTO_FRAME_REPETITION_TIME + 0.5)       // use uint_fast16_t!
+#define RF_MEDION_START_BIT_PULSE_LEN_MIN       ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_START_BIT_PULSE_TIME * MIN_TOLERANCE_05 + 0.5) - 1)
+#define RF_MEDION_START_BIT_PULSE_LEN_MAX       ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_START_BIT_PULSE_TIME * MAX_TOLERANCE_05 + 0.5) + 1)
+#define RF_MEDION_START_BIT_PAUSE_LEN_MIN       ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_START_BIT_PAUSE_TIME * MIN_TOLERANCE_05 + 0.5) - 1)
+#define RF_MEDION_START_BIT_PAUSE_LEN_MAX       ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_START_BIT_PAUSE_TIME * MAX_TOLERANCE_05 + 0.5) + 1)
+#define RF_MEDION_1_PAUSE_LEN_EXACT             ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_1_PAUSE_TIME + 0.5))
+#define RF_MEDION_1_PULSE_LEN_MIN               ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_1_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
+#define RF_MEDION_1_PULSE_LEN_MAX               ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_1_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define RF_MEDION_1_PAUSE_LEN_MIN               ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_1_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
+#define RF_MEDION_1_PAUSE_LEN_MAX               ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_1_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define RF_MEDION_0_PAUSE_LEN                   ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_0_PAUSE_TIME))
+#define RF_MEDION_0_PULSE_LEN_MIN               ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_0_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
+#define RF_MEDION_0_PULSE_LEN_MAX               ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_0_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define RF_MEDION_0_PAUSE_LEN_MIN               ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_0_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
+#define RF_MEDION_0_PAUSE_LEN_MAX               ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_0_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+
+#define AUTO_FRAME_REPETITION_LEN               (uint_fast16_t)(F_INTERRUPTS * AUTO_FRAME_REPETITION_TIME + 0.5)
+// use uint_fast16_t!
 
 #define STOP_BIT_PAUSE_TIME_MIN                 3000.0e-6                                                               // minimum stop bit pause time: 3.0 msec
 #define STOP_BIT_PAUSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * STOP_BIT_PAUSE_TIME_MIN + 0.5) + 1)      // minimum stop bit pause len
@@ -755,6 +771,7 @@ static const char proto_onkyo[]         PROGMEM = "ONKYO";
 
 static const char proto_rf_gen24[]      PROGMEM = "RF_GEN24";
 static const char proto_rf_x10[]        PROGMEM = "RF_X10";
+static const char proto_rf_medion[]     PROGMEM = "RF_MEDION";
 
 const char * const
 irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM =
@@ -2361,6 +2378,32 @@ static const PROGMEM IRMP_PARAMETER rf_x10_param =
 
 #endif
 
+#if IRMP_SUPPORT_RF_MEDION_PROTOCOL == 1
+
+static const PROGMEM IRMP_PARAMETER rf_medion_param =
+{
+    RF_MEDION_PROTOCOL,                                                 // protocol:        ir protocol
+
+    RF_MEDION_1_PULSE_LEN_MIN,                                          // pulse_1_len_min: minimum length of pulse with bit value 1
+    RF_MEDION_1_PULSE_LEN_MAX,                                          // pulse_1_len_max: maximum length of pulse with bit value 1
+    RF_MEDION_1_PAUSE_LEN_MIN,                                          // pause_1_len_min: minimum length of pause with bit value 1
+    RF_MEDION_1_PAUSE_LEN_MAX,                                          // pause_1_len_max: maximum length of pause with bit value 1
+    RF_MEDION_0_PULSE_LEN_MIN,                                          // pulse_0_len_min: minimum length of pulse with bit value 0
+    RF_MEDION_0_PULSE_LEN_MAX,                                          // pulse_0_len_max: maximum length of pulse with bit value 0
+    RF_MEDION_0_PAUSE_LEN_MIN,                                          // pause_0_len_min: minimum length of pause with bit value 0
+    RF_MEDION_0_PAUSE_LEN_MAX,                                          // pause_0_len_max: maximum length of pause with bit value 0
+    RF_MEDION_ADDRESS_OFFSET,                                           // address_offset:  address offset
+    RF_MEDION_ADDRESS_OFFSET + RF_MEDION_ADDRESS_LEN,                   // address_end:     end of address
+    RF_MEDION_COMMAND_OFFSET,                                           // command_offset:  command offset
+    RF_MEDION_COMMAND_OFFSET + RF_MEDION_COMMAND_LEN,                   // command_end:     end of command
+    RF_MEDION_COMPLETE_DATA_LEN,                                        // complete_len:    complete length of frame
+    RF_MEDION_STOP_BIT,                                                 // stop_bit:        flag: frame has stop bit
+    RF_MEDION_LSB,                                                      // lsb_first:       flag: LSB first
+    RF_MEDION_FLAGS                                                     // flags:           some flags
+};
+
+#endif
+
 static uint_fast8_t                             irmp_bit;               // current bit position
 static IRMP_PARAMETER                           irmp_param;
 
@@ -2699,8 +2742,9 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
 #endif
 
 
-#if IRMP_SUPPORT_RF_X10_PROTOCOL == 1
+#if IRMP_SUPPORT_RF_X10_PROTOCOL == 1 || IRMP_SUPPORT_RF_MEDION_PROTOCOL == 1
             case RF_X10_PROTOCOL:
+            case RF_MEDION_PROTOCOL:
             {
                 uint8_t channel;
                 uint8_t checksum;
@@ -2718,6 +2762,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 break;
             }
 #endif
+
             default:
             {
                 rtc = TRUE;
@@ -3540,7 +3585,7 @@ uint_fast8_t irmp_ISR(void)
                         bit_0 = 1;
                     }
                     else
-#endif // IRMP_SUPPORT_RF_X10_PROTOCOL == 1
+#endif // IRMP_SUPPORT_RF_GEN24_PROTOCOL == 1
 
 #if IRMP_SUPPORT_RF_X10_PROTOCOL == 1
                     if (irmp_pulse_time >= RF_X10_START_BIT_PULSE_LEN_MIN && irmp_pulse_time <= RF_X10_START_BIT_PULSE_LEN_MAX &&
@@ -3553,6 +3598,18 @@ uint_fast8_t irmp_ISR(void)
                     }
                     else
 #endif // IRMP_SUPPORT_RF_X10_PROTOCOL == 1
+
+#if IRMP_SUPPORT_RF_MEDION_PROTOCOL == 1
+                    if (irmp_pulse_time >= RF_MEDION_START_BIT_PULSE_LEN_MIN && irmp_pulse_time <= RF_MEDION_START_BIT_PULSE_LEN_MAX &&
+                        irmp_pause_time >= RF_MEDION_START_BIT_PAUSE_LEN_MIN && irmp_pause_time <= RF_MEDION_START_BIT_PAUSE_LEN_MAX)
+                    {
+                        ANALYZE_PRINTF5 ("protocol = RF_MEDION, start bit timings: pulse: %3d - %3d, pause: %3d - %3d\n",
+                                        RF_MEDION_START_BIT_PULSE_LEN_MIN, RF_MEDION_START_BIT_PULSE_LEN_MAX,
+                                        RF_MEDION_START_BIT_PAUSE_LEN_MIN, RF_MEDION_START_BIT_PAUSE_LEN_MAX);
+                        irmp_param_p = (IRMP_PARAMETER *) &rf_medion_param;
+                    }
+                    else
+#endif // IRMP_SUPPORT_RF_MEDION_PROTOCOL == 1
 
 #if IRMP_SUPPORT_RECS80_PROTOCOL == 1
                     if (irmp_pulse_time >= RECS80_START_BIT_PULSE_LEN_MIN && irmp_pulse_time <= RECS80_START_BIT_PULSE_LEN_MAX &&

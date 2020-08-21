@@ -49,24 +49,24 @@ jobs:
           #- SparkFun:apollo3:amap3nano # All examples give strange BFD assertions
 
         # Specify parameters for each board.
-        # With examples-exclude you may exclude specific examples for a board. Use a comma separated list.
+        # With sketches-exclude you may exclude specific examples for a board. Use a comma separated list.
         #############################################################################################################
         include:
           - arduino-boards-fqbn: digistump:avr:digispark-tiny:clock=clock16
             platform-url: https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
-            examples-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH # Comma separated list of (unique substrings of) example names to exclude in build
+            sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH # Comma separated list of (unique substrings of) example names to exclude in build
 
           - arduino-boards-fqbn: digistump:avr:digispark-pro
             platform-url: https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
-            examples-exclude: ReceiveAndSendDynamicPins # No Serial.available() function in ATtinySerialOut
+            sketches-exclude: ReceiveAndSendDynamicPins # No Serial.available() function in ATtinySerialOut
 
           - arduino-boards-fqbn: ATTinyCore:avr:attinyx5:chip=85,clock=8internal
             platform-url: http://drazzy.com/package_drazzy.com_index.json
-            examples-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
+            sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
 
           - arduino-boards-fqbn: esp8266:esp8266:d1_mini:eesz=4M3M,xtal=80
             platform-url: https://arduino.esp8266.com/stable/package_esp8266com_index.json
-            examples-exclude: AllProtocols # error ".text1' will not fit in region `iram1_0_seg'"
+            sketches-exclude: AllProtocols # error ".text1' will not fit in region `iram1_0_seg'"
 
           - arduino-boards-fqbn: esp32:esp32:featheresp32:FlashFreq=80
             platform-url: https://dl.espressif.com/dl/package_esp32_index.json
@@ -94,4 +94,4 @@ jobs:
           arduino-board-fqbn: ${{ matrix.arduino-boards-fqbn }}
           platform-url: ${{ matrix.platform-url }}
           required-libraries: ${{ matrix.required-libraries }}
-          examples-exclude: ${{ matrix.examples-exclude }}
+          sketches-exclude: ${{ matrix.sketches-exclude }}

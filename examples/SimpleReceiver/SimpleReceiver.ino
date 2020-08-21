@@ -84,7 +84,6 @@ void setup()
     Serial.print(F("Ready to receive IR signals of protocols: "));
     irmp_print_active_protocols(&Serial);
     Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
-    yield();
 }
 
 void loop()
