@@ -337,7 +337,7 @@ const uint8_t irmp_used_protocol_index[] PROGMEM =
     RF_GEN24_PROTOCOL,
 #endif
 #if IRMP_SUPPORT_RF_X10_PROTOCOL == 1
-    RF_X10_PROTOCOL
+    RF_X10_PROTOCOL,
 #endif
 #if IRMP_SUPPORT_RF_MEDION_PROTOCOL == 1
     RF_MEDION_PROTOCOL
@@ -515,7 +515,7 @@ const char * const irmp_used_protocol_names[] PROGMEM =
     proto_rf_gen24,
 #endif
 #if IRMP_SUPPORT_RF_X10_PROTOCOL == 1
-    proto_rf_x10
+    proto_rf_x10,
 #endif
 #if IRMP_SUPPORT_RF_MEDION_PROTOCOL == 1
     proto_rf_medion
