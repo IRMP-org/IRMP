@@ -2,7 +2,7 @@
 # [IRMP](https://github.com/ukw100/IRMP) - Infrared Multi Protocol Decoder + Encoder
 Available as Arduino library "IRMP"
 
-### [Version 3.1.0](https://github.com/ukw100/IRMP/releases)
+### [Version 3.1.1](https://github.com/ukw100/IRMP/releases)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Commits since latest](https://img.shields.io/github/commits-since/ukw100/irmp/latest)](https://github.com/ukw100/irmp/commits/master)
@@ -68,6 +68,31 @@ You may use **every pin for input or output**, just define it like `#define IRMP
 If you want to use pin numbers for input, output and LED feedback specified at runtime, you must define `IRMP_IRSND_ALLOW_DYNAMIC_PINS`. See [ReceiveAndSendDynamicPins example](examples/ReceiveAndSendDynamicPins/ReceiveAndSendDynamicPins.ino).<br/>
 The `irmp_init` and `irsnd_init` function then allows up to 3 parameters `uint_fast8_t aIrmpInputPin/aIrsndOutputPin, uint_fast8_t aIrmpFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow`.<br/>
 Be aware, only one pin and enable flag for receive and send feedback LED is supported.
+
+# API
+```
+// Init functions
+void irmp_init (void);
+void irmp_init(uint_fast8_t aIrmpInputPin);
+void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin);
+void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow);
+
+// Info function
+void irmp_print_active_protocols(Print * aSerial);
+
+// Main check for result function used in loop() - returns TRUE or FALSE
+uint_fast8_t irmp_get_data (IRMP_DATA *)
+
+// Result print functions
+void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr);
+void irmp_result_print(IRMP_DATA * aIRMPDataPtr);
+
+// Timer management functions
+void disableIRTimerInterrupt(void);
+void enableIRTimerInterrupt(void);
+void storeIRTimer(void);
+void restoreIRTimer(void);
+```
 
 # Easy migrating your code from IRremote to IRMP
 See also the [SimpleReceiver example](examples/SimpleReceiver/SimpleReceiver.ino) .
@@ -141,6 +166,9 @@ The **tone() library (using timer 2) is still available**. You can use it altern
   
   
 # Revision History
+### Version 3.1.1
+- Added `MinimalReceiver` example.
+
 ### Version 3.1.0
 - Added RF_MEDION protocol
 - IRAM attribute etc.

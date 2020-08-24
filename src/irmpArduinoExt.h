@@ -105,7 +105,6 @@ void irmp_init(uint_fast8_t aIrmpInputPin);
 void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin);
 void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow);
 
-
 void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr);
 void irmp_result_print(IRMP_DATA * aIRMPDataPtr);
 #  if defined(__AVR__)
