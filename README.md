@@ -80,8 +80,8 @@ void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin, boo
 // Info function
 void irmp_print_active_protocols(Print * aSerial);
 
-// Main check for result function used in loop() - returns TRUE or FALSE
-uint_fast8_t irmp_get_data (IRMP_DATA *)
+// Main check for result function used in loop()
+bool irmp_get_data (IRMP_DATA *)
 
 // Result print functions
 void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr);
@@ -95,7 +95,7 @@ void restoreIRTimer(void);
 ```
 
 # Easy migrating your code from IRremote to IRMP
-See also the [SimpleReceiver example](examples/SimpleReceiver/SimpleReceiver.ino) .
+See also the [SimpleReceiver example](examples/SimpleReceiver/SimpleReceiver.ino).
 
 ### Change the include and declarations from:
 ```

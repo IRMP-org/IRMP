@@ -308,8 +308,13 @@ extern "C"
 #endif
 
 extern void                             irmp_init (void);
+#ifdef __cplusplus
+extern bool                             irmp_get_data (IRMP_DATA *);
+extern bool                             irmp_ISR (void);
+#else
 extern uint_fast8_t                     irmp_get_data (IRMP_DATA *);
 extern uint_fast8_t                     irmp_ISR (void);
+#endif
 
 #if IRMP_PROTOCOL_NAMES == 1
 extern const char * const               irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM;

@@ -2533,7 +2533,11 @@ irmp_init (void)
  *  @return    TRUE: successful, FALSE: failed
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
+#  ifdef __cplusplus
+bool
+#else
 uint_fast8_t
+#endif
 irmp_get_data (IRMP_DATA * irmp_data_p)
 {
     uint_fast8_t   rtc = FALSE;
@@ -3142,11 +3146,15 @@ static uint32_t s_startBitSample = 0;
  * 4us idle, 45 us at start of each pulse @16 MHz ATMega 328p
  */
 #if defined(ESP8266)
-uint_fast8_t ICACHE_RAM_ATTR irmp_ISR(void)
+bool ICACHE_RAM_ATTR irmp_ISR(void)
 #elif defined(ESP32)
-uint_fast8_t IRAM_ATTR irmp_ISR(void)
+bool IRAM_ATTR irmp_ISR(void)
 #else
+#  ifdef __cplusplus
+bool irmp_ISR(void)
+#  else
 uint_fast8_t irmp_ISR(void)
+#  endif
 #endif
 {
     static uint_fast16_t    last_irmp_address = 0xFFFF;                             // save last irmp address to recognize key repetition
