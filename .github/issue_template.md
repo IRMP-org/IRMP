@@ -21,6 +21,7 @@ assignees: ArminJo
 * [ ] Teensy board
 * [ ] Other - please specify
 
+<!-- Please specify board name if not included in platform selection -->
 
 ### IDE
 * [ ] Arduino IDE

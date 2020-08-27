@@ -427,6 +427,9 @@ void disableIRTimerInterrupt(void) {
 #elif defined(ARDUINO_ARCH_APOLLO3)
     am_hal_ctimer_int_disable(AM_HAL_CTIMER_INT_TIMERB3);
 
+#else
+#warning Board / CPU is not covered by definitions using pre-processor symbols -> no timer available. Please extend IRTimer.cpp.h.
+#
 #endif
 }
 
