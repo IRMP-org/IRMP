@@ -166,6 +166,10 @@ The **tone() library (using timer 2) is still available**. You can use it altern
   
   
 # Revision History
+### Version 3.1.2
+- Fixed interrupt mode bug introduced by merging upstream code for version 3.1.0.
+- Fixed ESP8266 wrong memcpy_p definition introduced in 3.0.0.
+
 ### Version 3.1.1
 - Added `MinimalReceiver` example.
 

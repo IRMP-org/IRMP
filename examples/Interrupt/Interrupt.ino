@@ -42,7 +42,7 @@
 #include <Arduino.h>
 
 /*
- * Set library modifiers first to set input pin etc.
+ * Set input pin and output pin definitions etc.
  */
 #include "PinDefinitionsAndMore.h"
 
@@ -60,7 +60,7 @@
 #endif
 
 /*
- * After setting the modifiers we can include the code and compile it.
+ * After setting the definitions we can include the code and compile it.
  */
 #include <irmp.c.h>
 

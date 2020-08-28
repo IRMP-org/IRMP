@@ -140,8 +140,8 @@ void irmp_debug_print(const char * aMessage, bool aDoShortOutput)
     Serial.print(F(" Pa"));
     Serial.print(irmp_pause_time);
 
-    Serial.print(F(" Sb=0x"));
-    Serial.print(irmp_param.stop_bit, HEX);
+    Serial.print(F(" Sb"));
+    Serial.print(irmp_param.stop_bit); // boolean. 1 = stop bit required
 
     if (!aDoShortOutput)
     {

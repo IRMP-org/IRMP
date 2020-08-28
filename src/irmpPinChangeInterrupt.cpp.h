@@ -44,9 +44,12 @@ void irmp_PCI_ISR(void)
 {
     static uint32_t irmp_last_change_micros;
 
+    // save IR input level - negative logic, true means inactive / IR pause
     uint_fast8_t irmp_input = input(IRMP_PIN);
 
-    // compute ticks after last change
+    /*
+     * 1. compute ticks after last change
+     */
     uint32_t tMicros = micros();
     uint32_t tTicks = tMicros - irmp_last_change_micros; // values up to 10000
     irmp_last_change_micros = tMicros;
@@ -59,87 +62,110 @@ void irmp_PCI_ISR(void)
 
     if (tTicks != 0)
     {
-        tTicks -= 1;
+        tTicks -= 1; // adjust for irmp_pulse_time / irmp_pause_time incremented in irmp_ISR()
     }
 
-    if (irmp_input)
+    /*
+     * 2. check for input level and tweak timings
+     */
+    if (irmp_input) // true means inactive / IR pause
     {
-        // start of pause -> set pulse width
+        // start of pause -> just set pulse width
         irmp_pulse_time += tTicks;
     }
     else
     {
-        // start of pulse -> set pause or time between repetitions
-        if (!irmp_start_bit_detected)
+        if (irmp_start_bit_detected)
         {
+            irmp_pause_time += tTicks;
+        }
+        else
+        { // start pulse here -> set pause or time between repetitions
             if (tTicks > 0xFFFF)
             {
-                // avoid overflow
+                // avoid overflow for 16 bit key_repetition_len
                 tTicks = 0xFFFF;
             }
             key_repetition_len = tTicks;
         }
-        else
-        {
-            irmp_pause_time += tTicks;
-        }
     }
 
+    /*
+     * 3. call the protocol detection routine
+     */
     irmp_ISR();
 
     if (!irmp_ir_detected && irmp_input)
     {
         /*
-         * Simulate end for protocols
+         * No valid protocol detected and IR input is inactive now -> simulate end for protocols.
          * IRMP may be waiting for stop bit, but detects it only at the next call, so do one additional call.
          * !!! ATTENTION !!! This will NOT work if we try to receive simultaneously two protocols which are only different in length like NEC16 and NEC42
          */
 #ifdef PCI_DEBUG
         Serial.write('x');
-        if(irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
-            Serial.print(irmp_start_bit_detected);
+        if (irmp_bit > 0 && irmp_bit == irmp_param.complete_len)
+        {
+            Serial.println(irmp_start_bit_detected); // print start bit if complete_len is reached
         }
 #endif
-        if (irmp_start_bit_detected && irmp_bit == irmp_param.complete_len && irmp_param.stop_bit == 1)
+        if (irmp_start_bit_detected && irmp_bit == irmp_param.complete_len && irmp_param.stop_bit == TRUE)
         {
-            // call another time to detect a nec repeat
+            // Try to detect a nec repeat irmp_bit is 0
 #ifdef PCI_DEBUG
-            Serial.println('R');
+            irmp_debug_print(F("R"));
 #endif
-            if (irmp_pulse_time > 0)
-            {
-                irmp_pulse_time--;
-            }
-            irmp_ISR();
-        }
-
-        if (irmp_start_bit_detected && irmp_bit > 0 && irmp_bit == irmp_param.complete_len)
-        {
+            PAUSE_LEN irmp_pause_time_store = irmp_pause_time;
+            irmp_pause_time = STOP_BIT_PAUSE_LEN_MIN + 1; // set pause time to minimal pause required to detect a stop bit
+            irmp_ISR(); // Call to detect a NEC repeat
 #ifdef PCI_DEBUG
-            irmp_debug_print(F("S"));
-#endif
-            irmp_ISR();
-#ifdef PCI_DEBUG
-            irmp_debug_print(F("E"));
+            irmp_debug_print(F("E")); // print info after call
             Serial.println();
 #endif
+            if (irmp_ir_detected)
+            {
+                // no protocol detected -> restore irmp_pause_time. Not sure if this is really required.
+                irmp_pause_time = irmp_pause_time_store;
+            }
+        }
+
+        // For condition see also line 4203 and 5098 in irmp.c.h
+        if (irmp_start_bit_detected && irmp_bit > 0 && irmp_bit == irmp_param.complete_len)
+        {
+            // Complete length of bit now received -> try to detect end of protocol
+#ifdef PCI_DEBUG
+            irmp_debug_print(F("S")); // print info before call
+#endif
+            PAUSE_LEN irmp_pause_time_store = irmp_pause_time;
+            irmp_pause_time = STOP_BIT_PAUSE_LEN_MIN + 1; // set pause time to minimal pause required to detect a stop bit
+            irmp_ISR(); // Call to detect end of protocol, irmp_param.stop_bit (printed as Sb) should be set to 0 if stop bit was successfully detected.
+#ifdef PCI_DEBUG
+            irmp_debug_print(F("E")); // print info after call
+            Serial.println();
+#endif
+            if (irmp_ir_detected)
+            {
+                // no protocol detected -> restore irmp_pause_time. Not sure if this is really required.
+                irmp_pause_time = irmp_pause_time_store;
+            }
         }
 
 #if (IRMP_SUPPORT_MANCHESTER == 1)
-        /*
-         * Simulate end for Manchester/biphase protocols - 130 bytes
-         */
+    /*
+     * Simulate end for Manchester/biphase protocols - 130 bytes
+     */
+    if (((irmp_bit == irmp_param.complete_len - 1 && tTicks < irmp_param.pause_1_len_max)
+                    || (irmp_bit == irmp_param.complete_len - 2 && tTicks > irmp_param.pause_1_len_max))
+            && (irmp_param.flags & IRMP_PARAM_FLAG_IS_MANCHESTER) && irmp_start_bit_detected)
+    {
 #  ifdef PCI_DEBUG
-        Serial.println('M');
+    Serial.println('M'); // Try to detect a Manchester end of protocol
 #  endif
-        if (((irmp_bit == irmp_param.complete_len - 1 && tTicks < irmp_param.pause_1_len_max)
-                        || (irmp_bit == irmp_param.complete_len - 2 && tTicks > irmp_param.pause_1_len_max))
-                && (irmp_param.flags & IRMP_PARAM_FLAG_IS_MANCHESTER) && irmp_start_bit_detected) {
-            irmp_pause_time = 2 * irmp_param.pause_1_len_max;
-            irmp_ISR();        // Write last one (with value 0) or 2 (with last value 1) data bits and set wait for dummy stop bit
-            irmp_ISR();// process dummy stop bit
-            irmp_ISR();// reset stop bit and call callback
-        }
+    irmp_pause_time = 2 * irmp_param.pause_1_len_max;
+        irmp_ISR();        // Write last one (with value 0) or 2 (with last value 1) data bits and set wait for dummy stop bit
+        irmp_ISR();// process dummy stop bit
+        irmp_ISR();// reset stop bit and call callback
+    }
 #endif
     }
 }

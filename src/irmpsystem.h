@@ -18,7 +18,7 @@
 #endif
 
 #if defined(ARDUINO)                                                                // AVR Arduino. Should be first, since it covers multiple platforms
-// to avoid the other includes and defines which ar incompatible with ARDUINO
+// to avoid the other includes and defines which are incompatible with ARDUINO
 
 #elif defined(__18CXX)                                                                // Microchip PIC C18 compiler
 #  define PIC_C18
@@ -98,9 +98,6 @@
 #elif defined(IRMP_CHIBIOS_HAL)                                                     // ChibiOS HAL
 #  include "hal.h"
 
-#elif defined(ARDUINO)
-// specified here to avoid else case
-
 #else
 #  define ATMEL_AVR                                                                 // ATMEL AVR
 #endif
@@ -118,7 +115,10 @@
 #  endif
 #endif
 
-#if defined(ATMEL_AVR)
+#if defined(ARDUINO)                                                                // AVR Arduino. Should be first, since it covers multiple platforms
+// to avoid the other includes and defines which are incompatible with ARDUINO
+
+#elif defined(ATMEL_AVR)
 #  include <stdint.h>
 #  include <stdio.h>
 #  include <avr/io.h>
@@ -180,19 +180,12 @@
 #  define memcpy_P                      memcpy
 
 #elif defined(__xtensa__)
-#  if !defined(ARDUINO)
-#    define PROGMEM
-#  endif
-#  if !defined(memcpy_P)
-#    define memcpy_P                      memcpy
-#  endif
+#  define PROGMEM
+#  define memcpy_P                      memcpy
 
 #elif defined(__MBED__)
 #  define PROGMEM
 #  define memcpy_P                      memcpy
-
-#elif defined(ARDUINO)
-// specified here to avoid else case
 
 #else
 #  if ! defined(PROGMEM)

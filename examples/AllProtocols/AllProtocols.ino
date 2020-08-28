@@ -65,7 +65,7 @@
 #include "PinDefinitionsAndMore.h"
 
 /*
- * Set library modifiers first to set input pin etc.
+ * Set input pin and output pin definitions etc.
  */
 #define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some FLASH
 #define IRMP_USE_COMPLETE_CALLBACK       1 // Enable callback functionality
@@ -80,7 +80,7 @@
 #include <irmpSelectAllProtocols.h>  // This enables all possible protocols
 
 /*
- * After setting the modifiers we can include the code and compile it.
+ * After setting the definitions we can include the code and compile it.
  */
 #include <irmp.c.h>
 
@@ -156,7 +156,9 @@ void setup()
 
 void loop()
 {
+#if defined(__AVR__) && (! defined(__AVR_ATmega4809__))
     static uint32_t sMillisOfLastVoltagePrint;
+#endif
 
     if (sIRMPDataAvailable)
     {

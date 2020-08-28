@@ -46,7 +46,7 @@
 
 #include <irsndSelectMain15Protocols.h>
 /*
- * After setting the modifiers we can include the code and compile it.
+ * After setting the definitions we can include the code and compile it.
  */
 #include <irsnd.c.h>
 

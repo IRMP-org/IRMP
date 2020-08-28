@@ -26,7 +26,7 @@
 #include <Arduino.h>
 
 /*
- * Set library modifiers first to set input pin etc.
+ * Set input pin and output pin definitions etc.
  */
 #include "PinDefinitionsAndMore.h" // Sets input pin to 3
 
@@ -35,7 +35,7 @@
 #include <irmpSelectAllRFProtocols.h>  // This enables all possible RF protocols - currently 2 protocols
 
 /*
- * After setting the modifiers we can include the code and compile it.
+ * After setting the definitions we can include the code and compile it.
  */
 #include <irmp.c.h>
 
