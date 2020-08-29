@@ -60,21 +60,24 @@
 #  define F_INTERRUPTS                          15625   // 15625 interrupts per second gives 64 us period
 #endif
 
-#if ! defined(__AVR__)
+#if defined(__AVR__)
 #define uint_fast8_t uint8_t
 #define uint_fast16_t uint16_t
 
-#  if defined(ESP8266)
+#elif defined(ESP8266)
 #include "ets_sys.h"
 #include "osapi.h"
 #include "gpio.h"
 #include "os_type.h"
 #include "c_types.h"
 
-#  elif defined(ESP32)
-#  elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-#  elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-#  endif
+#elif defined(ARDUINO_ARCH_MBED)
+//#include "mbed.h"
+
+#elif defined(ESP32)
+#elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
+#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------

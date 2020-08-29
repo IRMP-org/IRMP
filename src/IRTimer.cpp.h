@@ -40,7 +40,15 @@
 static hw_timer_t * sESP32Timer = NULL;
 
 // BluePill in 2 flavors
-#  elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#  elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#include <HardwareTimer.h> // 4 timers and 4. timer is used for tone()
+/*
+ * Use timer 3 as IRMP timer.
+ * Timer 3 blocks PA6, PA7, PB0, PB1, so if you need one them as Servo output, you must choose another timer.
+ */
+HardwareTimer sSTM32Timer(TIM3);
+
+#  elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
 #include <HardwareTimer.h> // 4 timers and 4. timer is used for tone()
 /*
  * Use timer 3 as IRMP timer.
@@ -55,6 +63,10 @@ HardwareTimer sSTM32Timer(TIM3);
  * Timer 3 blocks PA6, PA7, PB0, PB1, so if you need one them as tone() or Servo output, you must choose another timer.
  */
 HardwareTimer sSTM32Timer(3);
+
+#elif defined(ARDUINO_ARCH_MBED)
+mbed::Ticker sMbedTimer;
+
 #  endif
 #endif // TIMER_DECLARED
 
@@ -88,11 +100,13 @@ uint32_t sTimerLoadValue;
 #  elif defined(ESP32)
 uint64_t sTimerAlarmValue;
 
-#  elif defined(STM32F1xx) || defined(__STM32F1__)
+#  elif defined(STM32F1xx) || defined(ARDUINO_ARCH_STM32) || defined(__STM32F1__)
 uint32_t sTimerOverflowValue;
 
 #  elif defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_APOLLO3)
 uint16_t sTimerCompareCapureValue;
+
+#  elif defined(ARDUINO_ARCH_MBED)
 
 #  endif // defined(__AVR__)
 #endif // defined(_IRMP_H_)
@@ -195,7 +209,15 @@ void initIRTimerForSend(void)
 #endif
 
 // BluePill in 2 flavors
-#elif defined(STM32F1xx) // stm32duino "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#elif defined(STM32F1xx) // "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+    sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);      // used for generating only interrupts, no pin specified
+    sSTM32Timer.setPrescaleFactor(1);
+    sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT);// microsecond period
+//sSTM32Timer.setOverflow(1000000 / IR_INTERRUPT_FREQUENCY, MICROSEC_FORMAT); // microsecond period
+    sSTM32Timer.attachInterrupt(irmp_timer_ISR);// this sets update interrupt enable
+    sSTM32Timer.resume();// Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
+
+#elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
     sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);      // used for generating only interrupts, no pin specified
     sSTM32Timer.setPrescaleFactor(1);
     sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT);// microsecond period
@@ -246,6 +268,9 @@ void initIRTimerForSend(void)
     am_hal_ctimer_int_register(AM_HAL_CTIMER_INT_TIMERB3, irmp_timer_ISR);
     am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
     NVIC_EnableIRQ(CTIMER_IRQn);
+
+#  elif defined(ARDUINO_ARCH_MBED)
+    sMbedTimer.attach_us(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
 #endif
 }
 
@@ -299,6 +324,9 @@ void storeIRTimer(void)
     sTimerAlarmValue = timerAlarmRead(sESP32Timer);
 
 #elif defined(STM32F1xx)
+    sTimerOverflowValue = sSTM32Timer.getOverflow(TICK_FORMAT);
+
+#elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
     sTimerOverflowValue = sSTM32Timer.getOverflow(TICK_FORMAT);
 
 #elif defined(__STM32F1__)
@@ -364,6 +392,9 @@ void restoreIRTimer(void)
 #elif defined(STM32F1xx)
     sSTM32Timer.setOverflow(sTimerOverflowValue, TICK_FORMAT);
 
+#elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
+    sSTM32Timer.setOverflow(sTimerOverflowValue, TICK_FORMAT);
+
 #elif defined(__STM32F1__)
     sSTM32Timer.setOverflow(sTimerOverflowValue);
 
@@ -412,7 +443,11 @@ void disableIRTimerInterrupt(void) {
 #elif defined(ESP32)
     timerAlarmDisable(sESP32Timer);
 
-#elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+    sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_DISABLED);
+    sSTM32Timer.detachInterrupt();
+
+#elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
     sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_DISABLED);
     sSTM32Timer.detachInterrupt();
 
@@ -427,9 +462,8 @@ void disableIRTimerInterrupt(void) {
 #elif defined(ARDUINO_ARCH_APOLLO3)
     am_hal_ctimer_int_disable(AM_HAL_CTIMER_INT_TIMERB3);
 
-#else
-#warning Board / CPU is not covered by definitions using pre-processor symbols -> no timer available. Please extend IRTimer.cpp.h.
-#
+#elif defined(ARDUINO_ARCH_MBED)
+    sMbedTimer.detach();
 #endif
 }
 
@@ -462,7 +496,12 @@ void enableIRTimerInterrupt(void) {
 #elif defined(ESP32)
     timerAlarmEnable(sESP32Timer);
 
-#elif defined(STM32F1xx)   // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+    sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC); // used for generating only interrupts, no pin specified
+    sSTM32Timer.attachInterrupt(irmp_timer_ISR);
+    sSTM32Timer.refresh();// Set the timer's count to 0 and update the prescaler and overflow values.
+
+#elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
     sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC); // used for generating only interrupts, no pin specified
     sSTM32Timer.attachInterrupt(irmp_timer_ISR);
     sSTM32Timer.refresh();// Set the timer's count to 0 and update the prescaler and overflow values.
@@ -480,6 +519,11 @@ void enableIRTimerInterrupt(void) {
 #elif defined(ARDUINO_ARCH_APOLLO3)
     am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
 
+#elif defined(ARDUINO_ARCH_MBED)
+    sMbedTimer.attach_us(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
+
+#else
+#warning Board / CPU is not covered by definitions using pre-processor symbols -> no timer available. Please extend IRTimer.cpp.h.
 #endif
 }
 
@@ -546,9 +590,9 @@ void IRAM_ATTR irmp_timer_ISR(void)
 void TC3_Handler(void)
 
 #elif defined(STM32F1xx) && STM32_CORE_VERSION_MAJOR == 1 &&  STM32_CORE_VERSION_MINOR <= 8 // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-void irmp_timer_ISR(HardwareTimer * aDummy __attribute__((unused))) // changed in stm32duino 1.9 - 5/2020
+void irmp_timer_ISR(HardwareTimer * aDummy __attribute__((unused))) // old 1.8 version - changed in stm32duino 1.9 - 5/2020
 
-#else // STM32F1xx (v1.9), __STM32F1__, ARDUINO_ARCH_APOLLO3
+#else // STM32F1xx (v1.9), __STM32F1__, ARDUINO_ARCH_APOLLO3, MBED
 void irmp_timer_ISR(void)
 
 #endif // defined(__AVR__)
