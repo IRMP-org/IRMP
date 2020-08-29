@@ -55,7 +55,15 @@ void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin, bool
 #  if !defined(IRSND_OUTPUT_PIN)                // Arduino IDE uses IRSND_OUTPUT_PIN instead of PORT and BIT
 #define IRSND_OUTPUT_PIN            4
 #  endif
+#endif // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
+
+#if defined(ARDUINO_ARCH_MBED) // Arduino Nano 33 BLE
+#include "mbed.h"
+// F is undefined in mbed.h, so F() is unknown and leads to "'F' was not declared in this scope" errors. -> define it again.
+#define F(a) a
+#define F_CPU 0 // dummy definition to avoid warning at irsnd.c.h:27 #error F_CPU unkown
 #endif
+
 #if !defined(IRMP_TIMING_TEST_PIN)              // Only for test purposes
 #define IRMP_TIMING_TEST_PIN        5
 #endif

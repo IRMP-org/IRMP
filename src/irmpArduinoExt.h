@@ -71,8 +71,10 @@
 #include "os_type.h"
 #include "c_types.h"
 
-#elif defined(ARDUINO_ARCH_MBED)
-//#include "mbed.h"
+#elif defined(ARDUINO_ARCH_MBED) // Arduino Nano 33 BLE
+#include "mbed.h"
+// F is undefined in mbed.h, so F() is unknown and leads to "'F' was not declared in this scope" errors. -> define it again.
+#define F(a) a
 
 #elif defined(ESP32)
 #elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager

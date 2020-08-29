@@ -39,12 +39,14 @@ jobs:
           - arduino:avr:mega
           - arduino:megaavr:nona4809:mode=off
           - arduino:samd:arduino_zero_native
+          - arduino:mbed:nano33ble
           - digistump:avr:digispark-tiny:clock=clock16
           - digistump:avr:digispark-pro
           - ATTinyCore:avr:attinyx5:chip=85,clock=8internal
           - esp8266:esp8266:d1_mini:eesz=4M3M,xtal=80
           - esp32:esp32:featheresp32:FlashFreq=80
           - STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
+          - STM32:stm32:GenL0:pnum=THUNDERPACK_L072
           - stm32duino:STM32F1:genericSTM32F103C
           #- SparkFun:apollo3:amap3nano # All examples give strange BFD assertions
 
@@ -72,6 +74,9 @@ jobs:
             platform-url: https://dl.espressif.com/dl/package_esp32_index.json
 
           - arduino-boards-fqbn: STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
+            platform-url: https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
+
+          - arduino-boards-fqbn: STM32:stm32:GenL0:pnum=THUNDERPACK_L072
             platform-url: https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
 
           - arduino-boards-fqbn: stm32duino:STM32F1:genericSTM32F103C # Roger Clark version

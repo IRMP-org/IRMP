@@ -97,7 +97,7 @@
 #define IRSND_OUTPUT_PIN 12
 #define TONE_PIN         5
 
-#elif defined(ARDUINO_ARCH_MBED)
+#elif defined(ARDUINO_ARCH_MBED) // Arduino Nano 33 BLE
 #define IRMP_INPUT_PIN   3
 #define IRSND_OUTPUT_PIN 4
 #define TONE_PIN         5

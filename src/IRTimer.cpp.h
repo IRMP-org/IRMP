@@ -64,7 +64,7 @@ HardwareTimer sSTM32Timer(TIM3);
  */
 HardwareTimer sSTM32Timer(3);
 
-#elif defined(ARDUINO_ARCH_MBED)
+#elif defined(ARDUINO_ARCH_MBED) // Arduino Nano 33 BLE
 mbed::Ticker sMbedTimer;
 
 #  endif
@@ -106,7 +106,7 @@ uint32_t sTimerOverflowValue;
 #  elif defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_APOLLO3)
 uint16_t sTimerCompareCapureValue;
 
-#  elif defined(ARDUINO_ARCH_MBED)
+#  elif defined(ARDUINO_ARCH_MBED) // Arduino Nano 33 BLE
 
 #  endif // defined(__AVR__)
 #endif // defined(_IRMP_H_)
