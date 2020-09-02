@@ -21,8 +21,13 @@
 static bool irmp_irsnd_LedFeedbackEnabled;
 
 #if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
-uint_fast8_t irmp_irsnd_LedFeedbackPin;// global variable to hold feedback led pin number.
-bool irmp_irsnd_LedFeedbackPinIsActiveLow = false;// global variable to hold feedback led polarity.
+// global variable to hold feedback led pin number. Set to 0 to not activating feedback LED by default.
+uint_fast8_t irmp_irsnd_LedFeedbackPin = 0;
+#  if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
+bool irmp_irsnd_LedFeedbackPinIsActiveLow = true; // global variable to hold feedback led polarity.
+#  else
+bool irmp_irsnd_LedFeedbackPinIsActiveLow = false; // global variable to hold feedback led polarity.
+#  endif
 #endif
 
 /*

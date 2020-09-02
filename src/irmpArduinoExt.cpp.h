@@ -51,26 +51,19 @@ void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aFeedbackLedPin, bool aI
 
 /*
  * Initialize, and activate feedback LED function
+ * @param irmp_irsnd_LedFeedbackPin if 0 feedback led is not activated
  */
 void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aFeedbackLedPin)
 {
-#  if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
-    irmp_init(aIrmpInputPin, aFeedbackLedPin, true);
-#  else
-    irmp_init(aIrmpInputPin, aFeedbackLedPin, false);
-#  endif
+    irmp_init(aIrmpInputPin, aFeedbackLedPin, irmp_irsnd_LedFeedbackPinIsActiveLow);
 }
 
 /*
- * Initialize, but avoid activating feedback LED by using 0 as led pin
+ * Initialize, but do not activate feedback LED by default, using irmp_irsnd_LedFeedbackPin as led pin.
  */
 void irmp_init(uint_fast8_t aIrmpInputPin)
 {
-#  if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
-    irmp_init(aIrmpInputPin, 0, true); // avoid activating feedback LED by using 0 as led pin
-#  else
-    irmp_init(aIrmpInputPin, 0, false);
-#  endif
+    irmp_init(aIrmpInputPin, irmp_irsnd_LedFeedbackPin, irmp_irsnd_LedFeedbackPinIsActiveLow);
 #  if defined(LED_BUILTIN)
     // set pin if we have one at hand
     irmp_irsnd_LedFeedbackPin = LED_BUILTIN;

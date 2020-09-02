@@ -166,6 +166,9 @@ The **tone() library (using timer 2) is still available**. You can use it altern
   
   
 # Revision History
+### Version 3.2.1
+- Fixed bug in feedback LED handling for dynamic pins for send and receive.
+
 ### Version 3.2.0
 - MBED support for Arduino Nano 33 BLE.
 - Added ARDUINO_ARCH_STM32 definition.

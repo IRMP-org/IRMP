@@ -67,11 +67,7 @@ void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin, bool
  */
 void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin)
 {
-#  if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
-    irsnd_init(aIrsndOutputPin, aFeedbackLedPin, true);
-#  else
-    irsnd_init(aIrsndOutputPin, aFeedbackLedPin, false);
-#  endif
+    irsnd_init(aIrsndOutputPin, aFeedbackLedPin, irmp_irsnd_LedFeedbackPinIsActiveLow);
 }
 
 /*
@@ -79,11 +75,7 @@ void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin)
  */
 void irsnd_init(uint_fast8_t aIrsndOutputPin)
 {
-#  if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
-    irsnd_init(aIrsndOutputPin, 0, true); // avoid activating feedback LED by using 0 as led pin
-#  else
-    irsnd_init(aIrsndOutputPin, 0, false);
-#  endif
+    irsnd_init(aIrsndOutputPin, irmp_irsnd_LedFeedbackPin, irmp_irsnd_LedFeedbackPinIsActiveLow);
 #  if defined(LED_BUILTIN)
     // set pin if we have one at hand
     irmp_irsnd_LedFeedbackPin = LED_BUILTIN;
