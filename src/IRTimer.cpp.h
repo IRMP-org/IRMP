@@ -41,23 +41,30 @@ static hw_timer_t * sESP32Timer = NULL;
 
 // BluePill in 2 flavors
 #  elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-#include <HardwareTimer.h> // 4 timers and 4. timer is used for tone()
+// https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
+#include <HardwareTimer.h> // 4 timers and 3. timer is used for tone(), 2. for Servo
 /*
- * Use timer 3 as IRMP timer.
- * Timer 3 blocks PA6, PA7, PB0, PB1, so if you need one them as Servo output, you must choose another timer.
+ * Use timer 4 as IRMP timer.
+ * Timer 4 blocks PB6, PB7, PB8, PB9, so if you need one them as Servo output, you must choose another timer.
  */
-HardwareTimer sSTM32Timer(TIM3);
+HardwareTimer sSTM32Timer(TIM4);
 
 #  elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
-#include <HardwareTimer.h> // 4 timers and 4. timer is used for tone()
+// https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
+#include <HardwareTimer.h>
 /*
- * Use timer 3 as IRMP timer.
- * Timer 3 blocks PA6, PA7, PB0, PB1, so if you need one them as Servo output, you must choose another timer.
+ * Use timer 4 as IRMP timer.
+ * Timer 4 blocks PB6, PB7, PB8, PB9, so if you need one them as Servo output, you must choose another timer.
  */
-HardwareTimer sSTM32Timer(TIM3);
+#    if defined(TIM4)
+HardwareTimer sSTM32Timer(TIM4);
+#    else
+HardwareTimer sSTM32Timer(TIM2);
+#    endif
 
-#  elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
-#include <HardwareTimer.h> // 4 timers and 4. timer is used for tone()
+#  elif defined(__STM32F1__) // or ARDUINO_ARCH_STM32F1 for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of Arduino Board manager
+// http://dan.drown.org/stm32duino/package_STM32duino_index.json
+#include <HardwareTimer.h> // 4 timers and 4. timer (4.channel) is used for tone()
 /*
  * Use timer 3 as IRMP timer.
  * Timer 3 blocks PA6, PA7, PB0, PB1, so if you need one them as tone() or Servo output, you must choose another timer.
@@ -154,16 +161,16 @@ void initIRTimerForSend(void)
 #  elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 // Timer 1 is a 16 bit counter so we need no prescaler
     ICR1 = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;// 1065 for 15 kHz @16 MHz. compare value: 1/15000 of CPU frequency
-    TCCR1B = 0;                                 // switch CTC Mode on
+    TCCR1B = 0;// switch CTC Mode on
     TCCR1B = _BV(WGM12) | _BV(WGM13) | _BV(CS10);// switch CTC Mode on, set prescaler to 1 / no prescaling
-    TIMSK1 = _BV(OCIE1B);                       // enable compare match interrupt
+    TIMSK1 = _BV(OCIE1B);// enable compare match interrupt
 
 #elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
     // TCB1 is used by Tone()
     // TCB2 is used by Servo
     // TCB3 is used by millis()
     TCB0.CTRLB = TCB_CNTMODE_INT_gc;
-    TCB0.CCMP = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;                   // compare value: 209 for 76 kHz, 221 for 72kHz @16MHz
+    TCB0.CCMP = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;// compare value: 209 for 76 kHz, 221 for 72kHz @16MHz
     TCB0.INTCTRL = TCB_CAPT_bm;
     TCB0.CTRLA = TCB_CLKSEL_CLKDIV1_gc | TCB_ENABLE_bm;
 
@@ -210,6 +217,7 @@ void initIRTimerForSend(void)
 
 // BluePill in 2 flavors
 #elif defined(STM32F1xx) // "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+    // https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
     sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);      // used for generating only interrupts, no pin specified
     sSTM32Timer.setPrescaleFactor(1);
     sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT);// microsecond period
@@ -218,6 +226,7 @@ void initIRTimerForSend(void)
     sSTM32Timer.resume();// Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
 
 #elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
+    // https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
     sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);      // used for generating only interrupts, no pin specified
     sSTM32Timer.setPrescaleFactor(1);
     sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT);// microsecond period
@@ -225,7 +234,8 @@ void initIRTimerForSend(void)
     sSTM32Timer.attachInterrupt(irmp_timer_ISR);// this sets update interrupt enable
     sSTM32Timer.resume();// Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
 
-#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (Roger Clark's STM32duino.com) of manual installed hardware folder
+#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (Roger Clark's STM32duino.com) of Arduino Board manager
+    // http://dan.drown.org/stm32duino/package_STM32duino_index.json
     sSTM32Timer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
     sSTM32Timer.setPrescaleFactor(1);
     sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY);
@@ -451,7 +461,7 @@ void disableIRTimerInterrupt(void) {
     sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_DISABLED);
     sSTM32Timer.detachInterrupt();
 
-#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
+#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of Arduino Board manager
     sSTM32Timer.setMode(TIMER_CH1, TIMER_DISABLED);
     sSTM32Timer.detachInterrupt(TIMER_CH1);
 
@@ -497,16 +507,19 @@ void enableIRTimerInterrupt(void) {
     timerAlarmEnable(sESP32Timer);
 
 #elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+    // https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
     sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC); // used for generating only interrupts, no pin specified
     sSTM32Timer.attachInterrupt(irmp_timer_ISR);
     sSTM32Timer.refresh();// Set the timer's count to 0 and update the prescaler and overflow values.
 
 #elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
+    // https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
     sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC); // used for generating only interrupts, no pin specified
     sSTM32Timer.attachInterrupt(irmp_timer_ISR);
     sSTM32Timer.refresh();// Set the timer's count to 0 and update the prescaler and overflow values.
 
-#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manual installed hardware folder
+#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of Arduino Board manager
+    // http://dan.drown.org/stm32duino/package_STM32duino_index.json
     sSTM32Timer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
     sSTM32Timer.attachInterrupt(TIMER_CH1, irmp_timer_ISR);
     sSTM32Timer.refresh(); // Set the timer's count to 0 and update the prescaler and overflow values.
@@ -598,7 +611,7 @@ void irmp_timer_ISR(void)
 #endif // defined(__AVR__)
 
 // Start of ISR
-{
+        {
 #if defined(ARDUINO_ARCH_SAMD)
     TC3->COUNT16.INTFLAG.bit.MC0 = 1; // Clear interrupt
 
@@ -653,14 +666,14 @@ void irmp_timer_ISR(void)
 #  endif
 
 #  if defined(_IRMP_H_) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
-        /*
-         * Receive part of ISR
-         */
-        irmp_ISR();
+    /*
+     * Receive part of ISR
+     */
+    irmp_ISR();
 #  endif
 
 #  if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
-    } // for receive and send in one ISR
+} // for receive and send in one ISR
 #  endif
 
 #  ifdef IRMP_MEASURE_TIMING

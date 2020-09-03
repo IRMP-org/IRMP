@@ -72,7 +72,7 @@ void setup()
     irmp_irsnd_LEDFeedback(true); // Enable send signal feedback at LED_BUILTIN
 
 #if defined(ARDUINO_ARCH_STM32)
-    Serial.println(F("Ready to send IR signals at pin PA5")); // the internal pin numbers are crazy for the STM32 Boards library
+    Serial.println(F("Ready to send IR signals at pin " IRSND_OUTPUT_PIN_STRING)); // the internal pin numbers are crazy for the STM32 Boards library
 #else
     Serial.println(F("Ready to send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
 #endif

@@ -108,14 +108,12 @@ void setup()
 
     irsnd_init();
 
-#if defined(ARDUINO_ARCH_STM32)
-    Serial.print(F("Ready to receive IR signals  of protocols: "));
-    irmp_print_active_protocols(&Serial);
-    Serial.println(F("at pin PA4")); // the internal pin numbers are crazy for the STM32 Boards library
-    Serial.println(F("Ready to send IR signals at pin PA5"));// the internal pin numbers are crazy for the STM32 Boards library
-#else
     Serial.print(F("Ready to receive IR signals of protocols: "));
     irmp_print_active_protocols(&Serial);
+#if defined(ARDUINO_ARCH_STM32)
+    Serial.println(F("at pin " IRMP_INPUT_PIN_STRING)); // the internal pin numbers are crazy for the STM32 Boards library
+    Serial.println(F("Ready to send IR signals at pin " IRSND_OUTPUT_PIN_STRING));// the internal pin numbers are crazy for the STM32 Boards library
+#else
     Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
     Serial.println(F("Ready to send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
 #endif

@@ -2,7 +2,7 @@
 # [IRMP](https://github.com/ukw100/IRMP) - Infrared Multi Protocol Decoder + Encoder
 Available as Arduino library "IRMP"
 
-### [Version 3.2.0](https://github.com/ukw100/IRMP/releases)
+### [Version 3.2.1](https://github.com/ukw100/IRMP/releases)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Commits since latest](https://img.shields.io/github/commits-since/ukw100/irmp/latest)](https://github.com/ukw100/irmp/commits/master)
@@ -168,6 +168,7 @@ The **tone() library (using timer 2) is still available**. You can use it altern
 # Revision History
 ### Version 3.2.1
 - Fixed bug in feedback LED handling for dynamic pins for send and receive.
+- Fixed wrong timer selection for STM32F1xx / ARDUINO_ARCH_STM32.
 
 ### Version 3.2.0
 - MBED support for Arduino Nano 33 BLE.

@@ -83,7 +83,11 @@ void setup()
 
     Serial.print(F("Ready to receive IR signals of protocols: "));
     irmp_print_active_protocols(&Serial);
+#if defined(ARDUINO_ARCH_STM32)
+    Serial.println(F("at pin " IRMP_INPUT_PIN_STRING));
+#else
     Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
+#endif
 }
 
 void loop()

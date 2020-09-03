@@ -60,7 +60,9 @@
 // Timer 3 of IRMP blocks PA6, PA7, PB0, PB1 for use by Servo or tone()
 #define FEEDBACK_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
 #define IRMP_INPUT_PIN   PA6
+#define IRMP_INPUT_PIN_STRING   "PA6"
 #define IRSND_OUTPUT_PIN PA7
+#define IRSND_OUTPUT_PIN_STRING  "PA7"
 #define TONE_PIN         PA3
 #define IRMP_TIMING_TEST_PIN PA5
 
