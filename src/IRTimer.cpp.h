@@ -181,8 +181,9 @@ void initIRTimerForSend(void)
     OCR2B = OCR2A = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;// 209 for 76000 interrupts per second - toggle at each interrupt
 #    else
     TCCR2B = _BV(CS21); // prescale by 8
-    OCR2B = OCR2A = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;// 132 for 15000 interrupts per second    TIFR2 = _BV(OCF2B) | _BV(OCF2A) | _BV(TOV2);// reset interrupt flags
+    OCR2B = OCR2A = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;// 132 for 15000 interrupts per second
 #    endif
+    TIFR2 = _BV(OCF2B) | _BV(OCF2A) | _BV(TOV2);// reset interrupt flags
     TIMSK2 = _BV(OCIE2B);                                 // enable TIMER2_COMPB_vect interrupt to be compatible with tone() library
     TCNT2 = 0;
 #  endif
