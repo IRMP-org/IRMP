@@ -166,6 +166,9 @@ The **tone() library (using timer 2) is still available**. You can use it altern
   
   
 # Revision History
+### Version 3.2.2
+- Restored missing line `reset interrupt flags` found by user yumkam.
+
 ### Version 3.2.1
 - Fixed bug in feedback LED handling for dynamic pins for send and receive.
 - Fixed wrong timer selection for STM32F1xx / ARDUINO_ARCH_STM32.
