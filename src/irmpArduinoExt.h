@@ -31,6 +31,12 @@
 
 #include "digitalWriteFast.h" // we use pinModeFast() and digitalReadFast() and digitalWriteFast() in turn
 
+/*
+ * For debugging purposes. The timing test pin for some platforms is specified in the PinDefinitionsAndMore.h files included in each example.
+ */
+//#define IRMP_MEASURE_TIMING
+//#define IRMP_TIMING_TEST_PIN <yourPinNumber>
+//
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Enable dynamic pin configuration in contrast to the static one which is known at compile time and saves program memory and CPU cycles.
  *---------------------------------------------------------------------------------------------------------------------------------------------------

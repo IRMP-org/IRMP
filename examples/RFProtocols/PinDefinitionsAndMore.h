@@ -39,6 +39,8 @@
  * BluePill     PA6         PA7         PA3
  * APOLLO3      11          12          5
  */
+//#define IRMP_MEASURE_TIMING // For debugging purposes.
+//
 #if defined(ESP8266)
 #define FEEDBACK_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
 #define IRMP_INPUT_PIN   14 // D5
