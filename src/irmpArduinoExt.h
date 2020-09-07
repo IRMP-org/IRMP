@@ -77,9 +77,9 @@
 #define F(a) a
 
 #elif defined(ESP32)
-#elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#elif defined(STM32F1xx) // for "Generic STM32F1 series" from "STM32 Boards (selected from submenu)" of Arduino Board manager
 #elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
-#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of Arduino Board manager
+#elif defined(__STM32F1__) // for "Generic STM32F103C series" from "STM32F1 Boards (STM32duino.com)" of Arduino Board manager
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------

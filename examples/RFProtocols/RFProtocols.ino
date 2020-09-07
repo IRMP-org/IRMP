@@ -53,7 +53,7 @@ void setup()
     delay(2000); // To be able to connect Serial monitor after reset and before first printout
 #endif
     // Just to know which program is running on my Arduino
-#if defined(__ESP8266__)
+#if defined(ESP8266)
     Serial.println();
 #endif
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));

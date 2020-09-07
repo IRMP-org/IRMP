@@ -90,7 +90,7 @@ void setup()
 #if defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL)
     delay(2000); // To be able to connect Serial monitor after reset and before first printout
 #endif
-#if defined(__ESP8266__)
+#if defined(ESP8266)
     Serial.println(); // to separate it from the internal boot output
 #endif
 

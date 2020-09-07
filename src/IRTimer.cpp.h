@@ -40,7 +40,7 @@
 static hw_timer_t * sESP32Timer = NULL;
 
 // BluePill in 2 flavors
-#  elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#  elif defined(STM32F1xx) // for "Generic STM32F1 series" from "STM32 Boards (selected from submenu)" of Arduino Board manager
 // https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
 #include <HardwareTimer.h> // 4 timers and 3. timer is used for tone(), 2. for Servo
 /*
@@ -62,7 +62,7 @@ HardwareTimer sSTM32Timer(TIM4);
 HardwareTimer sSTM32Timer(TIM2);
 #    endif
 
-#  elif defined(__STM32F1__) // or ARDUINO_ARCH_STM32F1 for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of Arduino Board manager
+#  elif defined(__STM32F1__) // or ARDUINO_ARCH_STM32F1 for "Generic STM32F103C series" from "STM32F1 Boards (STM32duino.com)" of Arduino Board manager
 // http://dan.drown.org/stm32duino/package_STM32duino_index.json
 #include <HardwareTimer.h> // 4 timers and 4. timer (4.channel) is used for tone()
 /*
@@ -217,7 +217,7 @@ void initIRTimerForSend(void)
 #endif
 
 // BluePill in 2 flavors
-#elif defined(STM32F1xx) // "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#elif defined(STM32F1xx) // "Generic STM32F1 series" from "STM32 Boards (selected from submenu)" of Arduino Board manager
     // https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
     sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);      // used for generating only interrupts, no pin specified
     sSTM32Timer.setPrescaleFactor(1);
@@ -454,7 +454,7 @@ void disableIRTimerInterrupt(void) {
 #elif defined(ESP32)
     timerAlarmDisable(sESP32Timer);
 
-#elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#elif defined(STM32F1xx) // for "Generic STM32F1 series" from "STM32 Boards (selected from submenu)" of Arduino Board manager
     sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_DISABLED);
     sSTM32Timer.detachInterrupt();
 
@@ -462,7 +462,7 @@ void disableIRTimerInterrupt(void) {
     sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_DISABLED);
     sSTM32Timer.detachInterrupt();
 
-#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of Arduino Board manager
+#elif defined(__STM32F1__) // for "Generic STM32F103C series" from "STM32F1 Boards (STM32duino.com)" of Arduino Board manager
     sSTM32Timer.setMode(TIMER_CH1, TIMER_DISABLED);
     sSTM32Timer.detachInterrupt(TIMER_CH1);
 
@@ -507,7 +507,7 @@ void enableIRTimerInterrupt(void) {
 #elif defined(ESP32)
     timerAlarmEnable(sESP32Timer);
 
-#elif defined(STM32F1xx) // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#elif defined(STM32F1xx) // for "Generic STM32F1 series" from "STM32 Boards (selected from submenu)" of Arduino Board manager
     // https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
     sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC); // used for generating only interrupts, no pin specified
     sSTM32Timer.attachInterrupt(irmp_timer_ISR);
@@ -519,7 +519,7 @@ void enableIRTimerInterrupt(void) {
     sSTM32Timer.attachInterrupt(irmp_timer_ISR);
     sSTM32Timer.refresh();// Set the timer's count to 0 and update the prescaler and overflow values.
 
-#elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of Arduino Board manager
+#elif defined(__STM32F1__) // for "Generic STM32F103C series" from "STM32F1 Boards (STM32duino.com)" of Arduino Board manager
     // http://dan.drown.org/stm32duino/package_STM32duino_index.json
     sSTM32Timer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
     sSTM32Timer.attachInterrupt(TIMER_CH1, irmp_timer_ISR);
@@ -603,7 +603,7 @@ void IRAM_ATTR irmp_timer_ISR(void)
 #elif defined(ARDUINO_ARCH_SAMD)
 void TC3_Handler(void)
 
-#elif defined(STM32F1xx) && STM32_CORE_VERSION_MAJOR == 1 &&  STM32_CORE_VERSION_MINOR <= 8 // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
+#elif defined(STM32F1xx) && STM32_CORE_VERSION_MAJOR == 1 &&  STM32_CORE_VERSION_MINOR <= 8 // for "Generic STM32F1 series" from "STM32 Boards (selected from submenu)" of Arduino Board manager
 void irmp_timer_ISR(HardwareTimer * aDummy __attribute__((unused))) // old 1.8 version - changed in stm32duino 1.9 - 5/2020
 
 #else // STM32F1xx (v1.9), __STM32F1__, ARDUINO_ARCH_APOLLO3, MBED

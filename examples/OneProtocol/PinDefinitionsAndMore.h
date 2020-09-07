@@ -55,8 +55,8 @@
 
 #elif defined(ARDUINO_ARCH_STM32) || defined(__STM32F1__)
 // BluePill in 2 flavors
-// STM32F1xx is for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-// __STM32F1__is for "Generic STM32F103C series" from STM32F1 Boards (STM32duino.com) of manually installed hardware folder
+// STM32F1xx is for "Generic STM32F1 series" from "STM32 Boards (selected from submenu)" of Arduino Board manager
+// __STM32F1__is for "Generic STM32F103C series" from "STM32F1 Boards (STM32duino.com)" of manually installed hardware folder
 // Timer 3 of IRMP blocks PA6, PA7, PB0, PB1 for use by Servo or tone()
 #define FEEDBACK_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
 #define IRMP_INPUT_PIN   PA6
