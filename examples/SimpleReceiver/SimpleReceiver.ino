@@ -65,10 +65,7 @@ IRMP_DATA irmp_data;
 void setup()
 {
     Serial.begin(115200);
-#if defined(__AVR_ATmega32U4__)
-    while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
-#endif
-#if defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL)
+#if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL)
     delay(2000); // To be able to connect Serial monitor after reset and before first printout
 #endif
 #if defined(ESP8266)

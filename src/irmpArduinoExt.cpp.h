@@ -576,7 +576,7 @@ void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr)
 }
 
 /*
- * Do not just call irmp_result_print( &Serial, aIRMPDataPtr), since this is not always possible for ATtinies.
+ * Do not just call irmp_result_print( &Serial, aIRMPDataPtr) above, since this is not always possible for ATtinies.
  */
 void irmp_result_print(IRMP_DATA * aIRMPDataPtr)
 {

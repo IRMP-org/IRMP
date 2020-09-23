@@ -111,10 +111,7 @@ bool volatile sIRMPDataAvailable = false;
 void setup()
 {
     Serial.begin(115200);
-#if defined(__AVR_ATmega32U4__)
-    while (!Serial); //delay for Leonardo, but this loops forever for Maple Serial
-#endif
-#if defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL)
+#if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL)
     delay(2000); // To be able to connect Serial monitor after reset and before first printout
 #endif
     // Just to know which program is running on my Arduino
@@ -324,7 +321,7 @@ void irmp_result_print_LCD()
     uint16_t tCommand = irmp_data.command;
 
 #  if (LCD_COLUMNS <= 16)
-    // check if prefix will change
+    // check if prefix position must change
     if (tDisplayWasCleared || (sLastCommand > 0x100 && tCommand < 0x100) || (sLastCommand < 0x100 && tCommand > 0x100))
     {
         sLastCommand = tCommand;

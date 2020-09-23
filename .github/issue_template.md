@@ -16,7 +16,8 @@ assignees: ArminJo
 * [ ] Arduino SAMD board (Zero, MKR*)
 * [ ] ESP8266 board
 * [ ] ESP32 board
-* [ ] STM32 board
+* [ ] STM32 board with "STM32 Boards (selected from submenu)" core
+* [ ] STM32 board with "STM32F1 Boards (STM32duino.com)" core
 * [ ] Apollo3 board
 * [ ] Teensy board
 * [ ] Other - please specify

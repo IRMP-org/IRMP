@@ -221,7 +221,7 @@ void initIRTimerForSend(void)
     // https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
     sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);      // used for generating only interrupts, no pin specified
     sSTM32Timer.setPrescaleFactor(1);
-    sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT);// microsecond period
+    sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT);// clock cycles period
 //sSTM32Timer.setOverflow(1000000 / IR_INTERRUPT_FREQUENCY, MICROSEC_FORMAT); // microsecond period
     sSTM32Timer.attachInterrupt(irmp_timer_ISR);// this sets update interrupt enable
     sSTM32Timer.resume();// Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
@@ -230,7 +230,7 @@ void initIRTimerForSend(void)
     // https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
     sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);      // used for generating only interrupts, no pin specified
     sSTM32Timer.setPrescaleFactor(1);
-    sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT);// microsecond period
+    sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT);// clock cycles period
 //sSTM32Timer.setOverflow(1000000 / IR_INTERRUPT_FREQUENCY, MICROSEC_FORMAT); // microsecond period
     sSTM32Timer.attachInterrupt(irmp_timer_ISR);// this sets update interrupt enable
     sSTM32Timer.resume();// Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
@@ -286,6 +286,11 @@ void initIRTimerForSend(void)
 }
 
 #if defined(_IRSND_H_) // we compile for irsnd
+/*
+ * If we do not use receive, we have no timer defined at the first call of this function.
+ * But for AVR saving the timer settings is possible anyway, since it only consists of saving registers.
+ * This helps cooperation with other libraries using the same timer.
+ */
 void storeIRTimer(void)
 {
 #  if defined(__AVR_ATmega16__)
@@ -330,25 +335,29 @@ void storeIRTimer(void)
 
 #  elif defined(ESP8266)
     sTimerLoadValue= T1L;
+#  endif
 
-#elif defined(ESP32)
+#  if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
+    // If we do not use receive, we have no timer defined at the first call of this function
+#    if defined(ESP32)
     sTimerAlarmValue = timerAlarmRead(sESP32Timer);
 
-#elif defined(STM32F1xx)
+#    elif defined(STM32F1xx)
     sTimerOverflowValue = sSTM32Timer.getOverflow(TICK_FORMAT);
 
-#elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
+#    elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
     sTimerOverflowValue = sSTM32Timer.getOverflow(TICK_FORMAT);
 
-#elif defined(__STM32F1__)
+#    elif defined(__STM32F1__)
     sTimerOverflowValue = sSTM32Timer.getOverflow();
 
-#elif defined(ARDUINO_ARCH_SAMD)
+#    elif defined(ARDUINO_ARCH_SAMD)
     sTimerCompareCapureValue = TC3->COUNT16.CC[0].reg;
 
-#elif defined(ARDUINO_ARCH_APOLLO3)
+#    elif defined(ARDUINO_ARCH_APOLLO3)
     sTimerCompareCapureValue = *((uint32_t *)CTIMERADDRn(CTIMER, 3, CMPRB0)) & 0xFFFF;
-#  endif
+#    endif
+#  endif // defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
 }
 
 /*
@@ -396,26 +405,30 @@ void restoreIRTimer(void)
 
 #  elif defined(ESP8266)
     timer1_write(sTimerLoadValue);
+#  endif
 
-#elif defined(ESP32)
+#  if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
+#    if defined(ESP32)
     timerAlarmWrite(sESP32Timer, sTimerAlarmValue, true);
 
-#elif defined(STM32F1xx)
+#    elif defined(STM32F1xx)
     sSTM32Timer.setOverflow(sTimerOverflowValue, TICK_FORMAT);
 
-#elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
+#    elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
     sSTM32Timer.setOverflow(sTimerOverflowValue, TICK_FORMAT);
 
-#elif defined(__STM32F1__)
+#    elif defined(__STM32F1__)
     sSTM32Timer.setOverflow(sTimerOverflowValue);
 
-#elif defined(ARDUINO_ARCH_SAMD)
+#    elif defined(ARDUINO_ARCH_SAMD)
     TC3->COUNT16.CC[0].reg = sTimerCompareCapureValue;
 
-#elif defined(ARDUINO_ARCH_APOLLO3)
+#    elif defined(ARDUINO_ARCH_APOLLO3)
     am_hal_ctimer_compare_set(3, AM_HAL_CTIMER_TIMERB, 0, sTimerCompareCapureValue);
 
-#  endif
+#    endif
+#  endif // defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
+
 }
 #endif // defined(_IRSND_H_)
 

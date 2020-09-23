@@ -1702,8 +1702,8 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
     }
 
 #if defined(ARDUINO)
-    storeIRTimer(); // store current timer state
-    initIRTimerForSend(); // to enable alternately send and receive with the same timer
+    storeIRTimer(); // store current timer state to enable alternately send and receive with the same timer
+    initIRTimerForSend(); // Setup timer and interrupts for sending
     if (do_wait) {
         while (irsnd_busy) {
             // do nothing;
