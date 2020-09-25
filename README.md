@@ -2,9 +2,10 @@
 # [IRMP](https://github.com/ukw100/IRMP) - Infrared Multi Protocol Decoder + Encoder
 Available as Arduino library "IRMP"
 
-### [Version 3.2.2](https://github.com/ukw100/IRMP/releases)
+### [Version 3.2.3](https://github.com/ukw100/IRMP/releases)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/irmp)
 [![Commits since latest](https://img.shields.io/github/commits-since/ukw100/irmp/latest)](https://github.com/ukw100/irmp/commits/master)
 [![Build Status](https://github.com/ukw100/irmp/workflows/LibraryBuild/badge.svg)](https://github.com/ukw100/irmp/actions)
 [![Hit Counter](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2Fukw100%2FIRMP)](https://github.com/brentvollebregt/hit-counter)
@@ -166,6 +167,9 @@ The **tone() library (using timer 2) is still available**. You can use it altern
   
   
 # Revision History
+### Version 3.2.3
+- Fixed warning for missing `USE_ONE_TIMER_FOR_IRMP_AND_IRSND` macro.
+
 ### Version 3.2.2
 - Removed blocking wait for ATmega32U4 Serial in examples.
 - Restored missing line `reset interrupt flags` found by user yumkam.
