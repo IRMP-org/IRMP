@@ -77,7 +77,7 @@ void irmp_init(void)
     pinModeFast(IRMP_INPUT_PIN, INPUT);                                 // set pin to input
 #  else
     IRMP_PORT &= ~_BV(IRMP_BIT);                                        // deactivate pullup
-    IRMP_DDR &= ~_BV(IRMP_BIT);                                         // set pin to input
+    IRMP_DDR &= ~_BV(IRMP_BIT);// set pin to input
 #  endif
 #  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT
     initPCIInterrupt();
@@ -105,6 +105,20 @@ void irmp_DoLEDFeedback(bool aSwitchLedOff)
     {
         irmp_irsnd_SetFeedbackLED(!aSwitchLedOff);
     }
+}
+
+/*
+ * returns true, if there is an ongoing transmission or repetition
+ */
+bool irmp_IsBusy()
+{
+#if defined(IRMP_ENABLE_PIN_CHANGE_INTERRUPT)
+    uint32_t tTicks = micros() - irmp_last_change_micros;
+    tTicks = (tTicks << 2) >> 8;
+    return (irmp_start_bit_detected || irmp_pulse_time || tTicks <= IRMP_KEY_REPETITION_LEN);
+#else
+    return (irmp_start_bit_detected || irmp_pulse_time || key_repetition_len <= IRMP_KEY_REPETITION_LEN);
+#endif
 }
 
 #if defined(__AVR__)
@@ -544,8 +558,10 @@ void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr)
 #if IRMP_PROTOCOL_NAMES == 1
 #  if defined(__AVR__)
     uint8_t tProtocolNumber = aIRMPDataPtr->protocol;
-    for (uint8_t i = 0; i < sizeof(irmp_used_protocol_index); ++i) {
-        if(pgm_read_byte(&irmp_used_protocol_index[i]) == tProtocolNumber) {
+    for (uint8_t i = 0; i < sizeof(irmp_used_protocol_index); ++i)
+    {
+        if(pgm_read_byte(&irmp_used_protocol_index[i]) == tProtocolNumber)
+        {
             const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_used_protocol_names[i]);
             aSerial->print((__FlashStringHelper *) (tProtocolStringPtr));
             break;
@@ -587,8 +603,10 @@ void irmp_result_print(IRMP_DATA * aIRMPDataPtr)
 #if IRMP_PROTOCOL_NAMES == 1
 #  if defined(__AVR__)
     uint8_t tProtocolNumber = aIRMPDataPtr->protocol;
-    for (uint8_t i = 0; i < sizeof(irmp_used_protocol_index); ++i) {
-        if(pgm_read_byte(&irmp_used_protocol_index[i]) == tProtocolNumber) {
+    for (uint8_t i = 0; i < sizeof(irmp_used_protocol_index); ++i)
+    {
+        if(pgm_read_byte(&irmp_used_protocol_index[i]) == tProtocolNumber)
+        {
             const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_used_protocol_names[i]);
             Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
             break;

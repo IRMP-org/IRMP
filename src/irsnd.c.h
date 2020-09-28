@@ -1008,7 +1008,11 @@ irsnd_set_callback_ptr (void (*cb)(uint8_t))
 
 #endif // ARDUINO
 
-uint8_t
+#  ifdef __cplusplus
+bool
+#else
+uint_fast8_t
+#endif
 irsnd_is_busy (void)
 {
     return irsnd_busy;
@@ -1040,7 +1044,11 @@ static uint8_t  sircs_additional_bitlen;
 /*
  * @param  do_wait - wait for last command to have ended before sending. For Arduino: Additionally wait for sent command to have ended.
  */
-uint8_t
+#  ifdef __cplusplus
+bool
+#else
+uint_fast8_t
+#endif
 irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
 {
 #if IRSND_SUPPORT_RECS80_PROTOCOL == 1
@@ -1725,7 +1733,11 @@ irsnd_stop (void)
  *  @details  ISR routine, called from 10000 to 20000, typically 15000 times per second
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-uint8_t
+#  ifdef __cplusplus
+bool
+#else
+uint_fast8_t
+#endif
 irsnd_ISR (void)
 {
     static uint8_t              send_trailer                    = FALSE;

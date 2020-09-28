@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * irmpPinChangeInterrupt.cpp.h
  *
- * Functions and ISR for the pin change interrupt functionality  for IRMP - For Arduino platform
+ * Functions and ISR for the pin change interrupt functionality for IRMP - For Arduino platform
  * Must be included after irmp_ISR to have all the internal variables of irmp_ISR declared
  *
  *  Copyright (C) 2020  Armin Joachimsmeyer
@@ -27,10 +27,11 @@
 #ifndef IRMP_PIN_CHANGE_INTERRUPT_CPP_H
 #define IRMP_PIN_CHANGE_INTERRUPT_CPP_H
 
+uint32_t irmp_last_change_micros; // microseconds of last Pin Change Interrupt. Used for irmp_IsBusy().
 /*
  * Wrapper for irmp_ISR() in order to run it with Pin Change Interrupts.
  * Needs additional 8-9us per call and 13us for signal going inactive and 19us for going active.
- * Tested for NEC, Kaseiko, Denon, RC6, Samsung
+ * Tested for NEC, Kaseiko, Denon, RC6, Samsung and others.
  * Requires micros() for timing.
  */
 //#define PCI_DEBUG
@@ -42,7 +43,6 @@ void IRAM_ATTR irmp_PCI_ISR(void)
 void irmp_PCI_ISR(void)
 #endif
 {
-    static uint32_t irmp_last_change_micros;
 
     // save IR input level - negative logic, true means inactive / IR pause
     uint_fast8_t irmp_input = input(IRMP_PIN);

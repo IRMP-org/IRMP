@@ -75,6 +75,7 @@ void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin, bool
 /*
  * For Arduino AVR use timer 2 with FIXED 38000 * 2 = 76000 interrupts per second to toggle output pin.
  * ISR is called each 4. interrupt at a rate of 19000 interrupts per second.
+ * (Re)define F_INTERRUPTS to the resulting call value in order to generate correct values for all the protocols.
  */
 #  undef  F_INTERRUPTS
 #  define F_INTERRUPTS              (IRSND_IR_FREQUENCY / 2)   // 19000 interrupts per second

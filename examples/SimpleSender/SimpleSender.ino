@@ -43,6 +43,7 @@
  */
 #include "PinDefinitionsAndMore.h"
 //#define IR_OUTPUT_IS_ACTIVE_LOW
+#define IRSND_IR_FREQUENCY          38000
 
 #include <irsndSelectMain15Protocols.h>
 /*

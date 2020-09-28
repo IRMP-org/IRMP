@@ -135,10 +135,16 @@ extern "C"
 #endif
 
 extern void                                     irsnd_init (void);
+#  ifdef __cplusplus
+extern bool                                     irsnd_is_busy (void);
+extern bool                                     irsnd_send_data (IRMP_DATA *, uint8_t);
+extern bool                                     irsnd_ISR (void);
+#else
 extern uint8_t                                  irsnd_is_busy (void);
 extern uint8_t                                  irsnd_send_data (IRMP_DATA *, uint8_t);
-extern void                                     irsnd_stop (void);
 extern uint8_t                                  irsnd_ISR (void);
+#endif
+extern void                                     irsnd_stop (void);
 
 #if IRSND_USE_CALLBACK == 1
 extern void                                     irsnd_set_callback_ptr (void (*cb)(uint8_t));
