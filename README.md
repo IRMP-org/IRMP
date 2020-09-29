@@ -2,7 +2,7 @@
 # [IRMP](https://github.com/ukw100/IRMP) - Infrared Multi Protocol Decoder + Encoder
 Available as Arduino library "IRMP"
 
-### [Version 3.3.1](https://github.com/ukw100/IRMP/releases)
+### [Version 3.3.2](https://github.com/ukw100/IRMP/releases)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/irmp)
@@ -217,6 +217,9 @@ The **tone() library (using timer 2) is still available**. You can use it altern
   
   
 # Revision History
+### Version 3.3.2 - work in progress
+- Added missing Medion entry in irmp_protocol_names.
+
 ### Version 3.3.1
 - Fix for function `bool irmp_IsBusy()` if `IRMP_ENABLE_PIN_CHANGE_INTERRUPT` is defined.
 

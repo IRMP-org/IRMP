@@ -835,7 +835,8 @@ irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM =
     proto_onkyo,
 
     proto_rf_gen24,
-    proto_rf_x10
+    proto_rf_x10,
+    proto_rf_medion
 };
 
 #endif
