@@ -132,6 +132,7 @@ void initPCIInterrupt(void);
 
 #if IRMP_PROTOCOL_NAMES == 1
 void irmp_print_active_protocols(Print * aSerial);
+void irmp_print_protocol_name(Print * aSerial, uint8_t aProtocolNumber);
 #endif
 extern const uint8_t irmp_used_protocol_index[] PROGMEM;
 extern const char * const irmp_used_protocol_names[] PROGMEM;

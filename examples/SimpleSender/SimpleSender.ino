@@ -76,10 +76,12 @@ void setup()
 #endif
     irsnd_data.protocol = IRMP_SAMSUNG32_PROTOCOL;
     irsnd_data.address = 0x0707;
-    irsnd_data.command = 0xFB04;
+    irsnd_data.command = 0xFB04; // For my Samsung the high byte is the negative of the low byte
     irsnd_data.flags = 0; // repeat frame 0 time
 
-    Serial.print(F("Send 0x"));
+    Serial.print(F("Send Samsung32: addr=0x"));
+    Serial.print(irsnd_data.address, HEX);
+    Serial.print(F(" cmd=0x"));
     Serial.println(irsnd_data.command, HEX);
     irsnd_send_data(&irsnd_data, false);
 
@@ -92,7 +94,7 @@ void loop()
     tNextCommand++;
     // For my Samsung the high byte is the negative of the low byte
     irsnd_data.command = ((~tNextCommand) << 8) | tNextCommand;
-    Serial.print(F("Send 0x"));
+    Serial.print(F("Send cmd=0x"));
     Serial.println(irsnd_data.command, HEX);
     irsnd_send_data(&irsnd_data, false); // This stores timer state and restores it after sending
 }

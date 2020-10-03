@@ -543,6 +543,24 @@ void irmp_print_active_protocols(Print * aSerial)
         aSerial->print(", ");
     }
 }
+
+void irmp_print_protocol_name(Print * aSerial, uint8_t aProtocolNumber)
+{
+#  if defined(__AVR__)
+    for (uint8_t i = 0; i < sizeof(irmp_used_protocol_index); ++i)
+    {
+        if(pgm_read_byte(&irmp_used_protocol_index[i]) == aProtocolNumber)
+        {
+            const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_used_protocol_names[i]);
+            aSerial->print((__FlashStringHelper *) (tProtocolStringPtr));
+            break;
+        }
+    }
+#  else
+    // no need to save space
+    aSerial->print(irmp_protocol_names[aProtocolNumber]);
+#  endif
+}
 #endif // IRMP_PROTOCOL_NAMES == 1
 
 /*
@@ -556,21 +574,7 @@ void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr)
      */
     aSerial->print(F("P="));
 #if IRMP_PROTOCOL_NAMES == 1
-#  if defined(__AVR__)
-    uint8_t tProtocolNumber = aIRMPDataPtr->protocol;
-    for (uint8_t i = 0; i < sizeof(irmp_used_protocol_index); ++i)
-    {
-        if(pgm_read_byte(&irmp_used_protocol_index[i]) == tProtocolNumber)
-        {
-            const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_used_protocol_names[i]);
-            aSerial->print((__FlashStringHelper *) (tProtocolStringPtr));
-            break;
-        }
-    }
-#  else
-    // no need to save space
-    aSerial->print(irmp_protocol_names[aIRMPDataPtr->protocol]);
-#  endif
+    irmp_print_protocol_name(aSerial, aIRMPDataPtr->protocol);
     aSerial->print(' ');
 #else
     aSerial->print(F("0x"));
@@ -601,20 +605,7 @@ void irmp_result_print(IRMP_DATA * aIRMPDataPtr)
      */
     Serial.print(F("P="));
 #if IRMP_PROTOCOL_NAMES == 1
-#  if defined(__AVR__)
-    uint8_t tProtocolNumber = aIRMPDataPtr->protocol;
-    for (uint8_t i = 0; i < sizeof(irmp_used_protocol_index); ++i)
-    {
-        if(pgm_read_byte(&irmp_used_protocol_index[i]) == tProtocolNumber)
-        {
-            const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_used_protocol_names[i]);
-            Serial.print((__FlashStringHelper *) (tProtocolStringPtr));
-            break;
-        }
-    }
-#  else
-    Serial.print(irmp_protocol_names[aIRMPDataPtr->protocol]);
-#  endif
+    irmp_print_protocol_name(&Serial, aIRMPDataPtr->protocol);
     Serial.print(' ');
 #else
     Serial.print(F("0x"));
