@@ -181,17 +181,21 @@ If you want to distinguish between more than one remote in one sketch, you may a
 # Timer usage
 The IRMP **receive** library works by polling the input pin at a rate of 10 to 20 kHz. Default is 15 kHz.<br/>
 Many protocols can be received **without timer usage**, just by using interrupts from the input pin by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. See [Interrupt example](examples/Interrupt/Interrupt.ino).<br/>
-The IRMP **send** library works by bit banging the output pin at a frequency of 38 kHz. This **avoids blocking waits** and allows to choose an **arbitrary pin**, you are not restricted to pin 3 or 11. The interrupts for send pin bit banging require 50% CPU time on a 16 MHz AVR.<br/>
-If both receiving and sending is required, the timer is set up for receiving and reconfigured for the duration of sending data, thus preventing (non interrupt) receiving while sending data.<br/>
-The **tone() library (using timer 2) is still available**. You can use it alternating with IR receive and send, see [ReceiveAndSend example](examples/ReceiveAndSend/ReceiveAndSend.ino).
+**In interrupt mode, the `micros()` function is used as timebase.**
+
+The IRMP **send** library works by bit banging the output pin at a frequency of 38 kHz. This **avoids blocking waits** and allows to choose an **arbitrary pin**, you are not restricted to PWM generating pins like pin 3 or 11. The interrupts for send pin bit banging require 50% CPU time on a 16 MHz AVR.<br/>
+If both receiving and sending is required, the timer is set up for receiving and reconfigured for the duration of sending data, thus preventing receiving in polling mode while sending data.<br/>
+The **tone() library (using timer 2) is still available**. You can use it alternating with IR receive and send, see [ReceiveAndSend example](examples/ReceiveAndSend/ReceiveAndSend.ino).<br/>
 
 - For AVR **timer 2 (Tone timer)** is used for receiving **and** sending. For variants, which have no timer 2 like ATtiny85 or ATtiny167, **timer 1** is used.
 - For SAMD **TC3** is used.
 - For Apollo3 **Timer 3 segment B** is used.
 - For ESP8266 and ESP32 **timer1** is used.
 - For STM32 (BluePill) **timer 3 (Servo timer) channel 1** is used as default.<br/>
-- If you use polling (default) mode with timer 2, the `millis()` function and the corresponding timer is not used by IRMP! 
-- In interrupt mode, the `micros()` function is used as timebase.
+
+# Tips and tricks
+- The minimal CPU clock required for receiving is 8MHz.
+- To save power, you can use the interrupt mode or polling mode with no-sending detection and power down sleep. This is **not available** for ATtiny85 running with the High Speed PLL clock (as on  Digispark boards) because of the high startup time from sleep of 4 to 5 ms for this clock. You have to use the ISP to [rewrite the CKSEL fuses](https://github.com/ArminJo/micronucleus-firmware/blob/master/utils/Write%2085%20Fuses%20E2%20DF%20FF%20-%20ISP%20Mode%20%3D%208MHz%20without%20BOD%20and%20Pin5.cmd) and to load the program.
 
 # [AllProtocol](examples/AllProtocols/AllProtocols.ino) example
 | Serial LCD output | Arduino Serial Monitor output |
@@ -218,7 +222,8 @@ The **tone() library (using timer 2) is still available**. You can use it altern
   
 # Revision History
 ### Version 3.3.2 - work in progress
-- Added missing Medion entry in irmp_protocol_names.
+- Added missing Medion entry in `irmp_protocol_names`.
+- Added function `irmp_print_protocol_name()`.
 
 ### Version 3.3.1
 - Fix for function `bool irmp_IsBusy()` if `IRMP_ENABLE_PIN_CHANGE_INTERRUPT` is defined.
