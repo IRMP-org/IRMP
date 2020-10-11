@@ -74,6 +74,10 @@ HardwareTimer sSTM32Timer(3);
 #elif defined(ARDUINO_ARCH_MBED) // Arduino Nano 33 BLE
 mbed::Ticker sMbedTimer;
 
+#elif defined(TEENSYDUINO)
+// common for all Teensy
+IntervalTimer sIntervalTimer;
+
 #  endif
 #endif // TIMER_DECLARED
 
@@ -112,8 +116,6 @@ uint32_t sTimerOverflowValue;
 
 #  elif defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_APOLLO3)
 uint16_t sTimerCompareCapureValue;
-
-#  elif defined(ARDUINO_ARCH_MBED) // Arduino Nano 33 BLE
 
 #  endif // defined(__AVR__)
 #endif // defined(_IRMP_H_)
@@ -280,8 +282,11 @@ void initIRTimerForSend(void)
     am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
     NVIC_EnableIRQ(CTIMER_IRQn);
 
-#  elif defined(ARDUINO_ARCH_MBED)
+#elif defined(ARDUINO_ARCH_MBED)
     sMbedTimer.attach_us(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
+
+#elif defined(TEENSYDUINO)
+    sIntervalTimer.begin(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
 #endif
 }
 
@@ -426,6 +431,11 @@ void restoreIRTimer(void)
 #    elif defined(ARDUINO_ARCH_APOLLO3)
     am_hal_ctimer_compare_set(3, AM_HAL_CTIMER_TIMERB, 0, sTimerCompareCapureValue);
 
+#    elif defined(ARDUINO_ARCH_MBED)
+    sMbedTimer.attach_us(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
+
+#    elif defined(TEENSYDUINO)
+    sIntervalTimer.update(1000000 / IR_INTERRUPT_FREQUENCY);
 #    endif
 #  endif // defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
 
@@ -488,6 +498,9 @@ void disableIRTimerInterrupt(void) {
 
 #elif defined(ARDUINO_ARCH_MBED)
     sMbedTimer.detach();
+
+#elif defined(TEENSYDUINO)
+    sIntervalTimer.end();
 #endif
 }
 
@@ -549,6 +562,8 @@ void enableIRTimerInterrupt(void) {
 #elif defined(ARDUINO_ARCH_MBED)
     sMbedTimer.attach_us(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
 
+#elif defined(TEENSYDUINO)
+    sIntervalTimer.begin(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
 #else
 #warning Board / CPU is not covered by definitions using pre-processor symbols -> no timer available. Please extend IRTimer.cpp.h.
 #endif
@@ -619,13 +634,13 @@ void TC3_Handler(void)
 #elif defined(STM32F1xx) && STM32_CORE_VERSION_MAJOR == 1 &&  STM32_CORE_VERSION_MINOR <= 8 // for "Generic STM32F1 series" from "STM32 Boards (selected from submenu)" of Arduino Board manager
 void irmp_timer_ISR(HardwareTimer * aDummy __attribute__((unused))) // old 1.8 version - changed in stm32duino 1.9 - 5/2020
 
-#else // STM32F1xx (v1.9), __STM32F1__, ARDUINO_ARCH_APOLLO3, MBED
+#else // STM32F1xx (v1.9), __STM32F1__, ARDUINO_ARCH_APOLLO3, MBED, TEENSYDUINO
 void irmp_timer_ISR(void)
 
 #endif // defined(__AVR__)
 
 // Start of ISR
-        {
+{
 #if defined(ARDUINO_ARCH_SAMD)
     TC3->COUNT16.INTFLAG.bit.MC0 = 1; // Clear interrupt
 

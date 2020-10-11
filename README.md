@@ -224,6 +224,7 @@ The **tone() library (using timer 2) is still available**. You can use it altern
 ### Version 3.3.2 - work in progress
 - Added missing Medion entry in `irmp_protocol_names`.
 - Added function `irmp_print_protocol_name()`.
+- Added Teensyduino support.
 
 ### Version 3.3.1
 - Fix for function `bool irmp_IsBusy()` if `IRMP_ENABLE_PIN_CHANGE_INTERRUPT` is defined.

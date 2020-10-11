@@ -107,6 +107,12 @@
 #define TONE_PIN         5
 #define IRMP_TIMING_TEST_PIN 6
 
+#elif defined(TEENSYDUINO)
+#define IRMP_INPUT_PIN   3
+#define IRSND_OUTPUT_PIN 4
+#define TONE_PIN         5
+#define IRMP_TIMING_TEST_PIN 6
+
 #elif defined(__AVR__)
 #define IRMP_INPUT_PIN   3 // To be compatible with interrupt example, pin 3 is chosen here (which is default).
 #define IRSND_OUTPUT_PIN 4

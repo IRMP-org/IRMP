@@ -36,7 +36,9 @@
 /*
  * Define the size of your LCD
  */
+#if !defined (USE_SERIAL_LCD)
 #define USE_1602_LCD
+#endif
 //#define USE_2004_LCD
 
 /*
