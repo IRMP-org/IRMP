@@ -137,7 +137,7 @@ void initIRTimerForSend(void)
 #  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 // Since the ISR takes 5 to 22 microseconds for ATtiny@16MHz only 16 and 8 MHz makes sense
 #    if defined(ARDUINO_AVR_DIGISPARK)
-// the digispark core uses timer 1 for millis() :-(
+// Use timer 0 - the digispark core uses timer 1 for millis() :-(
 // Timer 0 has only 1 and 8 as useful prescaler
     TCCR0A = 0;                                                     // must be set to zero before configuration!
 #      if (F_CPU / IR_INTERRUPT_FREQUENCY) > 256                    // for 8 bit timer
@@ -149,7 +149,9 @@ void initIRTimerForSend(void)
 #      endif
     TCCR0A = _BV(WGM01);                                            // CTC with OCRA as top
     TIMSK |= _BV(OCIE0B);                                           // enable compare match interrupt
+
 #    else
+// Use timer 1
 #      if (F_CPU / IR_INTERRUPT_FREQUENCY) > 256                    // for 8 bit timer
     OCR1B = OCR1C = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;     // 132 for 15 kHz @16 MHz
     TCCR1 = _BV(CTC1) | _BV(CS12);                                  // switch CTC Mode on, set prescaler to 8

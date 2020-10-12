@@ -74,12 +74,28 @@ void setup()
 #else
     Serial.println(F("Ready to send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
 #endif
+
+//#define SEND_SAMSUNG // else send NEC
+#ifdef SEND_SAMSUNG
+    /*
+     * Send Samsung32
+     */
     irsnd_data.protocol = IRMP_SAMSUNG32_PROTOCOL;
     irsnd_data.address = 0x0707;
-    irsnd_data.command = 0xFB04; // For my Samsung the high byte is the negative of the low byte
+    irsnd_data.command = 0xFB04; // For my Samsung, the high byte is the inverse of the low byte
     irsnd_data.flags = 0; // repeat frame 0 time
-
     Serial.print(F("Send Samsung32: addr=0x"));
+#else
+    /*
+     * Send NEC
+     */
+    irsnd_data.protocol = IRMP_NEC_PROTOCOL;
+    irsnd_data.address = 0x0707;
+    irsnd_data.command = 0xFB; // The required inverse of the 8 bit command is added by the send routine.
+    irsnd_data.flags = 2; // repeat frame 2 times
+    Serial.print(F("Send NEC: addr=0x"));
+#endif
+
     Serial.print(irsnd_data.address, HEX);
     Serial.print(F(" cmd=0x"));
     Serial.println(irsnd_data.command, HEX);
@@ -92,8 +108,10 @@ void loop()
     delay(5000);
     uint8_t tNextCommand = irsnd_data.command;
     tNextCommand++;
-    // For my Samsung the high byte is the negative of the low byte
+#ifdef SEND_SAMSUNG
+    // For my Samsung the high byte is the inverse of the low byte
     irsnd_data.command = ((~tNextCommand) << 8) | tNextCommand;
+#endif
     Serial.print(F("Send cmd=0x"));
     Serial.println(irsnd_data.command, HEX);
     irsnd_send_data(&irsnd_data, false); // This stores timer state and restores it after sending

@@ -38,6 +38,20 @@ Available as Arduino library "IRMP"
 |---|---|
 ![Fritzing schematic for Arduino UNO](extras/IRMP_UNO_Steckplatine.png) | ![Fritzing schematic for Arduino UNO + LCD](extras/IRMP_UNO_LCD_Steckplatine.png)
 
+# Supported Arduino architectures / CPU's / boards
+| Architecture | CPU | Board |
+|-|-|-|
+| avr     | ATmega16, ATmega328P, ATmega32U4, ATtinyX5, ATtinyX7 | Uno, Nano, Leonardo, Sparkfun Pro Micro, Digispark etc. |
+| megaavr | ATmega4809 | Uno WiFi Rev 2, Nano Every |
+| samd    | SAMD21G18A | Zero, MKR1000, etc. |
+| esp8266 | % | all |
+| esp32   | % | all |
+| stm32   | STM32F1xx     | BluePill |
+| STM32F1 | STM32F1xx     | BluePill |
+| apollo3 | Ambiq Apollo3 | Sparkfun Apollo3 + Artemis |
+| mbed    | nRF528x       | Nano 33 BLE |
+| Teensiduino | all       | >= Teensy 3 |
+
 # Quick comparison of 4 Arduino IR receiving libraries
 ## This is a short comparison and may not be complete or correct
 I created this comparison matrix for [myself](https://github.com/ArminJo) in order to choose a small IR lib for my project and to have a quick overview, when to choose which library.<br/>
@@ -187,7 +201,7 @@ The IRMP **send** library works by bit banging the output pin at a frequency of 
 If both receiving and sending is required, the timer is set up for receiving and reconfigured for the duration of sending data, thus preventing receiving in polling mode while sending data.<br/>
 The **tone() library (using timer 2) is still available**. You can use it alternating with IR receive and send, see [ReceiveAndSend example](examples/ReceiveAndSend/ReceiveAndSend.ino).<br/>
 
-- For AVR **timer 2 (Tone timer)** is used for receiving **and** sending. For variants, which have no timer 2 like ATtiny85 or ATtiny167, **timer 1** is used.
+- For AVR **timer 2 (Tone timer)** is used for receiving **and** sending. For variants, which have no timer 2 like ATtiny85 or ATtiny167, **timer 1** (or timer 0 for digispark core) is used.
 - For SAMD **TC3** is used.
 - For Apollo3 **Timer 3 segment B** is used.
 - For ESP8266 and ESP32 **timer1** is used.
