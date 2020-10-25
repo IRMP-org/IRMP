@@ -5463,7 +5463,7 @@ uint_fast8_t irmp_ISR(void)
  */
 
 void
-print_spectrum (const char * text, int * buf, int is_pulse)
+print_spectrum (const char *text, int *buf, int is_pulse)
 {
     int     i;
     int     j;

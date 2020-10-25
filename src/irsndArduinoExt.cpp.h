@@ -29,7 +29,7 @@
 
 #if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 uint_fast8_t irsnd_output_pin;
-#  if defined (__AVR__)
+#  if defined(__AVR__)
 // For fast toggling we additional require port and mask
 volatile uint8_t * irsnd_output_pin_input_port;
 uint8_t irsnd_output_pin_mask;

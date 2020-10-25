@@ -122,9 +122,9 @@ bool irmp_IsBusy()
 }
 
 #if defined(__AVR__)
-void irmp_debug_print(const __FlashStringHelper * aMessage, bool aDoShortOutput)
+void irmp_debug_print(const __FlashStringHelper *aMessage, bool aDoShortOutput)
 #else
-void irmp_debug_print(const char * aMessage, bool aDoShortOutput)
+void irmp_debug_print(const char *aMessage, bool aDoShortOutput)
 #endif
 {
     Serial.print(aMessage);
@@ -529,7 +529,7 @@ const char * const irmp_used_protocol_names[] PROGMEM =
 #endif
 };
 
-void irmp_print_active_protocols(Print * aSerial)
+void irmp_print_active_protocols(Print *aSerial)
 {
     // skip protocol 0 = UNKNOWN
     for (uint8_t i = 1; i < sizeof(irmp_used_protocol_index); ++i)
@@ -544,7 +544,7 @@ void irmp_print_active_protocols(Print * aSerial)
     }
 }
 
-void irmp_print_protocol_name(Print * aSerial, uint8_t aProtocolNumber)
+void irmp_print_protocol_name(Print *aSerial, uint8_t aProtocolNumber)
 {
 #  if defined(__AVR__)
     for (uint8_t i = 0; i < sizeof(irmp_used_protocol_index); ++i)
@@ -567,7 +567,7 @@ void irmp_print_protocol_name(Print * aSerial, uint8_t aProtocolNumber)
  * Print protocol name or number, address, code and repetition flag
  * needs appr. 2 milliseconds for output
  */
-void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr)
+void irmp_result_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr)
 {
     /*
      * Print protocol name or number
@@ -598,7 +598,7 @@ void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr)
 /*
  * Do not just call irmp_result_print( &Serial, aIRMPDataPtr) above, since this is not always possible for ATtinies.
  */
-void irmp_result_print(IRMP_DATA * aIRMPDataPtr)
+void irmp_result_print(IRMP_DATA *aIRMPDataPtr)
 {
     /*
      * Print protocol name or number

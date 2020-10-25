@@ -37,7 +37,7 @@
 #ifndef TIMER_DECLARED
 #define TIMER_DECLARED
 #  if defined(ESP32)
-static hw_timer_t * sESP32Timer = NULL;
+static hw_timer_t *sESP32Timer = NULL;
 
 // BluePill in 2 flavors
 #  elif defined(STM32F1xx) // for "Generic STM32F1 series" from "STM32 Boards (selected from submenu)" of Arduino Board manager
@@ -604,7 +604,7 @@ extern "C" void am_ctimer_isr(void) {
 #if defined(__AVR__)
 
 #  if F_CPU < 8000000L
-#error "F_CPU must not be less than 8MHz for IRMP and IRSND"
+#error F_CPU must not be less than 8MHz for IRMP and IRSND
 #  endif
 
 #  if defined(__AVR_ATmega16__)
@@ -634,7 +634,7 @@ void IRAM_ATTR irmp_timer_ISR(void)
 void TC3_Handler(void)
 
 #elif defined(STM32F1xx) && STM32_CORE_VERSION_MAJOR == 1 &&  STM32_CORE_VERSION_MINOR <= 8 // for "Generic STM32F1 series" from "STM32 Boards (selected from submenu)" of Arduino Board manager
-void irmp_timer_ISR(HardwareTimer * aDummy __attribute__((unused))) // old 1.8 version - changed in stm32duino 1.9 - 5/2020
+void irmp_timer_ISR(HardwareTimer *aDummy __attribute__((unused))) // old 1.8 version - changed in stm32duino 1.9 - 5/2020
 
 #else // STM32F1xx (v1.9), __STM32F1__, ARDUINO_ARCH_APOLLO3, MBED, TEENSYDUINO
 void irmp_timer_ISR(void)
@@ -666,11 +666,11 @@ void irmp_timer_ISR(void)
         if (irsnd_is_on)
         {
 #    if defined(digitalToggleFast)
-#      if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS) && defined (__AVR__)
+#      if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS) && defined(__AVR__)
             *irsnd_output_pin_input_port |= irsnd_output_pin_mask; // fast toggle for AVR
 #      else
             digitalToggleFast(IRSND_OUTPUT_PIN);
-#      endif // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)  && defined (__AVR__)
+#      endif // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)  && defined(__AVR__)
 #    else
             digitalWrite(IRSND_OUTPUT_PIN, !digitalRead(IRSND_OUTPUT_PIN));
 #    endif

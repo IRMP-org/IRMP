@@ -57,7 +57,7 @@ void irmp_PCI_ISR(void)
     // F_INTERRUPTS value of 31250 does not work (maybe 8 bit overflow?)
     tTicks = (tTicks << 2) >> 8;// saves 1.3 us
 #else
-#error "F_INTERRUPTS must be 15625 (to avoid a time consuming division)"
+#error F_INTERRUPTS must be 15625 (to avoid a time consuming division)
 #endif
 
     if (tTicks != 0)

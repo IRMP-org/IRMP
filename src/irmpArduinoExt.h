@@ -99,13 +99,13 @@ extern uint_fast8_t irmp_InputPin; // global variable to hold input pin number. 
 #undef IRMP_INPUT_PIN
 #define IRMP_INPUT_PIN              irmp_InputPin
 #else // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
-#  if !defined (IRMP_INPUT_PIN)                                       // Arduino IDE uses IRMP_INPUT_PIN instead of PORT and BIT
+#  if !defined(IRMP_INPUT_PIN)                                       // Arduino IDE uses IRMP_INPUT_PIN instead of PORT and BIT
 #define IRMP_INPUT_PIN              3
 #  endif
 #endif
 
-#if defined (IRMP_INPUT_PIN)
-#  if defined (__AVR__)
+#if defined(IRMP_INPUT_PIN)
+#  if defined(__AVR__)
 #    define input(x)                digitalReadFast(IRMP_INPUT_PIN)
 #  else
 #    define input(x)                digitalRead(IRMP_INPUT_PIN)
@@ -119,20 +119,20 @@ void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin, boo
 bool irmp_IsBusy();
 extern uint32_t irmp_last_change_micros;
 
-void irmp_result_print(Print * aSerial, IRMP_DATA * aIRMPDataPtr);
-void irmp_result_print(IRMP_DATA * aIRMPDataPtr);
+void irmp_result_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr);
+void irmp_result_print(IRMP_DATA *aIRMPDataPtr);
 #  if defined(__AVR__)
-void irmp_debug_print(const __FlashStringHelper * aMessage, bool aDoShortOutput = true);
+void irmp_debug_print(const __FlashStringHelper *aMessage, bool aDoShortOutput = true);
 #  else
-void irmp_debug_print(const char * aMessage, bool aDoShortOutput);
+void irmp_debug_print(const char *aMessage, bool aDoShortOutput);
 #  endif
 
 void irmp_PCI_ISR(void);
 void initPCIInterrupt(void);
 
 #if IRMP_PROTOCOL_NAMES == 1
-void irmp_print_active_protocols(Print * aSerial);
-void irmp_print_protocol_name(Print * aSerial, uint8_t aProtocolNumber);
+void irmp_print_active_protocols(Print *aSerial);
+void irmp_print_protocol_name(Print *aSerial, uint8_t aProtocolNumber);
 #endif
 extern const uint8_t irmp_used_protocol_index[] PROGMEM;
 extern const char * const irmp_used_protocol_names[] PROGMEM;
