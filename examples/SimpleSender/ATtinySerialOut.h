@@ -52,15 +52,17 @@
 #ifndef ATTINY_SERIAL_OUT_H_
 #define ATTINY_SERIAL_OUT_H_
 
-#if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) \
+    || defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__) \
+    || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include <Arduino.h>
 
-#define VERSION_ATTINY_SERIAL_OUT "1.2.0"
+#define VERSION_ATTINY_SERIAL_OUT "1.2.1"
 #define VERSION_ATTINY_SERIAL_OUT_MAJOR 1
 #define VERSION_ATTINY_SERIAL_OUT_MINOR 2
 
 #if (F_CPU != 1000000) &&  (F_CPU != 8000000) &&  (F_CPU != 16000000)
-#error "F_CPU value must be 1000000, 8000000 or 16000000."
+#error F_CPU value must be 1000000, 8000000 or 16000000.
 #endif
 
 #if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
@@ -102,13 +104,13 @@ void write1Start8Data1StopNoParity(uint8_t aValue);
 void write1Start8Data1StopNoParityWithCliSei(uint8_t aValue);
 void writeValue(uint8_t aValue);
 
-void writeString(const char * aStringPtr);
-void writeString(const __FlashStringHelper * aStringPtr);
-void writeString_P(const char * aStringPtr);
-void writeString_E(const char * aStringPtr);
-void writeStringWithCliSei(const char * aStringPtr);
-void writeStringWithoutCliSei(const char * aStringPtr);
-void writeStringSkipLeadingSpaces(const char * aStringPtr);
+void writeString(const char *aStringPtr);
+void writeString(const __FlashStringHelper *aStringPtr);
+void writeString_P(const char *aStringPtr);
+void writeString_E(const char *aStringPtr);
+void writeStringWithCliSei(const char *aStringPtr);
+void writeStringWithoutCliSei(const char *aStringPtr);
+void writeStringSkipLeadingSpaces(const char *aStringPtr);
 
 void writeBinary(uint8_t aByte); // write direct without decoding
 void writeChar(uint8_t aChar); // Synonym for writeBinary
@@ -143,7 +145,7 @@ public:
     size_t write(uint8_t aByte);
     operator bool(); // To support "while (!Serial); // wait for serial port to connect. Needed for Leonardo only
 
-    void print(const __FlashStringHelper * aStringPtr);
+    void print(const __FlashStringHelper *aStringPtr);
     void print(const char* aStringPtr);
     void print(char aChar);
     void print(uint8_t aByte, uint8_t aBase = 10);
@@ -154,7 +156,7 @@ public:
     void print(double aFloat, uint8_t aDigits = 2);
 
     void println(const char* aStringPtr);
-    void println(const __FlashStringHelper * aStringPtr);
+    void println(const __FlashStringHelper *aStringPtr);
     void println(char aChar);
     void println(uint8_t aByte, uint8_t aBase = 10);
     void println(int16_t aInteger, uint8_t aBase = 10);

@@ -14,6 +14,9 @@ assignees: ArminJo
 * [ ] Arduino megaAVR board (NanoEvery)
 * [ ] Arduino SAM board (Due)
 * [ ] Arduino SAMD board (Zero, MKR*)
+* [ ] ATtiny85 board (ATTinyCore by Spence Conde)
+* [ ] Digispark board
+* [ ] ATmega8 board
 * [ ] ESP8266 board
 * [ ] ESP32 board
 * [ ] STM32 board with "STM32 Boards (selected from submenu)" core

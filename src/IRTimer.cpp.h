@@ -120,6 +120,7 @@ uint16_t sTimerCompareCapureValue;
 #  endif // defined(__AVR__)
 #endif // defined(_IRMP_H_)
 
+// @formatter:off
 #if defined(_IRMP_H_)
 void initIRTimerForReceive(void)
 #elif defined(_IRSND_H_)
@@ -130,8 +131,8 @@ void initIRTimerForSend(void)
 // Use Timer 2
 #  if defined(__AVR_ATmega16__)
     TCCR2 = _BV(WGM21) | _BV(CS21);                                 // CTC mode, prescale by 8
-    OCR2 = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;// 132 for 15000 interrupts per second
-    TIMSK = _BV(OCIE2);// enable interrupt
+    OCR2 = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;              // 132 for 15000 interrupts per second
+    TIMSK = _BV(OCIE2);                                             // enable interrupt
     TCNT2 = 0;
 
 #  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
@@ -139,68 +140,68 @@ void initIRTimerForSend(void)
 #    if defined(ARDUINO_AVR_DIGISPARK)
 // Use timer 0 - the digispark core uses timer 1 for millis() :-(
 // Timer 0 has only 1 and 8 as useful prescaler
-    TCCR0A = 0;// must be set to zero before configuration!
+    TCCR0A = 0;                                                     // must be set to zero before configuration!
 #      if (F_CPU / IR_INTERRUPT_FREQUENCY) > 256                    // for 8 bit timer
     OCR0A = OCR0B = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;     // 132 for 15 kHz @16 MHz
-    TCCR0B = _BV(CS01);// presc = 8
+    TCCR0B = _BV(CS01);                                             // presc = 8
 #      else
     OCR0A = OCR0B = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;           // compare value: 209 for 76 kHz, 221 for 72kHz @16MHz
-    TCCR0B = _BV(CS00);// presc = 1 / no prescaling
+    TCCR0B = _BV(CS00);                                             // presc = 1 / no prescaling
 #      endif
     TCCR0A = _BV(WGM01);                                            // CTC with OCRA as top
-    TIMSK |= _BV(OCIE0B);// enable compare match interrupt
+    TIMSK |= _BV(OCIE0B);                                           // enable compare match interrupt
 
 #    else
 // Use timer 1
 #      if (F_CPU / IR_INTERRUPT_FREQUENCY) > 256                    // for 8 bit timer
     OCR1B = OCR1C = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;     // 132 for 15 kHz @16 MHz
-    TCCR1 = _BV(CTC1) | _BV(CS12);// switch CTC Mode on, set prescaler to 8
+    TCCR1 = _BV(CTC1) | _BV(CS12);                                  // switch CTC Mode on, set prescaler to 8
 #      else
     OCR1B = OCR1C = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;           // compare value: 209 for 76 kHz, 221 for 72kHz @16MHz
-    TCCR1 = _BV(CTC1) | _BV(CS10);// switch CTC Mode on, set prescaler to 1 / no prescaling
+    TCCR1 = _BV(CTC1) | _BV(CS10);                                  // switch CTC Mode on, set prescaler to 1 / no prescaling
 #      endif
     TIMSK |= _BV(OCIE1B);                                           // enable compare match interrupt
 #    endif
 
 #  elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 // Timer 1 is a 16 bit counter so we need no prescaler
-    ICR1 = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;// 1065 for 15 kHz @16 MHz. compare value: 1/15000 of CPU frequency
-    TCCR1B = 0;// switch CTC Mode on
-    TCCR1B = _BV(WGM12) | _BV(WGM13) | _BV(CS10);// switch CTC Mode on, set prescaler to 1 / no prescaling
-    TIMSK1 = _BV(OCIE1B);// enable compare match interrupt
+    ICR1 = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;                    // 1065 for 15 kHz @16 MHz. compare value: 1/15000 of CPU frequency
+    TCCR1B = 0;                                                     // switch CTC Mode on
+    TCCR1B = _BV(WGM12) | _BV(WGM13) | _BV(CS10);                   // switch CTC Mode on, set prescaler to 1 / no prescaling
+    TIMSK1 = _BV(OCIE1B);                                           // enable compare match interrupt
 
 #elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
     // TCB1 is used by Tone()
     // TCB2 is used by Servo
     // TCB3 is used by millis()
     TCB0.CTRLB = TCB_CNTMODE_INT_gc;
-    TCB0.CCMP = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;// compare value: 209 for 76 kHz, 221 for 72kHz @16MHz
+    TCB0.CCMP = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;               // compare value: 209 for 76 kHz, 221 for 72kHz @16MHz
     TCB0.INTCTRL = TCB_CAPT_bm;
     TCB0.CTRLA = TCB_CLKSEL_CLKDIV1_gc | TCB_ENABLE_bm;
 
 #elif defined(__AVR_ATmega8__)
 #    if (F_CPU / IR_INTERRUPT_FREQUENCY) <= 256                     // for 8 bit timer
     TCCR2 = _BV(WGM21) | _BV(CS20);                                 // CTC mode, no prescale
-    OCR2 = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;// 209 for 76000 interrupts per second - toggle at each interrupt
+    OCR2 = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;                    // 209 for 76000 interrupts per second - toggle at each interrupt
 #    else
     TCCR2 = _BV(WGM21) | _BV(CS21);                                 // CTC mode, prescale by 8
-    OCR2 = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;// 132 for 15000 interrupts per second
+    OCR2 = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;              // 132 for 15000 interrupts per second
 #    endif
     TIFR = _BV(OCF2) | _BV(TOV2);                                   // reset interrupt flags
-    TIMSK = _BV(OCIE2);// enable TIMER2_COMP_vect interrupt to be compatible with tone() library
+    TIMSK = _BV(OCIE2);                                             // enable TIMER2_COMP_vect interrupt to be compatible with tone() library
     TCNT2 = 0;
 
 #  else // __AVR_ATmega328__ here
     TCCR2A = _BV(WGM21);                                            // CTC mode
 #    if (F_CPU / IR_INTERRUPT_FREQUENCY) <= 256                     // for 8 bit timer
     TCCR2B = _BV(CS20);                                             // no prescale
-    OCR2B = OCR2A = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;// 209 for 76000 interrupts per second - toggle at each interrupt
+    OCR2B = OCR2A = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;           // 209 for 76000 interrupts per second @ 16MHz - toggle at each interrupt
 #    else
     TCCR2B = _BV(CS21);                                             // prescale by 8
-    OCR2B = OCR2A = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;// 132 for 15000 interrupts per second
+    OCR2B = OCR2A = ((F_CPU / 8) / IR_INTERRUPT_FREQUENCY) - 1;     // 132 for 15000 interrupts per second
 #    endif
     TIFR2 = _BV(OCF2B) | _BV(OCF2A) | _BV(TOV2);                    // reset interrupt flags
-    TIMSK2 = _BV(OCIE2B);// enable TIMER2_COMPB_vect interrupt to be compatible with tone() library
+    TIMSK2 = _BV(OCIE2B);                                           // enable TIMER2_COMPB_vect interrupt to be compatible with tone() library
     TCNT2 = 0;
 #  endif
 
@@ -235,21 +236,21 @@ void initIRTimerForSend(void)
 // BluePill in 2 flavors
 #elif defined(STM32F1xx) // "Generic STM32F1 series" from "STM32 Boards (selected from submenu)" of Arduino Board manager
     // https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
-    sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);// used for generating only interrupts, no pin specified
+    sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);          // used for generating only interrupts, no pin specified
     sSTM32Timer.setPrescaleFactor(1);
-    sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT);// clock cycles period
-//sSTM32Timer.setOverflow(1000000 / IR_INTERRUPT_FREQUENCY, MICROSEC_FORMAT); // microsecond period
-    sSTM32Timer.attachInterrupt(irmp_timer_ISR);// this sets update interrupt enable
-    sSTM32Timer.resume();// Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
+    sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT);       // clock cycles period
+//sSTM32Timer.setOverflow(1000000 / IR_INTERRUPT_FREQUENCY, MICROSEC_FORMAT);   // microsecond period
+    sSTM32Timer.attachInterrupt(irmp_timer_ISR);                                // this sets update interrupt enable
+    sSTM32Timer.resume();                           // Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
 
-#elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
+#elif defined(ARDUINO_ARCH_STM32)                                               // Untested! use settings from BluePill / STM32F1xx
     // https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
-    sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);// used for generating only interrupts, no pin specified
+    sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);          // used for generating only interrupts, no pin specified
     sSTM32Timer.setPrescaleFactor(1);
-    sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT);// clock cycles period
-//sSTM32Timer.setOverflow(1000000 / IR_INTERRUPT_FREQUENCY, MICROSEC_FORMAT); // microsecond period
-    sSTM32Timer.attachInterrupt(irmp_timer_ISR);// this sets update interrupt enable
-    sSTM32Timer.resume();// Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
+    sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT);       // clock cycles period
+//sSTM32Timer.setOverflow(1000000 / IR_INTERRUPT_FREQUENCY, MICROSEC_FORMAT);   // microsecond period
+    sSTM32Timer.attachInterrupt(irmp_timer_ISR);                                // this sets update interrupt enable
+    sSTM32Timer.resume();                           // Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
 
 #elif defined(__STM32F1__) // for "Generic STM32F103C series" from STM32F1 Boards (Roger Clark's STM32duino.com) of Arduino Board manager
     // http://dan.drown.org/stm32duino/package_STM32duino_index.json
@@ -258,7 +259,7 @@ void initIRTimerForSend(void)
     sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY);
 //sSTM32Timer.setPeriod(1000000 / IR_INTERRUPT_FREQUENCY);
     sSTM32Timer.attachInterrupt(TIMER_CH1, irmp_timer_ISR);
-    sSTM32Timer.refresh();// Set the timer's count to 0 and update the prescaler and overflow values.
+    sSTM32Timer.refresh();                          // Set the timer's count to 0 and update the prescaler and overflow values.
 
 #elif defined(ARDUINO_ARCH_SAMD)
     REG_GCLK_CLKCTRL = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID_TCC2_TC3); // GCLK1=32kHz,  GCLK0=48MHz
@@ -267,13 +268,13 @@ void initIRTimerForSend(void)
 
     TcCount16* TC = (TcCount16*) TC3;
 
-    TC->CTRLA.reg &= ~TC_CTRLA_ENABLE;// Enable write access to CTRLA register
-    while (TC->STATUS.bit.SYNCBUSY == 1);// wait for sync
+    TC->CTRLA.reg &= ~TC_CTRLA_ENABLE;          // Enable write access to CTRLA register
+    while (TC->STATUS.bit.SYNCBUSY == 1);       // wait for sync
 
 // Set Timer counter Mode to 16 bits, use match mode so that the timer counter resets when the count matches the compare register
     TC->CTRLA.reg |= TC_CTRLA_MODE_COUNT16 | TC_CTRLA_WAVEGEN_MFRQ |TC_CTRLA_PRESCALER_DIV1;
 
-    TC->CC[0].reg = (uint16_t) ((F_CPU / IR_INTERRUPT_FREQUENCY)- 1);// ((48MHz / sampleRate) - 1);
+    TC->CC[0].reg = (uint16_t) ((F_CPU / IR_INTERRUPT_FREQUENCY)- 1);   // ((48MHz / sampleRate) - 1);
 
 // Enable the compare interrupt
     TC->INTENSET.reg = 0;
@@ -286,7 +287,7 @@ void initIRTimerForSend(void)
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
 // Use Timer 3 segment B
-    am_hal_ctimer_clear(3, AM_HAL_CTIMER_TIMERB);// reset timer
+    am_hal_ctimer_clear(3, AM_HAL_CTIMER_TIMERB);   // reset timer
 // only AM_HAL_CTIMER_FN_REPEAT resets counter after match (CTC mode)
     am_hal_ctimer_config_single(3, AM_HAL_CTIMER_TIMERB, (AM_HAL_CTIMER_INT_ENABLE | AM_HAL_CTIMER_HFRC_12MHZ | AM_HAL_CTIMER_FN_REPEAT));
     am_hal_ctimer_compare_set(3, AM_HAL_CTIMER_TIMERB, 0, 12000000 / IR_INTERRUPT_FREQUENCY);
@@ -304,6 +305,7 @@ void initIRTimerForSend(void)
 #endif
 }
 
+// @formatter:on
 #if defined(_IRSND_H_) // we compile for irsnd
 /*
  * If we do not use receive, we have no timer defined at the first call of this function.
@@ -698,14 +700,19 @@ void irmp_timer_ISR(void)
     if(irsnd_busy) {
         if (irsnd_is_on)
         {
-#    if defined(digitalToggleFast)
-#      if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS) && defined(__AVR__)
+#    if !defined(IRSND_GENERATE_NO_SEND_RF)
+            /*
+             * generate IR send frequency by toggling the output at each call
+             */
+#      if defined(digitalToggleFast)
+#        if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS) && defined(__AVR__)
             *irsnd_output_pin_input_port |= irsnd_output_pin_mask; // fast toggle for AVR
-#      else
+#        else
             digitalToggleFast(IRSND_OUTPUT_PIN);
-#      endif // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)  && defined(__AVR__)
-#    else
+#        endif // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)  && defined(__AVR__)
+#      else
             digitalWrite(IRSND_OUTPUT_PIN, !digitalRead(IRSND_OUTPUT_PIN));
+#      endif
 #    endif
         }
 

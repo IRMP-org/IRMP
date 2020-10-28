@@ -129,8 +129,8 @@ void irsnd_on(void)
 #  endif
 #endif
         }
-        // Activate IR-LED
-#  if defined(IR_OUTPUT_IS_ACTIVE_LOW)
+        // set IR-LED to start state. I will later be toggled by the timer if irsnd_is_on == true
+#  if defined(IR_OUTPUT_IS_ACTIVE_LOW) || defined(IRSND_GENERATE_NO_SEND_RF)
         digitalWriteFast(IRSND_OUTPUT_PIN, LOW);
 #  else
         digitalWriteFast(IRSND_OUTPUT_PIN, HIGH);
@@ -167,7 +167,7 @@ void irsnd_off(void)
 #endif
         }
         // Deactivate IR-LED
-#if defined(IR_OUTPUT_IS_ACTIVE_LOW)
+#if defined(IR_OUTPUT_IS_ACTIVE_LOW) || defined(IRSND_GENERATE_NO_SEND_RF)
         digitalWriteFast(IRSND_OUTPUT_PIN, HIGH);
 #else
         digitalWriteFast(IRSND_OUTPUT_PIN, LOW);
