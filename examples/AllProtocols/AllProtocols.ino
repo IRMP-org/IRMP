@@ -36,7 +36,7 @@
 /*
  * Define the size of your LCD
  */
-#if !defined (USE_SERIAL_LCD)
+#if !defined(USE_SERIAL_LCD)
 #define USE_1602_LCD
 #endif
 //#define USE_2004_LCD
@@ -44,19 +44,19 @@
 /*
  * Imports and definitions for LCD
  */
-#if defined (USE_SERIAL_LCD)
+#if defined(USE_SERIAL_LCD)
 #include <LiquidCrystal_I2C.h> // Use an up to date library version which has the init method
 #endif
-#if defined (USE_PARALELL_LCD)
+#if defined(USE_PARALELL_LCD)
 #include <LiquidCrystal.h>
 #endif
 
-#if defined (USE_1602_LCD)
+#if defined(USE_1602_LCD)
 // definitions for a 1602 LCD
 #define LCD_COLUMNS 16
 #define LCD_ROWS 2
 #endif
-#if defined (USE_2004_LCD)
+#if defined(USE_2004_LCD)
 // definitions for a 2004 LCD
 #define LCD_COLUMNS 20
 #define LCD_ROWS 4
@@ -88,14 +88,14 @@
 
 IRMP_DATA irmp_data;
 
-#if defined (USE_SERIAL_LCD) && defined (USE_PARALELL_LCD)
-#error "Cannot use parallel and serial LCD simultaneously"
+#if defined(USE_SERIAL_LCD) && defined(USE_PARALELL_LCD)
+#error Cannot use parallel and serial LCD simultaneously
 #endif
 
-#if defined (USE_SERIAL_LCD)
+#if defined(USE_SERIAL_LCD)
 LiquidCrystal_I2C myLCD(0x27, LCD_COLUMNS, LCD_ROWS);  // set the LCD address to 0x27 for a 20 chars and 2 line display
 #endif
-#if defined (USE_PARALELL_LCD)
+#if defined(USE_PARALELL_LCD)
 LiquidCrystal myLCD(4, 5, 6, 7, 8, 9);
 #endif
 
@@ -135,16 +135,16 @@ void setup()
     getVCCVoltageMillivoltSimple(); // to initialize ADC mux and reference
 #endif
 
-#if defined (USE_SERIAL_LCD)
+#if defined(USE_SERIAL_LCD)
     myLCD.init();
     myLCD.clear();
     myLCD.backlight();
 #endif
-#if defined (USE_PARALELL_LCD)
+#if defined(USE_PARALELL_LCD)
     myLCD.begin(LCD_COLUMNS, LCD_ROWS);
 #endif
 
-#if defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
+#if defined(USE_SERIAL_LCD) || defined(USE_PARALELL_LCD)
     myLCD.print(F("IRMP all  v" VERSION_IRMP));
     myLCD.setCursor(0, 1);
     myLCD.print(F(__DATE__));
@@ -167,12 +167,12 @@ void loop()
          */
         irmp_result_print(&irmp_data);
 
-#if defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
-#  if defined (USE_SERIAL_LCD)
+#if defined(USE_SERIAL_LCD) || defined(USE_PARALELL_LCD)
+#  if defined(USE_SERIAL_LCD)
         disableIRTimerInterrupt(); // disable timer interrupt, since it disturbs the serial output
 #  endif
         irmp_result_print_LCD();
-#  if defined (USE_SERIAL_LCD)
+#  if defined(USE_SERIAL_LCD)
         enableIRTimerInterrupt();
 #  endif
 #endif
@@ -191,7 +191,7 @@ void loop()
         Serial.print(tVCC);
         Serial.println(F("mV"));
 
-#  if defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
+#  if defined(USE_SERIAL_LCD) || defined(USE_PARALELL_LCD)
         myLCD.setCursor(10, 0);
         myLCD.print(' ');
         myLCD.print(tVCC / 1000);
@@ -234,7 +234,7 @@ void handleReceivedIRData()
  */
 void irmp_result_print_LCD()
 {
-#if defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
+#if defined(USE_SERIAL_LCD) || defined(USE_PARALELL_LCD)
     static uint8_t sLastProtocolIndex;
     static uint16_t sLastProtocolAddress;
 
@@ -359,6 +359,6 @@ void irmp_result_print_LCD()
     }
     myLCD.print(tCommand, HEX);
 
-#endif // defined (USE_SERIAL_LCD) || defined (USE_PARALELL_LCD)
+#endif // defined(USE_SERIAL_LCD) || defined(USE_PARALELL_LCD)
 }
 

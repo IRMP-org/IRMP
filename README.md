@@ -201,7 +201,7 @@ The IR code representation of IRMP is different from that in IRremote. In IRMP (
 
 If you want to distinguish between more than one remote in one sketch, you may also use `irmp_data[0].address` like it is done in the [Callback example](examples/Callback/Callback.ino).
 
-# Timer usage
+# [Timer usage](https://github.com/ukw100/IRMP/blob/master/src/IRTimer.cpp.h#L39)
 The IRMP **receive** library works by polling the input pin at a rate of 10 to 20 kHz. Default is 15 kHz.<br/>
 Many protocols can be received **without timer usage**, just by using interrupts from the input pin by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. See [Interrupt example](examples/Interrupt/Interrupt.ino).<br/>
 **In interrupt mode, the `micros()` function is used as timebase.**
@@ -217,6 +217,7 @@ The **tone() library (using timer 2) is still available**. You can use it altern
 - For STM32 (BluePill) **timer 3 (Servo timer) channel 1** is used as default.<br/>
 
 # Tips and tricks
+- To port the library to another device, you merely have to extend *IRTimer.cpp.h*.
 - The minimal CPU clock required for receiving is 8MHz.
 - To save power, you can use the interrupt mode or polling mode with no-sending detection and power down sleep. This is **not available** for ATtiny85 running with the High Speed PLL clock (as on  Digispark boards) because of the high startup time from sleep of 4 to 5 ms for this clock. You have to use the ISP to [rewrite the CKSEL fuses](https://github.com/ArminJo/micronucleus-firmware/blob/master/utils/Write%2085%20Fuses%20E2%20DF%20FF%20-%20ISP%20Mode%20%3D%208MHz%20without%20BOD%20and%20Pin5.cmd) and to load the program.
 
@@ -245,6 +246,7 @@ The **tone() library (using timer 2) is still available**. You can use it altern
   
 # Revision History
 ### Version 3.3.3 - work in progress
+- Added ATmega8 support.
 
 ### Version 3.3.2
 - Added missing Medion entry in `irmp_protocol_names`.
