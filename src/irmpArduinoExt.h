@@ -45,7 +45,7 @@
 //
 //
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * Enable PinChangeInterrupt add on for irmp_ISR(). Tested for NEC, Kaseiko, Denon, RC6 protocols and Arduino Uno and Arduino ATMega.
+ * Enable PinChangeInterrupt add on for irmp_ISR(). Tested for NEC, Kaseiko, Denon, RC6 protocols and Arduino Uno and Arduino ATmega.
  * Receives IR protocol data  by using pin change interrupts and no polling by timer.
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
@@ -130,10 +130,9 @@ void irmp_debug_print(const char *aMessage, bool aDoShortOutput);
 void irmp_PCI_ISR(void);
 void initPCIInterrupt(void);
 
-#if IRMP_PROTOCOL_NAMES == 1
 void irmp_print_active_protocols(Print *aSerial);
 void irmp_print_protocol_name(Print *aSerial, uint8_t aProtocolNumber);
-#endif
+
 extern const uint8_t irmp_used_protocol_index[] PROGMEM;
 extern const char * const irmp_used_protocol_names[] PROGMEM;
 

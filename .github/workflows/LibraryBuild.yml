@@ -57,7 +57,7 @@ jobs:
         include:
           - arduino-boards-fqbn: digistump:avr:digispark-tiny:clock=clock16
             platform-url: https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
-            sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH # Comma separated list of (unique substrings of) example names to exclude in build
+            sketches-exclude: AllProtocols,SendAllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH # Comma separated list of (unique substrings of) example names to exclude in build
 
           - arduino-boards-fqbn: digistump:avr:digispark-pro
             platform-url: https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json

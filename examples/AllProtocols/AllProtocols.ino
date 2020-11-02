@@ -69,7 +69,7 @@
 /*
  * Set input pin and output pin definitions etc.
  */
-#define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some program memory
+#define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some program memory ~ 420 bytes here
 #define IRMP_USE_COMPLETE_CALLBACK       1 // Enable callback functionality
 
 #if __SIZEOF_INT__ == 4

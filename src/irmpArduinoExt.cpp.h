@@ -17,6 +17,7 @@
 #undef _IRSND_H_                // We are in IRMP now! Remove old symbol maybe set from former including irsnd.c.h.
 #include "IRTimer.cpp.h"        // include code for timer
 #include "IRFeedbackLed.cpp.h"  // include code for Feedback LED
+#include "irmpprotocols.c.h"    // include protocol strings and array of strings
 
 #if defined(IRMP_ENABLE_PIN_CHANGE_INTERRUPT)
 #include "irmpPinChangeInterrupt.cpp.h"
@@ -163,7 +164,6 @@ void irmp_debug_print(const char *aMessage, bool aDoShortOutput)
     Serial.println();
 }
 
-#if IRMP_PROTOCOL_NAMES == 1
 /*
  * irmp_used_protocol_index holds the protocol numbers (from irmpprotocols.h)
  * for the included protocol name entries of the irmp_used_protocol_names array below
@@ -534,18 +534,34 @@ void irmp_print_active_protocols(Print *aSerial)
     // skip protocol 0 = UNKNOWN
     for (uint8_t i = 1; i < sizeof(irmp_used_protocol_index); ++i)
     {
+#if IRMP_PROTOCOL_NAMES == 1
+        /*
+         * Read names of protocol from array and print
+         */
 #  if defined(__AVR__)
         const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_used_protocol_names[i]);
         aSerial->print((__FlashStringHelper *) (tProtocolStringPtr));
 #  else
         aSerial->print(irmp_used_protocol_names[i]);
 #  endif
+#else
+        /*
+         * Print just numbers of the protocols not the names
+         */
+#  if defined(__AVR__)
+        uint8_t tProtocolNumber = (uint8_t) pgm_read_byte(&irmp_used_protocol_index[i]);
+        aSerial->print(tProtocolNumber);
+#  else
+        aSerial->print(irmp_used_protocol_index[i]);
+#  endif
+#endif
         aSerial->print(", ");
     }
 }
 
 void irmp_print_protocol_name(Print *aSerial, uint8_t aProtocolNumber)
 {
+#if IRMP_PROTOCOL_NAMES == 1
 #  if defined(__AVR__)
     for (uint8_t i = 0; i < sizeof(irmp_used_protocol_index); ++i)
     {
@@ -560,8 +576,11 @@ void irmp_print_protocol_name(Print *aSerial, uint8_t aProtocolNumber)
     // no need to save space
     aSerial->print(irmp_protocol_names[aProtocolNumber]);
 #  endif
+#else
+    aSerial->print(F("0x"));
+    aSerial->print(aProtocolNumber, HEX);
+#endif
 }
-#endif // IRMP_PROTOCOL_NAMES == 1
 
 /*
  * Print protocol name or number, address, code and repetition flag
@@ -573,13 +592,8 @@ void irmp_result_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr)
      * Print protocol name or number
      */
     aSerial->print(F("P="));
-#if IRMP_PROTOCOL_NAMES == 1
     irmp_print_protocol_name(aSerial, aIRMPDataPtr->protocol);
     aSerial->print(' ');
-#else
-    aSerial->print(F("0x"));
-    aSerial->print(aIRMPDataPtr->protocol, HEX);
-#endif
 
     /*
      * Print address, code and repetition flag
@@ -604,6 +618,8 @@ void irmp_result_print(IRMP_DATA *aIRMPDataPtr)
      * Print protocol name or number
      */
     Serial.print(F("P="));
+    // Wee need to check if &Serial is of type Print in order not to get errors on e.g. ATtinies
+    // This is not the exact right condition, but on ATtinies you will mostly disable protocol names
 #if IRMP_PROTOCOL_NAMES == 1
     irmp_print_protocol_name(&Serial, aIRMPDataPtr->protocol);
     Serial.print(' ');

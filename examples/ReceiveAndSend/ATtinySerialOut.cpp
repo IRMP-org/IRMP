@@ -32,7 +32,9 @@
  *
  */
 
-#if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) \
+    || defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__) \
+    || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include "ATtinySerialOut.h"
 #include <avr/eeprom.h>     // for eeprom_read_byte() in writeString_E()
 
@@ -98,7 +100,7 @@ void useCliSeiForStrings(bool aUseCliSeiForWrite) {
 /*
  * Write String residing in RAM
  */
-void writeString(const char * aStringPtr) {
+void writeString(const char *aStringPtr) {
 #ifndef USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
     if (sUseCliSeiForWrite) {
 #endif
@@ -117,7 +119,7 @@ void writeString(const char * aStringPtr) {
 /*
  * Write string residing in program space (FLASH)
  */
-void writeString_P(const char * aStringPtr) {
+void writeString_P(const char *aStringPtr) {
     uint8_t tChar = pgm_read_byte((const uint8_t * ) aStringPtr);
 // Comparing with 0xFF is safety net for wrong string pointer
     while (tChar != 0 && tChar != 0xFF) {
@@ -137,7 +139,7 @@ void writeString_P(const char * aStringPtr) {
 /*
  * Write string residing in program space (FLASH)
  */
-void writeString(const __FlashStringHelper * aStringPtr) {
+void writeString(const __FlashStringHelper *aStringPtr) {
     PGM_P tPGMStringPtr = reinterpret_cast<PGM_P>(aStringPtr);
     uint8_t tChar = pgm_read_byte((const uint8_t * ) aStringPtr);
 // Comparing with 0xFF is safety net for wrong string pointer
@@ -158,7 +160,7 @@ void writeString(const __FlashStringHelper * aStringPtr) {
 /*
  * Write string residing in EEPROM space
  */
-void writeString_E(const char * aStringPtr) {
+void writeString_E(const char *aStringPtr) {
     uint8_t tChar = eeprom_read_byte((const uint8_t *) aStringPtr);
     // Comparing with 0xFF is safety net for wrong string pointer
     while (tChar != 0 && tChar != 0xFF) {
@@ -175,19 +177,19 @@ void writeString_E(const char * aStringPtr) {
     }
 }
 
-void writeStringWithoutCliSei(const char * aStringPtr) {
+void writeStringWithoutCliSei(const char *aStringPtr) {
     while (*aStringPtr != 0) {
         write1Start8Data1StopNoParity(*aStringPtr++);
     }
 }
 
-void writeStringWithCliSei(const char * aStringPtr) {
+void writeStringWithCliSei(const char *aStringPtr) {
     while (*aStringPtr != 0) {
         write1Start8Data1StopNoParityWithCliSei(*aStringPtr++);
     }
 }
 
-void writeStringSkipLeadingSpaces(const char * aStringPtr) {
+void writeStringSkipLeadingSpaces(const char *aStringPtr) {
     // skip leading spaces
     while (*aStringPtr == ' ' && *aStringPtr != 0) {
         aStringPtr++;
@@ -373,11 +375,11 @@ size_t TinySerialOut::write(uint8_t aByte) {
     return 1;
 }
 
-void TinySerialOut::print(const char* aStringPtr) {
+void TinySerialOut::print(const char *aStringPtr) {
     writeString(aStringPtr);
 }
 
-void TinySerialOut::print(const __FlashStringHelper * aStringPtr) {
+void TinySerialOut::print(const __FlashStringHelper *aStringPtr) {
     writeString(aStringPtr);
 }
 
@@ -433,12 +435,12 @@ void TinySerialOut::println(char aChar) {
     println();
 }
 
-void TinySerialOut::println(const char* aStringPtr) {
+void TinySerialOut::println(const char *aStringPtr) {
     print(aStringPtr);
     println();
 }
 
-void TinySerialOut::println(const __FlashStringHelper * aStringPtr) {
+void TinySerialOut::println(const __FlashStringHelper *aStringPtr) {
     print(aStringPtr);
     println();
 }

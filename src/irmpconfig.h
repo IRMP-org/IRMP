@@ -148,7 +148,7 @@
 #endif // ! defined(ARDUINO)
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * Change hardware pin here for ATMEL ATMega/ATTiny/XMega
+ * Change hardware pin here for ATMEL ATmega/ATTiny/XMega
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #if defined (ATMEL_AVR) || defined (__AVR_XMEGA__)                      // use PB6 as IR input on AVR

@@ -1,16 +1,7 @@
 /*
- *  SimpleSender.cpp
+ *  SendAllProtocols.cpp
  *
- *  Sends Samsung protocol frames.
- *  Is able to send IR protocol data of 15 main protocols.
- *
- *      Sony SIRCS
- *      NEC + APPLE
- *      Samsung + Samsg32
- *      Kaseikyo
- *
- *      Plus 11 other main protocols
- *      JVC, NEC16, NEC42, Matsushita, DENON, Sharp, RC5, RC6 & RC6A, IR60 (SDA2008) Grundig, Siemens Gigaset, Nokia
+ *  Sends 39 protocols for testing purposes
  *
  *  To disable one of them or to enable other protocols, specify this before the "#include <irmp.c.h>" line.
  *  If you get warnings of redefining symbols, just ignore them or undefine them first (see Interrupt example).
@@ -45,9 +36,12 @@
 //#define IR_OUTPUT_IS_ACTIVE_LOW
 #define IRSND_IR_FREQUENCY          38000
 
-#define IRSND_PROTOCOL_NAMES        1 // Enable protocol number mapping to protocol strings - requires some FLASH.
+#if ! (defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__))
+#define IRSND_PROTOCOL_NAMES        1
+#endif
+#define IRSND_GENERATE_NO_SEND_RF
 
-#include <irsndSelectMain15Protocols.h>
+#include <irsndSelectAllProtocols.h>
 /*
  * After setting the definitions we can include the code and compile it.
  */
@@ -76,40 +70,38 @@ void setup()
 #else
     Serial.println(F("Ready to send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
 #endif
-
-//#define SEND_SAMSUNG // else send NEC
-#ifdef SEND_SAMSUNG
-    /*
-     * Send Samsung32
-     */
-    irsnd_data.protocol = IRMP_SAMSUNG32_PROTOCOL;
-    irsnd_data.address = 0x0707;
-    irsnd_data.command = 0xFB04; // For my Samsung, the high byte is the inverse of the low byte
-    irsnd_data.flags = 0; // repeat frame 0 time
-#else
-    /*
-     * Send NEC
-     */
-    irsnd_data.protocol = IRMP_NEC_PROTOCOL;
-    irsnd_data.address = 0x0707;
-    irsnd_data.command = 0xFB; // The required inverse of the 8 bit command is added by the send routine.
-    irsnd_data.flags = 2; // repeat frame 2 times
-#endif
-
-    irsnd_send_data(&irsnd_data, true);
-    irsnd_data_print(&Serial, &irsnd_data);
-
+    delay(1000);
 }
 
 void loop()
 {
-    delay(5000);
-    uint8_t tNextCommand = irsnd_data.command;
-    tNextCommand++;
-#ifdef SEND_SAMSUNG
-    // For my Samsung the high byte is the inverse of the low byte
-    irsnd_data.command = ((~tNextCommand) << 8) | tNextCommand;
-#endif
-    irsnd_send_data(&irsnd_data, true); // true = wait for frame to end. This stores timer state and restores it after sending
-    irsnd_data_print(&Serial, &irsnd_data);
+    static uint8_t sAddress = 1;
+    static uint8_t sCommand = 1;
+    static uint8_t sRepeats = 0;
+
+    for (uint8_t i = 0; i < sizeof(irsnd_used_protocol_index); ++i)
+    {
+        irsnd_data.protocol = pgm_read_byte(&irsnd_used_protocol_index[i]);
+        irsnd_data.address = sAddress;
+        irsnd_data.command = sCommand;
+        irsnd_data.flags = sRepeats;
+
+        irsnd_send_data(&irsnd_data, true); // true = wait for frame to end
+
+        irsnd_data_print(&Serial, &irsnd_data);
+
+        sAddress++;
+        sCommand++;
+        delay(2000);
+    }
+    Serial.println();
+    Serial.println();
+
+    sRepeats++;
+
+    // we have 0x27 protocols now start with next number range
+    sAddress = (sAddress & 0xC0) + 0x40;
+    sCommand = sAddress;
+    Serial.print(F("Now sending all with number of repeats="));
+    Serial.println(sRepeats);
 }

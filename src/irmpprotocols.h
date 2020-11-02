@@ -87,6 +87,70 @@
 
 #define IRMP_N_PROTOCOLS                        59              // number of supported protocols
 
+#if defined(UNIX_OR_WINDOWS) || IRMP_PROTOCOL_NAMES == 1 || IRSND_PROTOCOL_NAMES == 1
+extern const char proto_unknown[]       PROGMEM;
+extern const char proto_sircs[]         PROGMEM;
+extern const char proto_nec[]           PROGMEM;
+extern const char proto_samsung[]       PROGMEM;
+extern const char proto_matsushita[]    PROGMEM;
+extern const char proto_kaseikyo[]      PROGMEM;
+extern const char proto_recs80[]        PROGMEM;
+extern const char proto_rc5[]           PROGMEM;
+extern const char proto_denon[]         PROGMEM;
+extern const char proto_rc6[]           PROGMEM;
+extern const char proto_samsung32[]     PROGMEM;
+extern const char proto_apple[]         PROGMEM;
+extern const char proto_recs80ext[]     PROGMEM;
+extern const char proto_nubert[]        PROGMEM;
+extern const char proto_bang_olufsen[]  PROGMEM;
+extern const char proto_grundig[]       PROGMEM;
+extern const char proto_nokia[]         PROGMEM;
+extern const char proto_siemens[]       PROGMEM;
+extern const char proto_fdc[]           PROGMEM;
+extern const char proto_rccar[]         PROGMEM;
+extern const char proto_jvc[]           PROGMEM;
+extern const char proto_rc6a[]          PROGMEM;
+extern const char proto_nikon[]         PROGMEM;
+extern const char proto_ruwido[]        PROGMEM;
+extern const char proto_ir60[]          PROGMEM;
+extern const char proto_kathrein[]      PROGMEM;
+extern const char proto_netbox[]        PROGMEM;
+extern const char proto_nec16[]         PROGMEM;
+extern const char proto_nec42[]         PROGMEM;
+extern const char proto_lego[]          PROGMEM;
+extern const char proto_thomson[]       PROGMEM;
+extern const char proto_bose[]          PROGMEM;
+extern const char proto_a1tvbox[]       PROGMEM;
+extern const char proto_ortek[]         PROGMEM;
+extern const char proto_telefunken[]    PROGMEM;
+extern const char proto_roomba[]        PROGMEM;
+extern const char proto_rcmm32[]        PROGMEM;
+extern const char proto_rcmm24[]        PROGMEM;
+extern const char proto_rcmm12[]        PROGMEM;
+extern const char proto_speaker[]       PROGMEM;
+extern const char proto_lgair[]         PROGMEM;
+extern const char proto_samsung48[]     PROGMEM;
+extern const char proto_merlin[]        PROGMEM;
+extern const char proto_pentax[]        PROGMEM;
+extern const char proto_fan[]           PROGMEM;
+extern const char proto_s100[]          PROGMEM;
+extern const char proto_acp24[]         PROGMEM;
+extern const char proto_technics[]      PROGMEM;
+extern const char proto_panasonic[]     PROGMEM;
+extern const char proto_mitsu_heavy[]   PROGMEM;
+extern const char proto_vincent[]       PROGMEM;
+extern const char proto_samsungah[]     PROGMEM;
+extern const char proto_irmp16[]        PROGMEM;
+extern const char proto_gree[]          PROGMEM;
+extern const char proto_rcii[]          PROGMEM;
+extern const char proto_metz[]          PROGMEM;
+extern const char proto_onkyo[]         PROGMEM;
+
+extern const char proto_rf_gen24[]      PROGMEM;
+extern const char proto_rf_x10[]        PROGMEM;
+extern const char proto_rf_medion[]     PROGMEM;
+#endif
+
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * timing constants:
  *---------------------------------------------------------------------------------------------------------------------------------------------------

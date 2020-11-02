@@ -249,6 +249,7 @@ The **tone() library (using timer 2) is still available**. You can use it altern
 ### Version 3.3.3 - work in progress
 - Added ATmega8 support.
 - Added `IRSND_GENERATE_NO_SEND_RF` compile switch.
+- New SendAllProtocols example.
 
 ### Version 3.3.2
 - Added missing Medion entry in `irmp_protocol_names`.

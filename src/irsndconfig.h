@@ -107,7 +107,7 @@
 #  define IRSND_OCx                             IRSND_XMEGA_OC0B        // use OC0B
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * AVR ATMega/ATTiny section:
+ * AVR ATmega/ATTiny section:
  *
  * Change hardware pin here:                    IRSND_OC2  = OC2  on ATmegas         supporting OC2,  e.g. ATmega8
  *                                              IRSND_OC2A = OC2A on ATmegas         supporting OC2A, e.g. ATmega88

@@ -711,134 +711,7 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #if defined(UNIX_OR_WINDOWS) || IRMP_PROTOCOL_NAMES == 1
-static const char proto_unknown[]       PROGMEM = "UNKNOWN";
-static const char proto_sircs[]         PROGMEM = "SIRCS";
-static const char proto_nec[]           PROGMEM = "NEC";
-static const char proto_samsung[]       PROGMEM = "SAMSUNG";
-static const char proto_matsushita[]    PROGMEM = "MATSUSH";
-static const char proto_kaseikyo[]      PROGMEM = "KASEIKYO";
-static const char proto_recs80[]        PROGMEM = "RECS80";
-static const char proto_rc5[]           PROGMEM = "RC5";
-static const char proto_denon[]         PROGMEM = "DENON";
-static const char proto_rc6[]           PROGMEM = "RC6";
-static const char proto_samsung32[]     PROGMEM = "SAMSG32";
-static const char proto_apple[]         PROGMEM = "APPLE";
-static const char proto_recs80ext[]     PROGMEM = "RECS80EX";
-static const char proto_nubert[]        PROGMEM = "NUBERT";
-static const char proto_bang_olufsen[]  PROGMEM = "BANG OLU";
-static const char proto_grundig[]       PROGMEM = "GRUNDIG";
-static const char proto_nokia[]         PROGMEM = "NOKIA";
-static const char proto_siemens[]       PROGMEM = "SIEMENS";
-static const char proto_fdc[]           PROGMEM = "FDC";
-static const char proto_rccar[]         PROGMEM = "RCCAR";
-static const char proto_jvc[]           PROGMEM = "JVC";
-static const char proto_rc6a[]          PROGMEM = "RC6A";
-static const char proto_nikon[]         PROGMEM = "NIKON";
-static const char proto_ruwido[]        PROGMEM = "RUWIDO";
-static const char proto_ir60[]          PROGMEM = "IR60";
-static const char proto_kathrein[]      PROGMEM = "KATHREIN";
-static const char proto_netbox[]        PROGMEM = "NETBOX";
-static const char proto_nec16[]         PROGMEM = "NEC16";
-static const char proto_nec42[]         PROGMEM = "NEC42";
-static const char proto_lego[]          PROGMEM = "LEGO";
-static const char proto_thomson[]       PROGMEM = "THOMSON";
-static const char proto_bose[]          PROGMEM = "BOSE";
-static const char proto_a1tvbox[]       PROGMEM = "A1TVBOX";
-static const char proto_ortek[]         PROGMEM = "ORTEK";
-static const char proto_telefunken[]    PROGMEM = "TELEFUNKEN";
-static const char proto_roomba[]        PROGMEM = "ROOMBA";
-static const char proto_rcmm32[]        PROGMEM = "RCMM32";
-static const char proto_rcmm24[]        PROGMEM = "RCMM24";
-static const char proto_rcmm12[]        PROGMEM = "RCMM12";
-static const char proto_speaker[]       PROGMEM = "SPEAKER";
-static const char proto_lgair[]         PROGMEM = "LGAIR";
-static const char proto_samsung48[]     PROGMEM = "SAMSG48";
-static const char proto_merlin[]        PROGMEM = "MERLIN";
-static const char proto_pentax[]        PROGMEM = "PENTAX";
-static const char proto_fan[]           PROGMEM = "FAN";
-static const char proto_s100[]          PROGMEM = "S100";
-static const char proto_acp24[]         PROGMEM = "ACP24";
-static const char proto_technics[]      PROGMEM = "TECHNICS";
-static const char proto_panasonic[]     PROGMEM = "PANASONIC";
-static const char proto_mitsu_heavy[]   PROGMEM = "MITSU_HEAVY";
-static const char proto_vincent[]       PROGMEM = "VINCENT";
-static const char proto_samsungah[]     PROGMEM = "SAMSUNGAH";
-static const char proto_irmp16[]        PROGMEM = "IRMP16";
-static const char proto_gree[]          PROGMEM = "GREE";
-static const char proto_rcii[]          PROGMEM = "RCII";
-static const char proto_metz[]          PROGMEM = "METZ";
-static const char proto_onkyo[]         PROGMEM = "ONKYO";
-
-static const char proto_rf_gen24[]      PROGMEM = "RF_GEN24";
-static const char proto_rf_x10[]        PROGMEM = "RF_X10";
-static const char proto_rf_medion[]     PROGMEM = "RF_MEDION";
-
-const char * const
-irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM =
-{
-    proto_unknown,
-    proto_sircs,
-    proto_nec,
-    proto_samsung,
-    proto_matsushita,
-    proto_kaseikyo,
-    proto_recs80,
-    proto_rc5,
-    proto_denon,
-    proto_rc6,
-    proto_samsung32,
-    proto_apple,
-    proto_recs80ext,
-    proto_nubert,
-    proto_bang_olufsen,
-    proto_grundig,
-    proto_nokia,
-    proto_siemens,
-    proto_fdc,
-    proto_rccar,
-    proto_jvc,
-    proto_rc6a,
-    proto_nikon,
-    proto_ruwido,
-    proto_ir60,
-    proto_kathrein,
-    proto_netbox,
-    proto_nec16,
-    proto_nec42,
-    proto_lego,
-    proto_thomson,
-    proto_bose,
-    proto_a1tvbox,
-    proto_ortek,
-    proto_telefunken,
-    proto_roomba,
-    proto_rcmm32,
-    proto_rcmm24,
-    proto_rcmm12,
-    proto_speaker,
-    proto_lgair,
-    proto_samsung48,
-    proto_merlin,
-    proto_pentax,
-    proto_fan,
-    proto_s100,
-    proto_acp24,
-    proto_technics,
-    proto_panasonic,
-    proto_mitsu_heavy,
-    proto_vincent,
-    proto_samsungah,
-    proto_irmp16,
-    proto_gree,
-    proto_rcii,
-    proto_metz,
-    proto_onkyo,
-
-    proto_rf_gen24,
-    proto_rf_x10,
-    proto_rf_medion
-};
-
+#include "irmpprotocols.c.h"  // include protocol strings and array of strings
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -3144,7 +3017,7 @@ static uint32_t s_startBitSample = 0;
 #endif
 
 /*
- * 4us idle, 45 us at start of each pulse @16 MHz ATMega 328p
+ * 4us idle, 45 us at start of each pulse @16 MHz ATmega 328p
  */
 #if defined(ESP8266)
 bool ICACHE_RAM_ATTR irmp_ISR(void)

@@ -57,6 +57,8 @@ void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin, bool
 #  endif
 #endif // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 
+void irsnd_data_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr);
+
 #if defined(ARDUINO_ARCH_MBED) // Arduino Nano 33 BLE
 #include "mbed.h"
 // F is undefined in mbed.h, so F() is unknown and leads to "'F' was not declared in this scope" errors. -> define it again.

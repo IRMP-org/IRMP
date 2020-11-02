@@ -1476,7 +1476,7 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
 #if IRSND_SUPPORT_GRUNDIG_PROTOCOL == 1
         case IRMP_GRUNDIG_PROTOCOL:
         {
-            command = bitsrevervse (irmp_data_p->command, TELEFUNKEN_COMMAND_LEN);
+            command = bitsrevervse (irmp_data_p->command, GRUNDIG_COMMAND_LEN);
 
             irsnd_buffer[0] = 0xFF;                                                                             // S1111111 (1st frame)
             irsnd_buffer[1] = 0xC0;                                                                             // 11

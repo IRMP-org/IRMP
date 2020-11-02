@@ -59,7 +59,8 @@
 //#define IR_OUTPUT_IS_ACTIVE_LOW
 #define IRSND_IR_FREQUENCY          38000
 
-#define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH.
+#define IRMP_PROTOCOL_NAMES         1 // Enable protocol number mapping to protocol strings - requires some FLASH.
+#define IRSND_PROTOCOL_NAMES        1 // Enable protocol number mapping to protocol strings - requires some FLASH.
 
 #define IRMP_SUPPORT_SAMSUNG_PROTOCOL     1
 #define IRSND_SUPPORT_SAMSUNG_PROTOCOL    1
@@ -155,8 +156,9 @@ void loop()
 
 void IRSendWithDelay(uint16_t aCommand, uint16_t aDelayMillis)
 {
-    irsnd_data.command = aCommand;
+    irsnd_data.command = aCommand;      // For my Samsung, the high byte is the inverse of the low byte, this is not checked here.
     irsnd_send_data(&irsnd_data, true); // true = wait for frame to end. This stores timer state and restores it after sending
+    irsnd_data_print(&Serial,&irsnd_data);
     delay(aDelayMillis);
 }
 
@@ -226,7 +228,7 @@ void sendSamsungSmartHubMacro(bool aDoSelect)
 
     for (uint8_t i = 0; i < 4; ++i)
     {
-        IRSendWithDelay(0x9E61, 250); // Down arrow
+        IRSendWithDelay(0x9E61, 250); // Down arrow. For my Samsung, the high byte of the command is the inverse of the low byte
     }
 
     IRSendWithDelay(0x9D62, 400); // Right arrow

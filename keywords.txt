@@ -21,6 +21,7 @@ irmp_get_data	KEYWORD2
 irmp_result_print	KEYWORD2
 irsnd_init	KEYWORD2
 irsnd_send_data	KEYWORD2
+irsnd_data_print	KEYWORD2
 irsnd_is_busy	KEYWORD2
 irmp_irsnd_LEDFeedback	KEYWORD2
 disableIRTimerInterrupt	KEYWORD2
