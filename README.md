@@ -29,8 +29,10 @@ Available as Arduino library "IRMP"
 # Features
 - You may use **every pin for input or output**.
 - Interrupt mode for major protocols.
-- Supports inverted feedback LED for send and receive feedback.
-- Supports inverted IR output for LED connected to VCC.
+- Callback after sucessful receive of a command supported.
+- Inverted feedback LED for send and receive feedback supported.
+- Inverted IR output for LED connected to VCC supported.
+- Unmodulated IR signal output enables direct replacment of an IR receiver circuit.
 - Compatible with Arduino tone() library.
 
 # Schematic for Arduino UNO
@@ -65,7 +67,9 @@ It is dated from **30.7.2020**. If you have complains about the data or request 
 | Timing method send | Timer2 interrupts | Timer2 interrupts | Timer2 and blocking wait | ? |
 | Send pins| All | All | All ? | ? |
 | Decode method | OnTheFly | OnTheFly | RAM | RAM |
-| Encode method | OnTheFly | ? | OnTheFly | ? |
+| Encode method | OnTheFly | OnTheFly | OnTheFly | OnTheFly or RAM |
+| Callback suppport | x | % | % | % |
+| Repeat detection | Receive + Send | % | ? | Sporadic |
 | LED feedback | x | % | x | x |
 | FLASH usage (simple NEC example with 5 prints) | 1500<br/>(4300 for 15 main / 8000 for all 40 protocols)<br/>(+200 for callback)<br/>
 (+80 for interrupt at pin 2+3)| **1270**<br/>(1400 for pin 2+3) | 4830 | 3210 |
@@ -115,6 +119,7 @@ void irmp_result_print(IRMP_DATA *aIRMPDataPtr);
 ```
 // Init functions
 void irsnd_init (void);
+// 3 additional init functions if IRMP_IRSND_ALLOW_DYNAMIC_PINS is defined
 void irsnd_init(uint_fast8_t aIrsndOutputPin);
 void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aIrmpFeedbackLedPin);
 void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aIrmpFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow);
@@ -146,9 +151,13 @@ Modify it by setting the value to 1 or 0. Or define the macro with the -D compil
 
 | Macro | Enable value | Description |
 |-|-|-|
+| `IRMP_INPUT_PIN` | defined | The pin number which gets compiled in, if not using `IRMP_IRSND_ALLOW_DYNAMIC_PINS`. |
+| `IRMP_FEEDBACK_LED_PIN` | defined | The pin number for the feedback led which gets compiled in, if not using `IRMP_IRSND_ALLOW_DYNAMIC_PINS`.<br/> If not defined, `LED_BUILTIN` ist taken. |
+| `FEEDBACK_LED_IS_ACTIVE_LOW` | defined | Required on some boards (like my ESP8266 board), where the feedback LED is active low. |
+| `IRMP_IRSND_ALLOW_DYNAMIC_PINS` | defined | Allows to specify pin number at irmp_init() -see above. This requires additional program space. |
 | `IRMP_PROTOCOL_NAMES` | 1 | Enable protocol number mapping to protocol strings - needs some program memory. |
 | `IRMP_USE_COMPLETE_CALLBACK` | 1 | Use Callback if complete data was received. Requires call to irmp_register_complete_callback_function(). |
-| `IRMP_ENABLE_PIN_CHANGE_INTERRUPT` | defined | Use pin change interrupt and do **no polling with timer ISR**. The results are equivalent to results aquired with a sampling rate of 15625 Hz (chosen to avoid time consuming divisions). |
+| `IRMP_ENABLE_PIN_CHANGE_INTERRUPT` | defined | Use [Arduino attachInterrupt()](https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/) and do **no polling with timer ISR**. This **restricts the available input pins**. The results are equivalent to results aquired with a sampling rate of 15625 Hz (chosen to avoid time consuming divisions). For AVR boards an own interrupt handler for  INT0 or INT1 is used instead of Arduino attachInterrupt().  |
 | `IRMP_ENABLE_RELEASE_DETECTION` | 1 | If user releases a key on the remote control, last protocol/address/command will be returned with flag `IRMP_FLAG_RELEASE` set. |
 | `IRMP_HIGH_ACTIVE` | 1 | Set to 1 if you use a RF receiver, which have an active HIGH output signal! |
 | `IRMP_32_BIT` | 1 | This enables MERLIN protocol, but decreases performance for AVR. |
@@ -249,7 +258,9 @@ The **tone() library (using timer 2) is still available**. You can use it altern
 ### Version 3.3.3 - work in progress
 - Added ATmega8 support.
 - Added `IRSND_GENERATE_NO_SEND_RF` compile switch.
+- Added function `irsnd_data_print()`.
 - New SendAllProtocols example.
+- Added `IRMP_FEEDBACK_LED_PIN` compile switch.
 
 ### Version 3.3.2
 - Added missing Medion entry in `irmp_protocol_names`.

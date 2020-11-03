@@ -47,6 +47,7 @@
 #define IRSND_OUTPUT_PIN 12 // D6 - D4/2 is internal LED
 #define tone(a,b) void() // tone() inhibits receive timer
 #define noTone(a) void()
+#define TONE_PIN 42 // Dummy for examples using it for e.g. irmp_tone()
 #define IRMP_TIMING_TEST_PIN 13 // D7
 
 #elif defined(ESP32)
@@ -54,6 +55,7 @@
 #define IRSND_OUTPUT_PIN  4  // D4
 #define tone(a,b) void() // no tone() available on ESP32
 #define noTone(a) void()
+#define TONE_PIN 42 // Dummy for examples using it for e.g. irmp_tone()
 
 #elif defined(ARDUINO_ARCH_STM32) || defined(__STM32F1__)
 // BluePill in 2 flavors
@@ -106,18 +108,21 @@
 #define IRSND_OUTPUT_PIN 4
 #define TONE_PIN         5
 #define IRMP_TIMING_TEST_PIN 6
+#define ALTERNATIVE_IRMP_FEEDBACK_LED_PIN 7 // used for examples which use LED_BUILDIN for example output.
 
 #elif defined(TEENSYDUINO)
 #define IRMP_INPUT_PIN   3
 #define IRSND_OUTPUT_PIN 4
 #define TONE_PIN         5
 #define IRMP_TIMING_TEST_PIN 6
+#define ALTERNATIVE_IRMP_FEEDBACK_LED_PIN 7 // used for examples which use LED_BUILDIN for example output.
 
 #elif defined(__AVR__)
 #define IRMP_INPUT_PIN   3 // To be compatible with interrupt example, pin 3 is chosen here (which is default).
 #define IRSND_OUTPUT_PIN 4
 #define TONE_PIN         5
 #define IRMP_TIMING_TEST_PIN 6
+#define ALTERNATIVE_IRMP_FEEDBACK_LED_PIN 7 // used for examples which use LED_BUILDIN for example output.
 // You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
 //#define IRMP_PORT_LETTER D
 //#define IRMP_BIT_NUMBER 3
@@ -129,6 +134,7 @@
 #define IRSND_OUTPUT_PIN 4
 #define TONE_PIN         5
 #define IRMP_TIMING_TEST_PIN 6
+#define ALTERNATIVE_IRMP_FEEDBACK_LED_PIN 7 // used for examples which use LED_BUILDIN for example output.
 #endif // defined(ESP8266)
 
 // On the Zero and others we switch explicitly to SerialUSB

@@ -55,6 +55,10 @@
 
 #include <irmpSelectMain15Protocols.h>  // This enables 15 main protocols
 //#define IRMP_SUPPORT_NEC_PROTOCOL        1 // this enables only one protocol
+
+#ifdef ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+#define IRMP_FEEDBACK_LED_PIN   ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+#endif
 /*
  * After setting the definitions we can include the code and compile it.
  */
@@ -76,7 +80,9 @@ void setup()
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
     irmp_init();
-    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN
+#ifdef ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+#endif
 
     Serial.print(F("Ready to receive IR signals of protocols: "));
     irmp_print_active_protocols(&Serial);
@@ -105,10 +111,11 @@ void loop()
             switch (irmp_data.command)
             {
             case 0x48:
-                digitalWrite(LED_BUILTIN, HIGH); // will be set to low by IR feedback / irmp_LEDFeedback()
+                digitalWrite(LED_BUILTIN, LOW);
                 delay(4000);
                 break;
             default:
+                digitalWrite(LED_BUILTIN, HIGH);
                 break;
             }
         }

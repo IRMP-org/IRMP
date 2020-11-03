@@ -65,9 +65,9 @@ void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aFeedbackLedPin)
 void irmp_init(uint_fast8_t aIrmpInputPin)
 {
     irmp_init(aIrmpInputPin, irmp_irsnd_LedFeedbackPin, irmp_irsnd_LedFeedbackPinIsActiveLow);
-#  if defined(LED_BUILTIN)
+#  if defined(IRMP_FEEDBACK_LED_PIN)
     // set pin if we have one at hand
-    irmp_irsnd_LedFeedbackPin = LED_BUILTIN;
+    irmp_irsnd_LedFeedbackPin = IRMP_FEEDBACK_LED_PIN;
 #  endif
 }
 #endif // if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
@@ -78,7 +78,7 @@ void irmp_init(void)
     pinModeFast(IRMP_INPUT_PIN, INPUT);                                 // set pin to input
 #  else
     IRMP_PORT &= ~_BV(IRMP_BIT);                                        // deactivate pullup
-    IRMP_DDR &= ~_BV(IRMP_BIT);// set pin to input
+    IRMP_DDR &= ~_BV(IRMP_BIT);                                        // set pin to input
 #  endif
 #  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT
     initPCIInterrupt();
@@ -119,6 +119,36 @@ bool irmp_IsBusy()
     return (irmp_start_bit_detected || irmp_pulse_time || tTicks <= IRMP_KEY_REPETITION_LEN);
 #else
     return (irmp_start_bit_detected || irmp_pulse_time || key_repetition_len <= IRMP_KEY_REPETITION_LEN);
+#endif
+}
+
+/*
+ * convenience IRMP compatible wrapper function for Arduino tone()
+ */
+void irmp_tone(uint8_t _pin, unsigned int frequency, unsigned long duration)
+{
+#if defined(__AVR__) && ! defined(IRMP_ENABLE_PIN_CHANGE_INTERRUPT)
+    storeIRTimer();
+    tone(_pin, frequency, 0);
+    if (duration == 0)
+    {
+        duration = 100;
+    }
+    delay(duration);
+    noTone(_pin);
+    restoreIRTimer();
+#elif defined(ESP32)
+//  no tone() available for this platform
+    (void)  _pin;
+    (void)  frequency;
+    (void)  duration;
+#elif defined(ESP8266)
+    // tone() and IRMP compatibility not tested for this platform
+    (void)  _pin;
+    (void)  frequency;
+    (void)  duration;
+#else
+    tone(_pin, frequency, duration);
 #endif
 }
 
@@ -531,7 +561,7 @@ const char * const irmp_used_protocol_names[] PROGMEM =
 
 void irmp_print_active_protocols(Print *aSerial)
 {
-    // skip protocol 0 = UNKNOWN
+// skip protocol 0 = UNKNOWN
     for (uint8_t i = 1; i < sizeof(irmp_used_protocol_index); ++i)
     {
 #if IRMP_PROTOCOL_NAMES == 1
@@ -618,8 +648,8 @@ void irmp_result_print(IRMP_DATA *aIRMPDataPtr)
      * Print protocol name or number
      */
     Serial.print(F("P="));
-    // Wee need to check if &Serial is of type Print in order not to get errors on e.g. ATtinies
-    // This is not the exact right condition, but on ATtinies you will mostly disable protocol names
+// Wee need to check if &Serial is of type Print in order not to get errors on e.g. ATtinies
+// This is not the exact right condition, but on ATtinies you will mostly disable protocol names
 #if IRMP_PROTOCOL_NAMES == 1
     irmp_print_protocol_name(&Serial, aIRMPDataPtr->protocol);
     Serial.print(' ');

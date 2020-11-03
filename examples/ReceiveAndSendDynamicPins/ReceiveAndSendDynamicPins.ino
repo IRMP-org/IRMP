@@ -69,6 +69,7 @@
 #define IRSND_IR_FREQUENCY          38000
 
 #define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH.
+#define IRSND_PROTOCOL_NAMES        1 // Enable protocol number mapping to protocol strings - requires some FLASH.
 
 #define IRMP_SUPPORT_SAMSUNG_PROTOCOL   1
 #define IRSND_SUPPORT_SAMSUNG_PROTOCOL  1
@@ -181,6 +182,7 @@ void IRSendWithDelay(uint16_t aCommand, uint16_t aDelayMillis)
 {
     irsnd_data.command = aCommand;
     irsnd_send_data(&irsnd_data, true); // true = wait for frame to end. This stores timer state and restores it after sending
+    irsnd_data_print(&Serial,&irsnd_data);
     delay(aDelayMillis);
 }
 

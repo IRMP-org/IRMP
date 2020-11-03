@@ -33,13 +33,12 @@
  * Set library modifiers first to set output pin etc.
  */
 #include "PinDefinitionsAndMore.h"
-//#define IR_OUTPUT_IS_ACTIVE_LOW
 #define IRSND_IR_FREQUENCY          38000
 
 #if ! (defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__))
 #define IRSND_PROTOCOL_NAMES        1
 #endif
-#define IRSND_GENERATE_NO_SEND_RF
+//#define IRSND_GENERATE_NO_SEND_RF // for back to back tests
 
 #include <irsndSelectAllProtocols.h>
 /*

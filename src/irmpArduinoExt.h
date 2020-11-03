@@ -28,6 +28,7 @@
 #include <Arduino.h>  // for Print
 
 #include "irmpVersion.h"
+#include "IRFeedbackLed.h" // for redefinition of
 
 #include "digitalWriteFast.h" // we use pinModeFast() and digitalReadFast() and digitalWriteFast() in turn
 
@@ -117,6 +118,9 @@ void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin);
 void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow);
 
 bool irmp_IsBusy();
+
+void irmp_tone(uint8_t _pin, unsigned int frequency, unsigned long duration);
+
 extern uint32_t irmp_last_change_micros;
 
 void irmp_result_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr);

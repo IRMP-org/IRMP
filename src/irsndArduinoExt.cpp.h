@@ -77,9 +77,9 @@ void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin)
 void irsnd_init(uint_fast8_t aIrsndOutputPin)
 {
     irsnd_init(aIrsndOutputPin, irmp_irsnd_LedFeedbackPin, irmp_irsnd_LedFeedbackPinIsActiveLow);
-#  if defined(LED_BUILTIN)
+#  if defined(IRMP_FEEDBACK_LED_PIN)
     // set pin if we have one at hand
-    irmp_irsnd_LedFeedbackPin = LED_BUILTIN;
+    irmp_irsnd_LedFeedbackPin = IRMP_FEEDBACK_LED_PIN;
 #  endif
 }
 
@@ -120,12 +120,12 @@ void irsnd_on(void)
 #if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
             irmp_irsnd_SetFeedbackLED(true);
 #else
-#  if defined(LED_BUILTIN)
+#  if defined(IRMP_FEEDBACK_LED_PIN)
 #    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
             // If the built in LED on the board is active LOW
-            digitalWriteFast(LED_BUILTIN, LOW);
+            digitalWriteFast(IRMP_FEEDBACK_LED_PIN, LOW);
 #    else
-            digitalWriteFast(LED_BUILTIN, HIGH);
+            digitalWriteFast(IRMP_FEEDBACK_LED_PIN, HIGH);
 #    endif
 #  endif
 #endif
@@ -157,12 +157,12 @@ void irsnd_off(void)
 #if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
             irmp_irsnd_SetFeedbackLED(false);
 #else
-#  if defined(LED_BUILTIN)
+#  if defined(IRMP_FEEDBACK_LED_PIN)
 #    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
             // If the built in LED on the board is active LOW
-            digitalWriteFast(LED_BUILTIN, HIGH);
+            digitalWriteFast(IRMP_FEEDBACK_LED_PIN, HIGH);
 #    else
-            digitalWriteFast(LED_BUILTIN, LOW);
+            digitalWriteFast(IRMP_FEEDBACK_LED_PIN, LOW);
 #    endif
 #  endif
 #endif

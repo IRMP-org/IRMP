@@ -1,5 +1,5 @@
 /*
- * IRTimer.h
+ * IRFeedbackLed.h
  *
  *  Copyright (C) 2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
@@ -26,6 +26,15 @@
 #if defined(ARDUINO)
 #ifndef IR_FEEDBACK_LED_H
 #define IR_FEEDBACK_LED_H
+
+#if !defined(IRMP_FEEDBACK_LED_PIN)
+#  if defined(LED_BUILTIN)
+#define IRMP_FEEDBACK_LED_PIN LED_BUILTIN
+#  else
+#warning IRMP_FEEDBACK_LED_PIN and LED_BUILTIN  not defined. Pin 5 is used for feedback output if enabled. You can change this in IRFeedbackLed.h.
+#define IRMP_FEEDBACK_LED_PIN 5 // choose an abitrary pin
+#  endif
+#endif
 
 void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed);
 void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn);

@@ -96,6 +96,7 @@ void setup()
     // Just to know which program is running on my Arduino
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
+    // tone before setup, since it kills the IR timer settings
     tone(TONE_PIN, 2200);
     digitalWrite(LED_BUILTIN, HIGH);
     delay(400);

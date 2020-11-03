@@ -35,7 +35,7 @@ bool irmp_irsnd_LedFeedbackPinIsActiveLow = false; // global variable to hold fe
  */
 void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed)
 {
-#if defined(LED_BUILTIN) || defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
+#if defined(IRMP_FEEDBACK_LED_PIN) || defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
     irmp_irsnd_LedFeedbackEnabled = aEnableBlinkLed;
     if (aEnableBlinkLed)
     {
@@ -51,12 +51,12 @@ void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed)
                 digitalWrite(irmp_irsnd_LedFeedbackPin, LOW);
             }
         }
-#  elif defined(LED_BUILTIN)
-        pinModeFast(LED_BUILTIN, OUTPUT);
+#  elif defined(IRMP_FEEDBACK_LED_PIN)
+        pinModeFast(IRMP_FEEDBACK_LED_PIN, OUTPUT);
 #    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
-        digitalWriteFast(LED_BUILTIN, HIGH);
+        digitalWriteFast(IRMP_FEEDBACK_LED_PIN, HIGH);
 #    else
-        digitalWriteFast(LED_BUILTIN, LOW);
+        digitalWriteFast(IRMP_FEEDBACK_LED_PIN, LOW);
 #    endif
 #  endif //  defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
     }
@@ -73,12 +73,12 @@ void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed)
             digitalWrite(irmp_irsnd_LedFeedbackPin, LOW); // to disable internal pullup
         }
 #    else
-        pinModeFast(LED_BUILTIN, INPUT);
-        digitalWriteFast(LED_BUILTIN, LOW); // to disable internal pullup
+        pinModeFast(IRMP_FEEDBACK_LED_PIN, INPUT);
+        digitalWriteFast(IRMP_FEEDBACK_LED_PIN, LOW); // to disable internal pullup
 #    endif
     }
 #  endif
-#endif // defined(LED_BUILTIN) || defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
+#endif // defined(IRMP_FEEDBACK_LED_PIN) || defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 }
 
 /*
@@ -103,16 +103,16 @@ void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
             digitalWrite(irmp_irsnd_LedFeedbackPin, aSwitchLedOn);
         }
     }
-#elif defined(LED_BUILTIN)
+#elif defined(IRMP_FEEDBACK_LED_PIN)
 #  if defined(__AVR__) // As far as I know, there is no active-low built in LED for AVR platform boards
-    digitalWriteFast(LED_BUILTIN, aSwitchLedOn);
+    digitalWriteFast(IRMP_FEEDBACK_LED_PIN, aSwitchLedOn);
 #  else
         // hope this is fast enough on other platforms
 #    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
         // If the built in LED on the board is active LOW
-    digitalWrite(LED_BUILTIN, !aSwitchLedOn);
+    digitalWrite(IRMP_FEEDBACK_LED_PIN, !aSwitchLedOn);
 #    else
-    digitalWrite(LED_BUILTIN, aSwitchLedOn);
+    digitalWrite(IRMP_FEEDBACK_LED_PIN, aSwitchLedOn);
 #    endif
 #  endif
 #endif

@@ -91,33 +91,6 @@ IntervalTimer sIntervalTimer;
 #undef IR_INTERRUPT_FREQUENCY
 #define IR_INTERRUPT_FREQUENCY      IRSND_INTERRUPT_FREQUENCY   // define frequency for send
 
-/*
- * Temporarily storage for timer register
- */
-#  if defined(__AVR__)
-uint8_t sTimerTCCRA;
-uint8_t sTimerTCCRB;
-#    if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-uint16_t sTimerOCR; // we have a 16 bit timer
-#    else
-uint8_t sTimerOCR;
-#    endif
-uint8_t sTimerOCRB;
-uint8_t sTimerTIMSK;
-
-#  elif defined(ESP8266)
-uint32_t sTimerLoadValue;
-
-#  elif defined(ESP32)
-uint64_t sTimerAlarmValue;
-
-#  elif defined(STM32F1xx) || defined(ARDUINO_ARCH_STM32) || defined(__STM32F1__)
-uint32_t sTimerOverflowValue;
-
-#  elif defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_APOLLO3)
-uint16_t sTimerCompareCapureValue;
-
-#  endif // defined(__AVR__)
 #endif // defined(_IRMP_H_)
 
 // @formatter:off
@@ -306,7 +279,36 @@ void initIRTimerForSend(void)
 }
 
 // @formatter:on
-#if defined(_IRSND_H_) // we compile for irsnd
+#ifndef TIMER_FUNCTIONS_DEFINED
+#define TIMER_FUNCTIONS_DEFINED
+/*
+ * Temporarily storage for timer register
+ */
+#  if defined(__AVR__)
+uint8_t sTimerTCCRA;
+uint8_t sTimerTCCRB;
+#    if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+uint16_t sTimerOCR; // we have a 16 bit timer
+#    else
+uint8_t sTimerOCR;
+#    endif
+uint8_t sTimerOCRB;
+uint8_t sTimerTIMSK;
+
+#  elif defined(ESP8266)
+uint32_t sTimerLoadValue;
+
+#  elif defined(ESP32)
+uint64_t sTimerAlarmValue;
+
+#  elif defined(STM32F1xx) || defined(ARDUINO_ARCH_STM32) || defined(__STM32F1__)
+uint32_t sTimerOverflowValue;
+
+#  elif defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_APOLLO3)
+uint16_t sTimerCompareCapureValue;
+
+#  endif // defined(__AVR__)
+
 /*
  * If we do not use receive, we have no timer defined at the first call of this function.
  * But for AVR saving the timer settings is possible anyway, since it only consists of saving registers.
@@ -466,10 +468,7 @@ void restoreIRTimer(void)
 #  endif // defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
 
 }
-#endif // defined(_IRSND_H_)
 
-#ifndef TIMER_INTERRUPT_EN_DISABLE_DEFINED
-#define TIMER_INTERRUPT_EN_DISABLE_DEFINED
 /*
  * NOT used if IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined
  * Initialize timer to generate interrupts at a rate F_INTERRUPTS (15000) per second to poll the input pin.
@@ -603,7 +602,7 @@ void enableIRTimerInterrupt(void)
 #endif
 }
 
-#endif // TIMER_INTERRUPT_EN_DISABLE_DEFINED
+#endif // TIMER_FUNCTIONS_DEFINED
 
 /*
  * If both irmp and irsnd are used, compile it only once in the second step, when all variables are declared.

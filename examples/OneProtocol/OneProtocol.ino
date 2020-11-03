@@ -69,6 +69,9 @@
  * More protocol definitions can be found in irmpSelectAllProtocols.h
  */
 
+#ifdef ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+#define IRMP_FEEDBACK_LED_PIN   ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+#endif
 /*
  * After setting the definitions we can include the code and compile it.
  */
@@ -91,7 +94,9 @@ void setup()
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
     irmp_init();
-//    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at LED_BUILTIN - commented out, since we use built in LED in loop below
+#ifdef ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+#endif
 
     Serial.print(F("Ready to receive IR signals of protocols: "));
     irmp_print_active_protocols(&Serial);
