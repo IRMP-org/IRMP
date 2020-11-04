@@ -104,8 +104,7 @@ void setup()
 void loop()
 {
     delay(5000);
-    uint8_t tNextCommand = irsnd_data.command;
-    tNextCommand++;
+    irsnd_data.command++;
 #ifdef SEND_SAMSUNG
     // For my Samsung the high byte is the inverse of the low byte
     irsnd_data.command = ((~tNextCommand) << 8) | tNextCommand;
