@@ -226,7 +226,7 @@ typedef unsigned short                  uint_fast16_t;
 
 #if IRMP_32_BIT == 1
 
-typedef struct
+typedef struct IRMP_PACKED_STRUCT
 {
     uint8_t                             protocol;                                   // protocol, e.g. NEC_PROTOCOL
     uint16_t                            address;                                    // address
