@@ -57,7 +57,7 @@ Available as Arduino library "IRMP"
 # Quick comparison of 4 Arduino IR receiving libraries
 ## This is a short comparison and may not be complete or correct
 I created this comparison matrix for [myself](https://github.com/ArminJo) in order to choose a small IR lib for my project and to have a quick overview, when to choose which library.<br/>
-It is dated from **30.7.2020**. If you have complains about the data or request for extensions, please send a PM or open an issue.
+It is dated from **11.11.2020**. If you have complains about the data or request for extensions, please send a PM or open an issue.
 
 | Subject | [IRMP](https://github.com/ukw100/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**mostly unmaintained** | [IRremote](https://github.com/z3t0/Arduino-IRremote) |
 |---------|------|-----------|--------|----------|
@@ -74,7 +74,7 @@ It is dated from **30.7.2020**. If you have complains about the data or request 
 | FLASH usage (simple NEC example with 5 prints) | 1500<br/>(4300 for 15 main / 8000 for all 40 protocols)<br/>(+200 for callback)<br/>
 (+80 for interrupt at pin 2+3)| **1270**<br/>(1400 for pin 2+3) | 4830 | 3210 |
 | RAM usage | **52**<br/>(73 / 100 for 15 (main) / 40 protocols) | **62** | 334 | 227 |
-| Supported platforms | **avr, megaAVR, attiny, Digispark (Pro), esp8266, ESP32, STM32, SAMD 21, Apollo3<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, SAMD 21, SAMD 51 | avr, attiny, *esp8266*, esp32, SAM, SAMD |
+| Supported platforms | **avr, megaAVR, attiny, Digispark (Pro), esp8266, ESP32, STM32, SAMD 21, Apollo3<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, SAMD 21, SAMD 51 | avr, attiny, [esp8266](https://github.com/crankyoldgit/IRremoteESP8266), esp32, SAM, SAMD |
 | Last library update | 4/2020 | 4/2018 | 9/2019 | 11/2017 |
 | Remarks | Decodes 40 protocols concurrently.<br/>39 Protocols to send.<br/>Work in progress. | Only one protocol at a time. | Consists of 5 libraries. **Project containing bugs - 45 issues, no reaction for at least one year.** | Decoding is very basic and easy to extend. |
 
