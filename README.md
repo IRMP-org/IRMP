@@ -5,15 +5,15 @@ Available as Arduino library "IRMP"
 ### [Version 3.3.2](https://github.com/ukw100/IRMP/releases)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/irmp)
+[![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/IRMP)
 [![Commits since latest](https://img.shields.io/github/commits-since/ukw100/irmp/latest)](https://github.com/ukw100/irmp/commits/master)
 [![Build Status](https://github.com/ukw100/irmp/workflows/LibraryBuild/badge.svg)](https://github.com/ukw100/irmp/actions)
 [![Hit Counter](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2Fukw100%2FIRMP)](https://github.com/brentvollebregt/hit-counter)
 
 ## 50 IR protocols supported and low memory footprint
-- Only 40 protocols can be enabled for receive at the same time, because some of them are quite similar and conflicts with each other.
+- Only 39 protocols can be enabled for receive at the same time, because some of them are quite similar and conflicts with each other.
 - 39 protocols are available for send.
-- FLASH usage in bytes: 1500 for one protocol, 4300 for 15 main and 8000 for all 40 protocols.
+- FLASH usage in bytes: 1500 for one protocol, 4300 for 15 main and 8000 for all 39 protocols.
 - RAM usage in bytes: 52, 73 and 100.
 
 | Nano running AllProtocol example | YouTube Video | Instructable |
@@ -23,7 +23,7 @@ Available as Arduino library "IRMP"
 # List of protocols
 - Sony SIRCS, NEC + APPLE + ONKYO, Samsung + Samsg32, Kaseikyo
 - JVC, NEC16, NEC42, Matsushita, DENON, Sharp, RC5, RC6 & RC6A, IR60 (SDA2008) Grundig, Siemens Gigaset, Nokia
-- BOSE, Kathrein , NUBERT , FAN (ventilator) , SPEAKER (~NUBERT), Bang & Olufsen , RECS80 (SAA3004) , RECS80EXT (SAA3008), Thomson, NIKON camera , Netbox keyboard, ORTEK (Hama) , Telefunken 1560, FDC3402 keyboard , RC Car , iRobot Roomba, RUWIDO, T-Home , A1 TV BOX, LEGO Power RC, RCMM 12,24, or 32, LG Air Condition , Samsung48, Merlin , Pentax , S100 , ACP24, TECHNICS , PANASONIC Beamer , Mitsubishi Aircond , VINCENT, SAMSUNG AH , IRMP specific, GREE CLIMATE , RCII T+A, RADIO e.g. TEVION, METZ<br/>
+- BOSE, Kathrein, NUBERT, FAN (ventilator), SPEAKER (~NUBERT), Bang & Olufsen, RECS80 (SAA3004), RECS80EXT (SAA3008), Thomson, NIKON camera, Netbox keyboard, ORTEK (Hama), Telefunken 1560, FDC3402 keyboard, RC Car, iRobot Roomba, RUWIDO, T-Home, A1 TV BOX, LEGO Power RC, RCMM 12,24, or 32, LG Air Condition, Samsung48, Merlin, Pentax, S100, ACP24, TECHNICS, PANASONIC Beamer, Mitsubishi Aircond, VINCENT, SAMSUNG AH, GREE CLIMATE, RCII T+A, RADIO e.g. TEVION, METZ<br/>
 - **NEC, Kaseiko, Denon, RC6, Samsung + Samsg32 were sucessfully tested in interrupt mode.**
 
 # Features
@@ -36,7 +36,7 @@ Available as Arduino library "IRMP"
 - Compatible with Arduino tone() library.
 
 # Schematic for Arduino UNO
-The VS1838B is used as receiver for all examples and tests. This module has a 120 탎 on/low and a 100 탎 off/high delay between received signal and output.
+The VS1838B is used as receiver for all examples and tests. This module has a 120 탎 on/low and a 100 탎 off/high delay between received signal and output. So it shortens the mark and extends the space by 20 탎.
 | IR-Receiver connection | Serial LCD connection |
 |---|---|
 ![Fritzing schematic for Arduino UNO](extras/IRMP_UNO_Steckplatine.png) | ![Fritzing schematic for Arduino UNO + LCD](extras/IRMP_UNO_LCD_Steckplatine.png)
@@ -262,6 +262,7 @@ The **tone() library (using timer 2) is still available**. You can use it altern
 - Added function `irsnd_data_print()`.
 - New SendAllProtocols example.
 - Added `IRMP_FEEDBACK_LED_PIN` compile switch.
+- Removed `IRMP16` protocol from the all list.
 
 ### Version 3.3.2
 - Added missing Medion entry in `irmp_protocol_names`.

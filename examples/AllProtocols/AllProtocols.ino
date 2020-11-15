@@ -80,6 +80,7 @@
 #endif
 
 #include <irmpSelectAllProtocols.h>  // This enables all possible protocols
+//#define IRMP_SUPPORT_SIEMENS_PROTOCOL 1
 
 /*
  * After setting the definitions we can include the code and compile it.

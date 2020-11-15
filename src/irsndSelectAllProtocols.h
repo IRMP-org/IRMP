@@ -71,7 +71,7 @@
 #define IRSND_SUPPORT_TECHNICS_PROTOCOL         0       // TECHNICS             >= 10000                 DON'T CHANGE, NOT SUPPORTED YET!
 #define IRSND_SUPPORT_PANASONIC_PROTOCOL        1       // PANASONIC Beamer     >= 10000                 ~150 bytes
 #define IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL      1       // Mitsubishi-Heavy Aircondition, similar Timing to Panasonic beamer
-#define IRSND_SUPPORT_IRMP16_PROTOCOL           1       // IRMP specific        >= 15000                 ~250 bytes
+#define IRSND_SUPPORT_IRMP16_PROTOCOL           0       // IRMP specific        >= 15000                 ~250 bytes
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Protocols Part 2: RF decoders

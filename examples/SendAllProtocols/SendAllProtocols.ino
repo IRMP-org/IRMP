@@ -61,6 +61,10 @@ void setup()
     // Just to know which program is running on my Arduino
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
+    Serial.print(F("Send sample frequency="));
+    Serial.print(F_INTERRUPTS);
+    Serial.println(F(" Hz"));
+
     irsnd_init();
     irmp_irsnd_LEDFeedback(true); // Enable send signal feedback at LED_BUILTIN
 

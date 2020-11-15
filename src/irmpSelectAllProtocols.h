@@ -89,7 +89,7 @@
 #define IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL       1       // Mitsubishi Aircond   >= 10000                 ~250 bytes
 #define IRMP_SUPPORT_VINCENT_PROTOCOL           1       // VINCENT              >= 10000                 ~250 bytes
 #define IRMP_SUPPORT_SAMSUNGAH_PROTOCOL         1       // SAMSUNG AH           >= 10000                 ~250 bytes
-#define IRMP_SUPPORT_IRMP16_PROTOCOL            1       // IRMP specific        >= 15000                 ~250 bytes
+#define IRMP_SUPPORT_IRMP16_PROTOCOL            0       // IRMP specific        >= 15000                 ~250 bytes
 #define IRMP_SUPPORT_GREE_PROTOCOL              1       // GREE CLIMATE         >= 10000 <=17000         ~250 bytes
 #define IRMP_SUPPORT_RCII_PROTOCOL              0       // RCII T+A             >= 15000                 ~250 bytes     conflicts with GRUNDIG and NOKIA
 #define IRMP_SUPPORT_METZ_PROTOCOL              1
