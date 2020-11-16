@@ -30,11 +30,6 @@
 
 #if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 uint_fast8_t irsnd_output_pin;
-#  if defined(__AVR__)
-// For fast toggling we additional require port and mask
-volatile uint8_t * irsnd_output_pin_input_port;
-uint8_t irsnd_output_pin_mask;
-#  endif
 
 /*
  * Initialize, and activate feedback LED function
@@ -42,12 +37,6 @@ uint8_t irsnd_output_pin_mask;
 void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow)
 {
     irsnd_output_pin = aIrsndOutputPin;
-#  if defined(__AVR__)
-    // store port and pin mask for fast toggle on AVR
-    irsnd_output_pin_input_port = portInputRegister(digitalPinToPort(aIrsndOutputPin));
-    irsnd_output_pin_mask = digitalPinToBitMask(aIrsndOutputPin);
-#  endif
-
     irmp_irsnd_LedFeedbackPin = aFeedbackLedPin;
     irmp_irsnd_LedFeedbackPinIsActiveLow = aIrmpLedFeedbackPinIsActiveLow;
 
@@ -130,13 +119,7 @@ void irsnd_on(void)
 #  endif
 #endif
         }
-        // set IR-LED to start state. I will later be toggled by the timer if irsnd_is_on == true
-#  if defined(IR_OUTPUT_IS_ACTIVE_LOW) || defined(IRSND_GENERATE_NO_SEND_RF)
-        digitalWriteFast(IRSND_OUTPUT_PIN, LOW);
-#  else
-        digitalWriteFast(IRSND_OUTPUT_PIN, HIGH);
-#  endif
-        irsnd_is_on = TRUE;
+        irsnd_is_on = TRUE; // evaluated at ISR
     }
 }
 
@@ -167,12 +150,6 @@ void irsnd_off(void)
 #  endif
 #endif
         }
-        // Deactivate IR-LED
-#if defined(IR_OUTPUT_IS_ACTIVE_LOW) || defined(IRSND_GENERATE_NO_SEND_RF)
-        digitalWriteFast(IRSND_OUTPUT_PIN, HIGH);
-#else
-        digitalWriteFast(IRSND_OUTPUT_PIN, LOW);
-#endif
         irsnd_is_on = FALSE;
     }
 }
@@ -541,7 +518,7 @@ void irsnd_print_protocol_name(Print *aSerial, uint8_t aProtocolNumber)
 #  if defined(__AVR__)
     for (uint8_t i = 0; i < sizeof(irsnd_used_protocol_index); ++i)
     {
-        if(pgm_read_byte(&irsnd_used_protocol_index[i]) == aProtocolNumber)
+        if (pgm_read_byte(&irsnd_used_protocol_index[i]) == aProtocolNumber)
         {
             const char* tProtocolStringPtr = (char*) pgm_read_word(&irsnd_used_protocol_names[i]);
             aSerial->print((__FlashStringHelper *) (tProtocolStringPtr));
@@ -583,6 +560,5 @@ void irsnd_data_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr)
     }
     aSerial->println();
 }
-
 
 #endif // defined(ARDUINO)

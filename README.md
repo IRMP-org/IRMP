@@ -2,7 +2,7 @@
 # [IRMP](https://github.com/ukw100/IRMP) - Infrared Multi Protocol Decoder + Encoder
 Available as Arduino library "IRMP"
 
-### [Version 3.3.2](https://github.com/ukw100/IRMP/releases)
+### [Version 3.3.3](https://github.com/ukw100/IRMP/releases)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/IRMP)
@@ -221,7 +221,8 @@ The IRMP **send** library works by bit banging the output pin at a frequency of 
 If both receiving and sending is required, the timer is set up for receiving and reconfigured for the duration of sending data, thus preventing receiving in polling mode while sending data.<br/>
 The **tone() library (using timer 2) is still available**. You can use it alternating with IR receive and send, see [ReceiveAndSend example](examples/ReceiveAndSend/ReceiveAndSend.ino).<br/>
 
-- For AVR **timer 2 (Tone timer)** is used for receiving **and** sending. For variants, which have no timer 2 like ATtiny85 or ATtiny167, **timer 1** (or timer 0 for digispark core) is used.
+- For AVR **timer 2 (Tone timer)** is used for receiving **and** sending.
+ For variants, which have no timer 2 like ATtiny85 or ATtiny167, **timer 1** (or timer 0 for digispark core) is used.
 - For SAMD **TC3** is used.
 - For Apollo3 **Timer 3 segment B** is used.
 - For ESP8266 and ESP32 **timer1** is used.
@@ -230,7 +231,14 @@ The **tone() library (using timer 2) is still available**. You can use it altern
 # Tips and tricks
 - To port the library to another device, you merely have to extend *IRTimer.cpp.h*.
 - The minimal CPU clock required for receiving is 8MHz.
-- To save power, you can use the interrupt mode or polling mode with no-sending detection and power down sleep. This is **not available** for ATtiny85 running with the High Speed PLL clock (as on  Digispark boards) because of the high startup time from sleep of 4 to 5 ms for this clock. You have to use the ISP to [rewrite the CKSEL fuses](https://github.com/ArminJo/micronucleus-firmware/blob/master/utils/Write%2085%20Fuses%20E2%20DF%20FF%20-%20ISP%20Mode%20%3D%208MHz%20without%20BOD%20and%20Pin5.cmd) and to load the program.
+- To save power, you can use the interrupt mode or polling mode with no-sending detection and power down sleep.
+ This is **not available** for ATtiny85 running with the High Speed PLL clock (as on  Digispark boards) 
+ because of the high startup time from sleep of 4 to 5 ms for this clock. You have to use the ISP to [rewrite the CKSEL fuses](https://github.com/ArminJo/micronucleus-firmware/blob/master/utils/Write%2085%20Fuses%20E2%20DF%20FF%20-%20ISP%20Mode%20%3D%208MHz%20without%20BOD%20and%20Pin5.cmd) and to load the program.
+ - The best way to **increase the IR power** is to use 2 or 3 IR diodes in series. 
+ One diode requires 1.1 to 1.5 volt so you can supply 3 diodes with a 5 volt output.To keep the current, 
+ you must reduce the resistor by (5 - 1.3) / (5 - 2.6) = 1.5 e.g. from 150 ohm to 100 ohm for 25 mA and 2 diodes with 1.3 volt and a 5 volt supply.
+ For 3 diodes it requires factor 2.5 e.g. from 150 ohm to 60 ohm.
+- A lot of recent IR diodes can be powered with max. 200 mA at 50% duty cycle, but for this you will require an external driver / transistor / (mos)fet.
 
 # [AllProtocol](examples/AllProtocols/AllProtocols.ino) example
 | Serial LCD output | Arduino Serial Monitor output |
@@ -253,8 +261,7 @@ The **tone() library (using timer 2) is still available**. You can use it altern
 ### German
    http://www.mikrocontroller.net/articles/IRMP<br/>
    http://www.mikrocontroller.net/articles/IRSND
-  
-  
+
 # Revision History
 ### Version 3.3.3 - work in progress
 - Added ATmega8 support.

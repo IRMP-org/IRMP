@@ -29,20 +29,19 @@
 
 #include "digitalWriteFast.h" // we use pinModeFast() and digitalReadFast() and digitalWriteFast() in turn
 
-/*
- * Comment this out if your send pin is active low.
- */
-// #define IR_OUTPUT_IS_ACTIVE_LOW
+#if defined(IR_OUTPUT_IS_ACTIVE_LOW) || defined(IRSND_GENERATE_NO_SEND_RF)
+#define IR_OUTPUT_ACTIVE_LEVEL      LOW
+#define IR_OUTPUT_INACTIVE_LEVEL    HIGH
+#else
+#define IR_OUTPUT_ACTIVE_LEVEL      HIGH
+#define IR_OUTPUT_INACTIVE_LEVEL    LOW
+#endif
 //
 /*
  * Set hardware pin defaults for Arduino IDE if no IRSND_OUTPUT_PIN specified
  */
 #if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 extern uint_fast8_t irsnd_output_pin;
-#  if defined(__AVR__)
-extern volatile uint8_t * irsnd_output_pin_input_port;
-extern uint8_t irsnd_output_pin_mask;
-#  endif
 
 #undef IRSND_OUTPUT_PIN
 #define IRSND_OUTPUT_PIN        irsnd_output_pin
@@ -74,6 +73,7 @@ void irsnd_data_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr);
 #define IRSND_IR_FREQUENCY          38000
 #endif
 #define IRSND_INTERRUPT_FREQUENCY   (IRSND_IR_FREQUENCY * 2)  // *2 to toggle output pin at each interrupt
+
 /*
  * For Arduino AVR use timer 2 with FIXED 38000 * 2 = 76000 interrupts per second to toggle output pin.
  * ISR is called each 4. interrupt at a rate of 19000 interrupts per second.

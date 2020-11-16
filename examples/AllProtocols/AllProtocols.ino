@@ -111,6 +111,10 @@ void irmp_result_print_LCD();
 
 bool volatile sIRMPDataAvailable = false;
 
+#if defined(__AVR__) && (! defined(__AVR_ATmega4809__))
+uint32_t volatile sMillisOfLastVoltagePrint;
+#endif
+
 void setup()
 {
     Serial.begin(115200);
@@ -154,10 +158,6 @@ void setup()
 
 void loop()
 {
-#if defined(__AVR__) && (! defined(__AVR_ATmega4809__))
-    static uint32_t sMillisOfLastVoltagePrint;
-#endif
-
     if (sIRMPDataAvailable)
     {
         sIRMPDataAvailable = false;
@@ -217,6 +217,12 @@ void IRAM_ATTR handleReceivedIRData()
 void handleReceivedIRData()
 #endif
 {
+
+#if defined(__AVR__) && (! defined(__AVR_ATmega4809__))
+    // reset voltage display timer
+    sMillisOfLastVoltagePrint = millis();
+#endif
+
     /*
      * Just print the data to Serial and LCD
      */
