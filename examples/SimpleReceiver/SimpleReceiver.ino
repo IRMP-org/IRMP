@@ -66,8 +66,7 @@
 
 IRMP_DATA irmp_data;
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL)
     delay(2000); // To be able to connect Serial monitor after reset and before first printout
@@ -80,9 +79,6 @@ void setup()
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
     irmp_init();
-#ifdef ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
-    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
-#endif
 
     Serial.print(F("Ready to receive IR signals of protocols: "));
     irmp_print_active_protocols(&Serial);
@@ -91,25 +87,27 @@ void setup()
 #else
     Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
 #endif
+
+#ifdef ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+    Serial.print(F("IR feedback pin is " STR(ALTERNATIVE_IRMP_FEEDBACK_LED_PIN)));
+#endif
+
 }
 
-void loop()
-{
+void loop() {
     /*
      * Check if new data available and get them
      */
-    if (irmp_get_data(&irmp_data))
-    {
+    if (irmp_get_data(&irmp_data)) {
         /*
          * Skip repetitions of command
          */
-        if (!(irmp_data.flags & IRMP_FLAG_REPETITION))
-        {
+        if (!(irmp_data.flags & IRMP_FLAG_REPETITION)) {
             /*
              * Here data is available and is no repetition -> evaluate IR command
              */
-            switch (irmp_data.command)
-            {
+            switch (irmp_data.command) {
             case 0x48:
                 digitalWrite(LED_BUILTIN, LOW);
                 delay(4000);

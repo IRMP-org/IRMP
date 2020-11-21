@@ -113,6 +113,10 @@ extern uint_fast8_t irmp_InputPin; // global variable to hold input pin number. 
 #  endif
 #endif
 
+#if !defined(IRMP_TIMING_TEST_PIN)              // Only for test purposes
+#define IRMP_TIMING_TEST_PIN        5
+#endif
+
 void irmp_init(uint_fast8_t aIrmpInputPin);
 void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin);
 void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow);
@@ -138,7 +142,7 @@ void irmp_print_active_protocols(Print *aSerial);
 void irmp_print_protocol_name(Print *aSerial, uint8_t aProtocolNumber);
 
 extern const uint8_t irmp_used_protocol_index[] PROGMEM;
-extern const char * const irmp_used_protocol_names[] PROGMEM;
+extern const char *const irmp_used_protocol_names[] PROGMEM;
 
 #endif // IRMP_ARDUINO_EXT_H
 #endif // ARDUINO

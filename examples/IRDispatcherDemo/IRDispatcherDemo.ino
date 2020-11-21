@@ -91,9 +91,6 @@ void setup()
 
     IRDispatcher.init(); // This just calls irmp_init()
     irmp_register_complete_callback_function(&handleReceivedIRData); // cannot use IRDispatcher.loop as parameter for irmp_register_complete_callback_function
-#ifdef ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
-    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
-#endif
 
     Serial.print(F("Ready to receive IR signals of protocols: "));
     irmp_print_active_protocols(&Serial);
@@ -101,6 +98,11 @@ void setup()
     Serial.println(F("at pin " IRMP_INPUT_PIN_STRING));
 #else
     Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
+#endif
+
+#ifdef ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+    Serial.print(F("IR feedback pin is " STR(ALTERNATIVE_IRMP_FEEDBACK_LED_PIN)));
 #endif
 
     Serial.print(F("Listening to commands of IR remote of type "));

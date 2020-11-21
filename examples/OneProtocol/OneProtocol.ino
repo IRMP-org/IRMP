@@ -94,9 +94,6 @@ void setup()
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
     irmp_init();
-#ifdef ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
-    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
-#endif
 
     Serial.print(F("Ready to receive IR signals of protocols: "));
     irmp_print_active_protocols(&Serial);
@@ -105,6 +102,12 @@ void setup()
 #else
     Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
 #endif
+
+#ifdef ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+    Serial.print(F("IR feedback pin is " STR(ALTERNATIVE_IRMP_FEEDBACK_LED_PIN)));
+#endif
+
 }
 
 void loop()

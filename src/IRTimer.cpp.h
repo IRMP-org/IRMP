@@ -155,7 +155,7 @@ void initIRTimerForSend(void)
 #  elif defined(__AVR_ATmega8__)
 #    if (F_CPU / IR_INTERRUPT_FREQUENCY) <= 256                     // for 8 bit timer
     TCCR2 = _BV(WGM21) | _BV(CS20);                                 // CTC mode, no prescale
-    OCR2 = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;                    // 209 for 76000 interrupts per second - toggle at each interrupt
+    OCR2 = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;                    // 209 for 76000 interrupts per second
 #    else
     TCCR2 = _BV(WGM21) | _BV(CS21);                                 // CTC mode, prescale by 8
     OCR2 = (((F_CPU / 8) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY) - 1; // 132 for 15 kHz @16 MHz, 52 for 38 kHz @16 MHz
@@ -164,11 +164,20 @@ void initIRTimerForSend(void)
     TIMSK = _BV(OCIE2);                                             // enable TIMER2_COMP_vect interrupt to be compatible with tone() library
     TCNT2 = 0;
 
+#  elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
+    TCCR3A = 0;
+    TCCR3B = _BV(CS30) | _BV(WGM32);                                // no prescale, CTC mode Top OCR3A
+    // Set OCR3B = OCR3A since we use TIMER3_COMPB_vect as interrupt, but run timer in CTC mode with OCR3A as TOP
+    OCR3B = OCR3A = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;           // 1065 for 15kHz, 209 for 76 kHz @ 16MHz
+    TIMSK3 = _BV(OCIE3B);                                           // enable TIMER3_COMPB_vect interrupt to be compatible with tone() library
+    TCNT3 = 0;
+
 #  else // __AVR_ATmega328__ here
     TCCR2A = _BV(WGM21);                                            // CTC mode
 #    if (F_CPU / IR_INTERRUPT_FREQUENCY) <= 256                     // for 8 bit timer
     TCCR2B = _BV(CS20);                                             // no prescale
-    OCR2B = OCR2A = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;           // 209 for 76000 interrupts per second @ 16MHz - toggle at each interrupt
+    // Set OCR2B = OCR2A since we use TIMER2_COMPB_vect as interrupt, but run timer in CTC mode with OCR2A as TOP
+    OCR2B = OCR2A = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;           // 209 for 76000 interrupts per second @ 16MHz
 #    else
     TCCR2B = _BV(CS21);                                             // prescale by 8
     OCR2B = OCR2A = (((F_CPU / 8) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY) - 1; // 132 for 15 kHz @16 MHz, 52 for 38 kHz @16 MHz
@@ -353,6 +362,14 @@ void storeIRTimer(void)
     sTimerOCR = OCR2;
     sTimerTIMSK = TIMSK;
 
+#  elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
+    // store current timer state
+    sTimerTCCRA = TCCR3A;
+    sTimerTCCRB = TCCR3B;
+    sTimerOCR = OCR3A;
+    sTimerOCRB = OCR3B;
+    sTimerTIMSK = TIMSK3;
+
 #  elif defined(__AVR__)
 // store current timer state
     sTimerTCCRA = TCCR2A;
@@ -429,6 +446,14 @@ void restoreIRTimer(void)
     OCR2 = sTimerOCR;
     TIMSK = sTimerTIMSK;
 
+#  elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
+    // store current timer state
+    TCCR3A = sTimerTCCRA;
+    TCCR3B = sTimerTCCRB;
+    OCR3A = sTimerOCR;
+    OCR3B = sTimerOCRB;
+    TIMSK3 = sTimerTIMSK;
+
 #  elif defined(__AVR__)
     TCCR2A = sTimerTCCRA;
     TCCR2B = sTimerTCCRB;
@@ -495,6 +520,9 @@ void disableIRTimerInterrupt(void)
 #elif defined(__AVR_ATmega8__)
     TIMSK &= ~_BV(OCIE2); // disable interrupt
 
+#  elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
+    TIMSK3 = 0; // disable interrupt
+
 #  else
     TIMSK2 = 0; // disable interrupt
 #  endif // defined(__AVR_ATmega16__)
@@ -554,6 +582,9 @@ void enableIRTimerInterrupt(void)
 
 #elif defined(__AVR_ATmega8__)
     TIMSK = _BV(OCIE2); // enable interrupt
+
+#  elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
+    TIMSK3 = _BV(OCIE3B); // enable interrupt
 
 #  else
     TIMSK2 = _BV(OCIE2B); // enable interrupt
@@ -652,6 +683,9 @@ ISR(TCB0_INT_vect)
 
 #elif defined(__AVR_ATmega8__)
 ISR(TIMER2_COMP_vect)
+
+#  elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
+ISR(TIMER3_COMPB_vect)
 
 #  else
 ISR(TIMER2_COMPB_vect)
