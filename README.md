@@ -2,7 +2,7 @@
 # [IRMP](https://github.com/ukw100/IRMP) - Infrared Multi Protocol Decoder + Encoder
 Available as Arduino library "IRMP"
 
-### [Version 3.3.3](https://github.com/ukw100/IRMP/releases)
+### [Version 3.3.4](https://github.com/ukw100/IRMP/releases)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/IRMP)
@@ -263,13 +263,17 @@ The **tone() library (using timer 2) is still available**. You can use it altern
    http://www.mikrocontroller.net/articles/IRSND
 
 # Revision History
-### Version 3.3.3 - work in progress
+### Version 3.3.4 - work in progress
+
+### Version 3.3.3
 - Added ATmega8 support.
 - Added `IRSND_GENERATE_NO_SEND_RF` compile switch.
 - Added function `irsnd_data_print()`.
 - New SendAllProtocols example.
+- New DispatcherDemo example.
 - Added `IRMP_FEEDBACK_LED_PIN` compile switch.
 - Removed `IRMP16` protocol from the all list.
+- Added missing Leonardo support.
 
 ### Version 3.3.2
 - Added missing Medion entry in `irmp_protocol_names`.
