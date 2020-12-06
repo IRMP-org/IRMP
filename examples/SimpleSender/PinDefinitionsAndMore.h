@@ -47,7 +47,7 @@
 #define IRSND_OUTPUT_PIN 12 // D6 - D4/2 is internal LED
 #define tone(a,b) void() // tone() inhibits receive timer
 #define noTone(a) void()
-#define TONE_PIN 42 // Dummy for examples using it for e.g. irmp_tone()
+#define TONE_PIN 42 // Dummy for examples using it
 #define IRMP_TIMING_TEST_PIN 13 // D7
 
 #elif defined(ESP32)
@@ -55,7 +55,7 @@
 #define IRSND_OUTPUT_PIN  4  // D4
 #define tone(a,b) void() // no tone() available on ESP32
 #define noTone(a) void()
-#define TONE_PIN 42 // Dummy for examples using it for e.g. irmp_tone()
+#define TONE_PIN 42 // Dummy for examples using it
 
 #elif defined(ARDUINO_ARCH_STM32) || defined(__STM32F1__)
 // BluePill in 2 flavors

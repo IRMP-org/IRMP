@@ -142,6 +142,33 @@ uint16_t readADCChannelWithReferenceOversample(uint8_t aChannelNumber, uint8_t a
 }
 
 /*
+ * Conversion time is defined as 26 microseconds for 16 MHz Arduino by ADC_PRESCALE32 in ADCUtils.h.
+ */
+uint16_t readADCChannelWithReferenceOversampleFast(uint8_t aChannelNumber, uint8_t aReference, uint8_t aOversampleExponent) {
+    uint16_t tSumValue = 0;
+    ADMUX = aChannelNumber | (aReference << SHIFT_VALUE_FOR_REFERENCE);
+
+// ADCSRB = 0; // free running mode if ADATE is 1 - is default
+// ADSC-StartConversion ADATE-AutoTriggerEnable ADIF-Reset Interrupt Flag
+    ADCSRA = (_BV(ADEN) | _BV(ADSC) | _BV(ADATE) | _BV(ADIF) | ADC_PRESCALE32);
+
+    for (uint8_t i = 0; i < _BV(aOversampleExponent); i++) {
+        /*
+         * wait for free running conversion to finish.
+         * Do not wait for ADSC here, since ADSC is only low for 1 ADC Clock cycle on free running conversion.
+         */
+        loop_until_bit_is_set(ADCSRA, ADIF);
+
+        ADCSRA |= _BV(ADIF); // clear bit to recognize next conversion has finished
+        // Add value
+        tSumValue += ADCL | (ADCH << 8); // using myWord does not save space here
+        // tSumValue += (ADCH << 8) | ADCL; // this does NOT work!
+    }
+    ADCSRA &= ~_BV(ADATE); // Disable auto-triggering (free running mode)
+    return (tSumValue >> aOversampleExponent);
+}
+
+/*
  * Returns sum of all sample values
  * Conversion time is defined as 0.104 milliseconds for 16 MHz Arduino by ADC_PRESCALE in ADCUtils.h.
  */
@@ -170,7 +197,7 @@ uint16_t readADCChannelWithReferenceMultiSamples(uint8_t aChannelNumber, uint8_t
 }
 
 /*
- * use ADC_PRESCALE16 which gives 13 us conversion time and good linearity
+ * use ADC_PRESCALE32 which gives 26 us conversion time and good linearity
  * @return the maximum of aNumberOfSamples measurements.
  */
 uint16_t readADCChannelWithReferenceMax(uint8_t aChannelNumber, uint8_t aReference, uint16_t aNumberOfSamples) {
@@ -180,7 +207,7 @@ uint16_t readADCChannelWithReferenceMax(uint8_t aChannelNumber, uint8_t aReferen
 
 // ADCSRB = 0; // free running mode if ADATE is 1 - is default
 // ADSC-StartConversion ADATE-AutoTriggerEnable ADIF-Reset Interrupt Flag
-    ADCSRA = (_BV(ADEN) | _BV(ADSC) | _BV(ADATE) | _BV(ADIF) | ADC_PRESCALE16);
+    ADCSRA = (_BV(ADEN) | _BV(ADSC) | _BV(ADATE) | _BV(ADIF) | ADC_PRESCALE32);
 
     for (uint16_t i = 0; i < aNumberOfSamples; i++) {
         /*
@@ -201,10 +228,10 @@ uint16_t readADCChannelWithReferenceMax(uint8_t aChannelNumber, uint8_t aReferen
 }
 
 /*
- * use ADC_PRESCALE16 which gives 13 us conversion time and good linearity
+ * use ADC_PRESCALE32 which gives 26 us conversion time and good linearity
  */
 uint16_t readADCChannelWithReferenceMaxMicros(uint8_t aChannelNumber, uint8_t aReference, uint16_t aMicrosecondsToAquire) {
-    uint16_t tNumberOfSamples = aMicrosecondsToAquire / 13;
+    uint16_t tNumberOfSamples = aMicrosecondsToAquire / 26;
     return readADCChannelWithReferenceMax(aChannelNumber, aReference, tNumberOfSamples);
 }
 

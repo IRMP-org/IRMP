@@ -4,7 +4,7 @@
  *  Receives IR protocol data of 15 main protocols.
  *
  *  *****************************************************************************************************************************
- *  To access the library files from your sketch, you have to first use `Sketch/Show Sketch Folder (Ctrl+K)` in the Arduino IDE.
+ *  To access the library files from your sketch, you have to first use `Sketch > Show Sketch Folder (Ctrl+K)` in the Arduino IDE.
  *  Then navigate to the parallel `libraries` folder and select the library you want to access.
  *  The library files itself are located in the `src` sub-directory.
  *  If you did not yet store the example as your own sketch, then with Ctrl+K you are instantly in the right library folder.

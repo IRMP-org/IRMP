@@ -32,8 +32,8 @@
 #define ADC_PRESCALE4    2 // 52 microseconds per ADC conversion at 1 MHz
 // PRESCALE8 => 13 * 8 = 104 microseconds per ADC sample at 1 MHz Clock => 9,6 kHz
 #define ADC_PRESCALE8    3 // 104 microseconds per ADC conversion at 1 MHz
-#define ADC_PRESCALE16   4 // 208 microseconds per ADC conversion at 1 MHz
-#define ADC_PRESCALE32   5 // 416 microseconds per ADC conversion at 1 MHz
+#define ADC_PRESCALE16   4 // 13/208 microseconds per ADC conversion at 16/1 MHz - degradations in linearity at 16 MHz
+#define ADC_PRESCALE32   5 // 26/416 microseconds per ADC conversion at 16/1 MHz - very good linearity at 16 MHz
 #define ADC_PRESCALE64   6 // 52 microseconds per ADC conversion at 16 MHz
 #define ADC_PRESCALE128  7 // 104 microseconds per ADC conversion at 16 MHz --- Arduino default
 
@@ -108,6 +108,7 @@ uint16_t readADCChannel(uint8_t aChannelNumber);
 uint16_t readADCChannelWithReference(uint8_t aChannelNumber, uint8_t aReference);
 uint16_t readADCChannelWithOversample(uint8_t aChannelNumber, uint8_t aOversampleExponent);
 uint16_t readADCChannelWithReferenceOversample(uint8_t aChannelNumber, uint8_t aReference, uint8_t aOversampleExponent);
+uint16_t readADCChannelWithReferenceOversampleFast(uint8_t aChannelNumber, uint8_t aReference, uint8_t aOversampleExponent);
 uint16_t readADCChannelWithReferenceMultiSamples(uint8_t aChannelNumber, uint8_t aReference, uint8_t aNumberOfSamples);
 uint16_t readADCChannelWithReferenceMax(uint8_t aChannelNumber, uint8_t aReference, uint16_t aNumberOfSamples);
 uint16_t readADCChannelWithReferenceMaxMicros(uint8_t aChannelNumber, uint8_t aReference, uint16_t aMicrosecondsToAquire);
