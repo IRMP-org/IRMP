@@ -681,7 +681,7 @@ typedef uint8_t     PAUSE_LEN;
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#if 0
+#if 1
 #define SIEMENS_OR_RUWIDO_START_BIT_PULSE_TIME    275.0e-6                      //  275 usec pulse
 #define SIEMENS_OR_RUWIDO_START_BIT_PAUSE_TIME    550.0e-6                      //  550 usec pause
 #define SIEMENS_OR_RUWIDO_BIT_PULSE_TIME          275.0e-6                      //  275 usec short pulse

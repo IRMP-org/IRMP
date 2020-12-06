@@ -69,6 +69,7 @@ void doTone2200();
 #include "IRCommandDispatcher.cpp.h"
 
 void handleReceivedIRData();
+void irmp_tone(uint8_t _pin, unsigned int frequency, unsigned long duration);
 
 void setup()
 {
@@ -204,15 +205,41 @@ void doTone1800()
 #ifdef IRMP_ENABLE_PIN_CHANGE_INTERRUPT
     tone(TONE_PIN, 1800, 200);
 #else
-    // You may use irmp_tone() instead
-    tone(TONE_PIN, 1800);
-    delay(200);
-    noTone(TONE_PIN);
-    irmp_init(); // restore timer for IR receive after using of tone
+    irmp_tone(TONE_PIN, 1800, 200);
 #endif
 }
 void doTone2200()
 {
     // use IRMP compatible function for tone()
     irmp_tone(TONE_PIN, 2200, 50);
+}
+
+/*
+ * convenience IRMP compatible wrapper function for Arduino tone()
+ */
+void irmp_tone(uint8_t _pin, unsigned int frequency, unsigned long duration)
+{
+#if defined(__AVR__) && ! defined(IRMP_ENABLE_PIN_CHANGE_INTERRUPT)
+    storeIRTimer();
+    tone(_pin, frequency, 0);
+    if (duration == 0)
+    {
+        duration = 100;
+    }
+    delay(duration);
+    noTone(_pin);
+    restoreIRTimer();
+#elif defined(ESP32)
+//  no tone() available for this platform
+    (void)  _pin;
+    (void)  frequency;
+    (void)  duration;
+#elif defined(ESP8266)
+    // tone() and IRMP compatibility not tested for this platform
+    (void)  _pin;
+    (void)  frequency;
+    (void)  duration;
+#else
+    tone(_pin, frequency, duration);
+#endif
 }

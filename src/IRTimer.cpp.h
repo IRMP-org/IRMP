@@ -143,7 +143,8 @@ void initIRTimerForSend(void)
     TCCR1B = _BV(WGM12) | _BV(WGM13) | _BV(CS10);                   // switch CTC Mode on, set prescaler to 1 / no prescaling
     TIMSK1 = _BV(OCIE1B);                                           // enable compare match interrupt
 
-#  elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
+#  elif defined(__AVR_ATmega4809__) || defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) // Uno WiFi Rev 2, Nano Every
+    // on ATtiny1616 and 32 we have only TCB0 and TCB1
     // TCB1 is used by Tone()
     // TCB2 is used by Servo
     // TCB3 is used by millis()

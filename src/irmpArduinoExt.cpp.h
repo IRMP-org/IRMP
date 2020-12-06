@@ -122,36 +122,6 @@ bool irmp_IsBusy()
 #endif
 }
 
-/*
- * convenience IRMP compatible wrapper function for Arduino tone()
- */
-void irmp_tone(uint8_t _pin, unsigned int frequency, unsigned long duration)
-{
-#if defined(__AVR__) && ! defined(IRMP_ENABLE_PIN_CHANGE_INTERRUPT)
-    storeIRTimer();
-    tone(_pin, frequency, 0);
-    if (duration == 0)
-    {
-        duration = 100;
-    }
-    delay(duration);
-    noTone(_pin);
-    restoreIRTimer();
-#elif defined(ESP32)
-//  no tone() available for this platform
-    (void)  _pin;
-    (void)  frequency;
-    (void)  duration;
-#elif defined(ESP8266)
-    // tone() and IRMP compatibility not tested for this platform
-    (void)  _pin;
-    (void)  frequency;
-    (void)  duration;
-#else
-    tone(_pin, frequency, duration);
-#endif
-}
-
 #if defined(__AVR__)
 void irmp_debug_print(const __FlashStringHelper *aMessage, bool aDoShortOutput)
 #else
