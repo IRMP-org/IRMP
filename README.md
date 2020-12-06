@@ -2,7 +2,7 @@
 # [IRMP](https://github.com/ukw100/IRMP) - Infrared Multi Protocol Decoder + Encoder
 Available as Arduino library "IRMP"
 
-### [Version 3.3.4](https://github.com/ukw100/IRMP/releases)
+### [Version 3.3.5](https://github.com/ukw100/IRMP/releases) - work in progress
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/IRMP)
@@ -263,7 +263,9 @@ The **tone() library (using timer 2) is still available**. You can use it altern
    http://www.mikrocontroller.net/articles/IRSND
 
 # Revision History
-### Version 3.3.4 - work in progress
+### Version 3.3.5 - work in progress
+
+### Version 3.3.4
 - Removed convenience function `irmp_tone()`, since it statically allocates the tone interrupt vector.
 
 ### Version 3.3.3
