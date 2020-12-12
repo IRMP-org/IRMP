@@ -173,7 +173,7 @@ void initIRTimerForSend(void)
     TIMSK3 = _BV(OCIE3B);                                           // enable TIMER3_COMPB_vect interrupt to be compatible with tone() library
     TCNT3 = 0;
 
-#  else // __AVR_ATmega328__ here
+#  elif defined(OCF2B)  // __AVR_ATmega328__ here
     TCCR2A = _BV(WGM21);                                            // CTC mode
 #    if (F_CPU / IR_INTERRUPT_FREQUENCY) <= 256                     // for 8 bit timer
     TCCR2B = _BV(CS20);                                             // no prescale
@@ -186,6 +186,9 @@ void initIRTimerForSend(void)
     TIFR2 = _BV(OCF2B) | _BV(OCF2A) | _BV(TOV2);                    // reset interrupt flags
     TIMSK2 = _BV(OCIE2B);                                           // enable TIMER2_COMPB_vect interrupt to be compatible with tone() library
     TCNT2 = 0;
+
+#  else
+#error "CPU is not supported by IRMP"
 #  endif // if defined(__AVR_ATmega16__)
 
 #elif defined(ESP8266)

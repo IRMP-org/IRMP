@@ -160,7 +160,7 @@ Modify it by setting the value to 1 or 0. Or define the macro with the -D compil
 | `IRMP_USE_COMPLETE_CALLBACK` | 1 | Use Callback if complete data was received. Requires call to irmp_register_complete_callback_function(). |
 | `IRMP_ENABLE_PIN_CHANGE_INTERRUPT` | defined | Use [Arduino attachInterrupt()](https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/) and do **no polling with timer ISR**. This **restricts the available input pins**. The results are equivalent to results aquired with a sampling rate of 15625 Hz (chosen to avoid time consuming divisions). For AVR boards an own interrupt handler for  INT0 or INT1 is used instead of Arduino attachInterrupt().  |
 | `IRMP_ENABLE_RELEASE_DETECTION` | 1 | If user releases a key on the remote control, last protocol/address/command will be returned with flag `IRMP_FLAG_RELEASE` set. |
-| `IRMP_HIGH_ACTIVE` | 1 | Set to 1 if you use a RF receiver, which have an active HIGH output signal! |
+| `IRMP_HIGH_ACTIVE` | 1 | Set to 1 if you use a RF receiver, which has an active HIGH output signal. |
 | `IRMP_32_BIT` | 1 | This enables MERLIN protocol, but decreases performance for AVR. |
 | `F_INTERRUPTS` |  | The IRMP sampling frequency. Default value is 15000.|
 | `USE_ONE_TIMER_FOR_IRMP_AND_IRSND` | defined | **Must** be defined if you use receiving and sending simultaneously, since both use the same timer resource. |

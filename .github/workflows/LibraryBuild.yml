@@ -44,7 +44,9 @@ jobs:
           - digistump:avr:digispark-tiny:clock=clock16
           - digistump:avr:digispark-pro
           - ATTinyCore:avr:attinyx5:chip=85,clock=8internal
+# Not yet supported by IRTimer.cpp.h
 #          - MiniCore:avr:8:bootloader=uart0,eeprom=keep,BOD=2v7,LTO=Os_flto,clock=16MHz_external # ATmega8
+#          - MegaCore:avr:128:bootloader=no_bootloader,eeprom=keep,BOD=2v7,LTO=Os,clock=8MHz_internal # ATmega128
           - esp8266:esp8266:d1_mini:eesz=4M3M,xtal=80
           - esp32:esp32:featheresp32:FlashFreq=80
           - STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
@@ -70,7 +72,13 @@ jobs:
 
 #          - arduino-boards-fqbn: MiniCore:avr:8:bootloader=uart0,eeprom=keep,BOD=2v7,LTO=Os_flto,clock=16MHz_external
 #            platform-url: https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
-            #sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
+#            arduino-platform: MiniCore:avr,arduino:avr # gcc is taken from arduino:avr
+#            sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
+
+#          - arduino-boards-fqbn: MegaCore:avr:128:bootloader=no_bootloader,eeprom=keep,BOD=2v7,LTO=Os,clock=8MHz_internal
+#            platform-url: https://mcudude.github.io/MegaCore/package_MCUdude_MegaCore_index.json
+#            arduino-platform: MegaCore:avr,arduino:avr # gcc is taken from arduino:avr
+#            sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
 
           - arduino-boards-fqbn: esp8266:esp8266:d1_mini:eesz=4M3M,xtal=80
             platform-url: https://arduino.esp8266.com/stable/package_esp8266com_index.json
@@ -104,6 +112,7 @@ jobs:
         with:
           arduino-board-fqbn: ${{ matrix.arduino-boards-fqbn }}
           platform-url: ${{ matrix.platform-url }}
+#          arduino-platform: ${{ matrix.arduino-platform }}
           required-libraries: ${{ matrix.required-libraries }}
           sketches-exclude: ${{ matrix.sketches-exclude }}
           debug-install: true
