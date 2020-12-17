@@ -115,4 +115,4 @@ jobs:
 #          arduino-platform: ${{ matrix.arduino-platform }}
           required-libraries: ${{ matrix.required-libraries }}
           sketches-exclude: ${{ matrix.sketches-exclude }}
-          debug-install: true
+#          debug-install: true

@@ -22,8 +22,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
  */
 
-#if defined(__AVR__) && (! defined(__AVR_ATmega4809__))
 #include "ADCUtils.h"
+#if defined(__AVR__) && defined(ADATE)
 
 // Union to speed up the combination of low and high bytes to a word
 // it is not optimal since the compiler still generates 2 unnecessary moves

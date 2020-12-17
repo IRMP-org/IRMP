@@ -26,6 +26,7 @@
 
 #if defined(__AVR__) && (! defined(__AVR_ATmega4809__))
 #include <Arduino.h>
+#if defined(ADATE)
 
 // PRESCALE4 => 13 * 4 = 52 microseconds per ADC conversion at 1 MHz Clock => 19,2 kHz
 #define ADC_PRESCALE2    1 // 26 microseconds per ADC conversion at 1 MHz
@@ -102,6 +103,9 @@
 #define ADC_1_1_VOLT_CHANNEL_MUX    0x1E
 #define ADC_GND_CHANNEL_MUX         0x1F
 #define INTERNAL INTERNAL1V1
+
+#else
+#error "No temperature channel definitions specified for this AVR CPU"
 #endif
 
 uint16_t readADCChannel(uint8_t aChannelNumber);
@@ -125,6 +129,7 @@ uint16_t getVCCVoltageMillivolt(void);
 void printVCCVoltageMillivolt(Print* aSerial);
 float getTemperature(void);
 
+#endif // defined(ADATE)
 #endif //  defined(__AVR__)
 #endif /* SRC_ADCUTILS_H_ */
 

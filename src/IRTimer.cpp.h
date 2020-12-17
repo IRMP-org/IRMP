@@ -188,7 +188,7 @@ void initIRTimerForSend(void)
     TCNT2 = 0;
 
 #  else
-#error "CPU is not supported by IRMP"
+#error "This AVR CPU is not supported by IRMP"
 #  endif // if defined(__AVR_ATmega16__)
 
 #elif defined(ESP8266)

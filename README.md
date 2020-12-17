@@ -24,16 +24,16 @@ Available as Arduino library "IRMP"
 - Sony SIRCS, NEC + APPLE + ONKYO, Samsung + Samsg32, Kaseikyo
 - JVC, NEC16, NEC42, Matsushita, DENON, Sharp, RC5, RC6 & RC6A, IR60 (SDA2008) Grundig, Siemens Gigaset, Nokia
 - BOSE, Kathrein, NUBERT, FAN (ventilator), SPEAKER (~NUBERT), Bang & Olufsen, RECS80 (SAA3004), RECS80EXT (SAA3008), Thomson, NIKON camera, Netbox keyboard, ORTEK (Hama), Telefunken 1560, FDC3402 keyboard, RC Car, iRobot Roomba, RUWIDO, T-Home, A1 TV BOX, LEGO Power RC, RCMM 12,24, or 32, LG Air Condition, Samsung48, Merlin, Pentax, S100, ACP24, TECHNICS, PANASONIC Beamer, Mitsubishi Aircond, VINCENT, SAMSUNG AH, GREE CLIMATE, RCII T+A, RADIO e.g. TEVION, METZ<br/>
-- **NEC, Kaseiko, Denon, RC6, Samsung + Samsg32 were sucessfully tested in interrupt mode.**
+- **NEC, Kaseiko, Denon, RC6, Samsung + Samsg32 were successfully tested in interrupt mode.**
 
 # Features
 - You may use **every pin for input or output**.
 - Interrupt mode for major protocols.
-- Callback after sucessful receive of a command supported.
+- Callback after successful receive of a command supported.
 - Inverted feedback LED for send and receive feedback supported.
 - Inverted IR output for LED connected to VCC supported.
 - Unmodulated IR signal output enables direct replacment of an IR receiver circuit.
-- Compatible with Arduino tone() library.
+- Compatible with Arduino tone library.
 
 # Schematic for Arduino UNO
 The VS1838B is used as receiver for all examples and tests. This module has a 120 µs on/low and a 100 µs off/high delay between received signal and output. So it shortens the mark and extends the space by 20 µs.
@@ -148,7 +148,7 @@ void restoreIRTimer(void);
 
 # Compile options / macros for this library
 To customize the library to different requirements, there are some compile options / macros available, which must be set **before** including the library e.g. with `#include <irmp.c.h>`.<br/>
-Modify it by setting the value to 1 or 0. Or define the macro with the -D compiler option for gobal compile (the latter is not possible with the Arduino IDE, so consider to use [Sloeber](https://eclipse.baeyens.it).<br/>
+Modify it by setting the value to 1 or 0. Or define the macro with the -D compiler option for global compile (the latter is not possible with the Arduino IDE, so consider using [Sloeber](https://eclipse.baeyens.it).<br/>
 
 | Macro | Enable value | Description |
 |-|-|-|
@@ -219,7 +219,7 @@ Many protocols can be received **without timer usage**, just by using interrupts
 
 The IRMP **send** library works by bit banging the output pin at a frequency of 38 kHz. This **avoids blocking waits** and allows to choose an **arbitrary pin**, you are not restricted to PWM generating pins like pin 3 or 11. The interrupts for send pin bit banging require 50% CPU time on a 16 MHz AVR.<br/>
 If both receiving and sending is required, the timer is set up for receiving and reconfigured for the duration of sending data, thus preventing receiving in polling mode while sending data.<br/>
-The **tone() library (using timer 2) is still available**. You can use it alternating with IR receive and send, see [ReceiveAndSend example](examples/ReceiveAndSend/ReceiveAndSend.ino).<br/>
+The **tone library (using timer 2) is still available**. You can use it alternating with IR receive and send, see [ReceiveAndSend example](examples/ReceiveAndSend/ReceiveAndSend.ino).<br/>
 
 - For AVR **timer 2 (Tone timer)** is used for receiving **and** sending.
  For variants, which have no timer 2 like ATtiny85 or ATtiny167, **timer 1** (or timer 0 for digispark core) is used.
@@ -348,7 +348,7 @@ The **tone() library (using timer 2) is still available**. You can use it altern
 
 ### Version 2.0.0
 - Added IR send fuctionality (IRSND).
-- Use `TIMER2_COMPB_vect` to be compatible with tone() library.
+- Use `TIMER2_COMPB_vect` to be compatible with tone library.
 - No longer required to call initPCIInterrupt() manually if IRMP_ENABLE_PIN_CHANGE_INTERRUPT is set.
 - Separated code for timer to IRTimer.cpp.h.
 - Separated code for Pin change interrupt to irmpPinChangeInterrupt.cpp.h.
