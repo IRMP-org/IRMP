@@ -29,14 +29,14 @@ Available as Arduino library "IRMP"
 # Features
 - You may use **every pin for input or output**.
 - Interrupt mode for major protocols.
-- Callback after sucessful receive of a command supported.
+- Callback after successful receive of a command supported.
 - Inverted feedback LED for send and receive feedback supported.
 - Inverted IR output for LED connected to VCC supported.
 - Unmodulated IR signal output enables direct replacment of an IR receiver circuit.
-- Compatible with Arduino tone() library.
+- Compatible with Arduino `tone()` library.
 
 # Schematic for Arduino UNO
-The VS1838B is used as receiver for all examples and tests. This module has a 120 µs on/low and a 100 µs off/high delay between received signal and output. So it shortens the mark and extends the space by 20 µs.
+The VS1838B is used as receiver for all examples and tests. This module has a 120 Âµs on/low and a 100 Âµs off/high delay between received signal and output. So it shortens the mark and extends the space by 20 Âµs.
 | IR-Receiver connection | Serial LCD connection |
 |---|---|
 ![Fritzing schematic for Arduino UNO](extras/IRMP_UNO_Steckplatine.png) | ![Fritzing schematic for Arduino UNO + LCD](extras/IRMP_UNO_LCD_Steckplatine.png)
@@ -148,16 +148,16 @@ void restoreIRTimer(void);
 
 # Compile options / macros for this library
 To customize the library to different requirements, there are some compile options / macros available, which must be set **before** including the library e.g. with `#include <irmp.c.h>`.<br/>
-Modify it by setting the value to 1 or 0. Or define the macro with the -D compiler option for gobal compile (the latter is not possible with the Arduino IDE, so consider to use [Sloeber](https://eclipse.baeyens.it).<br/>
+Modify it by setting the value to 1 or 0. Or define the macro with the -D compiler option for global compile (the latter is not possible with the Arduino IDE, so consider using [Sloeber](https://eclipse.baeyens.it).<br/>
 
 | Macro | Enable value | Description |
 |-|-|-|
 | `IRMP_INPUT_PIN` | defined | The pin number which gets compiled in, if not using `IRMP_IRSND_ALLOW_DYNAMIC_PINS`. |
 | `IRMP_FEEDBACK_LED_PIN` | defined | The pin number for the feedback led which gets compiled in, if not using `IRMP_IRSND_ALLOW_DYNAMIC_PINS`.<br/> If not defined, `LED_BUILTIN` ist taken. |
 | `FEEDBACK_LED_IS_ACTIVE_LOW` | defined | Required on some boards (like my ESP8266 board), where the feedback LED is active low. |
-| `IRMP_IRSND_ALLOW_DYNAMIC_PINS` | defined | Allows to specify pin number at irmp_init() -see above. This requires additional program space. |
+| `IRMP_IRSND_ALLOW_DYNAMIC_PINS` | defined | Allows to specify pin number at `irmp_init()` -see above. This requires additional program space. |
 | `IRMP_PROTOCOL_NAMES` | 1 | Enable protocol number mapping to protocol strings - needs some program memory. |
-| `IRMP_USE_COMPLETE_CALLBACK` | 1 | Use Callback if complete data was received. Requires call to irmp_register_complete_callback_function(). |
+| `IRMP_USE_COMPLETE_CALLBACK` | 1 | Use Callback if complete data was received. Requires call to `irmp_register_complete_callback_function()`. |
 | `IRMP_ENABLE_PIN_CHANGE_INTERRUPT` | defined | Use [Arduino attachInterrupt()](https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/) and do **no polling with timer ISR**. This **restricts the available input pins**. The results are equivalent to results aquired with a sampling rate of 15625 Hz (chosen to avoid time consuming divisions). For AVR boards an own interrupt handler for  INT0 or INT1 is used instead of Arduino attachInterrupt().  |
 | `IRMP_ENABLE_RELEASE_DETECTION` | 1 | If user releases a key on the remote control, last protocol/address/command will be returned with flag `IRMP_FLAG_RELEASE` set. |
 | `IRMP_HIGH_ACTIVE` | 1 | Set to 1 if you use a RF receiver, which has an active HIGH output signal. |
@@ -217,7 +217,7 @@ The IRMP **receive** library works by polling the input pin at a rate of 10 to 2
 Many protocols can be received **without timer usage**, just by using interrupts from the input pin by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. See [Interrupt example](examples/Interrupt/Interrupt.ino).<br/>
 **In interrupt mode, the `micros()` function is used as timebase.**
 
-The IRMP **send** library works by bit banging the output pin at a frequency of 38 kHz. This **avoids blocking waits** and allows to choose an **arbitrary pin**, you are not restricted to PWM generating pins like pin 3 or 11. The interrupts for send pin bit banging require 50% CPU time on a 16 MHz AVR.<br/>
+The IRMP **send** library works by bit banging the output pin at a frequency of 38 kHz. This **avoids blocking waits** and allows to choose an **arbitrary pin**, you are not restricted to PWM generating pins like pin 3 or 11. The interrupts for send pin bit banging requires 50% CPU time on a 16 MHz AVR.<br/>
 If both receiving and sending is required, the timer is set up for receiving and reconfigured for the duration of sending data, thus preventing receiving in polling mode while sending data.<br/>
 The **tone() library (using timer 2) is still available**. You can use it alternating with IR receive and send, see [ReceiveAndSend example](examples/ReceiveAndSend/ReceiveAndSend.ino).<br/>
 
@@ -374,7 +374,7 @@ The **tone() library (using timer 2) is still available**. You can use it altern
 - Added ESP8266 + ESP32 support.
 
 # CI
-Since Travis CI is unreliable and slow (5 times slower), the library examples are now tested with GitHub Actions for the following boards:
+The library examples are tested with GitHub Actions for the following boards:
 
 - arduino:avr:uno
 - arduino:avr:mega
