@@ -110,7 +110,8 @@ void handleReceivedIRData()
 #endif
 {
     irmp_get_data(&irmp_data);
-    interrupts();
-    // enable interrupts
+#if !defined(ARDUINO_ARCH_MBED)
+    interrupts(); // enable interrupts
+#endif
     irmp_result_print(&irmp_data);
 }

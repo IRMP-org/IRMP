@@ -108,8 +108,9 @@ void handleReceivedIRData()
 #endif
 {
     irmp_get_data(&irmp_data);
-    interrupts();
-    // Enable interrupts
+#if !defined(ARDUINO_ARCH_MBED)
+    interrupts(); // enable interrupts
+#endif
 
     /*
      * Filter for commands from the WM010 IR Remote

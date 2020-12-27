@@ -179,7 +179,7 @@ void loop()
 #endif
     }
 
-#if defined(__AVR__) && (! defined(__AVR_ATmega4809__))
+#if defined(__AVR__) && defined(ADATE)
     /*
      * Periodically print VCC
      */
@@ -218,7 +218,7 @@ void handleReceivedIRData()
 #endif
 {
 
-#if defined(__AVR__) && (! defined(__AVR_ATmega4809__))
+#if defined(__AVR__) && defined(ADATE)
     // reset voltage display timer
     sMillisOfLastVoltagePrint = millis();
 #endif

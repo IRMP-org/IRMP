@@ -71,7 +71,7 @@ HardwareTimer sSTM32Timer(TIM2);
  */
 HardwareTimer sSTM32Timer(3);
 
-#elif defined(ARDUINO_ARCH_MBED) // Arduino Nano 33 BLE
+#elif defined(ARDUINO_ARCH_MBED) // Arduino Nano 33 BLE + Sparkfun Apollo3
 mbed::Ticker sMbedTimer;
 
 #elif defined(TEENSYDUINO)
@@ -271,20 +271,20 @@ void initIRTimerForSend(void)
     TC->CTRLA.reg |= TC_CTRLA_ENABLE;
 //    while (TC5->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY); // Not required to wait at end of function
 
-#elif defined(ARDUINO_ARCH_APOLLO3)
-// Use Timer 3 segment B
-    am_hal_ctimer_clear(3, AM_HAL_CTIMER_TIMERB);   // reset timer
-// only AM_HAL_CTIMER_FN_REPEAT resets counter after match (CTC mode)
-    am_hal_ctimer_config_single(3, AM_HAL_CTIMER_TIMERB, (AM_HAL_CTIMER_INT_ENABLE | AM_HAL_CTIMER_HFRC_12MHZ | AM_HAL_CTIMER_FN_REPEAT));
-    am_hal_ctimer_compare_set(3, AM_HAL_CTIMER_TIMERB, 0, 12000000 / IR_INTERRUPT_FREQUENCY);
-    am_hal_ctimer_start(3, AM_HAL_CTIMER_TIMERB);
-
-    am_hal_ctimer_int_register(AM_HAL_CTIMER_INT_TIMERB3, irmp_timer_ISR);
-    am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
-    NVIC_EnableIRQ(CTIMER_IRQn);
+//#elif defined(ARDUINO_ARCH_APOLLO3)
+//// Use Timer 3 segment B
+//    am_hal_ctimer_clear(3, AM_HAL_CTIMER_TIMERB);   // reset timer
+//// only AM_HAL_CTIMER_FN_REPEAT resets counter after match (CTC mode)
+//    am_hal_ctimer_config_single(3, AM_HAL_CTIMER_TIMERB, (AM_HAL_CTIMER_INT_ENABLE | AM_HAL_CTIMER_HFRC_12MHZ | AM_HAL_CTIMER_FN_REPEAT));
+//    am_hal_ctimer_compare_set(3, AM_HAL_CTIMER_TIMERB, 0, 12000000 / IR_INTERRUPT_FREQUENCY);
+//    am_hal_ctimer_start(3, AM_HAL_CTIMER_TIMERB);
+//
+//    am_hal_ctimer_int_register(AM_HAL_CTIMER_INT_TIMERB3, irmp_timer_ISR);
+//    am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
+//    NVIC_EnableIRQ(CTIMER_IRQn);
 
 #elif defined(ARDUINO_ARCH_MBED)
-    sMbedTimer.attach_us(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
+    sMbedTimer.attach(irmp_timer_ISR, std::chrono::microseconds(1000000 / IR_INTERRUPT_FREQUENCY));
 
 #elif defined(TEENSYDUINO)
     sIntervalTimer.begin(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
@@ -317,7 +317,7 @@ uint64_t sTimerAlarmValue;
 #  elif defined(STM32F1xx) || defined(ARDUINO_ARCH_STM32) || defined(__STM32F1__)
 uint32_t sTimerOverflowValue;
 
-#  elif defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_APOLLO3)
+#  elif defined(ARDUINO_ARCH_SAMD) // || defined(ARDUINO_ARCH_APOLLO3)
 uint16_t sTimerCompareCapureValue;
 
 #  endif // defined(__AVR__)
@@ -403,8 +403,8 @@ void storeIRTimer(void)
 #    elif defined(ARDUINO_ARCH_SAMD)
     sTimerCompareCapureValue = TC3->COUNT16.CC[0].reg;
 
-#    elif defined(ARDUINO_ARCH_APOLLO3)
-    sTimerCompareCapureValue = *((uint32_t *)CTIMERADDRn(CTIMER, 3, CMPRB0)) & 0xFFFF;
+//#    elif defined(ARDUINO_ARCH_APOLLO3)
+//    sTimerCompareCapureValue = *((uint32_t *)CTIMERADDRn(CTIMER, 3, CMPRB0)) & 0xFFFF;
 #    endif
 #  endif // defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
 }
@@ -485,8 +485,8 @@ void restoreIRTimer(void)
 #    elif defined(ARDUINO_ARCH_SAMD)
     TC3->COUNT16.CC[0].reg = sTimerCompareCapureValue;
 
-#    elif defined(ARDUINO_ARCH_APOLLO3)
-    am_hal_ctimer_compare_set(3, AM_HAL_CTIMER_TIMERB, 0, sTimerCompareCapureValue);
+//#    elif defined(ARDUINO_ARCH_APOLLO3)
+//    am_hal_ctimer_compare_set(3, AM_HAL_CTIMER_TIMERB, 0, sTimerCompareCapureValue);
 
 #    elif defined(ARDUINO_ARCH_MBED)
     sMbedTimer.attach_us(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
@@ -553,8 +553,8 @@ void disableIRTimerInterrupt(void)
     TC3->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;
 //    while (TC3->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY) ; // Not required to wait at end of function
 
-#elif defined(ARDUINO_ARCH_APOLLO3)
-    am_hal_ctimer_int_disable(AM_HAL_CTIMER_INT_TIMERB3);
+//#elif defined(ARDUINO_ARCH_APOLLO3)
+//    am_hal_ctimer_int_disable(AM_HAL_CTIMER_INT_TIMERB3);
 
 #elif defined(ARDUINO_ARCH_MBED)
     sMbedTimer.detach();
@@ -623,11 +623,11 @@ void enableIRTimerInterrupt(void)
     while (TC3->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY)
     ; //wait until TC5 is done syncing
 
-#elif defined(ARDUINO_ARCH_APOLLO3)
-    am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
+//#elif defined(ARDUINO_ARCH_APOLLO3)
+//    am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
 
 #elif defined(ARDUINO_ARCH_MBED)
-    sMbedTimer.attach_us(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
+    sMbedTimer.attach(irmp_timer_ISR, std::chrono::microseconds(1000000 / IR_INTERRUPT_FREQUENCY));
 
 #elif defined(TEENSYDUINO)
     sIntervalTimer.begin(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
@@ -653,19 +653,19 @@ void enableIRTimerInterrupt(void)
  * We use TIMER2_COMPB_vect to be compatible with tone() library
  */
 
-#if defined(ARDUINO_ARCH_APOLLO3)
-/*
- * The isr, which calls the dispatcher/service, which call the irmp_timer_ISR
- */
-extern "C" void am_ctimer_isr(void) {
-    // Check and clear any active CTIMER interrupts.
-    uint32_t ui32Status = am_hal_ctimer_int_status_get(true);
-    am_hal_ctimer_int_clear(ui32Status);
-
-    // Run handlers for the various possible timer events.
-    am_hal_ctimer_int_service(ui32Status);
-}
-#endif
+//#if defined(ARDUINO_ARCH_APOLLO3)
+///*
+// * The isr, which calls the dispatcher/service, which call the irmp_timer_ISR
+// */
+//extern "C" void am_ctimer_isr(void) {
+//    // Check and clear any active CTIMER interrupts.
+//    uint32_t ui32Status = am_hal_ctimer_int_status_get(true);
+//    am_hal_ctimer_int_clear(ui32Status);
+//
+//    // Run handlers for the various possible timer events.
+//    am_hal_ctimer_int_service(ui32Status);
+//}
+//#endif
 
 #if defined(__AVR__)
 
@@ -717,9 +717,6 @@ void irmp_timer_ISR(void)
 {
 #if defined(ARDUINO_ARCH_SAMD)
     TC3->COUNT16.INTFLAG.bit.MC0 = 1; // Clear interrupt
-
-#elif defined(ARDUINO_ARCH_APOLLO3)
-    // Clear interrupt
 #endif
 
 #if (defined(_IRSND_H_) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND))

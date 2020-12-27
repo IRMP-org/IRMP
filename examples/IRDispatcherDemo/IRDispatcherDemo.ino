@@ -143,8 +143,10 @@ void IRAM_ATTR handleReceivedIRData()
 void handleReceivedIRData()
 #endif
 {
-    interrupts(); // be careful with always executable commands which lasts longer than the IR repeat duration.
     // To enable delay() for commands
+#if !defined(ARDUINO_ARCH_MBED)
+    interrupts(); // be careful with always executable commands which lasts longer than the IR repeat duration.
+#endif
     IRDispatcher.loop(false); // cannot use IRDispatcher.loop as parameter for irmp_register_complete_callback_function
 }
 

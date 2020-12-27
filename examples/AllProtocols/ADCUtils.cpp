@@ -85,7 +85,7 @@ uint16_t readADCChannelWithReference(uint8_t aChannelNumber, uint8_t aReference)
 uint8_t checkAndWaitForReferenceAndChannelToSwitch(uint8_t aChannelNumber, uint8_t aReference) {
     uint8_t tOldADMUX = ADMUX;
     /*
-     * Must wait >= 7 us if reference has to be switched from 1.1 volt to VCC (seen on oscilloscope)
+     * Must wait >= 7 us if reference has to be switched from 1.1 volt/INTERNAL to VCC/DEFAULT (seen on oscilloscope)
      * Must wait >= 6000 us for Nano board  >= 6200 for Uno board if reference has to be switched from VCC/DEFAULT to 1.1 volt/INTERNAL
      * Must wait >= 1100 us if channel has to be switched to 1.1 volt internal channel from channel with read 5 volt input
      */
