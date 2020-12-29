@@ -489,7 +489,7 @@ void restoreIRTimer(void)
 //    am_hal_ctimer_compare_set(3, AM_HAL_CTIMER_TIMERB, 0, sTimerCompareCapureValue);
 
 #    elif defined(ARDUINO_ARCH_MBED)
-    sMbedTimer.attach_us(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
+    sMbedTimer.attach(irmp_timer_ISR, std::chrono::microseconds(1000000 / IR_INTERRUPT_FREQUENCY));
 
 #    elif defined(TEENSYDUINO)
     sIntervalTimer.update(1000000 / IR_INTERRUPT_FREQUENCY);
