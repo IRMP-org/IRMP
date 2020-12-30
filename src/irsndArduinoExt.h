@@ -60,10 +60,6 @@ void irsnd_data_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr);
 
 #if defined(ARDUINO_ARCH_MBED) // Arduino Nano 33 BLE + Sparkfun Apollo3
 #include "mbed.h"
-// F is undefined in mbed.h, so F() is unknown and leads to "'F' was not declared in this scope" errors. -> define it again.
-#ifndef F
-#define F(a) a
-#endif
 #define F_CPU 0 // dummy definition to avoid warning at irsnd.c.h:27 #error F_CPU unkown
 #endif
 
