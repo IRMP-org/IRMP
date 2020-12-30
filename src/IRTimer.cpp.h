@@ -653,20 +653,6 @@ void enableIRTimerInterrupt(void)
  * We use TIMER2_COMPB_vect to be compatible with tone() library
  */
 
-//#if defined(ARDUINO_ARCH_APOLLO3)
-///*
-// * The isr, which calls the dispatcher/service, which call the irmp_timer_ISR
-// */
-//extern "C" void am_ctimer_isr(void) {
-//    // Check and clear any active CTIMER interrupts.
-//    uint32_t ui32Status = am_hal_ctimer_int_status_get(true);
-//    am_hal_ctimer_int_clear(ui32Status);
-//
-//    // Run handlers for the various possible timer events.
-//    am_hal_ctimer_int_service(ui32Status);
-//}
-//#endif
-
 #if defined(__AVR__)
 
 #  if F_CPU < 8000000L
