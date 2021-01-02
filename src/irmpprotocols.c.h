@@ -81,7 +81,7 @@ const char proto_rf_gen24[]      PROGMEM = "RF_GEN24";
 const char proto_rf_x10[]        PROGMEM = "RF_X10";
 const char proto_rf_medion[]     PROGMEM = "RF_MEDION";
 const char proto_rf_hme[]        PROGMEM = "RF_HOMEEASY";
-
+const char proto_rf_ac104[]      PROGMEM = "RF_AC104";
 
 const char * const
 irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM =
@@ -147,7 +147,8 @@ irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM =
     proto_rf_gen24,
     proto_rf_x10,
     proto_rf_medion,
-    proto_rf_hme
+    proto_rf_hme,
+    proto_rf_ac104
 };
 
 #endif // _IRMP_PROTOCOLS_C_H_

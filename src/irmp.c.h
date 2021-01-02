@@ -662,6 +662,21 @@
 #define RF_HME_0_PAUSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * RF_HME_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
 #define RF_HME_0_PAUSE_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * RF_HME_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 
+#define RF_AC104_START_BIT_PULSE_LEN_MIN          ((uint_fast8_t)(F_INTERRUPTS * RF_AC104_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
+#define RF_AC104_START_BIT_PULSE_LEN_MAX          ((uint_fast8_t)(F_INTERRUPTS * RF_AC104_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define RF_AC104_START_BIT_PAUSE_LEN_MIN          ((uint_fast8_t)(F_INTERRUPTS * RF_AC104_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
+#define RF_AC104_START_BIT_PAUSE_LEN_MAX          ((uint_fast8_t)(F_INTERRUPTS * RF_AC104_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define RF_AC104_1_PAUSE_LEN_EXACT                ((uint_fast8_t)(F_INTERRUPTS * RF_AC104_1_PAUSE_TIME + 0.5))
+#define RF_AC104_1_PULSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * RF_AC104_1_PULSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
+#define RF_AC104_1_PULSE_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * RF_AC104_1_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define RF_AC104_1_PAUSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * RF_AC104_1_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
+#define RF_AC104_1_PAUSE_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * RF_AC104_1_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define RF_AC104_0_PAUSE_LEN                      ((uint_fast8_t)(F_INTERRUPTS * RF_AC104_0_PAUSE_TIME))
+#define RF_AC104_0_PULSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * RF_AC104_0_PULSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
+#define RF_AC104_0_PULSE_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * RF_AC104_0_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define RF_AC104_0_PAUSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * RF_AC104_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
+#define RF_AC104_0_PAUSE_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * RF_AC104_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+
 
 #define AUTO_FRAME_REPETITION_LEN               (uint_fast16_t)(F_INTERRUPTS * AUTO_FRAME_REPETITION_TIME + 0.5)
 // use uint_fast16_t!
@@ -2320,6 +2335,33 @@ static const PROGMEM IRMP_PARAMETER rf_hme_param =
 
 #endif
 
+#if IRMP_SUPPORT_RF_AC104_PROTOCOL == 1
+
+static const PROGMEM IRMP_PARAMETER rf_ac104_param =
+{
+    RF_AC104_PROTOCOL,                                                    // protocol:        ir protocol
+
+    RF_AC104_1_PULSE_LEN_MIN,                                             // pulse_1_len_min: minimum length of pulse with bit value 1
+    RF_AC104_1_PULSE_LEN_MAX,                                             // pulse_1_len_max: maximum length of pulse with bit value 1
+    RF_AC104_1_PAUSE_LEN_MIN,                                             // pause_1_len_min: minimum length of pause with bit value 1
+    RF_AC104_1_PAUSE_LEN_MAX,                                             // pause_1_len_max: maximum length of pause with bit value 1
+    RF_AC104_0_PULSE_LEN_MIN,                                             // pulse_0_len_min: minimum length of pulse with bit value 0
+    RF_AC104_0_PULSE_LEN_MAX,                                             // pulse_0_len_max: maximum length of pulse with bit value 0
+    RF_AC104_0_PAUSE_LEN_MIN,                                             // pause_0_len_min: minimum length of pause with bit value 0
+    RF_AC104_0_PAUSE_LEN_MAX,                                             // pause_0_len_max: maximum length of pause with bit value 0
+    RF_AC104_ADDRESS_OFFSET,                                              // address_offset:  address offset
+    RF_AC104_ADDRESS_OFFSET + RF_AC104_ADDRESS_LEN,                         // address_end:     end of address
+    RF_AC104_COMMAND_OFFSET,                                              // command_offset:  command offset
+    RF_AC104_COMMAND_OFFSET + RF_AC104_COMMAND_LEN,                         // command_end:     end of command
+    RF_AC104_COMPLETE_DATA_LEN,                                           // complete_len:    complete length of frame
+    RF_AC104_STOP_BIT,                                                    // stop_bit:        flag: frame has stop bit
+    RF_AC104_LSB,                                                         // lsb_first:       flag: LSB first
+    RF_AC104_FLAGS                                                        // flags:           some flags
+};
+
+
+#endif
+
 
 static uint_fast8_t                             irmp_bit;               // current bit position
 static IRMP_PARAMETER                           irmp_param;
@@ -2736,6 +2778,16 @@ static uint_fast32_t irmp_tmp_command;                                      // i
 static uint_fast16_t irmp_tmp_command;                                      // ir command
 #endif
 
+#if IRMP_SUPPORT_RF_AC104_PROTOCOL == 1
+static uint_fast8_t ac104_preamble; //A3
+static uint_fast32_t ac104_remote_id; // 24 bit id
+static uint_fast8_t ac104_parity;
+#ifndef RF_AC104_IDCHECK
+#define RF_AC104_IDCHECK  0x4647a8
+#endif
+#endif // IRMP_SUPPORT_RF_AC104_PROTOCOL
+
+
 #if (IRMP_SUPPORT_RC5_PROTOCOL == 1 && (IRMP_SUPPORT_FDC_PROTOCOL == 1 || IRMP_SUPPORT_RCCAR_PROTOCOL == 1)) || IRMP_SUPPORT_NEC42_PROTOCOL == 1
 static uint_fast16_t irmp_tmp_address2;                                     // ir address
 static uint_fast16_t irmp_tmp_command2;                                     // ir command
@@ -2786,6 +2838,30 @@ irmp_store_bit (uint_fast8_t value)
       hme_manchester_store = 2; // reset
     }
     else
+#endif
+
+#if IRMP_SUPPORT_RF_AC104_PROTOCOL == 1
+    if(irmp_bit == 0) 
+    {
+      ac104_preamble = value;
+      ac104_remote_id = 0;
+      ac104_parity = 0;
+    } 
+    else if (irmp_bit < 8) 
+    {
+      ac104_preamble <<= 1;
+      ac104_preamble |= value;
+    } 
+    else if (irmp_bit < irmp_param.address_offset) 
+    {
+      ac104_remote_id <<= 1;
+      ac104_remote_id |= value;
+    } 
+    else if (irmp_bit >= irmp_param.command_end && irmp_bit < 64) 
+    {
+      ac104_parity <<=1;
+      ac104_parity |= value;
+    } // else store in address and command, last bit is one, but we have enought checks
 #endif
 
 #if IRMP_SUPPORT_ACP24_PROTOCOL == 1
@@ -3569,6 +3645,23 @@ uint_fast8_t irmp_ISR(void)
                     }
                     else
 #endif // IRMP_SUPPORT_RF_HME_PROTOCOL == 1
+
+#if IRMP_SUPPORT_RF_AC104_PROTOCOL == 1
+                    if (irmp_pulse_time >= RF_AC104_START_BIT_PULSE_LEN_MIN && irmp_pulse_time <= RF_AC104_START_BIT_PULSE_LEN_MAX &&
+                        irmp_pause_time >= RF_AC104_START_BIT_PAUSE_LEN_MIN && irmp_pause_time <= RF_AC104_START_BIT_PAUSE_LEN_MAX)
+                    {
+                        ANALYZE_PRINTF5 ("protocol = RF_AC104, start bit timings: pulse: %3d - %3d, pause: %3d - %3d\n",
+                                        RF_AC104_START_BIT_PULSE_LEN_MIN, RF_AC104_START_BIT_PULSE_LEN_MAX,
+                                        RF_AC104_START_BIT_PAUSE_LEN_MIN, RF_AC104_START_BIT_PAUSE_LEN_MAX);
+                        irmp_param_p = (IRMP_PARAMETER *) &rf_ac104_param;
+//                          memcpy_P (&irmp_param, irmp_param_p, sizeof (IRMP_PARAMETER));
+//                          irmp_address = 0x22;
+//                          irmp_protocol = irmp_param.protocol;
+//                          irmp_command = 0x33;
+//                          irmp_ir_detected= TRUE;
+                    }
+                    else
+#endif // IRMP_SUPPORT_RF_AC104_PROTOCOL == 1
 
 #if IRMP_SUPPORT_RECS80_PROTOCOL == 1
                     if (irmp_pulse_time >= RECS80_START_BIT_PULSE_LEN_MIN && irmp_pulse_time <= RECS80_START_BIT_PULSE_LEN_MAX &&
@@ -5128,6 +5221,32 @@ uint_fast8_t irmp_ISR(void)
                     ANALYZE_PRINTF3 ("%8.3fms code detected, length = %d\n", (double) (time_counter * 1000) / F_INTERRUPTS, irmp_bit);
                     irmp_ir_detected = TRUE;
 
+
+#if IRMP_SUPPORT_RF_AC104_PROTOCOL == 1
+                    if (irmp_param.protocol == RF_AC104_PROTOCOL) {
+                      if(ac104_preamble != 0xA3) 
+                      {
+                          ANALYZE_PRINTF1("wrong preample for AC104 remote\n");
+                          //irmp_tmp_command = ac104_preamble;
+                          irmp_ir_detected = FALSE;
+                      } 
+                      else 
+                      {
+                          uint_fast16_t checksum = (ac104_remote_id & 0xff) + ((ac104_remote_id >> 8) & 0xff) + ((ac104_remote_id >> 16) & 0xff) 
+                                                  + (irmp_tmp_address & 0xff) + ((irmp_tmp_address >> 8) & 0xff) + irmp_tmp_command;
+                          if((checksum & 0xff) != ac104_parity) 
+                          {
+                            ANALYZE_PRINTF1("wrong checksum for AC104 protocol\n");
+                            irmp_ir_detected = FALSE;
+                          }
+                          else if (ac104_remote_id != RF_AC104_IDCHECK)
+                          {
+                            irmp_tmp_address = (ac104_remote_id>>8) & 0xffff;
+                            irmp_tmp_command = ac104_remote_id & 0xff;
+                          }
+                      }
+                    }
+#endif
 #if IRMP_SUPPORT_KATHREIN_PROTOCOL == 1
                     if (irmp_param.protocol == IRMP_KATHREIN_PROTOCOL && irmp_tmp_command == 0x0000)
                     {

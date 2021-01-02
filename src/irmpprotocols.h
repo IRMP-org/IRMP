@@ -85,8 +85,9 @@
 #define RF_X10_PROTOCOL                         58              // RF PC X10 Remote Control (Medion, Pollin 721815)
 #define RF_MEDION_PROTOCOL                      59              // RF PC Medion Remote Control (Medion)
 #define RF_HME_PROTOCOL                         60              // RF Homeeasy advanced protocol (no dimming)
+#define RF_AC104_PROTOCOL                       61
 
-#define IRMP_N_PROTOCOLS                        60              // number of supported protocols
+#define IRMP_N_PROTOCOLS                        61              // number of supported protocols
 
 #if defined(UNIX_OR_WINDOWS) || IRMP_PROTOCOL_NAMES == 1 || IRSND_PROTOCOL_NAMES == 1
 extern const char proto_unknown[]       PROGMEM;
@@ -151,6 +152,7 @@ extern const char proto_rf_gen24[]      PROGMEM;
 extern const char proto_rf_x10[]        PROGMEM;
 extern const char proto_rf_medion[]     PROGMEM;
 extern const char proto_rf_hme[]        PROGMEM;
+extern const char proto_rf_ac104[]        PROGMEM;
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1214,6 +1216,29 @@ typedef uint8_t     PAUSE_LEN;
 #define RF_HME_LSB                               0                               // MSB...LSB
 #define RF_HME_FLAGS                             0                               // flags
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
+ * RF AC104 remote control (for shutters / projector screens)
+ *
+ * is a64 bit protocol, 8 bit preamble, 24 bit id, 16 bit address, 8 bit command and 8 bit checksum
+ * we toggle a flag in IRMP to retrieve the ID (TODO), otherwise, we set the RF_AC104_ID fixed and abandon when received
+ *---------------------------------------------------------------------------------------------------------------------------------------------------
+ */
+#define RF_AC104_START_BIT_PULSE_TIME             5300.0e-6                        // 275 usec pulse
+#define RF_AC104_START_BIT_PAUSE_TIME             530.0e-6                        // 2675 usec pause
+#define RF_AC104_0_PULSE_TIME                      270.0e-6                        //  275 usec pulse
+#define RF_AC104_0_PAUSE_TIME                      565.0e-6                        //  275 usec pause
+#define RF_AC104_1_PULSE_TIME                      565.0e-6                        //  275 usec pulse
+#define RF_AC104_1_PAUSE_TIME                     270.0e-6                        // 1225 usec pause
+
+#define RF_AC104_FRAME_REPEAT_PAUSE_TIME          5030.0e-6                        // frame repeat after 10msec
+#define RF_AC104_ADDRESS_OFFSET                   32                               // 
+#define RF_AC104_ADDRESS_LEN                      16                                // needs special preprocessor handling to have enought bits
+#define RF_AC104_COMMAND_OFFSET                   48                                // 16 address bits, actually 26
+#define RF_AC104_COMMAND_LEN                      8                                // read 16 command bits: actually 10 additional addr. bits 
+#define RF_AC104_COMPLETE_DATA_LEN                65                               // complete length
+#define RF_AC104_STOP_BIT                          0                               // has stop bit
+#define RF_AC104_LSB                               0                               // MSB...LSB
+#define RF_AC104_FLAGS                             0                               // flags
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Frame Repetitions:
