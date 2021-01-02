@@ -84,8 +84,9 @@
 #define RF_GEN24_PROTOCOL                       57              // RF Generic, 24 Bits (Pollin 550666, EAN 4049702006022 and many other similar RF remote controls))
 #define RF_X10_PROTOCOL                         58              // RF PC X10 Remote Control (Medion, Pollin 721815)
 #define RF_MEDION_PROTOCOL                      59              // RF PC Medion Remote Control (Medion)
+#define RF_HME_PROTOCOL                         60              // RF Homeeasy advanced protocol (no dimming)
 
-#define IRMP_N_PROTOCOLS                        59              // number of supported protocols
+#define IRMP_N_PROTOCOLS                        60              // number of supported protocols
 
 #if defined(UNIX_OR_WINDOWS) || IRMP_PROTOCOL_NAMES == 1 || IRSND_PROTOCOL_NAMES == 1
 extern const char proto_unknown[]       PROGMEM;
@@ -149,6 +150,7 @@ extern const char proto_onkyo[]         PROGMEM;
 extern const char proto_rf_gen24[]      PROGMEM;
 extern const char proto_rf_x10[]        PROGMEM;
 extern const char proto_rf_medion[]     PROGMEM;
+extern const char proto_rf_hme[]        PROGMEM;
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1186,6 +1188,31 @@ typedef uint8_t     PAUSE_LEN;
 #define RF_MEDION_STOP_BIT                       1                               // has stop bit
 #define RF_MEDION_LSB                            0                               // MSB...LSB
 #define RF_MEDION_FLAGS                          0                               // flags
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
+ * RF HOMEEASY remote control (advanced protocol)
+ *
+ * Uses a special "space encoding manchester" combination, see https://homeeasyhacking.fandom.com/wiki/Advanced_Protocol
+ * We decode 'double length' bits as normal space encoding and then convert 01 to 0 and 10 to 1 as we receive them
+ *---------------------------------------------------------------------------------------------------------------------------------------------------
+ */
+#define RF_HME_START_BIT_PULSE_TIME             275.0e-6                        // 275 usec pulse
+#define RF_HME_START_BIT_PAUSE_TIME             2675.0e-6                        // 2675 usec pause
+#define RF_HME_0_PULSE_TIME                      275.0e-6                        //  275 usec pulse
+#define RF_HME_0_PAUSE_TIME                      275.0e-6                        //  275 usec pause
+#define RF_HME_1_PULSE_TIME                      275.0e-6                        //  275 usec pulse
+#define RF_HME_1_PAUSE_TIME                     1225.0e-6                        // 1225 usec pause
+
+#define RF_HME_FRAME_REPEAT_PAUSE_TIME          10.0e-3                        // frame repeat after 10msec
+#define RF_HME_ADDRESS_OFFSET                   0                               // 
+#define RF_HME_ADDRESS_LEN                      16                                // needs special preprocessor handling to have enought bits
+#define RF_HME_COMMAND_OFFSET                   16                                // 16 address bits, actually 26
+#define RF_HME_COMMAND_LEN                      16                                // read 16 command bits: actually 10 additional addr. bits 
+#define RF_HME_COMPLETE_DATA_LEN                32                               // complete length
+#define RF_HME_STOP_BIT                          1                               // has stop bit
+#define RF_HME_LSB                               0                               // MSB...LSB
+#define RF_HME_FLAGS                             0                               // flags
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------

@@ -336,6 +336,9 @@ const uint8_t irsnd_used_protocol_index[] PROGMEM =
 #if IRMP_SUPPORT_RF_MEDION_PROTOCOL == 1
     RF_MEDION_PROTOCOL
 #endif
+#if IRMP_SUPPORT_RF_HME_PROTOCOL == 1
+    RF_HME_PROTOCOL
+#endif
 };
 
 const char * const irsnd_used_protocol_names[] PROGMEM =
@@ -510,6 +513,9 @@ const char * const irsnd_used_protocol_names[] PROGMEM =
 #endif
 #if IRSND_SUPPORT_RF_MEDION_PROTOCOL == 1
     proto_rf_medion
+#endif
+#if IRSND_SUPPORT_RF_HME_PROTOCOL == 1
+    proto_rf_hme
 #endif
 };
 

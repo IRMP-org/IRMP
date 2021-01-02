@@ -647,6 +647,22 @@
 #define RF_MEDION_0_PAUSE_LEN_MIN               ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_0_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
 #define RF_MEDION_0_PAUSE_LEN_MAX               ((uint_fast8_t)(F_INTERRUPTS * RF_MEDION_0_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
 
+#define RF_HME_START_BIT_PULSE_LEN_MIN          ((uint_fast8_t)(F_INTERRUPTS * RF_HME_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
+#define RF_HME_START_BIT_PULSE_LEN_MAX          ((uint_fast8_t)(F_INTERRUPTS * RF_HME_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define RF_HME_START_BIT_PAUSE_LEN_MIN          ((uint_fast8_t)(F_INTERRUPTS * RF_HME_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
+#define RF_HME_START_BIT_PAUSE_LEN_MAX          ((uint_fast8_t)(F_INTERRUPTS * RF_HME_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define RF_HME_1_PAUSE_LEN_EXACT                ((uint_fast8_t)(F_INTERRUPTS * RF_HME_1_PAUSE_TIME + 0.5))
+#define RF_HME_1_PULSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * RF_HME_1_PULSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
+#define RF_HME_1_PULSE_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * RF_HME_1_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define RF_HME_1_PAUSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * RF_HME_1_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
+#define RF_HME_1_PAUSE_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * RF_HME_1_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define RF_HME_0_PAUSE_LEN                      ((uint_fast8_t)(F_INTERRUPTS * RF_HME_0_PAUSE_TIME))
+#define RF_HME_0_PULSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * RF_HME_0_PULSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
+#define RF_HME_0_PULSE_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * RF_HME_0_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define RF_HME_0_PAUSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * RF_HME_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
+#define RF_HME_0_PAUSE_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * RF_HME_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+
+
 #define AUTO_FRAME_REPETITION_LEN               (uint_fast16_t)(F_INTERRUPTS * AUTO_FRAME_REPETITION_TIME + 0.5)
 // use uint_fast16_t!
 
@@ -2278,6 +2294,33 @@ static const PROGMEM IRMP_PARAMETER rf_medion_param =
 
 #endif
 
+#if IRMP_SUPPORT_RF_HME_PROTOCOL == 1
+
+static const PROGMEM IRMP_PARAMETER rf_hme_param =
+{
+    RF_HME_PROTOCOL,                                                    // protocol:        ir protocol
+
+    RF_HME_1_PULSE_LEN_MIN,                                             // pulse_1_len_min: minimum length of pulse with bit value 1
+    RF_HME_1_PULSE_LEN_MAX,                                             // pulse_1_len_max: maximum length of pulse with bit value 1
+    RF_HME_1_PAUSE_LEN_MIN,                                             // pause_1_len_min: minimum length of pause with bit value 1
+    RF_HME_1_PAUSE_LEN_MAX,                                             // pause_1_len_max: maximum length of pause with bit value 1
+    RF_HME_0_PULSE_LEN_MIN,                                             // pulse_0_len_min: minimum length of pulse with bit value 0
+    RF_HME_0_PULSE_LEN_MAX,                                             // pulse_0_len_max: maximum length of pulse with bit value 0
+    RF_HME_0_PAUSE_LEN_MIN,                                             // pause_0_len_min: minimum length of pause with bit value 0
+    RF_HME_0_PAUSE_LEN_MAX,                                             // pause_0_len_max: maximum length of pause with bit value 0
+    RF_HME_ADDRESS_OFFSET,                                              // address_offset:  address offset
+    RF_HME_ADDRESS_OFFSET + RF_HME_ADDRESS_LEN,                         // address_end:     end of address
+    RF_HME_COMMAND_OFFSET,                                              // command_offset:  command offset
+    RF_HME_COMMAND_OFFSET + RF_HME_COMMAND_LEN,                         // command_end:     end of command
+    RF_HME_COMPLETE_DATA_LEN,                                           // complete_len:    complete length of frame
+    RF_HME_STOP_BIT,                                                    // stop_bit:        flag: frame has stop bit
+    RF_HME_LSB,                                                         // lsb_first:       flag: LSB first
+    RF_HME_FLAGS                                                        // flags:           some flags
+};
+
+#endif
+
+
 static uint_fast8_t                             irmp_bit;               // current bit position
 static IRMP_PARAMETER                           irmp_param;
 
@@ -2287,7 +2330,11 @@ static IRMP_PARAMETER                           irmp_param2;
 
 static volatile uint_fast8_t                    irmp_ir_detected = FALSE;
 static volatile uint_fast8_t                    irmp_protocol;
+#if IRMP_SUPPORT_RF_HME_PROTOCOL == 1
+static volatile uint_fast32_t                   irmp_address;
+#else
 static volatile uint_fast16_t                   irmp_address;
+#endif
 #if IRMP_32_BIT == 1
 static volatile uint_fast32_t                   irmp_command;
 #else
@@ -2640,7 +2687,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 break;
             }
 #endif
-
+                
             default:
             {
                 rtc = TRUE;
@@ -2728,6 +2775,19 @@ static uint_fast8_t  mitsu_parity;                                          // n
 static void
 irmp_store_bit (uint_fast8_t value)
 {
+#if IRMP_SUPPORT_RF_HME_PROTOCOL == 1
+    static uint_fast8_t hme_manchester_store = 2;
+    if (irmp_param.protocol == RF_HME_PROTOCOL) {
+      if((hme_manchester_store == 2) || (hme_manchester_store == value)) {
+        hme_manchester_store = value;
+        return;
+      }
+      value = hme_manchester_store;
+      hme_manchester_store = 2; // reset
+    }
+    else
+#endif
+
 #if IRMP_SUPPORT_ACP24_PROTOCOL == 1
     if (irmp_param.protocol == IRMP_ACP24_PROTOCOL)                                                 // squeeze 64 bits into 16 bits:
     {
@@ -2990,6 +3050,7 @@ irmp_store_bit2 (uint_fast8_t value)
 }
 #endif // IRMP_SUPPORT_RC5_PROTOCOL == 1 && (IRMP_SUPPORT_FDC_PROTOCOL == 1 || IRMP_SUPPORT_RCCAR_PROTOCOL == 1)
 
+
 #ifdef ANALYZE
 static uint32_t s_curSample = 0;
 static uint32_t s_startBitSample = 0;
@@ -3011,7 +3072,6 @@ static uint32_t s_startBitSample = 0;
     static PAUSE_LEN        irmp_pause_time;                                        // count bit time for pause
     static uint_fast16_t    key_repetition_len;                                     // SIRCS repeats frame 2-5 times with 45 ms pause
     static uint_fast8_t     repetition_frame_number;
-
 #if defined(ARDUINO)
 #include "irmpArduinoExt.cpp.h" // Must be included after declaration of irmp_start_bit_detected etc.
 #endif
@@ -3492,6 +3552,23 @@ uint_fast8_t irmp_ISR(void)
                     }
                     else
 #endif // IRMP_SUPPORT_RF_MEDION_PROTOCOL == 1
+
+#if IRMP_SUPPORT_RF_HME_PROTOCOL == 1
+                    if (irmp_pulse_time >= RF_HME_START_BIT_PULSE_LEN_MIN && irmp_pulse_time <= RF_HME_START_BIT_PULSE_LEN_MAX &&
+                        irmp_pause_time >= RF_HME_START_BIT_PAUSE_LEN_MIN && irmp_pause_time <= RF_HME_START_BIT_PAUSE_LEN_MAX)
+                    {
+                        ANALYZE_PRINTF5 ("protocol = RF_HME, start bit timings: pulse: %3d - %3d, pause: %3d - %3d\n",
+                                        RF_HME_START_BIT_PULSE_LEN_MIN, RF_HME_START_BIT_PULSE_LEN_MAX,
+                                        RF_HME_START_BIT_PAUSE_LEN_MIN, RF_HME_START_BIT_PAUSE_LEN_MAX);
+                        irmp_param_p = (IRMP_PARAMETER *) &rf_hme_param;
+//                         memcpy_P (&irmp_param, irmp_param_p, sizeof (IRMP_PARAMETER));
+//                         irmp_address = 0x22;
+//                         irmp_protocol = irmp_param.protocol;
+//                         irmp_command = 0x33;
+//                         irmp_ir_detected= TRUE;
+                    }
+                    else
+#endif // IRMP_SUPPORT_RF_HME_PROTOCOL == 1
 
 #if IRMP_SUPPORT_RECS80_PROTOCOL == 1
                     if (irmp_pulse_time >= RECS80_START_BIT_PULSE_LEN_MIN && irmp_pulse_time <= RECS80_START_BIT_PULSE_LEN_MAX &&
@@ -4888,6 +4965,7 @@ uint_fast8_t irmp_ISR(void)
                     }
                     else
 #endif
+
 
                     if (irmp_pulse_time >= irmp_param.pulse_1_len_min && irmp_pulse_time <= irmp_param.pulse_1_len_max &&
                         irmp_pause_time >= irmp_param.pause_1_len_min && irmp_pause_time <= irmp_param.pause_1_len_max)
