@@ -76,7 +76,7 @@
 #endif
 
 /*
- * Define or comment this out, if you want to save 10 bytes code size and if you can live
+ * Activate this, if you want to save 10 bytes code size and if you can live
  * with 87 micro seconds intervals of disabled interrupts for each sent byte @115200 baud.
  */
 //#define USE_ALWAYS_CLI_SEI_GUARD_FOR_OUTPUT
@@ -174,7 +174,7 @@ public:
     || USE_SOFTWARE_SERIAL /*AttinyDigisparkCore condition*/\
     || ((defined(UBRRH) || defined(UBRR0H) || defined(UBRR1H) || defined(LINBRRH)) && !USE_SOFTWARE_SERIAL)/*AttinyDigisparkCore condition for HardwareSerial*/
 // Switch to SerialOut since Serial is already defined
-// or comment out line 745 in TinyDebugSerial.h included in AttinyDigisparkCores/src/tiny/WProgram.h at line 24 for AttinyDigisparkCores
+// or activate line 745 in TinyDebugSerial.h included in AttinyDigisparkCores/src/tiny/WProgram.h at line 24 for AttinyDigisparkCores
 extern TinySerialOut SerialOut;
 #define Serial SerialOut
 #else

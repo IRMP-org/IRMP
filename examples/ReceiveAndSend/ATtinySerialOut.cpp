@@ -484,7 +484,7 @@ void TinySerialOut::println() {
     || USE_SOFTWARE_SERIAL /*AttinyDigisparkCore condition*/\
     || ((defined(UBRRH) || defined(UBRR0H) || defined(UBRR1H) || defined(LINBRRH)) && !USE_SOFTWARE_SERIAL)/*AttinyDigisparkCore condition for HardwareSerial*/
 // Switch to SerialOut since Serial is already defined
-// or comment out line 745 in TinyDebugSerial.h included in AttinyDigisparkCores/src/tiny/WProgram.h at line 24 for AttinyDigisparkCores
+// or activate line 745 in TinyDebugSerial.h included in AttinyDigisparkCores/src/tiny/WProgram.h at line 24 for AttinyDigisparkCores
 TinySerialOut SerialOut;
 #else
 TinySerialOut Serial;

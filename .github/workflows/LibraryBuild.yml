@@ -58,6 +58,9 @@ jobs:
         # With sketches-exclude you may exclude specific examples for a board. Use a comma separated list.
         #############################################################################################################
         include:
+          - arduino-boards-fqbn: arduino:megaavr:nona4809:mode=off
+            sketches-exclude: MinimalReceiver,IRDispatcherDemo
+
           - arduino-boards-fqbn: digistump:avr:digispark-tiny:clock=clock16
             platform-url: https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
             sketches-exclude: AllProtocols,SendAllProtocols,ReceiveAndSendDynamicPins,ReceiverTimingAnalysis # Does not fit in FLASH # Comma separated list of example names to exclude in build
@@ -82,23 +85,28 @@ jobs:
 
           - arduino-boards-fqbn: esp8266:esp8266:d1_mini:eesz=4M3M,xtal=80
             platform-url: https://arduino.esp8266.com/stable/package_esp8266com_index.json
-            sketches-exclude: AllProtocols # error ".text1' will not fit in region `iram1_0_seg'"
+            sketches-exclude: MinimalReceiver,AllProtocols # error ".text1' will not fit in region `iram1_0_seg'"
 
           - arduino-boards-fqbn: esp32:esp32:featheresp32:FlashFreq=80
             platform-url: https://dl.espressif.com/dl/package_esp32_index.json
+            sketches-exclude: MinimalReceiver
 
           - arduino-boards-fqbn: STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
             platform-url: https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
+            sketches-exclude: MinimalReceiver
 
           - arduino-boards-fqbn: STM32:stm32:GenL0:pnum=THUNDERPACK_L072
             platform-url: https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
+            sketches-exclude: MinimalReceiver,IRDispatcherDemo
 
           - arduino-boards-fqbn: stm32duino:STM32F1:genericSTM32F103C # Roger Clark version
             platform-url: http://dan.drown.org/stm32duino/package_STM32duino_index.json
+            sketches-exclude: MinimalReceiver
 
           # ALL examples gave strange BFD assertions for 1.x version if empty .cpp files are included in the build
           - arduino-boards-fqbn: SparkFun:apollo3:sfe_artemis_nano
             platform-url: https://raw.githubusercontent.com/sparkfun/Arduino_Apollo3/master/package_sparkfun_apollo3_index.json
+            sketches-exclude: MinimalReceiver
 
       # Do not cancel all jobs / architectures if one job fails
       fail-fast: false

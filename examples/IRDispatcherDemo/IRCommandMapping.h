@@ -63,9 +63,9 @@
 #define COMMAND_STOP            IR_HASH
 #define COMMAND_RESET           IR_STAR
 #define COMMAND_BLINK           IR_0
-#define COMMAND_TONE2           IR_1
+#define COMMAND_TONE1           IR_1
 
-#define COMMAND_TONE1           IR_2
+#define COMMAND_TONE2           IR_2
 #define COMMAND_TONE3           IR_3
 //#define            IR_4
 //#define            IR_5
@@ -168,8 +168,10 @@ COMMAND_ON, IR_COMMAND_FLAG_REGULAR, &doLedOn, LEDon },
 {
 COMMAND_OFF, IR_COMMAND_FLAG_REGULAR, &doLedOff, LEDoff },
 { COMMAND_START, IR_COMMAND_FLAG_REGULAR, &doLedBlinkStart, blinkStart },
+#if !defined(ESP32)
 {
 COMMAND_TONE1, IR_COMMAND_FLAG_REGULAR, &doTone1800, tone1800 },
+#endif
 
 /*
  * Short commands, which can be executed always
@@ -182,10 +184,12 @@ COMMAND_STOP, IR_COMMAND_FLAG_IS_STOP_COMMAND, &doStop, stop },
 /*
  * Repeatable short commands
  */
+#if !defined(ESP32)
 {
 COMMAND_TONE2, IR_COMMAND_FLAG_REPEATABLE_EXECUTE_ALWAYS, &doTone2200, tone2200 },
 {
 COMMAND_TONE3, IR_COMMAND_FLAG_REPEATABLE_EXECUTE_ALWAYS, &doTone2200, tone2200 },
+#endif
 {
 COMMAND_INCREASE_BLINK, IR_COMMAND_FLAG_REPEATABLE_EXECUTE_ALWAYS, &doIncreaseBlinkFrequency, increaseBlink },
 {

@@ -105,8 +105,8 @@ void initIRTimerForSend(void)
 #  if defined(__AVR_ATmega16__)
     TCCR2 = _BV(WGM21) | _BV(CS21);                                 // CTC mode, prescale by 8
     OCR2 = (((F_CPU / 8) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY) - 1; // 132 for 15 kHz @16 MHz, 52 for 38 kHz @16 MHz
-    TIMSK = _BV(OCIE2);                                             // enable interrupt
     TCNT2 = 0;
+    TIMSK = _BV(OCIE2);                                             // enable interrupt
 
 #  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 // Since the ISR takes 5 to 22 microseconds for ATtiny@16MHz only 16 and 8 MHz makes sense
@@ -122,6 +122,7 @@ void initIRTimerForSend(void)
     TCCR0B = _BV(CS00);                                             // presc = 1 / no prescaling
 #      endif
     TCCR0A = _BV(WGM01);                                            // CTC with OCRA as top
+    TCNT0 = 0;
     TIMSK |= _BV(OCIE0B);                                           // enable compare match interrupt
 
 #    else
@@ -133,6 +134,7 @@ void initIRTimerForSend(void)
     OCR1B = OCR1C = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;           // compare value: 209 for 76 kHz, 221 for 72kHz @16MHz
     TCCR1 = _BV(CTC1) | _BV(CS10);                                  // switch CTC Mode on, set prescaler to 1 / no prescaling
 #      endif
+    TCNT1 = 0;
     TIMSK |= _BV(OCIE1B);                                           // enable compare match interrupt
 #    endif
 
@@ -141,6 +143,7 @@ void initIRTimerForSend(void)
     ICR1 = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;                    // 1065 for 15 kHz @16 MHz. compare value: 1/15000 of CPU frequency
     TCCR1B = 0;                                                     // switch CTC Mode on
     TCCR1B = _BV(WGM12) | _BV(WGM13) | _BV(CS10);                   // switch CTC Mode on, set prescaler to 1 / no prescaling
+    TCNT1 = 0;
     TIMSK1 = _BV(OCIE1B);                                           // enable compare match interrupt
 
 #  elif defined(__AVR_ATmega4809__) || defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) // Uno WiFi Rev 2, Nano Every
@@ -161,17 +164,17 @@ void initIRTimerForSend(void)
     TCCR2 = _BV(WGM21) | _BV(CS21);                                 // CTC mode, prescale by 8
     OCR2 = (((F_CPU / 8) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY) - 1; // 132 for 15 kHz @16 MHz, 52 for 38 kHz @16 MHz
 #    endif
+    TCNT2 = 0;
     TIFR = _BV(OCF2) | _BV(TOV2);                                   // reset interrupt flags
     TIMSK = _BV(OCIE2);                                             // enable TIMER2_COMP_vect interrupt to be compatible with tone() library
-    TCNT2 = 0;
 
 #  elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
     TCCR3A = 0;
     TCCR3B = _BV(CS30) | _BV(WGM32);                                // no prescale, CTC mode Top OCR3A
     // Set OCR3B = OCR3A since we use TIMER3_COMPB_vect as interrupt, but run timer in CTC mode with OCR3A as TOP
     OCR3B = OCR3A = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;           // 1065 for 15kHz, 209 for 76 kHz @ 16MHz
-    TIMSK3 = _BV(OCIE3B);                                           // enable TIMER3_COMPB_vect interrupt to be compatible with tone() library
     TCNT3 = 0;
+    TIMSK3 = _BV(OCIE3B);                                           // enable TIMER3_COMPB_vect interrupt to be compatible with tone() library
 
 #  elif defined(OCF2B)  // __AVR_ATmega328__ here
     TCCR2A = _BV(WGM21);                                            // CTC mode
@@ -183,9 +186,9 @@ void initIRTimerForSend(void)
     TCCR2B = _BV(CS21);                                             // prescale by 8
     OCR2B = OCR2A = (((F_CPU / 8) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY) - 1; // 132 for 15 kHz @16 MHz, 52 for 38 kHz @16 MHz
 #    endif
+    TCNT2 = 0;
     TIFR2 = _BV(OCF2B) | _BV(OCF2A) | _BV(TOV2);                    // reset interrupt flags
     TIMSK2 = _BV(OCIE2B);                                           // enable TIMER2_COMPB_vect interrupt to be compatible with tone() library
-    TCNT2 = 0;
 
 #  else
 #error "This AVR CPU is not supported by IRMP"

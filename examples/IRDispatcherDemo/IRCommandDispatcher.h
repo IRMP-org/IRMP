@@ -35,11 +35,12 @@ struct IRToCommandMapping {
     const char * CommandString;
 };
 
-struct IRData {
-    uint8_t protocol;   // not used but useful for compatibility to IRMP
-    uint16_t address;   // to distinguish between multiple senders
+struct IRDataForCommandDispatcherStruct {
+    uint16_t address;           // to distinguish between multiple senders
     uint16_t command;
     bool isRepeat;
+    bool isAvailable;           // Flag set by ISR for new data and reset by consumer
+    uint32_t MillisOfLastCode;  // millis() of last IR command received - for timeouts etc.
 };
 
 /*
@@ -72,8 +73,8 @@ public:
 
     uint8_t currentRegularCommandCalled = COMMAND_INVALID; // The code for the current called command
     bool executingRegularCommand = false;               // Lock for recursive calls of regular commands
-    bool justCalledRegularIRCommand = false;  // Flag that a regular command was received and called - is set before call of command
-    uint8_t rejectedRegularCommand = COMMAND_INVALID; // Storage for rejected command to allow the current command to end, before it is called by main loop
+    bool justCalledRegularIRCommand = false;            // Flag that a regular command was received and called - is set before call of command
+    uint8_t rejectedRegularCommand = COMMAND_INVALID;   // Storage for rejected command to allow the current command to end, before it is called by main loop
     /*
      * Flag for main loop, set by checkIRInputForAlwaysExecutableCommand().
      * It works like an exception so we do not need to propagate the return value from the delay up to the movements.
@@ -81,14 +82,12 @@ public:
      */
     bool requestToStopReceived;
 
-    struct IRData IRReceivedData;
-    unsigned long lastIRCodeMillis = 0;                 // millis() of last IR command received - for timeouts etc.
+    struct IRDataForCommandDispatcherStruct IRReceivedData;
 
     /*
      * Functions used internally
      */
     uint8_t checkAndCallCommand();
-    bool getIRCommand(bool doWait);
 };
 
 extern IRCommandDispatcher IRDispatcher;

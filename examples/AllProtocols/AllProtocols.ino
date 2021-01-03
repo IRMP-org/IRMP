@@ -29,7 +29,7 @@
  */
 
 /*
- * Comment out the type of LCD you use
+ * Activate the type of LCD you use
  */
 //#define USE_PARALELL_LCD
 //#define USE_SERIAL_LCD

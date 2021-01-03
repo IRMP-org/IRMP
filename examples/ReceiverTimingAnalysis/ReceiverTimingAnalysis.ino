@@ -1,11 +1,11 @@
 /*
  *  ReceiverTimingAnalysis.cpp
  *
- *  This test program enables the pin change interrupt at pin 3 for NEC IR Signals.
- *  It measures the pulse and pause times of the attached signal and computes some statistics.
+ *  This program enables the pin change interrupt at pin 3 and waits for NEC (or other Pulse-Distance-Coding) IR Signal.
+ *  It measures the pulse and pause times of the incoming signal and computes some statistics for it.
  *
  *  Observed values:
- *  Delta of each signal type is around 50 up to 100 and up to 200 at low signals. TSOP is better, especially at low signals.
+ *  Delta of each signal type is around 50 up to 100 and at low signals up to 200. TSOP is better, especially at low IR signal level.
  *  VS1838      Mark Excess -50 to +50 us
  *  TSOP31238   Mark Excess 0 to +50
  *
@@ -14,6 +14,7 @@
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
+ *  This file is part of Arduino-IRremote https://github.com/z3t0/Arduino-IRremote.
  *
  *  IRMP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -63,6 +64,7 @@ void setup()
     attachInterrupt(digitalPinToInterrupt(IR_INPUT_PIN), measureTimingISR, CHANGE);
 #endif
     Serial.println(F("Ready to analyze NEC IR signal at pin " STR(IR_INPUT_PIN)));
+    Serial.println();
 }
 
 uint8_t ISREdgeCounter = 0;
@@ -70,20 +72,23 @@ volatile uint32_t LastMicros;
 struct timingStruct
 {
     uint16_t minimum;
+    uint8_t indexOfMinimum;
     uint16_t maximum;
-    uint8_t minimumIndex;
-    uint8_t maximumIndex;
+    uint8_t indexOfMaximum;
     uint16_t average;
 
     uint16_t SumForAverage;
     uint8_t SampleCount;
-    uint8_t LastPrintedCount;
+//    uint8_t LastPrintedCount;
 };
 
 struct timingStruct Mark;
 struct timingStruct ShortSpace;
 struct timingStruct LongSpace;
 
+/*
+ * Compute minimum, maximum and average
+ */
 void processTmingValue(struct timingStruct *aTimingStruct, uint16_t aValue)
 {
     if (aTimingStruct->SampleCount == 0)
@@ -97,12 +102,12 @@ void processTmingValue(struct timingStruct *aTimingStruct, uint16_t aValue)
     if (aTimingStruct->minimum > aValue)
     {
         aTimingStruct->minimum = aValue;
-        aTimingStruct->minimumIndex = aTimingStruct->SampleCount;
+        aTimingStruct->indexOfMinimum = aTimingStruct->SampleCount;
     }
     if (aTimingStruct->maximum < aValue)
     {
         aTimingStruct->maximum = aValue;
-        aTimingStruct->maximumIndex = aTimingStruct->SampleCount;
+        aTimingStruct->indexOfMaximum = aTimingStruct->SampleCount;
     }
 
     aTimingStruct->SampleCount++;
@@ -111,7 +116,7 @@ void processTmingValue(struct timingStruct *aTimingStruct, uint16_t aValue)
 
 }
 
-void printTimingValue(struct timingStruct *aTimingStruct, const char *aCaption)
+void printTimingValues(struct timingStruct *aTimingStruct, const char *aCaption)
 {
 //    if (aTimingStruct->LastPrintedCount != aTimingStruct->SampleCount)
 //    {
@@ -122,11 +127,11 @@ void printTimingValue(struct timingStruct *aTimingStruct, const char *aCaption)
     Serial.print(F(" Minimum="));
     Serial.print(aTimingStruct->minimum);
     Serial.print(F(" @"));
-    Serial.print(aTimingStruct->minimumIndex);
+    Serial.print(aTimingStruct->indexOfMinimum);
     Serial.print(F(" Maximum="));
     Serial.print(aTimingStruct->maximum);
     Serial.print(F(" @"));
-    Serial.print(aTimingStruct->maximumIndex);
+    Serial.print(aTimingStruct->indexOfMaximum);
     Serial.print(F(" Delta="));
     Serial.print(aTimingStruct->maximum - aTimingStruct->minimum);
     Serial.print(F("   Average="));
@@ -138,32 +143,51 @@ void printTimingValue(struct timingStruct *aTimingStruct, const char *aCaption)
 
 void loop()
 {
-    if (Mark.SampleCount == 32)
+    if (Mark.SampleCount >= 32)
     {
-        Serial.println();
-        printTimingValue(&Mark, "Mark      ");
-        printTimingValue(&ShortSpace, "ShortSpace");
-        printTimingValue(&LongSpace, "LongSpace ");
+        /*
+         * This check enables statistics for longer protocols like Kaseikyo/Panasonics
+         */
+#if !defined(ARDUINO_ARCH_MBED)
+        noInterrupts();
+#endif
+        uint32_t tLastMicros = LastMicros;
+#if !defined(ARDUINO_ARCH_MBED)
+        interrupts();
+#endif
+        uint32_t tMicrosDelta = micros() - tLastMicros;
 
-        Serial.println(F("Analysis  :"));
-        Serial.print(F(" Average (Mark + ShortSpace)/2="));
-        int16_t MarkAndShortSpaceAverage = (Mark.average + ShortSpace.average) / 2;
-        Serial.print(MarkAndShortSpaceAverage);
-        Serial.print(F("us   Delta (to standard 560)="));
-        Serial.print(MarkAndShortSpaceAverage - 560);
-        Serial.print(F("us\r\n Mark - Average -> MarkExcess="));
-        Serial.print((int16_t) Mark.average - MarkAndShortSpaceAverage);
-        Serial.print(F("us"));
-        Serial.println();
+        if (tMicrosDelta > 10000)
+        {
+            // NEC signal ended just now
+            Serial.println();
+            printTimingValues(&Mark, "Mark      ");
+            printTimingValues(&ShortSpace, "ShortSpace");
+            printTimingValues(&LongSpace, "LongSpace ");
 
-        Mark.SampleCount = 0; // used as flag for printing the results
+            /*
+             * Print analysis of mark and short spaces
+             */
+            Serial.println(F("Analysis  :"));
+            Serial.print(F(" Average (Mark + ShortSpace)/2="));
+            int16_t MarkAndShortSpaceAverage = (Mark.average + ShortSpace.average) / 2;
+            Serial.print(MarkAndShortSpaceAverage);
+            Serial.print(F("us   Delta (to NEC standard 560)="));
+            Serial.print(MarkAndShortSpaceAverage - 560);
+            Serial.print(F("us\r\n Mark - Average -> MarkExcess="));
+            Serial.print((int16_t) Mark.average - MarkAndShortSpaceAverage);
+            Serial.print(F("us"));
+            Serial.println();
+            Serial.println();
+
+            Mark.SampleCount = 0; // used as flag for not printing the results more than once
+        }
     }
 }
 
 /*
- * Here we know, that data is available.
- * Since this function is executed in Interrupt handler context, make it short and do not use delay() etc.
- * In order to enable other interrupts you can call sei() (enable interrupt again) after getting data.
+ * The interrupt handler.
+ * Just add to the appropriate timing structure.
  */
 #if defined(ESP8266)
 void ICACHE_RAM_ATTR measureTimingISR()
@@ -199,7 +223,9 @@ void measureTimingISR()
         ISREdgeCounter++;
     }
 
-// skip header mark and space and first bit mark and space
+    /*
+     * Skip header mark and space and first bit mark and space
+     */
     if (ISREdgeCounter > 4)
     {
         if (tInputLevel != LOW)
@@ -215,13 +241,13 @@ void measureTimingISR()
             {
                 // long space - logical 1
                 processTmingValue(&LongSpace, tMicrosDelta);
-//                Serial.print('1');
+                Serial.print('1');
             }
             else
             {
                 // short space - logical 0
                 processTmingValue(&ShortSpace, tMicrosDelta);
-//                Serial.print('0');
+                Serial.print('0');
             }
         }
     }

@@ -11,6 +11,7 @@
  *
  *  This file is part of ServoEasing https://github.com/ArminJo/ServoEasing.
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
+ *  This file is part of Arduino-IRremote https://github.com/z3t0/Arduino-IRremote.
  *
  *  ServoEasing is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,8 +31,8 @@
 
 #include "IRCommandDispatcher.h"
 
-//#define INFO // comment this out to see serial info output
-//#define DEBUG // comment this out to see serial info output
+//#define INFO // activate this out to see serial info output
+//#define DEBUG // activate this out to see serial info output
 #ifdef INFO
 #  ifndef DEBUG
 #define DEBUG
@@ -40,60 +41,93 @@
 
 IRCommandDispatcher IRDispatcher;
 
-#if defined(USE_IRMP_LIBRARY)
-#define getIRData() irmp_get_data((IRMP_DATA*)&IRReceivedData)
+#if defined(USE_TINY_IR_RECEIVER)
+#include "TinyIRReceiver.cpp.h"
 
+void IRCommandDispatcher::init() {
+    initPCIInterruptForTinyReceiver();
+}
+
+/*
+ * This is the function is called if a complete command was received
+ */
+#if defined(ESP8266)
+void ICACHE_RAM_ATTR handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat)
+#elif defined(ESP32)
+void IRAM_ATTR handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat)
+#else
+void handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat)
+#endif
+{
+    IRDispatcher.IRReceivedData.address = aAddress;
+    IRDispatcher.IRReceivedData.command = aCommand;
+    IRDispatcher.IRReceivedData.isRepeat = isRepeat;
+    IRDispatcher.IRReceivedData.MillisOfLastCode = millis();
+    IRDispatcher.IRReceivedData.isAvailable = true;
+#ifdef INFO
+    Serial.print(F("A=0x"));
+    Serial.print(aAddress, HEX);
+    Serial.print(F(" C=0x"));
+    Serial.print(aCommand, HEX);
+    if (isRepeat) {
+        Serial.print(F("R"));
+    }
+    Serial.println();
+#endif
+    if (aAddress == IR_ADDRESS) {
+        IRDispatcher.loop(false); // cannot use IRDispatcher.loop as parameter for irmp_register_complete_callback_function
+#ifdef INFO
+        } else {
+        Serial.print(F(" Wrong address. Expected 0x"));
+        Serial.println(IR_ADDRESS, HEX);
+#endif
+    }
+}
+
+#elif defined(USE_IRMP_LIBRARY)
 void IRCommandDispatcher::init() {
     irmp_init();
 }
 
-
-#elif defined(USE_IRL_REMOTE_LIBRARY)
-
-#if (IR_RECEIVER_PIN != 2) && (IR_RECEIVER_PIN != 3)
-#include <PinChangeInterrupt.h> // must be included before IRLremote.h if we do not use pin 2 or 3
+/*
+ * This is the function is called if a complete command was received
+ */
+#if defined(ESP8266)
+void ICACHE_RAM_ATTR handleReceivedIRData()
+#elif defined(ESP32)
+void IRAM_ATTR handleReceivedIRData()
+#else
+void handleReceivedIRData()
 #endif
-/*
- * Only NEC protocol
- */
-#include <IRLremote.h>      // include IR Remote library
-
-// repeat definitions for NEC
-#define IR_NEC_REPEAT_ADDRESS 0xFFFF
-#define IR_NEC_REPEAT_CODE 0x0
-
-CNec IRLremote;
-
-/*
- * @return true if command or repeat was received
- */
-bool getIRData() {
-    static uint8_t sLastIRValue = COMMAND_EMPTY; // for repeat detection
-
-    if (IRLremote.available()) {
-        // Get the new data from the remote
-        auto tIRData = IRLremote.read();
-        IRDispatcher.IRReceivedData.address = tIRData.address;
-        IRDispatcher.IRReceivedData.command = tIRData.command;
-        if ((tIRData.address == IR_NEC_REPEAT_ADDRESS && tIRData.command == IR_NEC_REPEAT_CODE) || (sLastIRValue == tIRData.command)) {
-            IRDispatcher.IRReceivedData.isRepeat = true;
-            if (sLastIRValue != COMMAND_EMPTY) {
-                IRDispatcher.IRReceivedData.command = sLastIRValue;
-            }
-        } else {
-            sLastIRValue = tIRData.command;
-            IRDispatcher.IRReceivedData.isRepeat = false;
-        }
-        return true;
-    }
-    return false;
-}
-
-void IRCommandDispatcher::init() {
-    // Start reading the remote. PinInterrupt or PinChangeInterrupt* will automatically be selected
-    if (!IRLremote.begin(IR_RECEIVER_PIN)) {
+{
+    IRMP_DATA tTeporaryData;
+    irmp_get_data(&tTeporaryData);
+    IRDispatcher.IRReceivedData.address = tTeporaryData.address;
+    IRDispatcher.IRReceivedData.command = tTeporaryData.command;
+    IRDispatcher.IRReceivedData.isRepeat = tTeporaryData.flags & IRMP_FLAG_REPETITION;
+    IRDispatcher.IRReceivedData.MillisOfLastCode = millis();
+    IRDispatcher.IRReceivedData.isAvailable = true;
 #ifdef INFO
-        Serial.println(F("You did not choose a valid pin"));
+    Serial.print(F("A=0x"));
+    Serial.print(IRDispatcher.IRReceivedData.address, HEX);
+    Serial.print(F(" C=0x"));
+    Serial.print(IRDispatcher.IRReceivedData.command, HEX);
+    if (IRDispatcher.IRReceivedData.isRepeat) {
+        Serial.print(F("R"));
+    }
+    Serial.println();
+#endif
+    // To enable delay() for commands
+#if !defined(ARDUINO_ARCH_MBED)
+    interrupts(); // be careful with always executable commands which lasts longer than the IR repeat duration.
+#endif
+
+    if (IRDispatcher.IRReceivedData.address == IR_ADDRESS) {
+        IRDispatcher.loop(false); // cannot use IRDispatcher.loop as parameter for irmp_register_complete_callback_function
+#ifdef INFO
+        } else {
+        Serial.print(F(" Wrong address. Expected 0x"));
+        Serial.println(IR_ADDRESS, HEX);
 #endif
     }
 }
@@ -119,46 +153,10 @@ void IRCommandDispatcher::loop(bool aRunRejectedCommand) {
         checkAndCallCommand();
     }
 
-    if (getIRCommand(false)) {
+    if (IRReceivedData.isAvailable) {
+        IRReceivedData.isAvailable = false;
         checkAndCallCommand();
     }
-}
-
-/*
- * Waits for next IR command, and returns IR code.
- * @return true if new command was received
- */
-bool IRCommandDispatcher::getIRCommand(bool doWait) {
-    do {
-        if (getIRData()) {
-            lastIRCodeMillis = millis();
-#ifdef INFO
-# if defined(USE_IRMP_LIBRARY)
-            irmp_result_print((IRMP_DATA*)&IRReceivedData);
-#  else
-            Serial.print(F("A=0x"));
-            Serial.print(IRReceivedData.address, HEX);
-            Serial.print(F(" C=0x"));
-            Serial.print(IRReceivedData.command, HEX);
-            if ((IRReceivedData.isRepeat)) {
-                Serial.print(F("R"));
-            }
-            Serial.println();
-#  endif
-#endif
-            if (IRReceivedData.isRepeat || IRReceivedData.address == IR_ADDRESS) {
-                // Received new code with right address or repeat
-                return true;
-            } else {
-#ifdef INFO
-                Serial.print(F(" Wrong address. Expected 0x"));
-                Serial.println(IR_ADDRESS, HEX);
-#endif
-            }
-        }
-    } while (doWait);
-
-    return false;
 }
 
 /*
@@ -173,7 +171,7 @@ uint8_t IRCommandDispatcher::checkAndCallCommand() {
         if (IRReceivedData.command == IRMapping[i].IRCode) {
 
 #ifdef INFO
-            const __FlashStringHelper * tCommandName = reinterpret_cast<const __FlashStringHelper *>(IRMapping[i].CommandString);
+            const __FlashStringHelper *tCommandName = reinterpret_cast<const __FlashStringHelper*>(IRMapping[i].CommandString);
 #endif
             /*
              * Check for repeat and if it is allowed for the current command
@@ -258,7 +256,8 @@ void IRCommandDispatcher::setRequestToStopReceived() {
  */
 bool IRCommandDispatcher::checkIRInputForAlwaysExecutableCommand() {
     uint8_t tCheckResult;
-    if (getIRCommand(false)) {
+    if (IRDispatcher.IRReceivedData.isAvailable) {
+        IRReceivedData.isAvailable = false;
         tCheckResult = checkAndCallCommand();
         if ((tCheckResult == IR_CODE_NOT_FOUND) || (tCheckResult == FOUND_BUT_RECURSIVE_LOCK)) {
             // IR command not found in mapping or received a recursive (while just running another one) regular command -> request stop
@@ -293,11 +292,11 @@ void IRCommandDispatcher::printIRCommandString() {
     Serial.print(F("IRCommand="));
     for (uint8_t i = 0; i < sizeof(IRMapping) / sizeof(struct IRToCommandMapping); ++i) {
         if (IRReceivedData.command == IRMapping[i].IRCode) {
-            Serial.println(reinterpret_cast<const __FlashStringHelper *>(IRMapping[i].CommandString));
+            Serial.println(reinterpret_cast<const __FlashStringHelper*>(IRMapping[i].CommandString));
             return;
         }
     }
-    Serial.println(reinterpret_cast<const __FlashStringHelper *>(unknown));
+    Serial.println(reinterpret_cast<const __FlashStringHelper*>(unknown));
 #endif
 }
 

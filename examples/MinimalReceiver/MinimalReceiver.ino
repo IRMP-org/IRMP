@@ -1,21 +1,20 @@
 /*
  *  MinimalReceiver.cpp
  *
- *  Receives IR protocol data of 1 protocol.
- *  Example with minimal functionality to receive 1 protocol - especially suited for ATtinies.
- *
- *  *****************************************************************************************************************************
- *  To access the library files from your sketch, you have to first use `Sketch > Show Sketch Folder (Ctrl+K)` in the Arduino IDE.
- *  Then navigate to the parallel `libraries` folder and select the library you want to access.
- *  The library files itself are located in the `src` sub-directory.
- *  If you did not yet store the example as your own sketch, then with Ctrl+K you are instantly in the right library folder.
- *  *****************************************************************************************************************************
+ *  Receives IR protocol data of NEC protocol using pin change interrupts.
+ *  On complete received IR command the function handleReceivedIRData(uint16_t aAddress, uint8_t aCommand, bool isRepetition)
+ *  is called in Interrupt context but with interrupts being enabled to enable use of delay() etc.
+ *  !!!!!!!!!!!!!!!!!!!!!!
+ *  Functions called in interrupt context should be running as short as possible,
+ *  so if you require longer action, save the data (address + command) and handle them in the main loop.
+ *  !!!!!!!!!!!!!!!!!!!!!
  *
  *
- *  Copyright (C) 2019  Armin Joachimsmeyer
+ *  Copyright (C) 2021  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
+ *  This file is part of Arduino-IRremote https://github.com/z3t0/Arduino-IRremote.
  *
  *  IRMP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,36 +34,77 @@
 #include <Arduino.h>
 
 /*
- * Set input pin and output pin definitions etc.
+ * First: set input pin definition.
  */
-#include "PinDefinitionsAndMore.h"
+#if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#include "ATtinySerialOut.h"
+#  if defined(ARDUINO_AVR_DIGISPARKPRO)
+#define IR_INPUT_PIN   9 // PA3 - on Digispark board labeled as pin 9
+#  else
+#define IR_INPUT_PIN    0
+#  endif
+#  if defined(ARDUINO_AVR_DIGISPARK)
+#define LED_BUILTIN PB1
+#  endif
+#else
 
-#define IRMP_SUPPORT_NEC_PROTOCOL               1
+#define IR_INPUT_PIN    2
+//#define DO_NOT_USE_FEEDBACK_LED_PIN
+#endif
+
 /*
- * After setting the definitions we can include the code and compile it.
+ * Second: include the code and compile it.
  */
-#include <irmp.c.h>
+#include "TinyIRReceiver.cpp.h"
 
-IRMP_DATA irmp_data;
+/*
+ * Helper macro for getting a macro definition as string
+ */
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
 
-void setup() {
-    pinMode(LED_BUILTIN,OUTPUT);
-    irmp_init();
+void setup()
+{
+    pinMode(LED_BUILTIN, OUTPUT);
+
+    Serial.begin(115200);
+#if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL)
+    delay(2000); // To be able to connect Serial monitor after reset and before first printout
+#endif
+    // Just to know which program is running on my Arduino
+#if defined(ESP8266)
+    Serial.println();
+#endif
+    Serial.println(F("START " __FILE__ " from " __DATE__));
+    initPCIInterruptForTinyReceiver();
+    Serial.println(F("Ready to receive NEC IR signals at pin " STR(IR_INPUT_PIN)));
 }
 
-void loop() {
+void loop()
+{
     /*
-     * Check if new data available and get them
+     * Put your code here
      */
-    if (irmp_get_data(&irmp_data)) {
-        /*
-         * Skip repetitions of command
-         */
-        if (!(irmp_data.flags & IRMP_FLAG_REPETITION)) {
-            /*
-             * Here data is available and is no repetition -> echo last bit of command at the internal led
-             */
-            digitalWrite(LED_BUILTIN, irmp_data.command & 0x01);
-        }
-    }
+}
+
+/*
+ * This is the function is called if a complete command was received
+ */
+#if defined(ESP8266)
+void ICACHE_RAM_ATTR handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat)
+#elif defined(ESP32)
+void IRAM_ATTR handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat)
+#else
+void handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat)
+#endif
+{
+    /*
+     * Print only very short output, since we are in an interrupt context and do not want to miss the next interrupts of the repeats coming soon
+     */
+    Serial.print(F("A=0x"));
+    Serial.print(aAddress, HEX);
+    Serial.print(F(" C=0x"));
+    Serial.print(aCommand, HEX);
+    Serial.print(F(" R="));
+    Serial.println(isRepeat);
 }

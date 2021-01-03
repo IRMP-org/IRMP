@@ -15,7 +15,7 @@
 #define IRMP_SELECT_PROTOCOLS_H
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * Change settings from 1 to 0 (or comment it out) if you want to disable one or more decoders.
+ * Change settings from 1 to 0 (or deactivate it) if you want to disable one or more decoders.
  * This saves program space.
  *
  * 1 enable  decoder
