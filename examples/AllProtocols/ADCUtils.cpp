@@ -362,4 +362,8 @@ float getTemperature(void) {
     return (tTemp / 1.22);
 #endif
 }
+#elif defined(ARDUINO_ARCH_APOLLO3)
+    void ADCUtilsDummyToAvoidBFDAssertions(){
+        ;
+    }
 #endif // defined(__AVR__)
