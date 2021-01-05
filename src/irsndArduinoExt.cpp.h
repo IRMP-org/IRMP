@@ -521,7 +521,7 @@ const char * const irsnd_used_protocol_names[] PROGMEM =
     proto_rf_medion,
 #endif
 #if IRSND_SUPPORT_RF_HME_PROTOCOL == 1
-    proto_rf_hme
+    proto_rf_hme,
 #endif
 #if IRSND_SUPPORT_RF_AC104_PROTOCOL == 1
     proto_rf_ac104

@@ -475,8 +475,6 @@
 #define IRSND_ACP24_0_PAUSE_LEN                     (uint8_t)(F_INTERRUPTS * ACP24_0_PAUSE_TIME + 0.5)
 #define IRSND_ACP24_FRAME_REPEAT_PAUSE_LEN          (uint16_t)(F_INTERRUPTS * ACP24_FRAME_REPEAT_PAUSE_TIME + 0.5)                // use uint16_t!
 
-#define IRSND_RF_LATENCY                              (50.0e-6) //50 us latency
-
 #define IRSND_RF_GEN24_START_BIT_PULSE_LEN             0
 #define IRSND_RF_GEN24_START_BIT_PAUSE_LEN             0
 #define IRSND_RF_GEN24_REPEAT_START_BIT_PAUSE_LEN      (uint8_t)(F_INTERRUPTS * RF_GEN24_REPEAT_START_BIT_PAUSE_TIME + 0.5)
@@ -486,23 +484,23 @@
 #define IRSND_RF_GEN24_0_PAUSE_LEN                     (uint8_t)(F_INTERRUPTS * RF_GEN24_0_PAUSE_TIME + 0.5)
 #define IRSND_RF_GEN24_FRAME_REPEAT_PAUSE_LEN          (uint16_t)(F_INTERRUPTS * RF_GEN24_FRAME_REPEAT_PAUSE_TIME + 0.5)                // use uint16_t!
 
-#define IRSND_RF_HME_START_BIT_PULSE_LEN             (uint8_t)(F_INTERRUPTS * (RF_HME_START_BIT_PULSE_TIME - IRSND_RF_LATENCY)+ 0.5)
-#define IRSND_RF_HME_START_BIT_PAUSE_LEN             (uint8_t)(F_INTERRUPTS * (RF_HME_START_BIT_PAUSE_TIME + IRSND_RF_LATENCY)+ 0.5)
+#define IRSND_RF_HME_START_BIT_PULSE_LEN             (uint8_t)(F_INTERRUPTS * RF_HME_START_BIT_PULSE_TIME + 0.5)
+#define IRSND_RF_HME_START_BIT_PAUSE_LEN             (uint8_t)(F_INTERRUPTS * RF_HME_START_BIT_PAUSE_TIME + 0.5)
 #define IRSND_RF_HME_REPEAT_START_BIT_PAUSE_LEN      (uint8_t)(F_INTERRUPTS * RF_HME_REPEAT_START_BIT_PAUSE_TIME + 0.5)
-#define IRSND_RF_HME_1_PULSE_LEN                       (uint8_t)(F_INTERRUPTS * (RF_HME_1_PULSE_TIME - IRSND_RF_LATENCY)+ 0.5)
-#define IRSND_RF_HME_0_PULSE_LEN                       (uint8_t)(F_INTERRUPTS * (RF_HME_0_PULSE_TIME - IRSND_RF_LATENCY)+ 0.5)
-#define IRSND_RF_HME_1_PAUSE_LEN                     (uint8_t)(F_INTERRUPTS * (RF_HME_1_PAUSE_TIME + IRSND_RF_LATENCY)+ 0.5)
-#define IRSND_RF_HME_0_PAUSE_LEN                     (uint8_t)(F_INTERRUPTS * (RF_HME_0_PAUSE_TIME + IRSND_RF_LATENCY)+ 0.5)
+#define IRSND_RF_HME_1_PULSE_LEN                       (uint8_t)(F_INTERRUPTS * RF_HME_1_PULSE_TIME + 0.5)
+#define IRSND_RF_HME_0_PULSE_LEN                       (uint8_t)(F_INTERRUPTS * RF_HME_0_PULSE_TIME + 0.5)
+#define IRSND_RF_HME_1_PAUSE_LEN                     (uint8_t)(F_INTERRUPTS * RF_HME_1_PAUSE_TIME + 0.5)
+#define IRSND_RF_HME_0_PAUSE_LEN                     (uint8_t)(F_INTERRUPTS * RF_HME_0_PAUSE_TIME + 0.5)
 #define IRSND_RF_HME_FRAME_REPEAT_PAUSE_LEN          (uint16_t)(F_INTERRUPTS * RF_HME_FRAME_REPEAT_PAUSE_TIME + 0.5)                // use uint16_t!
 
-#define IRSND_RF_AC104_START_BIT_PULSE_LEN             (uint8_t)(F_INTERRUPTS * RF_AC104_START_BIT_PULSE_TIME + 0.5)
-#define IRSND_RF_AC104_START_BIT_PAUSE_LEN             (uint8_t)(F_INTERRUPTS * RF_AC104_START_BIT_PAUSE_TIME + 0.5)
-#define IRSND_RF_AC104_REPEAT_START_BIT_PAUSE_LEN      (uint8_t)(F_INTERRUPTS * RF_AC104_REPEAT_START_BIT_PAUSE_TIME + 0.5)
-#define IRSND_RF_AC104_1_PULSE_LEN                       (uint8_t)(F_INTERRUPTS * RF_AC104_1_PULSE_TIME + 0.5)
-#define IRSND_RF_AC104_0_PULSE_LEN                       (uint8_t)(F_INTERRUPTS * RF_AC104_0_PULSE_TIME + 0.5)
-#define IRSND_RF_AC104_1_PAUSE_LEN                     (uint8_t)(F_INTERRUPTS * RF_AC104_1_PAUSE_TIME + 0.5)
-#define IRSND_RF_AC104_0_PAUSE_LEN                     (uint8_t)(F_INTERRUPTS * RF_AC104_0_PAUSE_TIME + 0.5)
-#define IRSND_RF_AC104_FRAME_REPEAT_PAUSE_LEN          (uint16_t)(F_INTERRUPTS * RF_AC104_FRAME_REPEAT_PAUSE_TIME + 0.5)                // use uint16_t!
+#define IRSND_RF_AC104_START_BIT_PULSE_LEN             (uint8_t)(F_INTERRUPTS * (RF_AC104_START_BIT_PULSE_TIME) + 0.5) //+ IRSND_RF_LATENCY) + 0.5)
+#define IRSND_RF_AC104_START_BIT_PAUSE_LEN             (uint8_t)(F_INTERRUPTS * (RF_AC104_START_BIT_PAUSE_TIME) + 0.5) //- IRSND_RF_LATENCY) + 0.5)
+#define IRSND_RF_AC104_REPEAT_START_BIT_PAUSE_LEN      (uint8_t)(F_INTERRUPTS * (RF_AC104_REPEAT_START_BIT_PAUSE_TIME) + 0.5) // - IRSND_RF_LATENCY) + 0.5)
+#define IRSND_RF_AC104_1_PULSE_LEN                       (uint8_t)(F_INTERRUPTS * (RF_AC104_1_PULSE_TIME) + 0.5) // + IRSND_RF_LATENCY) + 0.5)
+#define IRSND_RF_AC104_0_PULSE_LEN                       (uint8_t)(F_INTERRUPTS * (RF_AC104_0_PULSE_TIME) + 0.5) // + IRSND_RF_LATENCY) + 0.5)
+#define IRSND_RF_AC104_1_PAUSE_LEN                     (uint8_t)(F_INTERRUPTS * (RF_AC104_1_PAUSE_TIME) + 0.5) // - IRSND_RF_LATENCY) + 0.5)
+#define IRSND_RF_AC104_0_PAUSE_LEN                     (uint8_t)(F_INTERRUPTS * (RF_AC104_0_PAUSE_TIME) + 0.5) // - IRSND_RF_LATENCY) + 0.5)
+#define IRSND_RF_AC104_FRAME_REPEAT_PAUSE_LEN          (uint16_t)(F_INTERRUPTS * (RF_AC104_FRAME_REPEAT_PAUSE_TIME) + 0.5) // - IRSND_RF_LATENCY) + 0.5)                // use uint16_t!
 
 
 #ifdef PIC_C18                                  // PIC C18
@@ -1085,6 +1083,15 @@ static uint8_t hme_manchester_converter(uint8_t code) // only considers the lowe
     return output;
 }
 #endif
+
+#if IRSND_SUPPORT_RF_AC104_PROTOCOL == 1
+#define RF_AC104_PREAMBLE  0xA3
+#ifndef RF_AC104_ID
+#define RF_AC104_ID        0x4647a8
+#endif
+static const uint16_t rf_ac104_parity_id=((RF_AC104_ID >> 16) + (RF_AC104_ID >> 8) + RF_AC104_ID) & 0xff;
+#endif // IRMP_SUPPORT_RF_AC104_PROTOCOL
+
 
 #if IRSND_SUPPORT_SIRCS_PROTOCOL == 1
 static uint8_t  sircs_additional_bitlen;
@@ -1762,6 +1769,23 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
             irsnd_buffer[5] = hme_manchester_converter((irmp_data_p->command >> 8) & 0xF);
             irsnd_buffer[6] = hme_manchester_converter((irmp_data_p->command >> 4) & 0xF);
             irsnd_buffer[7] = hme_manchester_converter(irmp_data_p->command & 0xF);
+            
+            irsnd_busy = TRUE;
+            break;
+        }
+#endif
+#if IRSND_SUPPORT_RF_AC104_PROTOCOL == 1
+        case RF_AC104_PROTOCOL:
+        {
+            irsnd_buffer[0] = RF_AC104_PREAMBLE;
+            irsnd_buffer[1] = (RF_AC104_ID >> 16) & 0xff;
+            irsnd_buffer[2] = (RF_AC104_ID >> 8) & 0xff;
+            irsnd_buffer[3] = RF_AC104_ID & 0xff;
+            irsnd_buffer[4] = (irmp_data_p->address >> 8) & 0xff;
+            irsnd_buffer[5] = irmp_data_p->address & 0xff;
+            irsnd_buffer[6] = irmp_data_p->command & 0xff;
+            irsnd_buffer[7] = ((irmp_data_p->address >> 8) + irmp_data_p->address + irmp_data_p->command + rf_ac104_parity_id ) & 0xff;
+            irsnd_buffer[8] = 0x80; //send '1' to terminate
             
             irsnd_busy = TRUE;
             break;
@@ -2693,6 +2717,24 @@ irsnd_ISR (void)
                         break;
                     }
 #endif
+#if IRSND_SUPPORT_RF_AC104_PROTOCOL == 1
+                    case RF_AC104_PROTOCOL:
+                    {
+                        startbit_pulse_len          = IRSND_RF_AC104_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = IRSND_RF_AC104_START_BIT_PAUSE_LEN - 1;
+                        complete_data_len           = RF_AC104_COMPLETE_DATA_LEN;
+                        pulse_1_len                 = IRSND_RF_AC104_1_PULSE_LEN;
+                        pause_1_len                 = IRSND_RF_AC104_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = IRSND_RF_AC104_0_PULSE_LEN;
+                        pause_0_len                 = IRSND_RF_AC104_0_PAUSE_LEN - 1;
+                        has_stop_bit                = RF_AC104_STOP_BIT;
+                        n_auto_repetitions          = 4;                                                    // 4 frames
+                        auto_repetition_pause_len   = IRSND_RF_AC104_FRAME_REPEAT_PAUSE_LEN;
+                        repeat_frame_pause_len      = IRSND_RF_AC104_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_rf                    = 1;
+                        break;
+                    }
+#endif
                     default:
                     {
                         irsnd_busy = FALSE;
@@ -2806,6 +2848,9 @@ irsnd_ISR (void)
 #if IRSND_SUPPORT_RF_HME_PROTOCOL == 1
                 case RF_HME_PROTOCOL:
 #endif
+#if IRSND_SUPPORT_RF_AC104_PROTOCOL == 1
+                case RF_AC104_PROTOCOL:
+#endif
 
 #if IRSND_SUPPORT_SIRCS_PROTOCOL == 1  || IRSND_SUPPORT_NEC_PROTOCOL == 1 || IRSND_SUPPORT_NEC16_PROTOCOL == 1 || IRSND_SUPPORT_NEC42_PROTOCOL == 1 || \
     IRSND_SUPPORT_LGAIR_PROTOCOL == 1 || IRSND_SUPPORT_SAMSUNG_PROTOCOL == 1 || IRSND_SUPPORT_MATSUSHITA_PROTOCOL == 1 || IRSND_SUPPORT_TECHNICS_PROTOCOL == 1 || \
@@ -2814,7 +2859,7 @@ irsnd_ISR (void)
     IRSND_SUPPORT_FDC_PROTOCOL == 1 || IRSND_SUPPORT_RCCAR_PROTOCOL == 1 || IRSND_SUPPORT_JVC_PROTOCOL == 1 || IRSND_SUPPORT_NIKON_PROTOCOL == 1 || \
     IRSND_SUPPORT_LEGO_PROTOCOL == 1 || IRSND_SUPPORT_THOMSON_PROTOCOL == 1 || IRSND_SUPPORT_ROOMBA_PROTOCOL == 1 || IRSND_SUPPORT_TELEFUNKEN_PROTOCOL == 1 || \
     IRSND_SUPPORT_PENTAX_PROTOCOL == 1 || IRSND_SUPPORT_ACP24_PROTOCOL == 1 || IRSND_SUPPORT_PANASONIC_PROTOCOL == 1 || IRSND_SUPPORT_BOSE_PROTOCOL == 1 || \
-    IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL == 1 || IRSND_SUPPORT_IRMP16_PROTOCOL == 1 || IRSND_SUPPORT_RF_HME_PROTOCOL == 1
+    IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL == 1 || IRSND_SUPPORT_IRMP16_PROTOCOL == 1 || IRSND_SUPPORT_RF_HME_PROTOCOL == 1 || IRSND_SUPPORT_RF_AC104_PROTOCOL == 1
                 {
                     if (pulse_counter == 0)
                     {
@@ -2973,7 +3018,7 @@ irsnd_ISR (void)
                             {
                                 irsnd_busy = FALSE;
                                 auto_repetition_counter = 0;
-#if IRSND_SUPPORT_RF_HME_PROTOCOL == 1
+#if IRSND_SUPPORT_RF_HME_PROTOCOL == 1 || IRSND_SUPPORT_RF_AC104_PROTOCOL == 1
                                 irsnd_rf = 0; //no need to check for protocol, turn off rf anyway
 #endif 
                             }

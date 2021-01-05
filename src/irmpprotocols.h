@@ -1230,7 +1230,7 @@ typedef uint8_t     PAUSE_LEN;
 #define RF_AC104_1_PULSE_TIME                      565.0e-6                        //  275 usec pulse
 #define RF_AC104_1_PAUSE_TIME                     270.0e-6                        // 1225 usec pause
 
-#define RF_AC104_FRAME_REPEAT_PAUSE_TIME          5030.0e-6                        // frame repeat after 10msec
+#define RF_AC104_FRAME_REPEAT_PAUSE_TIME          150.0e-6                        // frame repeat after 10msec
 #define RF_AC104_ADDRESS_OFFSET                   32                               // 
 #define RF_AC104_ADDRESS_LEN                      16                                // needs special preprocessor handling to have enought bits
 #define RF_AC104_COMMAND_OFFSET                   48                                // 16 address bits, actually 26
