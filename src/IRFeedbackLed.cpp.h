@@ -40,17 +40,16 @@ void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed)
     if (aEnableBlinkLed)
     {
 #  if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
-        if(irmp_irsnd_LedFeedbackPin != 0) {
-            pinMode(irmp_irsnd_LedFeedbackPin, OUTPUT);
-            if (irmp_irsnd_LedFeedbackPinIsActiveLow)
-            {
-                digitalWrite(irmp_irsnd_LedFeedbackPin, HIGH);
-            }
-            else
-            {
-                digitalWrite(irmp_irsnd_LedFeedbackPin, LOW);
-            }
+        pinMode(irmp_irsnd_LedFeedbackPin, OUTPUT);
+        if (irmp_irsnd_LedFeedbackPinIsActiveLow)
+        {
+            digitalWrite(irmp_irsnd_LedFeedbackPin, HIGH);
         }
+        else
+        {
+            digitalWrite(irmp_irsnd_LedFeedbackPin, LOW);
+        }
+
 #  elif defined(IRMP_FEEDBACK_LED_PIN)
         pinModeFast(IRMP_FEEDBACK_LED_PIN, OUTPUT);
 #    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)

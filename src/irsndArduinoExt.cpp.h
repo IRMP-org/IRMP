@@ -33,6 +33,7 @@ uint_fast8_t irsnd_output_pin;
 
 /*
  * Initialize, and activate feedback LED function
+ * @param aFeedbackLedPin - if 0 feedback function is disabled
  */
 void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow)
 {
@@ -54,6 +55,7 @@ void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin, bool
 
 /*
  * Initialize, and activate feedback LED function
+ * @param aFeedbackLedPin - if 0 feedback function is disabled
  */
 void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin)
 {
@@ -61,7 +63,7 @@ void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin)
 }
 
 /*
- * Initialize, but avoid activating feedback LED by using 0 as led pin
+ * Initialize, use  feedback LED by using 0 as led pin
  */
 void irsnd_init(uint_fast8_t aIrsndOutputPin)
 {

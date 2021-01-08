@@ -27,6 +27,10 @@
 #ifndef IR_FEEDBACK_LED_H
 #define IR_FEEDBACK_LED_H
 
+/*
+ * Set IRMP_FEEDBACK_LED_PIN to a reasonable value
+ * defining it to 0 disables LED feedback function otherwise LED_BUILTIN (if available) is taken as feedback LED.
+ */
 #if !defined(IRMP_FEEDBACK_LED_PIN)
 #  if defined(LED_BUILTIN)
 #define IRMP_FEEDBACK_LED_PIN LED_BUILTIN
