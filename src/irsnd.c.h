@@ -1089,7 +1089,7 @@ static uint8_t hme_manchester_converter(uint8_t code) // only considers the lowe
 #if IRSND_SUPPORT_RF_AC104_PROTOCOL == 1
 #define RF_AC104_PREAMBLE  0xA3
 #ifndef RF_AC104_ID
-#define RF_AC104_ID        0x4647a8
+#define RF_AC104_ID        0  //preferably defined in main program
 #endif
 static const uint16_t rf_ac104_parity_id=((RF_AC104_ID >> 16) + (RF_AC104_ID >> 8) + RF_AC104_ID) & 0xff;
 #endif // IRMP_SUPPORT_RF_AC104_PROTOCOL
