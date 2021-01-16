@@ -93,12 +93,13 @@ IntervalTimer sIntervalTimer;
 
 #endif // defined(_IRMP_H_)
 
-// @formatter:off
+//@formatter:off
 #if defined(_IRMP_H_)
 void initIRTimerForReceive(void)
 #elif defined(_IRSND_H_)
 void initIRTimerForSend(void)
 #endif
+
 {
 #if defined(__AVR__)
 // Use Timer 2
@@ -146,15 +147,39 @@ void initIRTimerForSend(void)
     TCNT1 = 0;
     TIMSK1 = _BV(OCIE1B);                                           // enable compare match interrupt
 
-#  elif defined(__AVR_ATmega4809__) || defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) // Uno WiFi Rev 2, Nano Every
-    // on ATtiny1616 and 32 we have only TCB0 and TCB1
+#  elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
     // TCB1 is used by Tone()
     // TCB2 is used by Servo
     // TCB3 is used by millis()
     TCB0.CTRLB = TCB_CNTMODE_INT_gc;
     TCB0.CCMP = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;               // compare value: 209 for 76 kHz, 221 for 72kHz @16MHz
-    TCB0.INTCTRL = TCB_CAPT_bm;
+    TCB0.INTFLAGS = TCB_CAPT_bm;                                    // reset interrupt flags
+    TCB0.INTCTRL = TCB_CAPT_bm;                                     // enable capture compare interrupt
     TCB0.CTRLA = TCB_CLKSEL_CLKDIV1_gc | TCB_ENABLE_bm;
+
+#  elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__) // TinyCore boards
+    // use one ramp mode and overflow interrupt
+    TCD0.CTRLA = 0;                                                 // reset enable bit in order to unprotect the other bits
+    TCD0.CTRLB = TCD_WGMODE_ONERAMP_gc;                             // must be set since it is used by PWM
+//    TCD0.CMPBSET = 80;
+    TCD0.CMPBCLR = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;            // 1332 for 15 kHz, 262 for 76000 interrupts per second @ 20MHz
+
+    // Generate 50% duty cycle signal for debugging etc.
+//    TCD0.CMPASET = 0;
+//    TCD0.CMPACLR = (F_CPU / (IR_INTERRUPT_FREQUENCY * 2)) - 1;      // 50% duty cycle for WOA
+//    TCD0.CTRLC = 0;                                                 // reset WOx outputs
+
+//    _PROTECTED_WRITE(TCD0.FAULTCTRL,FUSE_CMPAEN_bm);                // enable WOA signal
+//    PORTA.DIRSET = PIN4_bm;                                         // enable WOA output pin 13/PA4
+//    _PROTECTED_WRITE(TCD0.FAULTCTRL,FUSE_CMPAEN_bm | FUSE_CMPBEN_bm); // enable WOA + WOB signal signal
+//    PORTA.DIRSET = PIN4_bm | PIN5_bm;                               // enable WOA + WOB output pins 13/PA4 + 14/PA5
+
+    TCD0.INTFLAGS = TCD_OVF_bm;                                     // reset interrupt flags
+    TCD0.INTCTRL = TCD_OVF_bm;                                      // overflow interrupt
+    // check enable ready
+//    while ((TCD0.STATUS & TCD_ENRDY_bm) == 0); // Wait for Enable Ready to be high - I guess it is not required
+    // enable timer - this locks the other bits and static registers and activates values in double buffered registers
+    TCD0.CTRLA = TCD_ENABLE_bm | TCD_CLKSEL_SYSCLK_gc| TCD_CNTPRES_DIV1_gc; // System clock, no prescale, no synchronization prescaler
 
 #  elif defined(__AVR_ATmega8__)
 #    if (F_CPU / IR_INTERRUPT_FREQUENCY) <= 256                     // for 8 bit timer
@@ -172,7 +197,7 @@ void initIRTimerForSend(void)
     TCCR3A = 0;
     TCCR3B = _BV(CS30) | _BV(WGM32);                                // no prescale, CTC mode Top OCR3A
     // Set OCR3B = OCR3A since we use TIMER3_COMPB_vect as interrupt, but run timer in CTC mode with OCR3A as TOP
-    OCR3B = OCR3A = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;           // 1065 for 15kHz, 209 for 76 kHz @ 16MHz
+    OCR3B = OCR3A = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;           // 1065 for 15 kHz, 209 for 76 kHz @ 16MHz
     TCNT3 = 0;
     TIMSK3 = _BV(OCIE3B);                                           // enable TIMER3_COMPB_vect interrupt to be compatible with tone() library
 
@@ -190,7 +215,7 @@ void initIRTimerForSend(void)
     TIFR2 = _BV(OCF2B) | _BV(OCF2A) | _BV(TOV2);                    // reset interrupt flags
     TIMSK2 = _BV(OCIE2B);                                           // enable TIMER2_COMPB_vect interrupt to be compatible with tone() library
 
-#  else
+#  else // if defined(__AVR_ATmega16__) etc
 #error "This AVR CPU is not supported by IRMP"
 #  endif // if defined(__AVR_ATmega16__)
 
@@ -294,64 +319,61 @@ void initIRTimerForSend(void)
 #endif // defined(__AVR__)
 }
 
-// @formatter:on
+//@formatter:on
 #ifndef TIMER_FUNCTIONS_DEFINED
 #define TIMER_FUNCTIONS_DEFINED
-/*
- * Temporarily storage for timer register
- */
-#  if defined(__AVR__)
+/** Temporarily storage for timer register*/
+#if defined(__AVR__)
 uint8_t sTimerTCCRA;
 uint8_t sTimerTCCRB;
-#    if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-uint16_t sTimerOCR; // we have a 16 bit timer
-#    else
+#  if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__) || defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+uint16_t sTimerOCR; // we have a 12/16 bit timer
+#  else
 uint8_t sTimerOCR;
-#    endif
+#  endif
 uint8_t sTimerOCRB;
 uint8_t sTimerTIMSK;
 
-#  elif defined(ESP8266)
+#elif defined(ESP8266)
 uint32_t sTimerLoadValue;
 
-#  elif defined(ESP32)
+#elif defined(ESP32)
 uint64_t sTimerAlarmValue;
 
-#  elif defined(STM32F1xx) || defined(ARDUINO_ARCH_STM32) || defined(__STM32F1__)
+#elif defined(STM32F1xx) || defined(ARDUINO_ARCH_STM32) || defined(__STM32F1__)
 uint32_t sTimerOverflowValue;
 
-#  elif defined(ARDUINO_ARCH_SAMD) // || defined(ARDUINO_ARCH_APOLLO3)
+#elif defined(ARDUINO_ARCH_SAMD) // || defined(ARDUINO_ARCH_APOLLO3)
 uint16_t sTimerCompareCapureValue;
 
-#  endif // defined(__AVR__)
+#endif // defined(__AVR__)
 
 /*
  * If we do not use receive, we have no timer defined at the first call of this function.
  * But for AVR saving the timer settings is possible anyway, since it only consists of saving registers.
  * This helps cooperation with other libraries using the same timer.
  */
-void storeIRTimer(void)
-{
-#  if defined(__AVR_ATmega16__)
+void storeIRTimer(void) {
+#if defined(__AVR_ATmega16__)
     sTimerTCCRA = TCCR2;
     sTimerOCR = OCR2;
     sTimerTIMSK = TIMSK;
 
-#  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#    if defined(ARDUINO_AVR_DIGISPARK)
+#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+#  if defined(ARDUINO_AVR_DIGISPARK)
     sTimerTCCRA = TCCR0A;
     sTimerTCCRB = TCCR0B;
     sTimerOCRB = OCR0B;
     sTimerOCR = OCR0A;
     sTimerTIMSK = TIMSK;
-#    else
+#  else
     sTimerTCCRA = TCCR1;
     sTimerOCRB = OCR1B;
     sTimerOCR = OCR1C;
     sTimerTIMSK = TIMSK;
-#    endif
+#  endif
 
-#  elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
     sTimerTCCRB = TCCR1B;
     sTimerOCR = ICR1;
     sTimerOCRB = OCR1B;
@@ -369,7 +391,7 @@ void storeIRTimer(void)
     sTimerOCR = OCR2;
     sTimerTIMSK = TIMSK;
 
-#  elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
+#elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
     // store current timer state
     sTimerTCCRA = TCCR3A;
     sTimerTCCRB = TCCR3B;
@@ -377,7 +399,15 @@ void storeIRTimer(void)
     sTimerOCRB = OCR3B;
     sTimerTIMSK = TIMSK3;
 
-#  elif defined(__AVR__)
+#elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+    // store settings used for PWM
+    sTimerTCCRA = TCD0.CTRLA;
+    sTimerTCCRB = TCD0.CTRLB;
+    sTimerOCR = TCD0.CMPBCLR;
+    sTimerOCRB = TCD0.CTRLC;
+    sTimerTIMSK = TCD0.INTCTRL;
+
+#elif defined(__AVR__)
 // store current timer state
     sTimerTCCRA = TCCR2A;
     sTimerTCCRB = TCCR2B;
@@ -385,58 +415,57 @@ void storeIRTimer(void)
     sTimerOCRB = OCR2B;
     sTimerTIMSK = TIMSK2;
 
-#  elif defined(ESP8266)
+#elif defined(ESP8266)
     sTimerLoadValue= T1L;
-#  endif
+#endif // defined(__AVR_ATmega16__)
 
-#  if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
+#if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
     // If we do not use receive, we have no timer defined at the first call of this function
-#    if defined(ESP32)
+#  if defined(ESP32)
     sTimerAlarmValue = timerAlarmRead(sESP32Timer);
 
-#    elif defined(STM32F1xx)
+#  elif defined(STM32F1xx)
     sTimerOverflowValue = sSTM32Timer.getOverflow(TICK_FORMAT);
 
-#    elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
+#  elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
     sTimerOverflowValue = sSTM32Timer.getOverflow(TICK_FORMAT);
 
-#    elif defined(__STM32F1__)
+#  elif defined(__STM32F1__)
     sTimerOverflowValue = sSTM32Timer.getOverflow();
 
-#    elif defined(ARDUINO_ARCH_SAMD)
+#  elif defined(ARDUINO_ARCH_SAMD)
     sTimerCompareCapureValue = TC3->COUNT16.CC[0].reg;
 
 //#    elif defined(ARDUINO_ARCH_APOLLO3)
 //    sTimerCompareCapureValue = *((uint32_t *)CTIMERADDRn(CTIMER, 3, CMPRB0)) & 0xFFFF;
-#    endif
-#  endif // defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
+#  endif
+#endif // defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
 }
 
 /*
  * Restore settings of the timer e.g. for IRSND
  */
-void restoreIRTimer(void)
-{
-#  if defined(__AVR_ATmega16__)
+void restoreIRTimer(void) {
+#if defined(__AVR_ATmega16__)
     TCCR2 = sTimerTCCRA;
     OCR2 = sTimerOCR;
     TIMSK = sTimerTIMSK;
 
-#  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#    if defined(ARDUINO_AVR_DIGISPARK)
+#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+#  if defined(ARDUINO_AVR_DIGISPARK)
     TCCR0A = sTimerTCCRA;
     TCCR0B = sTimerTCCRB;
     OCR0B = sTimerOCRB;
     OCR0A = sTimerOCR;
     TIMSK = sTimerTIMSK;
-#    else
+#  else
     TCCR1 = sTimerTCCRA;
     OCR1B = sTimerOCRB;
     OCR1C = sTimerOCR;
     TIMSK = sTimerTIMSK;
-#    endif
+#  endif
 
-#  elif  defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#elif  defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
     TCCR1B = sTimerTCCRB;
     ICR1 = sTimerOCR;
     OCR1B = sTimerOCRB;
@@ -453,82 +482,93 @@ void restoreIRTimer(void)
     OCR2 = sTimerOCR;
     TIMSK = sTimerTIMSK;
 
-#  elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
-    // store current timer state
+#elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
+    // restore current timer state
     TCCR3A = sTimerTCCRA;
     TCCR3B = sTimerTCCRB;
     OCR3A = sTimerOCR;
     OCR3B = sTimerOCRB;
     TIMSK3 = sTimerTIMSK;
 
-#  elif defined(__AVR__)
+#elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+    // restore settings used for PWM
+    TCD0.CTRLA = 0; // unlock timer
+    TCD0.CTRLB = sTimerTCCRB;
+    TCD0.CMPBCLR = sTimerOCR;
+    TCD0.CTRLC = sTimerOCRB;
+    TCD0.INTCTRL = sTimerTIMSK;
+    TCD0.CTRLA = sTimerTCCRA;
+
+#elif defined(__AVR__)
     TCCR2A = sTimerTCCRA;
     TCCR2B = sTimerTCCRB;
     OCR2A = sTimerOCR;
     OCR2B = sTimerOCRB;
     TIMSK2 = sTimerTIMSK;
 
-#  elif defined(ESP8266)
+#elif defined(ESP8266)
     timer1_write(sTimerLoadValue);
-#  endif
+#endif // defined(__AVR_ATmega16__)
 
-#  if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
-#    if defined(ESP32)
+#if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
+#  if defined(ESP32)
     timerAlarmWrite(sESP32Timer, sTimerAlarmValue, true);
 
-#    elif defined(STM32F1xx)
+#  elif defined(STM32F1xx)
     sSTM32Timer.setOverflow(sTimerOverflowValue, TICK_FORMAT);
 
-#    elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
+#  elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
     sSTM32Timer.setOverflow(sTimerOverflowValue, TICK_FORMAT);
 
-#    elif defined(__STM32F1__)
+#  elif defined(__STM32F1__)
     sSTM32Timer.setOverflow(sTimerOverflowValue);
 
-#    elif defined(ARDUINO_ARCH_SAMD)
+#  elif defined(ARDUINO_ARCH_SAMD)
     TC3->COUNT16.CC[0].reg = sTimerCompareCapureValue;
 
-//#    elif defined(ARDUINO_ARCH_APOLLO3)
+//#  elif defined(ARDUINO_ARCH_APOLLO3)
 //    am_hal_ctimer_compare_set(3, AM_HAL_CTIMER_TIMERB, 0, sTimerCompareCapureValue);
 
-#    elif defined(ARDUINO_ARCH_MBED)
+#  elif defined(ARDUINO_ARCH_MBED)
     sMbedTimer.attach(irmp_timer_ISR, std::chrono::microseconds(1000000 / IR_INTERRUPT_FREQUENCY));
 
-#    elif defined(TEENSYDUINO)
+#  elif defined(TEENSYDUINO)
     sIntervalTimer.update(1000000 / IR_INTERRUPT_FREQUENCY);
-#    endif
-#  endif // defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
+#  endif
+#endif // defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
 }
 
 /*
  * NOT used if IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined
  * Initialize timer to generate interrupts at a rate F_INTERRUPTS (15000) per second to poll the input pin.
  */
-void disableIRTimerInterrupt(void)
-{
+void disableIRTimerInterrupt(void) {
 #if defined(__AVR__)
 // Use Timer 2
 #  if defined(__AVR_ATmega16__)
-    TIMSK = 0; // disable interrupt
+    TIMSK = 0;                  // disable interrupt
 
 #  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 #    if defined(ARDUINO_AVR_DIGISPARK)
-    TIMSK &= ~_BV(OCIE0B); // disable interrupt
+    TIMSK &= ~_BV(OCIE0B);      // disable interrupt
 #    else
-    TIMSK &= ~_BV(OCIE1B); // disable interrupt
+    TIMSK &= ~_BV(OCIE1B);      // disable interrupt
 #    endif
 
 #  elif  defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-    TIMSK1 &= ~_BV(OCIE1A); // disable interrupt
+    TIMSK1 &= ~_BV(OCIE1A);     // disable interrupt
 
 #elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
     TCB0.INTCTRL &= ~TCB_CAPT_bm;
 
 #elif defined(__AVR_ATmega8__)
-    TIMSK &= ~_BV(OCIE2); // disable interrupt
+    TIMSK &= ~_BV(OCIE2);       // disable interrupt
 
 #  elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
-    TIMSK3 = 0; // disable interrupt
+    TIMSK3 = 0;                 // disable interrupt
+
+#  elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+    TCD0.INTCTRL = 0;           // overflow interrupt
 
 #  else
     TIMSK2 = 0; // disable interrupt
@@ -564,34 +604,36 @@ void disableIRTimerInterrupt(void)
 
 #elif defined(TEENSYDUINO)
     sIntervalTimer.end();
-#endif
+#endif // defined(__AVR__)
 }
 
-void enableIRTimerInterrupt(void)
-{
+void enableIRTimerInterrupt(void) {
 #if defined(__AVR__)
 // Use Timer 2
 #  if defined(__AVR_ATmega16__)
-    TIMSK = _BV(OCIE2); // enable interrupt
+    TIMSK = _BV(OCIE2);             // enable interrupt
 
 #  elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 #    if defined(ARDUINO_AVR_DIGISPARK)
-    TIMSK |= _BV(OCIE0B); // enable compare match interrupt
+    TIMSK |= _BV(OCIE0B);           // enable compare match interrupt
 #    else
-    TIMSK |= _BV(OCIE1B); // enable compare match interrupt
+    TIMSK |= _BV(OCIE1B);           // enable compare match interrupt
 #    endif
 
 #  elif  defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-    TIMSK1 |= _BV(OCIE1A); // enable compare match interrupt
+    TIMSK1 |= _BV(OCIE1A);          // enable compare match interrupt
 
-#elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
+#elif defined(__AVR_ATmega4809__)   // Uno WiFi Rev 2, Nano Every
     TCB0.INTCTRL = TCB_CAPT_bm;
 
 #elif defined(__AVR_ATmega8__)
-    TIMSK = _BV(OCIE2); // enable interrupt
+    TIMSK = _BV(OCIE2);             // enable interrupt
 
 #  elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
-    TIMSK3 = _BV(OCIE3B); // enable interrupt
+    TIMSK3 = _BV(OCIE3B);           // enable interrupt
+
+#  elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+    TCD0.INTCTRL = TCD_OVF_bm;      // overflow interrupt
 
 #  else
     TIMSK2 = _BV(OCIE2B); // enable interrupt
@@ -636,7 +678,7 @@ void enableIRTimerInterrupt(void)
     sIntervalTimer.begin(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
 #else
 #warning Board / CPU is not covered by definitions using pre-processor symbols -> no timer available. Please extend IRTimer.cpp.h.
-#endif
+#endif // defined(__AVR__)
 }
 
 #endif // TIMER_FUNCTIONS_DEFINED
@@ -655,7 +697,6 @@ void enableIRTimerInterrupt(void)
  * Together with call of irsnd_ISR() 10.5 us (frame) or 9.4 (trailing pause) - measured by scope
  * We use TIMER2_COMPB_vect to be compatible with tone() library
  */
-
 #if defined(__AVR__)
 
 #  if F_CPU < 8000000L
@@ -679,6 +720,9 @@ ISR(TIMER2_COMP_vect)
 
 #  elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
 ISR(TIMER3_COMPB_vect)
+
+#  elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+ISR(TCD0_OVF_vect)
 
 #  else
 ISR(TIMER2_COMPB_vect)
@@ -706,6 +750,15 @@ void irmp_timer_ISR(void)
 {
 #if defined(ARDUINO_ARCH_SAMD)
     TC3->COUNT16.INTFLAG.bit.MC0 = 1; // Clear interrupt
+#endif
+
+#if defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
+    // Not tested, but with the experience, I made with the ATtiny3217, I guess it is required
+    TCB0.INTFLAGS = TCB_CAPT_bm;    // reset interrupt flags
+#endif
+#if defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+    // must reset interrupt flag here
+    TCD0.INTFLAGS = TCD_OVF_bm;
 #endif
 
 #if (defined(_IRSND_H_) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND))

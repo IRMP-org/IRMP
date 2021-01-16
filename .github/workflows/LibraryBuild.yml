@@ -44,6 +44,7 @@ jobs:
           - digistump:avr:digispark-tiny:clock=clock16
           - digistump:avr:digispark-pro
           - ATTinyCore:avr:attinyx5:chip=85,clock=8internal
+          - TinyCore:avr:tiny32
 # Not yet supported by IRTimer.cpp.h
 #          - MiniCore:avr:8:bootloader=uart0,eeprom=keep,BOD=2v7,LTO=Os_flto,clock=16MHz_external # ATmega8
 #          - MegaCore:avr:128:bootloader=no_bootloader,eeprom=keep,BOD=2v7,LTO=Os,clock=8MHz_internal # ATmega128
@@ -53,7 +54,6 @@ jobs:
           - STM32:stm32:GenL0:pnum=THUNDERPACK_L072
           - stm32duino:STM32F1:genericSTM32F103C
           - SparkFun:apollo3:amap3nano
-          - SparkFun:apollo3:sfe_artemis_nano
 
         # Specify parameters for each board.
         # With sketches-exclude you may exclude specific examples for a board. Use a comma separated list.
@@ -73,6 +73,10 @@ jobs:
           - arduino-boards-fqbn: ATTinyCore:avr:attinyx5:chip=85,clock=8internal
             platform-url: http://drazzy.com/package_drazzy.com_index.json
             sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
+
+          - arduino-boards-fqbn: TinyCore:avr:tiny32
+            platform-url: https://raw.githubusercontent.com/xukangmin/TinyCore/master/avr/package/package_tinycore_index.json
+#            sketches-exclude: MinimalReceiver,IRDispatcherDemo
 
 #          - arduino-boards-fqbn: MiniCore:avr:8:bootloader=uart0,eeprom=keep,BOD=2v7,LTO=Os_flto,clock=16MHz_external
 #            platform-url: https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
@@ -109,9 +113,10 @@ jobs:
             platform-url: https://raw.githubusercontent.com/sparkfun/Arduino_Boards/master/IDE_Board_Manager/package_sparkfun_index.json
             sketches-exclude: MinimalReceiver
 
-          - arduino-boards-fqbn: SparkFun:apollo3:sfe_artemis_nano
-            platform-url: https://raw.githubusercontent.com/sparkfun/Arduino_Apollo3/master/package_sparkfun_apollo3_index.json
-            sketches-exclude: MinimalReceiver
+# gives fatal error: opening dependency file /dev/null.d:
+#          - arduino-boards-fqbn: SparkFun:apollo3:sfe_artemis_nano
+#            platform-url: https://raw.githubusercontent.com/sparkfun/Arduino_Apollo3/master/package_sparkfun_apollo3_index.json
+#            sketches-exclude: MinimalReceiver
 
       # Do not cancel all jobs / architectures if one job fails
       fail-fast: false
@@ -119,6 +124,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@master
+
+# gives ERROR: library.properties includes field item(s) Arduino.h not found in library.
+#      - name: Arduino Lint
+#        uses: arduino/arduino-lint-action@v1
+#        with:
+#          library-manager: update
 
       - name: Compile all examples
         uses: ArminJo/arduino-test-compile@master

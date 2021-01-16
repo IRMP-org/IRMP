@@ -33,6 +33,7 @@
  * ATtinyX5     0           4           3
  * ATtin167     9           8           5 // Digispark pro number schema
  * ATtin167     3           2           7
+ * ATtin3217    10          11          3 // TinyCore schema
  * SAMD21       3           4           5
  * ESP8266      14 // D5    12 // D6    %
  * ESP32        15          4           %
@@ -97,6 +98,11 @@
 #define TONE_PIN         7
 #    endif
 #  endif
+
+#  elif defined(__AVR_ATtiny3217__)
+#define IRMP_INPUT_PIN   10
+#define IRSND_OUTPUT_PIN 11
+#define TONE_PIN         3
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
 #define IRMP_INPUT_PIN   11

@@ -1,25 +1,15 @@
 /*
  *  Interrupt.cpp
  *
- *  Receives IR protocol data  by using pin change interrupts and no polling by timer.
- *  This might be not working for all protocols.
+ *  Receives IR protocol data by using pin change interrupts and no polling by timer.
+ *  !!! This WILL NOT work for all protocols.!!!
  *  Tested for NEC, Kaseiko, Denon, RC6, Samsung + Samsg32.
- *
- *  The following IR protocols are enabled:
- *      Sony SIRCS
- *      NEC + APPLE
- *      Samsung + Samsg32
- *      Kaseikyo
- *
- *      Plus 11 other main protocols
- *      JVC, NEC16, NEC42, Matsushita, DENON, Sharp, RC5, RC6 & RC6A, IR60 (SDA2008) Grundig, Siemens Gigaset, Nokia
  *
  *  To disable one of them or to enable other protocols, specify this before the "#include <irmp.c.h>" line.
  *  If you get warnings of redefining symbols, just ignore them or undefine them first (see Interrupt example).
  *  The exact names can be found in the library file irmpSelectAllProtocols.h (see Callback example).
-
  *
- *  Copyright (C) 2019-2020  Armin Joachimsmeyer
+ *  Copyright (C) 2019-2021  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
@@ -50,14 +40,11 @@
 #define IRMP_USE_COMPLETE_CALLBACK       1 // Enable callback functionality
 #define IRMP_ENABLE_PIN_CHANGE_INTERRUPT   // Enable interrupt functionality
 
-//#define SIZE_TEST
-#ifdef SIZE_TEST
-#define IRMP_SUPPORT_NEC_PROTOCOL        1
-#else
-#include <irmpSelectMain15Protocols.h>  // This enables 15 main protocols
-#undef IRMP_SUPPORT_NEC42_PROTOCOL // this protocols is incompatible to NEC in interrupt mode, since it is the same as NEC but has longer data sections
-#define IRMP_SUPPORT_NEC42_PROTOCOL      0
-#endif
+#define IRMP_SUPPORT_NEC_PROTOCOL               1       // NEC + APPLE + ONKYO  >= 10000                 ~300 bytes
+#define IRMP_SUPPORT_SAMSUNG_PROTOCOL           1       // Samsung + Samsg32    >= 10000                 ~300 bytes
+#define IRMP_SUPPORT_KASEIKYO_PROTOCOL          1       // Kaseikyo             >= 10000                 ~250 bytes
+#define IRMP_SUPPORT_RC6_PROTOCOL               1       // RC6 & RC6A           >= 10000                 ~250 bytes
+#define IRMP_SUPPORT_DENON_PROTOCOL             1       // DENON, Sharp         >= 10000                 ~250 bytes
 
 /*
  * After setting the definitions we can include the code and compile it.
@@ -70,8 +57,8 @@ void handleReceivedIRData();
 void setup()
 {
     Serial.begin(115200);
-#if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL)
-    delay(2000); // To be able to connect Serial monitor after reset and before first printout
+#if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL) || defined(ARDUINO_attiny3217)
+    delay(2000); // To be able to connect Serial monitor after reset or power up and before first printout
 #endif
     // Just to know which program is running on my Arduino
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));

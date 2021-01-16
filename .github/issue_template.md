@@ -67,7 +67,7 @@ assignees: ArminJo
 ### Pin(s) used for IR-receive, if not default
 
 ### Version
-* [ ] Yes I use the [latest release](https://github.com/ukw100/IRMP/releases) and verified this!
+* [ ] Yes I use the [latest repo version](https://github.com/ukw100/IRMP/archive/master.zip) and verified this!
 * [ ] Other - please specify
 
 ### Current behavior
