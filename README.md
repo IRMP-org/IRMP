@@ -62,7 +62,7 @@ The VS1838B is used as receiver for all examples and tests. This module has a 12
 I created this comparison matrix for [myself](https://github.com/ArminJo) in order to choose a small IR lib for my project and to have a quick overview, when to choose which library.<br/>
 It is dated from **11.11.2020**. If you have complains about the data or request for extensions, please send a PM or open an issue.
 
-| Subject | [IRMP](https://github.com/ukw100/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**mostly unmaintained** | [IRremote](https://github.com/z3t0/Arduino-IRremote) |
+| Subject | [IRMP](https://github.com/ukw100/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**mostly unmaintained** | [IRremote](https://github.com/Arduino-IRremote/Arduino-IRremote) |
 |---------|------|-----------|--------|----------|
 | Number of protocols | **50** | Nec + Panasonic + Hash \* | 12 + Hash \* | 16 |
 | 3.Party libs needed| % | PinChangeInterrupt if not pin 2 or 3 | % | % |
@@ -173,6 +173,10 @@ Modify it by setting the value to 1 or 0. Or define the macro with the -D compil
 | `IR_INPUT_PIN` | defined | The pin number for TinyIRReceiver IR input which gets compiled in. |
 | `IR_FEEDBACK_LED_PIN` | defined | The pin number for TinyIRReceiver feedback LED  which gets compiled in. |
 | `DO_NOT_USE_FEEDBACK_LED` | defined | Enable it to disable the feedback LED function. |
+|-|-|-|
+| `IRMP_MEASURE_TIMING` +  `IRMP_TIMING_TEST_PIN` | defined | For development only. The test pin is switched high at the very beginning and low at the end of the ISR. |
+
+
 
 ### Modifying compile options with Arduino IDE
 First use *Sketch > Show Sketch Folder (Ctrl+K)*.<br/>
@@ -269,6 +273,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 
 # Revision History
 ### Version 3.3.6 - work in progress
+- Added ATtiny3217 / TinyCore support.
 
 ### Version 3.3.5
 - Added TinyIRReceiver and updated IRDispatcherDemo examples.

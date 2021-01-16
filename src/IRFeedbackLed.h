@@ -40,11 +40,11 @@
 #  endif
 #endif
 
-void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed);
-void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn);
-constexpr auto irmp_blink13 = irmp_irsnd_LEDFeedback; // alias for irmp_blink13
-constexpr auto irmp_LEDFeedback = irmp_irsnd_LEDFeedback; // alias for irmp_LEDFeedback
-constexpr auto irsnd_LEDFeedback = irmp_irsnd_LEDFeedback; // alias for irsnd_LEDFeedback
+void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed);          // set the mode
+void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn);          // set set pin
+constexpr auto irmp_blink13 = irmp_irsnd_LEDFeedback;       // alias for irmp_blink13
+constexpr auto irmp_LEDFeedback = irmp_irsnd_LEDFeedback;   // alias for irmp_LEDFeedback
+constexpr auto irsnd_LEDFeedback = irmp_irsnd_LEDFeedback;  // alias for irsnd_LEDFeedback
 
 #endif // IR_FEEDBACK_LED_H
 #endif // defined(ARDUINO)

@@ -94,13 +94,11 @@ uint8_t checkAndWaitForReferenceAndChannelToSwitch(uint8_t aChannelNumber, uint8
      */
     uint8_t tNewReference = (aReference << SHIFT_VALUE_FOR_REFERENCE);
     ADMUX = aChannelNumber | tNewReference;
-    if ((tOldADMUX & MASK_FOR_ADC_REFERENCE) != tNewReference) {
-        if (aReference == INTERNAL) {
-            /*
-             * Switch reference from DEFAULT to INTERNAL
-             */
-            delayMicroseconds(8000); // experimental value is >= 7600 us for Nano board and 6200 for UNO board
-        }
+    if ((tOldADMUX & MASK_FOR_ADC_REFERENCE) != tNewReference && aReference == INTERNAL) {
+        /*
+         * Switch reference from DEFAULT to INTERNAL
+         */
+        delayMicroseconds(8000); // experimental value is >= 7600 us for Nano board and 6200 for UNO board
     } else if ((tOldADMUX & 0x0F) != aChannelNumber) {
         if (aChannelNumber == ADC_1_1_VOLT_CHANNEL_MUX) {
             /*

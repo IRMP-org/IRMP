@@ -60,8 +60,7 @@ void irmp_PCI_ISR(void)
 #error F_INTERRUPTS must be 15625 (to avoid a time consuming division)
 #endif
 
-    if (tTicks != 0)
-    {
+    if (tTicks != 0) {
         tTicks -= 1; // adjust for irmp_pulse_time / irmp_pause_time incremented in irmp_ISR()
     }
 
@@ -72,17 +71,11 @@ void irmp_PCI_ISR(void)
     {
         // start of pause -> just set pulse width
         irmp_pulse_time += tTicks;
-    }
-    else
-    {
-        if (irmp_start_bit_detected)
-        {
+    } else {
+        if (irmp_start_bit_detected) {
             irmp_pause_time += tTicks;
-        }
-        else
-        { // start pulse here -> set pause or time between repetitions
-            if (tTicks > 0xFFFF)
-            {
+        } else { // start pulse here -> set pause or time between repetitions
+            if (tTicks > 0xFFFF) {
                 // avoid overflow for 16 bit key_repetition_len
                 tTicks = 0xFFFF;
             }
@@ -95,8 +88,7 @@ void irmp_PCI_ISR(void)
      */
     irmp_ISR();
 
-    if (!irmp_ir_detected && irmp_input)
-    {
+    if (!irmp_ir_detected && irmp_input) {
         /*
          * No valid protocol detected and IR input is inactive now -> simulate end for protocols.
          * IRMP may be waiting for stop bit, but detects it only at the next call, so do one additional call.
@@ -109,8 +101,7 @@ void irmp_PCI_ISR(void)
             Serial.println(irmp_start_bit_detected); // print start bit if complete_len is reached
         }
 #endif
-        if (irmp_start_bit_detected && irmp_bit == irmp_param.complete_len && irmp_param.stop_bit == TRUE)
-        {
+        if (irmp_start_bit_detected && irmp_bit == irmp_param.complete_len && irmp_param.stop_bit == TRUE) {
             // Try to detect a nec repeat irmp_bit is 0
 #ifdef PCI_DEBUG
             irmp_debug_print(F("R"));
@@ -122,16 +113,14 @@ void irmp_PCI_ISR(void)
             irmp_debug_print(F("E")); // print info after call
             Serial.println();
 #endif
-            if (irmp_ir_detected)
-            {
+            if (irmp_ir_detected) {
                 // no protocol detected -> restore irmp_pause_time. Not sure if this is really required.
                 irmp_pause_time = irmp_pause_time_store;
             }
         }
 
         // For condition see also line 4203 and 5098 in irmp.c.h
-        if (irmp_start_bit_detected && irmp_bit > 0 && irmp_bit == irmp_param.complete_len)
-        {
+        if (irmp_start_bit_detected && irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
             // Complete length of bit now received -> try to detect end of protocol
 #ifdef PCI_DEBUG
             irmp_debug_print(F("S")); // print info before call
@@ -143,8 +132,7 @@ void irmp_PCI_ISR(void)
             irmp_debug_print(F("E")); // print info after call
             Serial.println();
 #endif
-            if (irmp_ir_detected)
-            {
+            if (irmp_ir_detected) {
                 // no protocol detected -> restore irmp_pause_time. Not sure if this is really required.
                 irmp_pause_time = irmp_pause_time_store;
             }
@@ -170,10 +158,13 @@ void irmp_PCI_ISR(void)
     }
 }
 
-void initPCIInterrupt()
-{
-#if ! defined(__AVR__) || defined(IRMP_USE_ARDUINO_ATTACH_INTERRUPT)
+void initPCIInterrupt() {
+#if defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+    attachInterrupt(IRMP_INPUT_PIN, irmp_PCI_ISR, CHANGE); // 14.2 us before LED Feedback compared to 12 if configured with macros and not compatible
+
+#elif ! defined(__AVR__) || defined(IRMP_USE_ARDUINO_ATTACH_INTERRUPT)
     attachInterrupt(digitalPinToInterrupt(IRMP_INPUT_PIN), irmp_PCI_ISR, CHANGE);
+
 #else
 #  if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
     // use PinChangeInterrupt
@@ -251,6 +242,7 @@ void initPCIInterrupt()
 #if defined(__AVR__) && ! defined(IRMP_USE_ARDUINO_ATTACH_INTERRUPT)
 # if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 ISR(PCINT0_vect)
+
 #  else
 #    if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #      if defined(ARDUINO_AVR_DIGISPARKPRO)
