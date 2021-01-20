@@ -39,15 +39,18 @@
 #if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include "ATtinySerialOut.h"
 #  if defined(ARDUINO_AVR_DIGISPARKPRO)
-#define IR_INPUT_PIN   9 // PA3 - on Digispark board labeled as pin 9
+#define IR_INPUT_PIN    9 // PA3 - on Digispark board labeled as pin 9
 #  else
 #define IR_INPUT_PIN    0
 #  endif
 #  if defined(ARDUINO_AVR_DIGISPARK)
 #define LED_BUILTIN PB1
 #  endif
-#else
 
+#elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+#define IR_INPUT_PIN    10
+
+#else
 #define IR_INPUT_PIN    2
 //#define DO_NOT_USE_FEEDBACK_LED_PIN
 #endif

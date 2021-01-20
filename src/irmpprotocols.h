@@ -331,11 +331,11 @@ typedef uint8_t     PAUSE_LEN;
  * KASEIKYO:
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#define KASEIKYO_START_BIT_PULSE_TIME           3380.0e-6                       // 3380 usec pulse
-#define KASEIKYO_START_BIT_PAUSE_TIME           1690.0e-6                       // 1690 usec pause
-#define KASEIKYO_PULSE_TIME                      423.0e-6                       //  525 usec pulse
-#define KASEIKYO_1_PAUSE_TIME                   1269.0e-6                       //  525 usec pause
-#define KASEIKYO_0_PAUSE_TIME                    423.0e-6                       // 1690 usec pause
+#define KASEIKYO_START_BIT_PULSE_TIME           3456.0e-6                       // 3380 usec pulse
+#define KASEIKYO_START_BIT_PAUSE_TIME           1728.0e-6                       // 1690 usec pause
+#define KASEIKYO_PULSE_TIME                      432.0e-6                       //  525 usec pulse
+#define KASEIKYO_1_PAUSE_TIME                   1296.0e-6                       //  525 usec pause
+#define KASEIKYO_0_PAUSE_TIME                    432.0e-6                       // 1690 usec pause
 #define KASEIKYO_AUTO_REPETITION_PAUSE_TIME       74.0e-3                       // repetition after 74 ms
 #define KASEIKYO_FRAME_REPEAT_PAUSE_TIME          74.0e-3                       // frame repeat after 74 ms
 #define KASEIKYO_ADDRESS_OFFSET                  0                              // skip 0 bits
@@ -354,9 +354,9 @@ typedef uint8_t     PAUSE_LEN;
  */
 #define PANASONIC_START_BIT_PULSE_TIME           3600.0e-6                      // 3600 usec pulse
 #define PANASONIC_START_BIT_PAUSE_TIME           1600.0e-6                      // 1690 usec pause
-#define PANASONIC_PULSE_TIME                      565.0e-6                      //  565 usec pulse
-#define PANASONIC_1_PAUSE_TIME                   1140.0e-6                      // 1140 usec pause
-#define PANASONIC_0_PAUSE_TIME                    316.0e-6                      //  316 usec pause
+#define PANASONIC_PULSE_TIME                      432.0e-6                      //  565 usec pulse
+#define PANASONIC_1_PAUSE_TIME                   1296.0e-6                      // 1140 usec pause
+#define PANASONIC_0_PAUSE_TIME                    432.0e-6                      //  316 usec pause
 #define PANASONIC_AUTO_REPETITION_PAUSE_TIME       40.0e-3                      // repetition after 40 ms?
 #define PANASONIC_FRAME_REPEAT_PAUSE_TIME          40.0e-3                      // frame repeat after 40 ms
 #define PANASONIC_ADDRESS_OFFSET                 24                             // skip 24 bits: 010000000000010000000001

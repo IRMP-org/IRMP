@@ -23,7 +23,7 @@ Available as Arduino library "IRMP"
 - Sony SIRCS, NEC + APPLE + ONKYO, Samsung + Samsg32, Kaseikyo
 - JVC, NEC16, NEC42, Matsushita, DENON, Sharp, RC5, RC6 & RC6A, IR60 (SDA2008) Grundig, Siemens Gigaset, Nokia
 - BOSE, Kathrein, NUBERT, FAN (ventilator), SPEAKER (~NUBERT), Bang & Olufsen, RECS80 (SAA3004), RECS80EXT (SAA3008), Thomson, NIKON camera, Netbox keyboard, ORTEK (Hama), Telefunken 1560, FDC3402 keyboard, RC Car, iRobot Roomba, RUWIDO, T-Home, A1 TV BOX, LEGO Power RC, RCMM 12,24, or 32, LG Air Condition, Samsung48, Merlin, Pentax, S100, ACP24, TECHNICS, PANASONIC Beamer, Mitsubishi Aircond, VINCENT, SAMSUNG AH, GREE CLIMATE, RCII T+A, RADIO e.g. TEVION, METZ<br/>
-- **NEC, Kaseiko, Denon, RC6, Samsung + Samsg32 were successfully tested in interrupt mode.**
+- **NEC, Kaseiko, Denon, RC6, Samsung + Samsg32** were successfully tested in **interrupt mode**, but there are many protocols which **in principle cannot be decoded** in this mode.
 
 # Features
 - You may use **every pin for input or output**.
@@ -38,7 +38,7 @@ Available as Arduino library "IRMP"
 For applications only requiring NEC protocol, there is a receiver which has very **small codesize and does NOT require any timer**. See the MinimalReceiver and IRDispatcherDemo example how to use it.
 
 # Schematic for Arduino UNO
-The VS1838B is used as receiver for all examples and tests. This module has a 120 µs on/low and a 100 µs off/high delay between received signal and output. So it shortens the mark and extends the space by 20 µs.
+The VS1838B is used as receiver for all examples and tests. This module has a 120 Âµs on/low and a 100 Âµs off/high delay between received signal and output. So it shortens the mark and extends the space by 20 Âµs.
 | IR-Receiver connection | Serial LCD connection |
 |---|---|
 ![Fritzing schematic for Arduino UNO](extras/IRMP_UNO_Steckplatine.png) | ![Fritzing schematic for Arduino UNO + LCD](extras/IRMP_UNO_LCD_Steckplatine.png)
@@ -62,7 +62,7 @@ The VS1838B is used as receiver for all examples and tests. This module has a 12
 I created this comparison matrix for [myself](https://github.com/ArminJo) in order to choose a small IR lib for my project and to have a quick overview, when to choose which library.<br/>
 It is dated from **11.11.2020**. If you have complains about the data or request for extensions, please send a PM or open an issue.
 
-| Subject | [IRMP](https://github.com/ukw100/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**mostly unmaintained** | [IRremote](https://github.com/z3t0/Arduino-IRremote) |
+| Subject | [IRMP](https://github.com/ukw100/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**mostly unmaintained** | [IRremote](https://github.com/Arduino-IRremote/Arduino-IRremote) |
 |---------|------|-----------|--------|----------|
 | Number of protocols | **50** | Nec + Panasonic + Hash \* | 12 + Hash \* | 16 |
 | 3.Party libs needed| % | PinChangeInterrupt if not pin 2 or 3 | % | % |
@@ -160,7 +160,7 @@ Modify it by setting the value to 1 or 0. Or define the macro with the -D compil
 | `IRMP_IRSND_ALLOW_DYNAMIC_PINS` | defined | Allows to specify pin number at irmp_init() -see above. This requires additional program space. |
 | `IRMP_PROTOCOL_NAMES` | 1 | Enable protocol number mapping to protocol strings - needs some program memory. |
 | `IRMP_USE_COMPLETE_CALLBACK` | 1 | Use Callback if complete data was received. Requires call to irmp_register_complete_callback_function(). |
-| `IRMP_ENABLE_PIN_CHANGE_INTERRUPT` | defined | Use [Arduino attachInterrupt()](https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/) and do **no polling with timer ISR**. This **restricts the available input pins**. The results are equivalent to results aquired with a sampling rate of 15625 Hz (chosen to avoid time consuming divisions). For AVR boards an own interrupt handler for  INT0 or INT1 is used instead of Arduino attachInterrupt().  |
+| `IRMP_ENABLE_PIN_CHANGE_INTERRUPT` | defined | Use [Arduino attachInterrupt()](https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/) and do **no polling with timer ISR**. This **restricts the available input pins and protocols**. The results are equivalent to results aquired with a sampling rate of 15625 Hz (chosen to avoid time consuming divisions). For AVR boards an own interrupt handler for  INT0 or INT1 is used instead of Arduino attachInterrupt().  |
 | `IRMP_ENABLE_RELEASE_DETECTION` | 1 | If user releases a key on the remote control, last protocol/address/command will be returned with flag `IRMP_FLAG_RELEASE` set. |
 | `IRMP_HIGH_ACTIVE` | 1 | Set to 1 if you use a RF receiver, which has an active HIGH output signal. |
 | `IRMP_32_BIT` | 1 | This enables MERLIN protocol, but decreases performance for AVR. |
@@ -173,6 +173,8 @@ Modify it by setting the value to 1 or 0. Or define the macro with the -D compil
 | `IR_INPUT_PIN` | defined | The pin number for TinyIRReceiver IR input which gets compiled in. |
 | `IR_FEEDBACK_LED_PIN` | defined | The pin number for TinyIRReceiver feedback LED  which gets compiled in. |
 | `DO_NOT_USE_FEEDBACK_LED` | defined | Enable it to disable the feedback LED function. |
+|-|-|-|
+| `IRMP_MEASURE_TIMING` +  `IRMP_TIMING_TEST_PIN` | defined | For development only. The test pin is switched high at the very beginning and low at the end of the ISR. |
 
 ### Modifying compile options with Arduino IDE
 First use *Sketch > Show Sketch Folder (Ctrl+K)*.<br/>
@@ -219,7 +221,7 @@ If you want to distinguish between more than one remote in one sketch, you may a
 
 # [Timer usage](https://github.com/ukw100/IRMP/blob/master/src/IRTimer.cpp.h#L39)
 The IRMP **receive** library works by polling the input pin at a rate of 10 to 20 kHz. Default is 15 kHz.<br/>
-Many protocols can be received **without timer usage**, just by using interrupts from the input pin by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. See [Interrupt example](examples/Interrupt/Interrupt.ino).<br/>
+Some protocols (NEC, Kaseiko, Denon, RC6, Samsung + Samsg32) can be received **without timer usage**, just by using interrupts from the input pin by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. There are many protocols which **in principle cannot be decoded** in this mode. See [Interrupt example](examples/Interrupt/Interrupt.ino).<br/>
 **In interrupt mode, the `micros()` function is used as timebase.**
 
 The IRMP **send** library works by bit banging the output pin at a frequency of 38 kHz. This **avoids blocking waits** and allows to choose an **arbitrary pin**, you are not restricted to PWM generating pins like pin 3 or 11. The interrupts for send pin bit banging require 50% CPU time on a 16 MHz AVR.<br/>
@@ -269,6 +271,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 
 # Revision History
 ### Version 3.3.6 - work in progress
+- Added ATtiny3217 / TinyCore support.
 
 ### Version 3.3.5
 - Added TinyIRReceiver and updated IRDispatcherDemo examples.

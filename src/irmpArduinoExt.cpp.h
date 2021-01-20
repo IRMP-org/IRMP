@@ -569,17 +569,16 @@ void irmp_print_protocol_name(Print *aSerial, uint8_t aProtocolNumber)
         {
             const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_used_protocol_names[i]);
             aSerial->print((__FlashStringHelper *) (tProtocolStringPtr));
-            break;
+            return;
         }
     }
 #  else
     // no need to save space
     aSerial->print(irmp_protocol_names[aProtocolNumber]);
 #  endif
-#else
+#endif
     aSerial->print(F("0x"));
     aSerial->print(aProtocolNumber, HEX);
-#endif
 }
 
 /*
