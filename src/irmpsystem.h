@@ -232,7 +232,7 @@ typedef unsigned short                  uint_fast16_t;
 #  endif
 #endif
 
-typedef struct IRMP_PACKED_STRUCT
+typedef struct IRMP_PACKED_STRUCT IRMP_DATA
 {
     uint8_t                             protocol;                                   // protocol, e.g. NEC_PROTOCOL
     uint16_t                            address;                                    // address
