@@ -592,7 +592,6 @@ void irmp_result_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr)
      */
     aSerial->print(F("P="));
     irmp_print_protocol_name(aSerial, aIRMPDataPtr->protocol);
-    aSerial->print(' ');
 
     /*
      * Print address, code and repetition flag
@@ -621,7 +620,6 @@ void irmp_result_print(IRMP_DATA *aIRMPDataPtr)
 // This is not the exact right condition, but on ATtinies you will mostly disable protocol names
 #if IRMP_PROTOCOL_NAMES == 1
     irmp_print_protocol_name(&Serial, aIRMPDataPtr->protocol);
-    Serial.print(' ');
 #else
     Serial.print(F("0x"));
     Serial.print(aIRMPDataPtr->protocol, HEX);
