@@ -490,7 +490,7 @@ const char * const irmp_used_protocol_names[] PROGMEM =
 void irmp_print_active_protocols(Print *aSerial)
 {
 // skip protocol 0 = UNKNOWN
-    for (uint8_t i = 1; i < sizeof(irmp_used_protocol_index); ++i)
+    for (uint_fast8_t i = 1; i < sizeof(irmp_used_protocol_index); ++i)
     {
 #if IRMP_PROTOCOL_NAMES == 1
         /*
@@ -521,7 +521,7 @@ void irmp_print_protocol_name(Print *aSerial, uint8_t aProtocolNumber)
 {
 #if IRMP_PROTOCOL_NAMES == 1
 #  if defined(__AVR__)
-    for (uint8_t i = 0; i < sizeof(irmp_used_protocol_index); ++i)
+    for (uint_fast8_t i = 0; i < sizeof(irmp_used_protocol_index); ++i)
     {
         if(pgm_read_byte(&irmp_used_protocol_index[i]) == aProtocolNumber)
         {

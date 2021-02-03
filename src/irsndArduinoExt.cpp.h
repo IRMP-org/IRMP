@@ -518,7 +518,7 @@ const char * const irsnd_used_protocol_names[] PROGMEM =
 void irsnd_print_protocol_name(Print *aSerial, uint8_t aProtocolNumber)
 {
 #  if defined(__AVR__)
-    for (uint8_t i = 0; i < sizeof(irsnd_used_protocol_index); ++i)
+    for (uint_fast8_t i = 0; i < sizeof(irsnd_used_protocol_index); ++i)
     {
         if (pgm_read_byte(&irsnd_used_protocol_index[i]) == aProtocolNumber)
         {

@@ -27,6 +27,8 @@
 #  error F_CPU unkown
 #endif
 
+#define IRMP_NEC_REPETITION_PROTOCOL                0xFF            // pseudo protocol: NEC repetition frame
+
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  *  ATtiny pin definition of OC0A / OC0B
  *  ATmega pin definition of OC2 / OC2A / OC2B / OC0 / OC0A / OC0B
@@ -243,6 +245,15 @@
 #define IRSND_NEC_1_PAUSE_LEN                       (uint8_t)(F_INTERRUPTS * NEC_1_PAUSE_TIME + 0.5)
 #define IRSND_NEC_0_PAUSE_LEN                       (uint8_t)(F_INTERRUPTS * NEC_0_PAUSE_TIME + 0.5)
 #define IRSND_NEC_FRAME_REPEAT_PAUSE_LEN            (uint16_t)(F_INTERRUPTS * NEC_FRAME_REPEAT_PAUSE_TIME + 0.5)                    // use uint16_t!
+
+#define IRSND_MELINERA_START_BIT_PULSE_LEN          (uint8_t)(F_INTERRUPTS * MELINERA_START_BIT_PULSE_TIME + 0.5)
+#define IRSND_MELINERA_START_BIT_PAUSE_LEN          (uint8_t)(F_INTERRUPTS * MELINERA_START_BIT_PAUSE_TIME + 0.5)
+#define IRSND_MELINERA_REPEAT_START_BIT_PAUSE_LEN   (uint8_t)(F_INTERRUPTS * MELINERA_REPEAT_START_BIT_PAUSE_TIME + 0.5)
+#define IRSND_MELINERA_1_PULSE_LEN                  (uint8_t)(F_INTERRUPTS * MELINERA_1_PULSE_TIME + 0.5)
+#define IRSND_MELINERA_0_PULSE_LEN                  (uint8_t)(F_INTERRUPTS * MELINERA_0_PULSE_TIME + 0.5)
+#define IRSND_MELINERA_1_PAUSE_LEN                  (uint8_t)(F_INTERRUPTS * MELINERA_1_PAUSE_TIME + 0.5)
+#define IRSND_MELINERA_0_PAUSE_LEN                  (uint8_t)(F_INTERRUPTS * MELINERA_0_PAUSE_TIME + 0.5)
+#define IRSND_MELINERA_FRAME_REPEAT_PAUSE_LEN       (uint16_t)(F_INTERRUPTS * MELINERA_FRAME_REPEAT_PAUSE_TIME + 0.5)               // use uint16_t!
 
 #define IRSND_SAMSUNG_START_BIT_PULSE_LEN           (uint8_t)(F_INTERRUPTS * SAMSUNG_START_BIT_PULSE_TIME + 0.5)
 #define IRSND_SAMSUNG_START_BIT_PAUSE_LEN           (uint8_t)(F_INTERRUPTS * SAMSUNG_START_BIT_PAUSE_TIME + 0.5)
@@ -1140,14 +1151,22 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
         }
         case IRMP_NEC_PROTOCOL:
         {
-            address = bitsrevervse (irmp_data_p->address, NEC_ADDRESS_LEN);
-            command = bitsrevervse (irmp_data_p->command, NEC_COMMAND_LEN);
+            if (irmp_data_p->flags & IRSND_RAW_REPETITION_FRAME)
+            {
+                irsnd_protocol = IRMP_NEC_REPETITION_PROTOCOL;                                          // send a raw repetition frame
+                irsnd_buffer[0] = 0x00;                                                                 // no address, no command
+            }
+            else
+            {
+                address = bitsrevervse (irmp_data_p->address, NEC_ADDRESS_LEN);
+                command = bitsrevervse (irmp_data_p->command, NEC_COMMAND_LEN);
 
-            irsnd_buffer[0] = (address & 0xFF00) >> 8;                                                          // AAAAAAAA
-            irsnd_buffer[1] = (address & 0x00FF);                                                               // AAAAAAAA
-            irsnd_buffer[2] = (command & 0xFF00) >> 8;                                                          // CCCCCCCC
-            irsnd_buffer[3] = ~((command & 0xFF00) >> 8);                                                       // cccccccc
-            irsnd_busy      = TRUE;
+                irsnd_buffer[0] = (address & 0xFF00) >> 8;                                              // AAAAAAAA
+                irsnd_buffer[1] = (address & 0x00FF);                                                   // AAAAAAAA
+                irsnd_buffer[2] = (command & 0xFF00) >> 8;                                              // CCCCCCCC
+                irsnd_buffer[3] = ~((command & 0xFF00) >> 8);                                           // cccccccc
+            }
+            irsnd_busy = TRUE;
             break;
         }
         case IRMP_ONKYO_PROTOCOL:
@@ -1187,6 +1206,16 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
             irsnd_buffer[3] = ((~address & 0x0003) << 6) | ( (command & 0x00FC) >> 2);                          // aaCCCCCC
             irsnd_buffer[4] = ( (command & 0x0003) << 6) | ((~command & 0x00FC) >> 2);                          // CCcccccc
             irsnd_buffer[5] = ((~command & 0x0003) << 6);                                                       // cc
+            irsnd_busy      = TRUE;
+            break;
+        }
+#endif
+#if IRSND_SUPPORT_MELINERA_PROTOCOL == 1
+        case IRMP_MELINERA_PROTOCOL:
+        {
+            command = irmp_data_p->command;
+
+            irsnd_buffer[0] = (command & 0x00FF);                                                               // CCCCCCCC
             irsnd_busy      = TRUE;
             break;
         }
@@ -1895,11 +1924,12 @@ irsnd_ISR (void)
 #endif
 #if IRSND_SUPPORT_NEC_PROTOCOL == 1
                     case IRMP_NEC_PROTOCOL:
+                    case IRMP_NEC_REPETITION_PROTOCOL:
                     case IRMP_ONKYO_PROTOCOL:
                     {
                         startbit_pulse_len          = IRSND_NEC_START_BIT_PULSE_LEN;
 
-                        if (repeat_counter > 0)
+                        if (repeat_counter > 0 || irsnd_protocol == IRMP_NEC_REPETITION_PROTOCOL)
                         {
                             startbit_pause_len      = IRSND_NEC_REPEAT_START_BIT_PAUSE_LEN - 1;
                             complete_data_len       = 0;
@@ -1954,6 +1984,24 @@ irsnd_ISR (void)
                         n_auto_repetitions          = 1;                                                    // 1 frame
                         auto_repetition_pause_len   = 0;
                         repeat_frame_pause_len      = IRSND_NEC_FRAME_REPEAT_PAUSE_LEN;
+                        irsnd_set_freq (IRSND_FREQ_38_KHZ);
+                        break;
+                    }
+#endif
+#if IRSND_SUPPORT_MELINERA_PROTOCOL == 1
+                    case IRMP_MELINERA_PROTOCOL:
+                    {
+                        startbit_pulse_len          = IRSND_MELINERA_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = IRSND_MELINERA_START_BIT_PAUSE_LEN - 1;
+                        pulse_1_len                 = IRSND_MELINERA_1_PULSE_LEN;
+                        pause_1_len                 = IRSND_MELINERA_1_PAUSE_LEN - 1;
+                        pulse_0_len                 = IRSND_MELINERA_0_PULSE_LEN;
+                        pause_0_len                 = IRSND_MELINERA_0_PAUSE_LEN - 1;
+                        has_stop_bit                = MELINERA_STOP_BIT;
+                        complete_data_len           = MELINERA_COMPLETE_DATA_LEN;
+                        n_auto_repetitions          = 1;                                                    // 1 frame
+                        auto_repetition_pause_len   = 0;
+                        repeat_frame_pause_len      = IRSND_MELINERA_FRAME_REPEAT_PAUSE_LEN;
                         irsnd_set_freq (IRSND_FREQ_38_KHZ);
                         break;
                     }
@@ -2631,6 +2679,7 @@ irsnd_ISR (void)
 #endif
 #if IRSND_SUPPORT_NEC_PROTOCOL == 1
                 case IRMP_NEC_PROTOCOL:
+                case IRMP_NEC_REPETITION_PROTOCOL:
                 case IRMP_ONKYO_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_NEC16_PROTOCOL == 1
@@ -2638,6 +2687,9 @@ irsnd_ISR (void)
 #endif
 #if IRSND_SUPPORT_NEC42_PROTOCOL == 1
                 case IRMP_NEC42_PROTOCOL:
+#endif
+#if IRSND_SUPPORT_MELINERA_PROTOCOL == 1
+                case IRMP_MELINERA_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_LGAIR_PROTOCOL == 1
                 case IRMP_LGAIR_PROTOCOL:
@@ -2729,7 +2781,7 @@ irsnd_ISR (void)
     IRSND_SUPPORT_FDC_PROTOCOL == 1 || IRSND_SUPPORT_RCCAR_PROTOCOL == 1 || IRSND_SUPPORT_JVC_PROTOCOL == 1 || IRSND_SUPPORT_NIKON_PROTOCOL == 1 || \
     IRSND_SUPPORT_LEGO_PROTOCOL == 1 || IRSND_SUPPORT_THOMSON_PROTOCOL == 1 || IRSND_SUPPORT_ROOMBA_PROTOCOL == 1 || IRSND_SUPPORT_TELEFUNKEN_PROTOCOL == 1 || \
     IRSND_SUPPORT_PENTAX_PROTOCOL == 1 || IRSND_SUPPORT_ACP24_PROTOCOL == 1 || IRSND_SUPPORT_PANASONIC_PROTOCOL == 1 || IRSND_SUPPORT_BOSE_PROTOCOL == 1 || \
-    IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL == 1 || IRSND_SUPPORT_IRMP16_PROTOCOL == 1
+    IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL == 1 || IRSND_SUPPORT_IRMP16_PROTOCOL == 1 || IRSND_SUPPORT_MELINERA_PROTOCOL
                 {
                     if (pulse_counter == 0)
                     {
