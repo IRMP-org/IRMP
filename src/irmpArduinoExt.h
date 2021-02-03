@@ -127,11 +127,6 @@ extern uint32_t irmp_last_change_micros;
 
 void irmp_result_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr);
 void irmp_result_print(IRMP_DATA *aIRMPDataPtr);
-#  if defined(__AVR__)
-void irmp_debug_print(const __FlashStringHelper *aMessage, bool aDoShortOutput = true);
-#  else
-void irmp_debug_print(const char *aMessage, bool aDoShortOutput);
-#  endif
 
 void irmp_PCI_ISR(void);
 void initPCIInterrupt(void);

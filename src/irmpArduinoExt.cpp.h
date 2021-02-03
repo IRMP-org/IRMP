@@ -122,48 +122,6 @@ bool irmp_IsBusy()
 #endif
 }
 
-#if defined(__AVR__)
-void irmp_debug_print(const __FlashStringHelper *aMessage, bool aDoShortOutput)
-#else
-void irmp_debug_print(const char *aMessage, bool aDoShortOutput)
-#endif
-{
-    Serial.print(aMessage);
-    Serial.print(' ');
-    Serial.print(irmp_ir_detected); // valid IR command detected
-    Serial.print(F(" St"));
-    Serial.print(irmp_start_bit_detected);
-
-    Serial.print(F(" Ws"));
-    Serial.print(wait_for_space); // true if in data/address section and no signal. Now increment pause time.
-    Serial.print(F(" Wss"));
-    Serial.print(wait_for_start_space); // true if we have received start bit
-
-    Serial.print(F(" L"));
-    Serial.print(irmp_param.complete_len); // maximum bit position
-    Serial.print(F(" B"));
-    Serial.print((int8_t) irmp_bit); // current bit position - FF(-1) is start value
-    Serial.print(F(" Pu"));
-    Serial.print(irmp_pulse_time); // bit time for pulse
-    Serial.print(F(" Pa"));
-    Serial.print(irmp_pause_time);
-
-    Serial.print(F(" Sb"));
-    Serial.print(irmp_param.stop_bit); // boolean. 1 = stop bit required
-
-    if (!aDoShortOutput)
-    {
-        Serial.print(F(" F"));
-        Serial.print(irmp_flags); // currently only repetition flag
-        Serial.print(F(" K"));
-        Serial.print(key_repetition_len); // the pause after a command to distinguish repetitions from new commands
-        Serial.print(F(" R"));
-        Serial.print(repetition_frame_number); // Number of repetitions
-    }
-
-    Serial.println();
-}
-
 /*
  * irmp_used_protocol_index holds the protocol numbers (from irmpprotocols.h)
  * for the included protocol name entries of the irmp_used_protocol_names array below

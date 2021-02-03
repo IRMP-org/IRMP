@@ -27,6 +27,14 @@
 #ifndef IRMP_PIN_CHANGE_INTERRUPT_CPP_H
 #define IRMP_PIN_CHANGE_INTERRUPT_CPP_H
 
+//#define PCI_DEBUG
+
+#  if defined(__AVR__)
+void irmp_debug_print(const __FlashStringHelper *aMessage, bool aDoShortOutput = true);
+#  else
+void irmp_debug_print(const char *aMessage, bool aDoShortOutput);
+#  endif
+
 uint32_t irmp_last_change_micros; // microseconds of last Pin Change Interrupt. Used for irmp_IsBusy().
 /*
  * Wrapper for irmp_ISR() in order to run it with Pin Change Interrupts.
@@ -273,5 +281,47 @@ ISR(INT1_vect)
     irmp_PCI_ISR();
 }
 #endif // defined(__AVR__)
+
+#if defined(__AVR__)
+void irmp_debug_print(const __FlashStringHelper *aMessage, bool aDoShortOutput)
+#else
+void irmp_debug_print(const char *aMessage, bool aDoShortOutput)
+#endif
+{
+    Serial.print(aMessage);
+    Serial.print(' ');
+    Serial.print(irmp_ir_detected); // valid IR command detected
+    Serial.print(F(" St"));
+    Serial.print(irmp_start_bit_detected);
+
+    Serial.print(F(" Ws"));
+    Serial.print(wait_for_space); // true if in data/address section and no signal. Now increment pause time.
+    Serial.print(F(" Wss"));
+    Serial.print(wait_for_start_space); // true if we have received start bit
+
+    Serial.print(F(" L"));
+    Serial.print(irmp_param.complete_len); // maximum bit position
+    Serial.print(F(" B"));
+    Serial.print((int8_t) irmp_bit); // current bit position - FF(-1) is start value
+    Serial.print(F(" Pu"));
+    Serial.print(irmp_pulse_time); // bit time for pulse
+    Serial.print(F(" Pa"));
+    Serial.print(irmp_pause_time);
+
+    Serial.print(F(" Sb"));
+    Serial.print(irmp_param.stop_bit); // boolean. 1 = stop bit required
+
+    if (!aDoShortOutput)
+    {
+        Serial.print(F(" F"));
+        Serial.print(irmp_flags); // currently only repetition flag
+        Serial.print(F(" K"));
+        Serial.print(key_repetition_len); // the pause after a command to distinguish repetitions from new commands
+        Serial.print(F(" R"));
+        Serial.print(repetition_frame_number); // Number of repetitions
+    }
+
+    Serial.println();
+}
 
 #endif // IRMP_PIN_CHANGE_INTERRUPT_CPP_H
