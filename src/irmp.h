@@ -275,6 +275,12 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #  define IRMP_SUPPORT_NEC_PROTOCOL             1
 #endif
 
+#if IRMP_SUPPORT_MELINERA_PROTOCOL == 1 && IRMP_SUPPORT_NEC_PROTOCOL == 0
+#  warning MELINERA protocol needs also NEC protocol, NEC protocol enabled
+#  undef IRMP_SUPPORT_NEC_PROTOCOL
+#  define IRMP_SUPPORT_NEC_PROTOCOL             1
+#endif
+
 #if IRMP_SUPPORT_RCMM_PROTOCOL == 1 && F_INTERRUPTS < 20000
 #  warning F_INTERRUPTS too low, RCMM protocol disabled (should be at least 20000)
 #  undef IRMP_SUPPORT_RCMM_PROTOCOL

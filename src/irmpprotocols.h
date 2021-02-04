@@ -23,7 +23,7 @@
  * IR protocols:
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#define IRMP_UNKNOWN_PROTOCOL                    0              // uknown protocol
+#define IRMP_UNKNOWN_PROTOCOL                    0              // unknown protocol
 #define IRMP_SIRCS_PROTOCOL                      1              // Sony
 #define IRMP_NEC_PROTOCOL                        2              // NEC with 32 bits, 16 address + 8 + 8 command bits, Pioneer, JVC, Toshiba, NoName etc.
 #define IRMP_SAMSUNG_PROTOCOL                    3              // Samsung
@@ -84,8 +84,9 @@
 #define RF_GEN24_PROTOCOL                       57              // RF Generic, 24 Bits (Pollin 550666, EAN 4049702006022 and many other similar RF remote controls))
 #define RF_X10_PROTOCOL                         58              // RF PC X10 Remote Control (Medion, Pollin 721815)
 #define RF_MEDION_PROTOCOL                      59              // RF PC Medion Remote Control (Medion)
+#define IRMP_MELINERA_PROTOCOL                  60
 
-#define IRMP_N_PROTOCOLS                        59              // number of supported protocols
+#define IRMP_N_PROTOCOLS                        60              // number of supported protocols
 
 #if defined(UNIX_OR_WINDOWS) || IRMP_PROTOCOL_NAMES == 1 || IRSND_PROTOCOL_NAMES == 1
 extern const char proto_unknown[]       PROGMEM;
@@ -149,6 +150,7 @@ extern const char proto_onkyo[]         PROGMEM;
 extern const char proto_rf_gen24[]      PROGMEM;
 extern const char proto_rf_x10[]        PROGMEM;
 extern const char proto_rf_medion[]     PROGMEM;
+extern const char proto_melinera[]      PROGMEM;
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -208,7 +210,7 @@ typedef uint8_t     PAUSE_LEN;
 #define SIRCS_FLAGS                             0                               // flags
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * NEC & NEC42 & NEC16 & LGAIR:
+ * NEC & NEC42 & NEC16 & LGAIR & MELINERA:
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #define NEC_START_BIT_PULSE_TIME                9000.0e-6                       // 9000 usec pulse
@@ -244,6 +246,22 @@ typedef uint8_t     PAUSE_LEN;
 #define NEC16_COMMAND_OFFSET                    8                               // skip 8 bits (8 address)
 #define NEC16_COMMAND_LEN                       8                               // read 8 bits (8 command)
 #define NEC16_COMPLETE_DATA_LEN                 16                              // complete length
+
+#define MELINERA_START_BIT_PULSE_TIME           8800.0e-6                       // 8800 usec pulse
+#define MELINERA_START_BIT_PAUSE_TIME           4100.0e-6                       // 4100 usec pause
+#define MELINERA_0_PULSE_TIME                    440.0e-6                       //  430 usec pause
+#define MELINERA_0_PAUSE_TIME                    590.0e-6                       //  600 usec pause
+#define MELINERA_1_PULSE_TIME                    970.0e-6                       //  910 usec pause
+#define MELINERA_1_PAUSE_TIME                   1140.0e-6                       // 1160 usec pause
+#define MELINERA_FRAME_REPEAT_PAUSE_TIME          40.0e-3                       // frame repeat after 40ms
+#define MELINERA_ADDRESS_OFFSET                 0                               // skip 0 bits
+#define MELINERA_ADDRESS_LEN                    0                               // read 0 address bits
+#define MELINERA_COMMAND_OFFSET                 0                               // skip 0 bits (0 address)
+#define MELINERA_COMMAND_LEN                    8                               // read 8 bits (8 command)
+#define MELINERA_COMPLETE_DATA_LEN              8                               // complete length
+#define MELINERA_STOP_BIT                       1                               // has stop bit
+#define MELINERA_LSB                            0                               // MSB
+#define MELINERA_FLAGS                          0                               // flags
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * SAMSUNG & SAMSUNG32 & SAMSUNG48:
@@ -681,21 +699,12 @@ typedef uint8_t     PAUSE_LEN;
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#if 1
 #define SIEMENS_OR_RUWIDO_START_BIT_PULSE_TIME    275.0e-6                      //  275 usec pulse
 #define SIEMENS_OR_RUWIDO_START_BIT_PAUSE_TIME    550.0e-6                      //  550 usec pause
 #define SIEMENS_OR_RUWIDO_BIT_PULSE_TIME          275.0e-6                      //  275 usec short pulse
 #define SIEMENS_OR_RUWIDO_BIT_PULSE_TIME_2        550.0e-6                      //  550 usec long pulse
 #define SIEMENS_OR_RUWIDO_BIT_PAUSE_TIME          275.0e-6                      //  275 usec short pause
 #define SIEMENS_OR_RUWIDO_BIT_PAUSE_TIME_2        550.0e-6                      //  550 usec long pause
-#else
-#define SIEMENS_OR_RUWIDO_START_BIT_PULSE_TIME    370.0e-6                      //  370 usec pulse
-#define SIEMENS_OR_RUWIDO_START_BIT_PAUSE_TIME    550.0e-6                      //  550 usec pause
-#define SIEMENS_OR_RUWIDO_BIT_PULSE_TIME          370.0e-6                      //  370 usec short pulse
-#define SIEMENS_OR_RUWIDO_BIT_PULSE_TIME_2        680.0e-6                      //  680 usec long pulse
-#define SIEMENS_OR_RUWIDO_BIT_PAUSE_TIME          275.0e-6                      //  275 usec short pause
-#define SIEMENS_OR_RUWIDO_BIT_PAUSE_TIME_2        550.0e-6                      //  550 usec long pause
-#endif
 
 #define SIEMENS_OR_RUWIDO_FRAME_REPEAT_PAUSE_TIME 45.0e-3                       // frame repeat after 45ms
 #define SIEMENS_OR_RUWIDO_STOP_BIT                0                             // has no stop bit
@@ -933,8 +942,8 @@ typedef uint8_t     PAUSE_LEN;
 #define MERLIN_ADDRESS_OFFSET                  2                                // skip 1 bits
 #define MERLIN_ADDRESS_LEN                     9                                // read 9 address bits
 #define MERLIN_COMMAND_OFFSET                  11                               // skip 11 bits (start bit + address)
-#define MERLIN_COMMAND_LEN                     32                               // read up to 32 command bits
-#define MERLIN_COMPLETE_DATA_LEN               45                               // complete length incl. start bit
+#define MERLIN_COMMAND_LEN                     16                               // read up to 16 command bits (could be up to 32)
+#define MERLIN_COMPLETE_DATA_LEN               27                               // complete length incl. start bit
 #define MERLIN_FRAME_REPEAT_PAUSE_TIME         50.0e-3                          // 50 msec pause between frames, don't know if it is correct
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------

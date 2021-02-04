@@ -93,6 +93,7 @@
 #define IRMP_SUPPORT_GREE_PROTOCOL              1       // GREE CLIMATE         >= 10000 <=17000         ~250 bytes
 #define IRMP_SUPPORT_RCII_PROTOCOL              0       // RCII T+A             >= 15000                 ~250 bytes     conflicts with GRUNDIG and NOKIA
 #define IRMP_SUPPORT_METZ_PROTOCOL              1
+#define IRMP_SUPPORT_MELINERA_PROTOCOL          1       // MELINERA (Lidl)      >= 10000
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Protocols Part 2: RF decoders
@@ -102,5 +103,6 @@
 #define IRMP_SUPPORT_RF_GEN24_PROTOCOL          0       // RF GEN24 (generic)   >= 15000                 ~250 bytes
 #define IRMP_SUPPORT_RF_X10_PROTOCOL            0       // RF PC X10 (Medion)   >= 15000                 ~250 bytes
 #define IRMP_SUPPORT_RF_MEDION_PROTOCOL         0       // RF PC Medion         >= 15000                 ~250 bytes
+
 
 #endif // IRMP_SELECT_PROTOCOLS_H
