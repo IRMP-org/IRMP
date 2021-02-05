@@ -271,8 +271,11 @@ The **tone library (using timer 2) is still available**. You can use it alternat
    http://www.mikrocontroller.net/articles/IRSND
 
 # Revision History
-### Version 3.3.6 - work in progress
+### Version 3.4.1 - work in progress
+
+### Version 3.4.0
 - Added ATtiny3217 / TinyCore support.
+- Added Melinera protocol and single repeat for NEC from upstream.
 
 ### Version 3.3.5
 - Added TinyIRReceiver and updated IRDispatcherDemo examples.
