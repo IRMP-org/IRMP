@@ -93,15 +93,6 @@ void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
 #if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
     if(irmp_irsnd_LedFeedbackPin != 0) {
         if (irmp_irsnd_LedFeedbackPinIsActiveLow)
-#  if defined(__AVR_ATtiny3217__) // TinyCore introduced PinStatus type
-        {
-            digitalWrite(irmp_irsnd_LedFeedbackPin, (PinStatus)!aSwitchLedOn);
-        }
-        else
-        {
-            digitalWrite(irmp_irsnd_LedFeedbackPin, (PinStatus)aSwitchLedOn);
-        }
-#  else
         {
             digitalWrite(irmp_irsnd_LedFeedbackPin, !aSwitchLedOn);
         }
@@ -109,15 +100,10 @@ void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
         {
             digitalWrite(irmp_irsnd_LedFeedbackPin, aSwitchLedOn);
         }
-#  endif
     }
 #elif defined(IRMP_FEEDBACK_LED_PIN)
 #  if defined(__AVR__) // As far as I know, there is no active-low built in LED for AVR platform boards
-#    if defined(__AVR_ATtiny3217__) // TinyCore introduced PinStatus type
-    digitalWriteFast(IRMP_FEEDBACK_LED_PIN, (PinStatus)aSwitchLedOn);
-#    else
     digitalWriteFast(IRMP_FEEDBACK_LED_PIN, aSwitchLedOn);
-#    endif
 #  else
         // hope this is fast enough on other platforms
 #    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
