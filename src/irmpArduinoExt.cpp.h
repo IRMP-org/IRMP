@@ -95,12 +95,11 @@ void irmp_init(void)
  * With -oS it is taken as inline function
  */
 #if defined(ESP8266)
-void ICACHE_RAM_ATTR irmp_DoLEDFeedback(bool aSwitchLedOff)
+ICACHE_RAM_ATTR
 #elif defined(ESP32)
-void IRAM_ATTR irmp_DoLEDFeedback(bool aSwitchLedOff)
-#else
-void irmp_DoLEDFeedback(bool aSwitchLedOff)
+IRAM_ATTR
 #endif
+void irmp_DoLEDFeedback(bool aSwitchLedOff)
 {
     if (irmp_irsnd_LedFeedbackEnabled)
     {

@@ -29,7 +29,7 @@
  *
  * Platform     IR input    IR output   Tone
  * -----------------------------------------
- * DEFAULT/AVR  3           4           5
+ * DEFAULT/AVR  2           3           4
  * ATtinyX5     0           4           3
  * ATtin167     9           8           5 // Digispark pro number schema
  * ATtin167     3           2           7
@@ -124,14 +124,14 @@
 #define ALTERNATIVE_IRMP_FEEDBACK_LED_PIN 7 // used for examples which use LED_BUILDIN for example output.
 
 #elif defined(__AVR__)
-#define IRMP_INPUT_PIN   3 // To be compatible with interrupt example, pin 3 is chosen here (which is default).
-#define IRSND_OUTPUT_PIN 4
-#define TONE_PIN         5
+#define IRMP_INPUT_PIN   2 // To be compatible with interrupt example, pin 2 is chosen here.
+#define IRSND_OUTPUT_PIN 3
+#define TONE_PIN         4
 #define IRMP_TIMING_TEST_PIN 6
 #define ALTERNATIVE_IRMP_FEEDBACK_LED_PIN 7 // used for examples which use LED_BUILDIN for example output.
 // You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
 //#define IRMP_PORT_LETTER D
-//#define IRMP_BIT_NUMBER 3
+//#define IRMP_BIT_NUMBER 2
 
 #else
 #warning Board / CPU is not detected using pre-processor symbols -> using default values, which may not fit. Please extend PinDefinitionsAndMore.h.

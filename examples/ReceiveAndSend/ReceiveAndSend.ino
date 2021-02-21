@@ -39,7 +39,7 @@
  *
  * Platform     IR input    IR output   Tone
  * -----------------------------------------
- * DEFAULT/AVR  3           4           5
+ * DEFAULT/AVR  2           3           4
  * ATtinyX5     0           4           3
  * ATtin167     9           8           5 // Digispark pro number schema
  * ATtin167     3           2           7
@@ -158,7 +158,7 @@ void loop()
 void IRSendWithDelay(uint16_t aCommand, uint16_t aDelayMillis)
 {
     irsnd_data.command = aCommand;      // For my Samsung, the high byte is the inverse of the low byte, this is not checked here.
-    irsnd_send_data(&irsnd_data, true); // true = wait for frame to end. This stores timer state and restores it after sending
+    irsnd_send_data(&irsnd_data, true); // true = wait for frame and trailing space to end. This stores timer state and restores it after sending.
     irsnd_data_print(&Serial,&irsnd_data);
     delay(aDelayMillis);
 }

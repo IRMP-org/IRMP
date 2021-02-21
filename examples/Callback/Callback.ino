@@ -100,12 +100,11 @@ void loop()
  * In order to enable other interrupts you can call sei() (enable interrupt again) after getting data.
  */
 #if defined(ESP8266)
-void ICACHE_RAM_ATTR handleReceivedIRData()
+ICACHE_RAM_ATTR
 #elif defined(ESP32)
-void IRAM_ATTR handleReceivedIRData()
-#else
-void handleReceivedIRData()
+IRAM_ATTR
 #endif
+void handleReceivedIRData()
 {
     irmp_get_data(&irmp_data);
 #if !defined(ARDUINO_ARCH_MBED)

@@ -36,10 +36,10 @@
 #include <Arduino.h>
 
 /*
- * First: set input pin definition.
+ * Set sensible receive pin for different CPU's
  */
 #if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#include "ATtinySerialOut.h"
+#include "ATtinySerialOut.h" // Available as Arduino library "ATtinySerialOut"
 #  if defined(ARDUINO_AVR_DIGISPARKPRO)
 #define IR_INPUT_PIN    9 // PA3 - on Digispark board labeled as pin 9
 #  else
@@ -68,8 +68,7 @@
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL) || defined(ARDUINO_attiny3217)
     delay(2000); // To be able to connect Serial monitor after reset or power up and before first printout
@@ -83,8 +82,7 @@ void setup()
 //    Serial.println(F("Ready to receive NEC IR signals at pin " STR(IR_INPUT_PIN)));
 }
 
-void loop()
-{
+void loop() {
     /*
      * Put your code here
      */
@@ -94,13 +92,11 @@ void loop()
  * This is the function is called if a complete command was received
  */
 #if defined(ESP8266)
-void ICACHE_RAM_ATTR handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat)
+ICACHE_RAM_ATTR
 #elif defined(ESP32)
-void IRAM_ATTR handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat)
-#else
-void handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat)
+IRAM_ATTR
 #endif
-{
+void handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat) {
     /*
      * Print only very short output, since we are in an interrupt context and do not want to miss the next interrupts of the repeats coming soon
      */
@@ -108,7 +104,7 @@ void handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat
     Serial.print(aAddress, HEX);
     Serial.print(F(" C=0x"));
     Serial.print(aCommand, HEX);
-//    Serial.print(F(" R="));
-//    Serial.print(isRepeat);
+    Serial.print(F(" R="));
+    Serial.print(isRepeat);
     Serial.println();
 }

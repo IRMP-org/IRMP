@@ -109,6 +109,6 @@ void loop()
     // For my Samsung the high byte is the inverse of the low byte
     irsnd_data.command = ((~tNextCommand) << 8) | tNextCommand;
 #endif
-    irsnd_send_data(&irsnd_data, true); // true = wait for frame to end. This stores timer state and restores it after sending
+    irsnd_send_data(&irsnd_data, true); // true = wait for frame and trailing space to end. This stores timer state and restores it after sending.
     irsnd_data_print(&Serial, &irsnd_data);
 }

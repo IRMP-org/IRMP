@@ -733,7 +733,7 @@ ISR(TIMER2_COMPB_vect)
 void ICACHE_RAM_ATTR irmp_timer_ISR(void)
 
 #elif defined(ESP32)
-void IRAM_ATTR irmp_timer_ISR(void)
+IRAM_ATTR void irmp_timer_ISR(void)
 
 #elif defined(ARDUINO_ARCH_SAMD)
 void TC3_Handler(void)
@@ -765,7 +765,7 @@ void irmp_timer_ISR(void)
     static uint8_t sDivider; // IR signal toggle rate is 2 (4) times IRSND call rate
 #endif
 
-#ifdef IRMP_MEASURE_TIMING
+#if defined(IRMP_MEASURE_TIMING) && defined(IRMP_TIMING_TEST_PIN)
     digitalWriteFast(IRMP_TIMING_TEST_PIN, HIGH); // 2 clock cycles
 #endif
 
@@ -799,7 +799,7 @@ void irmp_timer_ISR(void)
          */
         if (--sDivider == 0)
         {
-            // empty call needs additional 0.7 us. This in turn calls irsnd_on() or irsnd_off()
+            // This in turn calls irsnd_on() or irsnd_off(). Empty call requires additional 0.7 us.
             if (!irsnd_ISR())
             {
                 restoreIRTimer();
@@ -828,7 +828,7 @@ void irmp_timer_ISR(void)
 } // for receive and send in one ISR
 #endif
 
-#ifdef IRMP_MEASURE_TIMING
+#if defined(IRMP_MEASURE_TIMING) && defined(IRMP_TIMING_TEST_PIN)
     digitalWriteFast(IRMP_TIMING_TEST_PIN, LOW); // 2 clock cycles
 #endif
 }

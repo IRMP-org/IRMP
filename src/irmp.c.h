@@ -3039,16 +3039,16 @@ static uint32_t s_startBitSample = 0;
  * 4 us idle, 45 us at start of each pulse @16 MHz ATmega 328p
  */
 #if defined(ESP8266)
-bool ICACHE_RAM_ATTR irmp_ISR(void)
+ICACHE_RAM_ATTR
 #elif defined(ESP32)
-bool IRAM_ATTR irmp_ISR(void)
-#else
-#  ifdef __cplusplus
-bool irmp_ISR(void)
-#  else
-uint_fast8_t irmp_ISR(void)
-#  endif
+IRAM_ATTR
 #endif
+#ifdef __cplusplus
+bool irmp_ISR(void)
+#else
+uint_fast8_t irmp_ISR(void)
+#endif
+
 {
     static uint_fast16_t    last_irmp_address = 0xFFFF;                             // save last irmp address to recognize key repetition
 #if IRMP_ENABLE_RELEASE_DETECTION == 1

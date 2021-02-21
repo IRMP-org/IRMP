@@ -89,7 +89,7 @@ void loop()
         irsnd_data.command = sCommand;
         irsnd_data.flags = sRepeats;
 
-        irsnd_send_data(&irsnd_data, true); // true = wait for frame to end
+        irsnd_send_data(&irsnd_data, true); // true = wait for frame and trailing space to end. This stores timer state and restores it after sending.
 
         irsnd_data_print(&Serial, &irsnd_data);
 

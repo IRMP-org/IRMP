@@ -52,13 +52,11 @@ void IRCommandDispatcher::init() {
  * This is the function is called if a complete command was received
  */
 #if defined(ESP8266)
-void ICACHE_RAM_ATTR handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat)
+ICACHE_RAM_ATTR
 #elif defined(ESP32)
-void IRAM_ATTR handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat)
-#else
-void handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat)
+IRAM_ATTR
 #endif
-{
+void handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat) {
     IRDispatcher.IRReceivedData.address = aAddress;
     IRDispatcher.IRReceivedData.command = aCommand;
     IRDispatcher.IRReceivedData.isRepeat = isRepeat;
@@ -93,13 +91,11 @@ void IRCommandDispatcher::init() {
  * This is the function is called if a complete command was received
  */
 #if defined(ESP8266)
-void ICACHE_RAM_ATTR handleReceivedIRData()
+ICACHE_RAM_ATTR
 #elif defined(ESP32)
-void IRAM_ATTR handleReceivedIRData()
-#else
-void handleReceivedIRData()
+IRAM_ATTR
 #endif
-{
+void handleReceivedIRData() {
     IRMP_DATA tTeporaryData;
     irmp_get_data(&tTeporaryData);
     IRDispatcher.IRReceivedData.address = tTeporaryData.address;
@@ -167,7 +163,7 @@ uint8_t IRCommandDispatcher::checkAndCallCommand() {
         return IR_CODE_EMPTY;
     }
 
-    for (uint8_t i = 0; i < sizeof(IRMapping) / sizeof(struct IRToCommandMappingStruct); ++i) {
+    for (uint_fast8_t i = 0; i < sizeof(IRMapping) / sizeof(struct IRToCommandMappingStruct); ++i) {
         if (IRReceivedData.command == IRMapping[i].IRCode) {
 
 #ifdef INFO
@@ -290,7 +286,7 @@ bool IRCommandDispatcher::delayAndCheckForIRCommand(uint16_t aDelayMillis) {
 void IRCommandDispatcher::printIRCommandString() {
 #ifdef INFO
     Serial.print(F("IRCommand="));
-    for (uint8_t i = 0; i < sizeof(IRMapping) / sizeof(struct IRToCommandMappingStruct); ++i) {
+    for (uint_fast8_t i = 0; i < sizeof(IRMapping) / sizeof(struct IRToCommandMappingStruct); ++i) {
         if (IRReceivedData.command == IRMapping[i].IRCode) {
             Serial.println(reinterpret_cast<const __FlashStringHelper*>(IRMapping[i].CommandString));
             return;
