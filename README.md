@@ -35,6 +35,9 @@ Available as Arduino library "IRMP"
 - Compatible with Arduino tone library.
 - Send can also also wait for trailing space.
 
+# Restrictions
+- Send IR frequency is fixed at 38 kHz.
+
 # Minimal version
 For applications only requiring NEC protocol, there is a receiver which has very **small codesize and does NOT require any timer**. See the MinimalReceiver and IRDispatcherDemo example how to use it.
 
@@ -177,7 +180,6 @@ Modify it by setting the value to 1 or 0. Or define the macro with the -D compil
 | `IRMP_MEASURE_TIMING` +  `IRMP_TIMING_TEST_PIN` | defined | For development only. The test pin is switched high at the very beginning and low at the end of the ISR. |
 
 
-
 ### Modifying compile options with Arduino IDE
 First use *Sketch > Show Sketch Folder (Ctrl+K)*.<br/>
 If you did not yet stored the example as your own sketch, then you are instantly in the right library folder.<br/>
@@ -241,6 +243,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 # Revision History
 ### Version 3.4.1 - work in progress
 - Changed default pins for ATmega328 platform from 3,4,5 to 2,3,4.
+- Adapted to TinyCore 0.0.7.
 
 ### Version 3.4.0
 - Added ATtiny3217 / TinyCore support.
