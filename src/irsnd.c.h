@@ -1053,7 +1053,9 @@ static uint8_t  sircs_additional_bitlen;
 #endif // IRSND_SUPPORT_SIRCS_PROTOCOL == 1
 
 /*
- * @param  do_wait - wait for last command to have ended sending its trailing space before start of new sending. For Arduino: Additionally wait for sent command to have ended.
+ * @param  do_wait - wait for last command to have ended sending its trailing space before start of new sending.
+ *                   For Arduino: Additionally wait for sent command to have ended (including trailing gap).
+ * @return value of irsnd_busy. I.e. true if sending was accepted and do_wait was false, false if protocol was not found or do_wait was true;
  */
 #  ifdef __cplusplus
 bool
@@ -1087,10 +1089,12 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
             // wait for last command to have ended
         }
     }
+#if !defined(ARDUINO)
     else if (irsnd_busy)
     {
         return (FALSE);
     }
+#endif
 
     irsnd_protocol  = irmp_data_p->protocol;
     irsnd_repeat    = irmp_data_p->flags & IRSND_REPETITION_MASK;
@@ -1743,7 +1747,7 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
     initIRTimerForSend(); // Setup timer and interrupts for sending
     if (do_wait) {
         while (irsnd_busy) {
-            // do nothing;
+            // Wait for frame and leading space to be sent;
         }
     }
 #endif

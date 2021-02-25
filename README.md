@@ -33,13 +33,13 @@ Available as Arduino library "IRMP"
 - Support for inverted IR output for LED connected to VCC.
 - Unmodulated IR signal output enables direct replacment of an IR receiver circuit.
 - Compatible with Arduino tone library.
-- Send can also also wait for trailing space.
+- Send can also also wait for trailing space/gap.
 
 # Restrictions
 - Send IR frequency is fixed at 38 kHz.
 
 # Minimal version
-For applications only requiring NEC protocol, there is a receiver which has very **small codesize and does NOT require any timer**. See the MinimalReceiver and IRDispatcherDemo example how to use it.
+For applications only requiring NEC protocol, there is a receiver which has very **small codesize of 500 bytes and does NOT require any timer**. See the MinimalReceiver and IRDispatcherDemo example how to use it.
 
 # Schematic for Arduino UNO
 The VS1838B is used as receiver for all examples and tests. This module has a 120 µs on/low and a 100 µs off/high delay between received signal and output. So it shortens the mark and extends the space by 20 µs.
