@@ -53,7 +53,7 @@ jobs:
           - STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
           - STM32:stm32:GenL0:pnum=THUNDERPACK_L072
           - stm32duino:STM32F1:genericSTM32F103C
-          - SparkFun:apollo3:amap3nano
+          - SparkFun:apollo3:sfe_artemis_nano
 
         # Specify parameters for each board.
         # With sketches-exclude you may exclude specific examples for a board. Use a comma separated list.
@@ -108,15 +108,9 @@ jobs:
             platform-url: http://dan.drown.org/stm32duino/package_STM32duino_index.json
             sketches-exclude: MinimalReceiver
 
-          # ALL examples give strange BFD assertions for 1.x version if empty .cpp files are included in the build
-          - arduino-boards-fqbn: SparkFun:apollo3:amap3nano
-            platform-url: https://raw.githubusercontent.com/sparkfun/Arduino_Boards/master/IDE_Board_Manager/package_sparkfun_index.json
+          - arduino-boards-fqbn: SparkFun:apollo3:sfe_artemis_nano
+            platform-url: https://raw.githubusercontent.com/sparkfun/Arduino_Apollo3/master/package_sparkfun_apollo3_index.json
             sketches-exclude: MinimalReceiver
-
-# gives fatal error: opening dependency file /dev/null.d:
-#          - arduino-boards-fqbn: SparkFun:apollo3:sfe_artemis_nano
-#            platform-url: https://raw.githubusercontent.com/sparkfun/Arduino_Apollo3/master/package_sparkfun_apollo3_index.json
-#            sketches-exclude: MinimalReceiver
 
       # Do not cancel all jobs / architectures if one job fails
       fail-fast: false
