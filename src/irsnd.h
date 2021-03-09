@@ -129,6 +129,7 @@
 #define IRSND_ENDLESS_REPETITION                15      // endless repetions
 #define IRSND_REPETITION_MASK                   0x0F    // lower nibble of flags
 #define IRSND_RAW_REPETITION_FRAME              0x10    // send one or more raw repetition frames, yet only used for NEC
+#define IRSND_SUPPRESS_TRAILER                  0x20    // suppress trailer
 
 #ifdef __cplusplus
 extern "C"

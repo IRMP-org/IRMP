@@ -554,6 +554,7 @@ volatile uint8_t                                irsnd_is_on = FALSE;
 static volatile uint8_t                         irsnd_protocol = 0;
 static volatile uint8_t                         irsnd_buffer[11] = {0};
 static volatile uint8_t                         irsnd_repeat = 0;
+static volatile uint8_t                         irsnd_suppress_trailer = 0;
 
 #if defined(ARDUINO)
 #include "irsndArduinoExt.cpp.h" // must be after the declarations of irsnd_busy etc.
@@ -1098,6 +1099,7 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
 
     irsnd_protocol  = irmp_data_p->protocol;
     irsnd_repeat    = irmp_data_p->flags & IRSND_REPETITION_MASK;
+    irsnd_suppress_trailer  = (irmp_data_p->flags & IRSND_SUPPRESS_TRAILER) ? TRUE : FALSE;
 
     switch (irsnd_protocol)
     {
@@ -3182,8 +3184,11 @@ irsnd_ISR (void)
             }
         }
 
-        if (! irsnd_busy)
+        if (!irsnd_busy)
         {
+            /*
+             * Check if we are really finished or if we must send a repeat or a trailing space
+             */
             if (repeat_counter < n_repeat_frames)
             {
                 // repeat again
@@ -3194,14 +3199,24 @@ irsnd_ISR (void)
                 }
 #endif
                 repeat_counter++;
+                irsnd_busy = TRUE;
             }
             else
             {
-                send_trailer = TRUE;
+#if !defined(ARDUINO) // never send a trailing space for Arduino
+                if (!irsnd_suppress_trailer)
+                {
+                    /*
+                     * Switch to mode: send last trailing space
+                     */
+                    irsnd_busy = TRUE;
+                    send_trailer = TRUE;
+                }
+#endif
+                // cleanup for ending transmission
                 n_repeat_frames = 0;
                 repeat_counter = 0;
             }
-            irsnd_busy = TRUE;
         }
     }
 
