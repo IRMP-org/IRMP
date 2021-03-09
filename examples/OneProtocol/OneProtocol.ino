@@ -69,8 +69,8 @@
  * More protocol definitions can be found in irmpSelectAllProtocols.h
  */
 
-#ifdef ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
-#define IRMP_FEEDBACK_LED_PIN   ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+#ifdef ALTERNATIVE_IR_FEEDBACK_LED_PIN
+#define IRMP_FEEDBACK_LED_PIN   ALTERNATIVE_IR_FEEDBACK_LED_PIN
 #endif
 /*
  * After setting the definitions we can include the code and compile it.
@@ -84,7 +84,7 @@ void setup()
     pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL) || defined(ARDUINO_attiny3217)
-    delay(2000); // To be able to connect Serial monitor after reset or power up and before first printout
+    delay(4000); // To be able to connect Serial monitor after reset or power up and before first printout
 #endif
     // Just to know which program is running on my Arduino
 #if defined(ESP8266)
@@ -102,9 +102,9 @@ void setup()
     Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
 #endif
 
-#ifdef ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
-    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
-    Serial.print(F("IR feedback pin is " STR(ALTERNATIVE_IRMP_FEEDBACK_LED_PIN)));
+#ifdef ALTERNATIVE_IR_FEEDBACK_LED_PIN
+    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at ALTERNATIVE_IR_FEEDBACK_LED_PIN
+    Serial.print(F("IR feedback pin is " STR(ALTERNATIVE_IR_FEEDBACK_LED_PIN)));
 #endif
 
 }

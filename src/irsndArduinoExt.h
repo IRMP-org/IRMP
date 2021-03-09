@@ -63,8 +63,8 @@ void irsnd_data_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr);
 #define F_CPU 0 // dummy definition to avoid warning at irsnd.c.h:27 #error F_CPU unkown
 #endif
 
-#if !defined(IRMP_TIMING_TEST_PIN)              // Only for test purposes
-#define IRMP_TIMING_TEST_PIN        5
+#if !defined(IR_TIMING_TEST_PIN)              // Only for test purposes
+#define IR_TIMING_TEST_PIN        5
 #endif
 
 #if ! defined(IRSND_IR_FREQUENCY)

@@ -36,7 +36,7 @@
  * For debugging purposes. The timing test pin for some platforms is specified in the PinDefinitionsAndMore.h files included in each example.
  */
 //#define IRMP_MEASURE_TIMING
-//#define IRMP_TIMING_TEST_PIN <yourPinNumber>
+//#define IR_TIMING_TEST_PIN <yourPinNumber>
 //
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Enable dynamic pin configuration in contrast to the static one which is known at compile time and saves program memory and CPU cycles.
@@ -111,8 +111,8 @@ extern uint_fast8_t irmp_InputPin; // global variable to hold input pin number. 
 #  endif
 #endif
 
-#if !defined(IRMP_TIMING_TEST_PIN)              // Only for test purposes
-#define IRMP_TIMING_TEST_PIN        5
+#if !defined(IR_TIMING_TEST_PIN)              // Only for test purposes
+#define IR_TIMING_TEST_PIN        5
 #endif
 
 void irmp_init(uint_fast8_t aIrmpInputPin);

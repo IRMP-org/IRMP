@@ -46,7 +46,7 @@ void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aFeedbackLedPin, bool aI
     initIRTimerForReceive();
 #  endif
 #  ifdef IRMP_MEASURE_TIMING
-    pinModeFast(IRMP_TIMING_TEST_PIN, OUTPUT);
+    pinModeFast(IR_TIMING_TEST_PIN, OUTPUT);
 #  endif
 }
 
@@ -86,7 +86,7 @@ void irmp_init(void)
     initIRTimerForReceive();
 #  endif
 #  ifdef IRMP_MEASURE_TIMING
-    pinModeFast(IRMP_TIMING_TEST_PIN, OUTPUT);
+    pinModeFast(IR_TIMING_TEST_PIN, OUTPUT);
 #  endif
 }
 

@@ -159,7 +159,7 @@ Modify it by setting the value to 1 or 0. Or define the macro with the -D compil
 |-|-|-|
 | `IRMP_INPUT_PIN` | defined | The pin number which gets compiled in, if not using `IRMP_IRSND_ALLOW_DYNAMIC_PINS`. |
 | `IRMP_FEEDBACK_LED_PIN` | defined | The pin number for the feedback led which gets compiled in, if not using `IRMP_IRSND_ALLOW_DYNAMIC_PINS`.<br/> If not defined, `LED_BUILTIN` ist taken. |
-| `FEEDBACK_LED_IS_ACTIVE_LOW` | defined | Required on some boards (like my ESP8266 board), where the feedback LED is active low. |
+| `FEEDBACK_LED_IS_ACTIVE_LOW` | defined | Required on some boards (like my like my BluePill and my ESP8266 board), where the feedback LED is active low. |
 | `IRMP_IRSND_ALLOW_DYNAMIC_PINS` | defined | Allows to specify pin number at irmp_init() -see above. This requires additional program space. |
 | `IRMP_PROTOCOL_NAMES` | 1 | Enable protocol number mapping to protocol strings - needs some program memory. |
 | `IRMP_USE_COMPLETE_CALLBACK` | 1 | Use Callback if complete data was received. Requires call to irmp_register_complete_callback_function(). |
@@ -177,7 +177,7 @@ Modify it by setting the value to 1 or 0. Or define the macro with the -D compil
 | `IR_FEEDBACK_LED_PIN` | defined | The pin number for TinyIRReceiver feedback LED  which gets compiled in. |
 | `DO_NOT_USE_FEEDBACK_LED` | defined | Enable it to disable the feedback LED function. |
 |-|-|-|
-| `IRMP_MEASURE_TIMING` +  `IRMP_TIMING_TEST_PIN` | defined | For development only. The test pin is switched high at the very beginning and low at the end of the ISR. |
+| `IRMP_MEASURE_TIMING` +  `IR_TIMING_TEST_PIN` | defined | For development only. The test pin is switched high at the very beginning and low at the end of the ISR. |
 
 
 ### Modifying compile options with Arduino IDE
@@ -244,6 +244,8 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 ### Version 3.4.1 - work in progress
 - Changed default pins for ATmega328 platform from 3,4,5 to 2,3,4.
 - Adapted to TinyCore 0.0.7.
+- Renamed macro IRMP_TIMING_TEST_PIN to IR_TIMING_TEST_PIN.
+- Changed pins in PinDefinitionsAndMore.h.
 
 ### Version 3.4.0
 - Added ATtiny3217 / TinyCore support.

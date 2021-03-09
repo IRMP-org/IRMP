@@ -1,8 +1,8 @@
 /*
  *  PinDefinitionsAndMore.h
  *
- *  Contains IRMP_INPUT_PIN definitions for IRMP examples for various platforms
- *  as well as includes and definitions for LED_BUILTIN
+ *  Contains pin definitions for IRremote examples for various platforms
+ *  as well as definitions for feedback LED and tone() and includes
  *
  *  Copyright (C) 2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
@@ -44,32 +44,30 @@
 //
 #if defined(ESP8266)
 #define FEEDBACK_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
-#define IRMP_INPUT_PIN   14 // D5
-#define IRSND_OUTPUT_PIN 12 // D6 - D4/2 is internal LED
-#define tone(a,b) void() // tone() inhibits receive timer
+#define IRMP_INPUT_PIN      14 // D5
+#define IRSND_OUTPUT_PIN    12 // D6 - D4/2 is internal LED
+#define tone(a,b) void()        // tone() inhibits receive timer
 #define noTone(a) void()
-#define TONE_PIN 42 // Dummy for examples using it
-#define IRMP_TIMING_TEST_PIN 13 // D7
+#define TONE_PIN            42 // Dummy for examples using it
+#define IR_TIMING_TEST_PIN  13 // D7
 
 #elif defined(ESP32)
-#define IRMP_INPUT_PIN   15  // D15
-#define IRSND_OUTPUT_PIN  4  // D4
-#define tone(a,b) void() // no tone() available on ESP32
+#define IRMP_INPUT_PIN      15  // D15
+#define IRSND_OUTPUT_PIN     4  // D4
+#define tone(a,b) void()        // no tone() available on ESP32
 #define noTone(a) void()
-#define TONE_PIN 42 // Dummy for examples using it
+#define TONE_PIN            42 // Dummy for examples using it
 
-#elif defined(ARDUINO_ARCH_STM32) || defined(__STM32F1__)
+#elif defined(ARDUINO_ARCH_STM32) || defined(ARDUINO_ARCH_STM32F1)
 // BluePill in 2 flavors
-// STM32F1xx is for "Generic STM32F1 series" from "STM32 Boards (selected from submenu)" of Arduino Board manager
-// __STM32F1__is for "Generic STM32F103C series" from "STM32F1 Boards (STM32duino.com)" of manually installed hardware folder
 // Timer 3 of IRMP blocks PA6, PA7, PB0, PB1 for use by Servo or tone()
 #define FEEDBACK_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
-#define IRMP_INPUT_PIN   PA6
+#define IRMP_INPUT_PIN          PA6
 #define IRMP_INPUT_PIN_STRING   "PA6"
-#define IRSND_OUTPUT_PIN PA7
-#define IRSND_OUTPUT_PIN_STRING  "PA7"
-#define TONE_PIN         PA3
-#define IRMP_TIMING_TEST_PIN PA5
+#define IRSND_OUTPUT_PIN        PA7
+#define IRSND_OUTPUT_PIN_STRING "PA7"
+#define TONE_PIN                PA3
+#define IR_TIMING_TEST_PIN      PA5
 
 #elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 #include "ATtinySerialOut.h"
@@ -80,7 +78,7 @@
 #define IRMP_INPUT_PIN   0
 #define IRSND_OUTPUT_PIN 4 // Pin 2 is serial output with ATtinySerialOut. Pin 1 is internal LED and Pin3 is USB+ with pullup on Digispark board.
 #define TONE_PIN         3
-//#define IRMP_TIMING_TEST_PIN 3
+//#define IR_TIMING_TEST_PIN 3
 
 #  else
 // ATtiny87 + ATtiny167 here. For ATtiny167 Pins PB6 and PA3 are usable as interrupt source.
@@ -90,7 +88,7 @@
 //#define IRMP_INPUT_PIN  14 // PB6 / INT0 is connected to USB+ on DigisparkPro boards
 #define IRSND_OUTPUT_PIN 8 // PA2 - on Digispark board labeled as pin 8
 #define TONE_PIN         5 // PA7
-#define IRMP_TIMING_TEST_PIN 10 // PA4
+#define IR_TIMING_TEST_PIN 10 // PA4
 
 #    else
 #define IRMP_INPUT_PIN   3
@@ -99,7 +97,7 @@
 #    endif
 #  endif
 
-#  elif defined(__AVR_ATtiny3217__)
+#elif defined(__AVR_ATtiny3217__)
 #define IRMP_INPUT_PIN   10
 #define IRSND_OUTPUT_PIN 11
 #define TONE_PIN         3
@@ -110,48 +108,66 @@
 #define TONE_PIN         5
 
 #elif defined(ARDUINO_ARCH_MBED) // Arduino Nano 33 BLE
-#define IRMP_INPUT_PIN   3
-#define IRSND_OUTPUT_PIN 4
-#define TONE_PIN         5
-#define IRMP_TIMING_TEST_PIN 6
-#define ALTERNATIVE_IRMP_FEEDBACK_LED_PIN 7 // used for examples which use LED_BUILDIN for example output.
+#define IR_RECEIVE_PIN      2
+#define IR_SEND_PIN         3
+#define TONE_PIN            4
+#define APPLICATION_PIN     5
+#define ALTERNATIVE_IR_FEEDBACK_LED_PIN 6 // E.g. used for examples which use LED_BUILDIN for example output.
+#define IR_TIMING_TEST_PIN  7
 
 #elif defined(TEENSYDUINO)
-#define IRMP_INPUT_PIN   3
-#define IRSND_OUTPUT_PIN 4
-#define TONE_PIN         5
-#define IRMP_TIMING_TEST_PIN 6
-#define ALTERNATIVE_IRMP_FEEDBACK_LED_PIN 7 // used for examples which use LED_BUILDIN for example output.
+#define IR_RECEIVE_PIN      2
+#define IR_SEND_PIN         3
+#define TONE_PIN            4
+#define APPLICATION_PIN     5
+#define ALTERNATIVE_IR_FEEDBACK_LED_PIN 6 // E.g. used for examples which use LED_BUILDIN for example output.
+#define IR_TIMING_TEST_PIN  7
 
 #elif defined(__AVR__)
-#define IRMP_INPUT_PIN   2 // To be compatible with interrupt example, pin 2 is chosen here.
-#define IRSND_OUTPUT_PIN 3
-#define TONE_PIN         4
-#define IRMP_TIMING_TEST_PIN 6
-#define ALTERNATIVE_IRMP_FEEDBACK_LED_PIN 7 // used for examples which use LED_BUILDIN for example output.
+#define IRMP_INPUT_PIN      2 // To be compatible with interrupt example, pin 2 is chosen here.
+#define IRSND_OUTPUT_PIN    3
+#define TONE_PIN            4
+#define APPLICATION_PIN     5
+#define ALTERNATIVE_IR_FEEDBACK_LED_PIN 6 // E.g. used for examples which use LED_BUILDIN for example output.
+#define IR_TIMING_TEST_PIN 7
 // You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
 //#define IRMP_PORT_LETTER D
 //#define IRMP_BIT_NUMBER 2
 
+#elif defined(ARDUINO_ARCH_SAMD)
+#define IR_RECEIVE_PIN      2
+#define IR_SEND_PIN         3
+#define TONE_PIN            4
+#define APPLICATION_PIN     5
+#if !defined(ALTERNATIVE_IR_FEEDBACK_LED_PIN)
+#define ALTERNATIVE_IR_FEEDBACK_LED_PIN 6 // E.g. used for examples which use LED_BUILDIN for example output.
+#endif
+#define IR_TIMING_TEST_PIN  7
+
+// On the Zero and others we switch explicitly to SerialUSB
+#define Serial SerialUSB
+
+// Definitions for the Chinese SAMD21 M0-Mini clone, which has no led connected to D13/PA17.
+// Attention!!! D2 and D4 are switched on these boards!!!
+// If you connect the LED, it is on pin 24/PB11. In this case activate the next two lines.
+//#undef LED_BUILTIN
+//#define LED_BUILTIN 24 // PB11
+// As an alternative you can choose pin 25, it is the RX-LED pin (PB03), but active low.In this case activate the next 3 lines.
+//#undef LED_BUILTIN
+//#define LED_BUILTIN 25 // PB03
+//#define FEEDBACK_LED_IS_ACTIVE_LOW // The RX LED on the M0-Mini is active LOW
+
 #else
 #warning Board / CPU is not detected using pre-processor symbols -> using default values, which may not fit. Please extend PinDefinitionsAndMore.h.
 // Default valued for unidentified boards
-#define IRMP_INPUT_PIN   3
-#define IRSND_OUTPUT_PIN 4
-#define TONE_PIN         5
-#define IRMP_TIMING_TEST_PIN 6
-#define ALTERNATIVE_IRMP_FEEDBACK_LED_PIN 7 // used for examples which use LED_BUILDIN for example output.
+#define IRMP_INPUT_PIN      2
+#define IRSND_OUTPUT_PIN    3
+#define TONE_PIN            4
+#define APPLICATION_PIN     5
+#define ALTERNATIVE_IR_FEEDBACK_LED_PIN 6 // E.g. used for examples which use LED_BUILDIN for example output.
+#define IR_TIMING_TEST_PIN  7
 #endif // defined(ESP8266)
 
-// On the Zero and others we switch explicitly to SerialUSB
-#if defined(ARDUINO_ARCH_SAMD)
-#define Serial SerialUSB
-// The Chinese SAMD21 M0-Mini clone has no led connected, if you connect it, it is on pin 24 like on the original board.
-// Attention! D2 and D4 are reversed on these boards
-//#undef LED_BUILTIN
-//#define LED_BUILTIN 25 // Or choose pin 25, it is the RX pin, but active low.
-//#define FEEDBACK_LED_IS_ACTIVE_LOW // The RX LED on the M0-Mini is active LOW
-#endif
 
 #if defined(__AVR_ATmega4809__) // for standard AVR we manage hardware directly in void initPCIInterrupt()
 #define IRMP_USE_ARDUINO_ATTACH_INTERRUPT

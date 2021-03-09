@@ -7,7 +7,7 @@
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
- *  This file is part of Arduino-IRremote https://github.com/z3t0/Arduino-IRremote.
+ *  This file is part of Arduino-IRremote https://github.com/Arduino-IRremote/Arduino-IRremote.
  *
  *  IRMP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,8 +64,8 @@
 
 #include "PinDefinitionsAndMore.h"
 #define IR_RECEIVER_PIN     IRMP_INPUT_PIN
-#if defined(ALTERNATIVE_IRMP_FEEDBACK_LED_PIN)
-#define FEEDBACK_LED_PIN    ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+#if defined(ALTERNATIVE_IR_FEEDBACK_LED_PIN)
+#define FEEDBACK_LED_PIN    ALTERNATIVE_IR_FEEDBACK_LED_PIN
 #endif
 
 //#define IRMP_ENABLE_PIN_CHANGE_INTERRUPT   // Enable interrupt functionality - requires around 376 additional bytes of program space
@@ -76,8 +76,8 @@
 
 #define IRMP_SUPPORT_NEC_PROTOCOL        1 // this enables only one protocol
 
-#  ifdef ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
-#define IRMP_FEEDBACK_LED_PIN   ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
+#  ifdef ALTERNATIVE_IR_FEEDBACK_LED_PIN
+#define IRMP_FEEDBACK_LED_PIN   ALTERNATIVE_IR_FEEDBACK_LED_PIN
 #  endif
 /*
  * After setting the definitions we can include the code and compile it.
@@ -115,7 +115,7 @@ void setup()
     pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL) || defined(ARDUINO_attiny3217)
-    delay(2000); // To be able to connect Serial monitor after reset or power up and before first printout
+    delay(4000); // To be able to connect Serial monitor after reset or power up and before first printout
 #endif
 #if defined(ESP8266)
     Serial.println(); // to separate it from the internal boot output
@@ -149,9 +149,9 @@ void setup()
     Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
 #  endif
 
-#  ifdef ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
-    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at ALTERNATIVE_IRMP_FEEDBACK_LED_PIN
-    Serial.print(F("IR feedback pin is " STR(ALTERNATIVE_IRMP_FEEDBACK_LED_PIN)));
+#  ifdef ALTERNATIVE_IR_FEEDBACK_LED_PIN
+    irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at ALTERNATIVE_IR_FEEDBACK_LED_PIN
+    Serial.print(F("IR feedback pin is " STR(ALTERNATIVE_IR_FEEDBACK_LED_PIN)));
 #  endif
 #endif
 

@@ -49,7 +49,7 @@ void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin, bool
     // Do not call irsnd_init_and_store_timer() here, it is done at irsnd_send_data().
     pinMode(irsnd_output_pin, OUTPUT);
 #  ifdef IRMP_MEASURE_TIMING
-    pinModeFast(IRMP_TIMING_TEST_PIN, OUTPUT);
+    pinModeFast(IR_TIMING_TEST_PIN, OUTPUT);
 #  endif
 }
 
@@ -83,7 +83,7 @@ void irsnd_init(void)
     // Do not call irsnd_init_and_store_timer() here, it is done at irsnd_send_data().
     pinModeFast(IRSND_OUTPUT_PIN, OUTPUT);
 #  ifdef IRMP_MEASURE_TIMING
-    pinModeFast(IRMP_TIMING_TEST_PIN, OUTPUT);
+    pinModeFast(IR_TIMING_TEST_PIN, OUTPUT);
 #  endif
 }
 #endif // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
