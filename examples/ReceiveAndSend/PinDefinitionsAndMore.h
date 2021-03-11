@@ -69,33 +69,36 @@
 #define TONE_PIN                PA3
 #define IR_TIMING_TEST_PIN      PA5
 
-#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#elif  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 #include "ATtinySerialOut.h"
-#  if  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#    if defined(ARDUINO_AVR_DIGISPARK)
-#define LED_BUILTIN PB1
-#    endif
-#define IRMP_INPUT_PIN   0
+#define IRMP_INPUT_PIN   0 // PCINT0
 #define IRSND_OUTPUT_PIN 4 // Pin 2 is serial output with ATtinySerialOut. Pin 1 is internal LED and Pin3 is USB+ with pullup on Digispark board.
 #define TONE_PIN         3
 //#define IR_TIMING_TEST_PIN 3
 
-#  else
-// ATtiny87 + ATtiny167 here. For ATtiny167 Pins PB6 and PA3 are usable as interrupt source.
-#    if defined(ARDUINO_AVR_DIGISPARKPRO)
-#define LED_BUILTIN      1 // PB1 - on Digispark board labeled as pin 1 / for ATtinyCore lib use D9
+#elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#include "ATtinySerialOut.h"
+// For ATtiny167 Pins PB6 and PA3 are usable as interrupt source.
+#  if defined(ARDUINO_AVR_DIGISPARKPRO)
 #define IRMP_INPUT_PIN   9 // PA3 - on Digispark board labeled as pin 9
 //#define IRMP_INPUT_PIN  14 // PB6 / INT0 is connected to USB+ on DigisparkPro boards
 #define IRSND_OUTPUT_PIN 8 // PA2 - on Digispark board labeled as pin 8
 #define TONE_PIN         5 // PA7
 #define IR_TIMING_TEST_PIN 10 // PA4
 
-#    else
+#  else
 #define IRMP_INPUT_PIN   3
 #define IRSND_OUTPUT_PIN 2
 #define TONE_PIN         7
-#    endif
 #  endif
+
+#elif defined(__AVR_ATtiny88__) // MH-ET Tiny88 board
+#include "ATtinySerialOut.h"
+// Pin 6 is TX pin 7 is RX
+#define IRMP_INPUT_PIN   3 // INT1
+#define IRSND_OUTPUT_PIN 4
+#define TONE_PIN         9
+#define IR_TIMING_TEST_PIN 8
 
 #elif defined(__AVR_ATtiny3217__)
 #define IRMP_INPUT_PIN   10

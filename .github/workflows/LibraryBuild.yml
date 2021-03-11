@@ -65,14 +65,17 @@ jobs:
           - arduino-boards-fqbn: digistump:avr:digispark-tiny:clock=clock16
             platform-url: https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
             sketches-exclude: AllProtocols,SendAllProtocols,ReceiveAndSendDynamicPins,ReceiverTimingAnalysis # Does not fit in FLASH # Comma separated list of example names to exclude in build
+            required-libraries: ATtinySerialOut
 
           - arduino-boards-fqbn: digistump:avr:digispark-pro
             platform-url: https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
             sketches-exclude: ReceiveAndSendDynamicPins # No Serial.available() function in ATtinySerialOut
+            required-libraries: ATtinySerialOut
 
           - arduino-boards-fqbn: ATTinyCore:avr:attinyx5:chip=85,clock=8internal
             platform-url: http://drazzy.com/package_drazzy.com_index.json
             sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
+            required-libraries: ATtinySerialOut
 
           - arduino-boards-fqbn: TinyCore:avr:tiny32
             platform-url: https://raw.githubusercontent.com/xukangmin/TinyCore/master/avr/package/package_tinycore_index.json

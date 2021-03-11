@@ -217,6 +217,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
  you must reduce the resistor by (5 - 1.3) / (5 - 2.6) = 1.5 e.g. from 150 ohm to 100 ohm for 25 mA and 2 diodes with 1.3 volt and a 5 volt supply.
  For 3 diodes it requires factor 2.5 e.g. from 150 ohm to 60 ohm.
 - A lot of recent IR diodes can be powered with max. 200 mA at 50% duty cycle, but for this you will require an external driver / transistor / (mos)fet.
+- In order to fit the examples to the 8K flash of ATtiny85 and ATtiny88, the [Arduino library ATtinySerialOut](https://github.com/ArminJo/ATtinySerialOut) is required for this CPU's.
 
 # [AllProtocol](examples/AllProtocols/AllProtocols.ino) example
 | Serial LCD output | Arduino Serial Monitor output |
@@ -246,6 +247,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 - Adapted to TinyCore 0.0.7.
 - Renamed macro IRMP_TIMING_TEST_PIN to IR_TIMING_TEST_PIN.
 - Changed pins in PinDefinitionsAndMore.h.
+- Never send a trailing space for Arduino.
 
 ### Version 3.4.0
 - Added ATtiny3217 / TinyCore support.

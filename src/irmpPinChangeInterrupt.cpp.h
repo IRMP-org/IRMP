@@ -245,40 +245,30 @@ void initPCIInterrupt() {
 /*
  * Specify the right INT0, INT1 or PCINT0 interrupt vector according to different pins and cores
  */
-#if defined(__AVR__) && ! defined(IRMP_USE_ARDUINO_ATTACH_INTERRUPT)
-# if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-ISR(PCINT0_vect)
+#if defined(__AVR__) && !defined(IRMP_USE_ARDUINO_ATTACH_INTERRUPT)
+#  if (IRMP_INPUT_PIN == 2)
+ISR(INT0_vect) // Pin 2 global assignment
 
-#  else
-#    if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
-#      if defined(ARDUINO_AVR_DIGISPARKPRO)
-#        if (IRMP_INPUT_PIN == 3) //  PB6 / INT0 is connected to USB+ on DigisparkPro boards
-ISR(INT0_vect)
-#        endif
-#       if (IRMP_INPUT_PIN == 9)
-ISR(INT1_vect)
-#       endif
-
-#      else // defined(ARDUINO_AVR_DIGISPARKPRO)
-#        if (IRMP_INPUT_PIN == 14) // For AVR_ATtiny167 INT0 is on pin 14 / PB6
-ISR(INT0_vect)
-#        endif
-#      endif
-
-#    else // AVR_ATtiny167
-#    if (IRMP_INPUT_PIN == 2)
-ISR(INT0_vect)
-#      endif
-#    endif // AVR_ATtiny167
-
-#    if (IRMP_INPUT_PIN == 3) && !defined(ARDUINO_AVR_DIGISPARKPRO)
-ISR(INT1_vect)
+#  elif (IRMP_INPUT_PIN == 3)
+#    if  defined(ARDUINO_AVR_DIGISPARKPRO)
+ISR(INT0_vect) //  Pin 3 / PB6 / INT0 is connected to USB+ on DigisparkPro boards
+#    else
+ISR(INT1_vect) // Pin 3 global assignment
 #    endif
-#  endif // defined(__AVR_ATtiny25__)
+
+#  elif (IRMP_INPUT_PIN == 9) // Digispark pro
+ISR(INT1_vect)
+
+#  elif (IRMP_INPUT_PIN == 14) // For AVR_ATtiny167 INT0 is on pin 14 / PB6
+ISR(INT0_vect)
+#  elif (! defined(ISC10)) || ((defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)) && INT1_PIN != 3)
+// on ATtinyX5 we do not have a INT1_vect but we can use the PCINT0_vect
+ISR(PCINT0_vect)
+#  endif // (IRMP_INPUT_PIN == 2)
 {
     irmp_PCI_ISR();
 }
-#endif // defined(__AVR__)
+#endif // defined(__AVR__) && !defined(IRMP_USE_ARDUINO_ATTACH_INTERRUPT)
 
 #if defined(__AVR__)
 void irmp_debug_print(const __FlashStringHelper *aMessage, bool aDoShortOutput)
