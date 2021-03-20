@@ -540,7 +540,8 @@ void irmp_print_protocol_name(Print *aSerial, uint8_t aProtocolNumber)
     aSerial->print(irmp_protocol_names[aProtocolNumber]);
 #  endif
 #endif
-    aSerial->print(F("0x"));
+    // append protocol number
+    aSerial->print(F(" | 0x"));
     aSerial->print(aProtocolNumber, HEX);
 }
 
