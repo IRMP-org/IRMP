@@ -1,7 +1,7 @@
 # [IRMP](https://github.com/ukw100/IRMP) - Infrared Multi Protocol Decoder + Encoder
 Available as Arduino library "IRMP"
 
-### [Version 3.4.1](https://github.com/ukw100/IRMP/archive/master.zip) - work in progress
+### [Version 3.4.2](https://github.com/ukw100/IRMP/archive/master.zip) - work in progress
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/IRMP)
@@ -242,12 +242,13 @@ The **tone library (using timer 2) is still available**. You can use it alternat
    http://www.mikrocontroller.net/articles/IRSND
 
 # Revision History
-### Version 3.4.1 - work in progress
+### Version 3.4.1
 - Changed default pins for ATmega328 platform from 3,4,5 to 2,3,4.
 - Adapted to TinyCore 0.0.7.
 - Renamed macro IRMP_TIMING_TEST_PIN to IR_TIMING_TEST_PIN.
 - Changed pins in PinDefinitionsAndMore.h.
 - Never send a trailing space for Arduino.
+- ATTiny88 support.
 
 ### Version 3.4.0
 - Added ATtiny3217 / TinyCore support.
