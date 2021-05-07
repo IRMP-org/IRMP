@@ -46,7 +46,7 @@ static hw_timer_t *sESP32Timer = NULL;
 #include <HardwareTimer.h> // 4 timers and 4. timer (4.channel) is used for tone()
 /*
  * Use timer 3 as IRMP timer.
- * Timer 3 blocks PA6, PA7, PB0, PB1, so if you need one them as tone() or Servo output, you must choose another timer.
+ * Timer 3 blocks PA6, PA7, PB0, PB1, so if you require one of them as tone() or Servo output, you must choose another timer.
  */
 HardwareTimer sSTM32Timer(3);
 
@@ -56,7 +56,7 @@ HardwareTimer sSTM32Timer(3);
 #include <HardwareTimer.h>
 /*
  * Use timer 4 as IRMP timer.
- * Timer 4 blocks PB6, PB7, PB8, PB9, so if you need one them as Servo output, you must choose another timer.
+ * Timer 4 blocks PB6, PB7, PB8, PB9, so if you require one of them as tone() or Servo output, you must choose another timer.
  */
 #    if defined(TIM4)
 HardwareTimer sSTM32Timer(TIM4);
@@ -221,7 +221,7 @@ void initIRTimerForSend(void)
      * TIM_DIV256 = 3 //312.5Khz (1 tick = 3.2us - 26843542.4 us max)
      */
     timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP);
-    timer1_write(((F_CPU / 16) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY);
+    timer1_write(((80 / 16) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY); // 80 holds for 80 and 160 MHz clock!
 
 #elif defined(ESP32)
     // Tasmota requires timer 3 (last of 4 timers)

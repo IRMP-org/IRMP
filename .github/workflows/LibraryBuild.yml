@@ -43,7 +43,7 @@ jobs:
           - arduino:mbed:nano33ble
           - digistump:avr:digispark-tiny:clock=clock16
           - digistump:avr:digispark-pro
-          - ATTinyCore:avr:attinyx5:chip=85,clock=8internal
+          - ATTinyCore:avr:attinyx5micr:LTO=enable,sketchclock=8pll
           - TinyCore:avr:tiny32
 # Not yet supported by IRTimer.cpp.h
 #          - MiniCore:avr:8:bootloader=uart0,eeprom=keep,BOD=2v7,LTO=Os_flto,clock=16MHz_external # ATmega8
@@ -72,10 +72,10 @@ jobs:
             required-libraries: ATtinySerialOut
             sketches-exclude: ReceiveAndSendDynamicPins # No Serial.available() function in ATtinySerialOut
 
-          - arduino-boards-fqbn: ATTinyCore:avr:attinyx5:chip=85,clock=8internal
+          - arduino-boards-fqbn: ATTinyCore:avr:attinyx5micr:LTO=enable,sketchclock=8pll
             platform-url: http://drazzy.com/package_drazzy.com_index.json
             required-libraries: ATtinySerialOut
-            sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
+            sketches-exclude: AllProtocols,SendAllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
 
           - arduino-boards-fqbn: TinyCore:avr:tiny32
             platform-url: https://raw.githubusercontent.com/xukangmin/TinyCore/master/avr/package/package_tinycore_index.json
@@ -134,6 +134,6 @@ jobs:
           arduino-board-fqbn: ${{ matrix.arduino-boards-fqbn }}
           platform-url: ${{ matrix.platform-url }}
 #          arduino-platform: ${{ matrix.arduino-platform }}
-          required-libraries: ${{ matrix.required-libraries }}
+          required-libraries: 'LiquidCrystal I2C,${{ matrix.required-libraries }}'
           sketches-exclude: ${{ matrix.sketches-exclude }}
 #          debug-install: true

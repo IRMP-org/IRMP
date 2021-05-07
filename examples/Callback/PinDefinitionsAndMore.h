@@ -4,7 +4,7 @@
  *  Contains pin definitions for IRremote examples for various platforms
  *  as well as definitions for feedback LED and tone() and includes
  *
- *  Copyright (C) 2020  Armin Joachimsmeyer
+ *  Copyright (C) 2020-2021  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
@@ -31,9 +31,9 @@
  * -----------------------------------------
  * DEFAULT/AVR  2           3           4
  * ATtinyX5     0           4           3
- * ATtin167     9           8           5 // Digispark pro number schema
- * ATtin167     3           2           7
- * ATtin3217    10          11          3 // TinyCore schema
+ * ATtiny167    9           8           5 // Digispark pro number schema
+ * ATtiny167    3           2           7
+ * ATtiny3217   10          11          3 // TinyCore schema
  * SAMD21       3           4           5
  * ESP8266      14 // D5    12 // D6    %
  * ESP32        15          4           %
@@ -71,7 +71,7 @@
 
 #elif  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 #include "ATtinySerialOut.h"
-#define IRMP_INPUT_PIN   0 // PCINT0
+#define IRMP_INPUT_PIN   0
 #define IRSND_OUTPUT_PIN 4 // Pin 2 is serial output with ATtinySerialOut. Pin 1 is internal LED and Pin3 is USB+ with pullup on Digispark board.
 #define TONE_PIN         3
 //#define IR_TIMING_TEST_PIN 3

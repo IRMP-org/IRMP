@@ -70,7 +70,7 @@ void setup() {
     pinMode(LED_BUILTIN,OUTPUT);
     Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL) || defined(ARDUINO_attiny3217)
-    delay(4000); // To be able to connect Serial monitor after reset or power up and before first printout
+    delay(4000); // To be able to connect Serial monitor after reset or power up and before first print out. Do not wait for an attached Serial Monitor!
 #endif
 #if defined(ESP8266)
     Serial.println(); // to separate it from the internal boot output
@@ -110,6 +110,7 @@ void loop() {
              */
             switch (irmp_data.command) {
             case 0x48:
+            case 0x40:
                 digitalWrite(LED_BUILTIN, LOW);
                 delay(4000);
                 break;

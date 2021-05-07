@@ -6,8 +6,9 @@
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
+ *  This file is part of Arduino-IRremote https://github.com/Arduino-IRremote/Arduino-IRremote.
  *
- *  IRMP is free software: you can redistribute it and/or modify
+ *  TinyIRReceiver is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
@@ -29,6 +30,9 @@
 
 #include "LongUnion.h"
 
+/** \addtogroup TinyReceiver Minimal receiver for NEC protocol
+ * @{
+ */
 /*
  * Set input pin and output pin definitions etc.
  */
@@ -46,17 +50,19 @@
 #define IR_FEEDBACK_LED_PIN    LED_BUILTIN
 #endif
 
-//#define DO_NOT_USE_FEEDBACK_LED // Activate it if you do not want the feedback LED function, saving only 2 bytes code and 2 clock cycles per interrupt.
+//#define DO_NOT_USE_FEEDBACK_LED // Activate it if you do not want the feedback LED function. This saves 2 bytes code and 2 clock cycles per interrupt.
 
-#if ! (defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)) /* ATtinyX5 */ \
-&& ! ( (defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)) && ( (defined(ARDUINO_AVR_DIGISPARKPRO) && ((IR_INPUT_PIN == 3) || (IR_INPUT_PIN == 9))) /*ATtinyX7(digisparkpro) and pin 3 or 9 */\
-        || (! defined(ARDUINO_AVR_DIGISPARKPRO) && ((IR_INPUT_PIN == 3) || (IR_INPUT_PIN == 14)))) ) /*ATtinyX7(ATTinyCore) and pin 3 or 14 */ \
-&& ! ( defined(__AVR_ATtiny88__) && ( (IR_INPUT_PIN == 2) || (IR_INPUT_PIN == 3))) /* MH-ET LIVE Tiny88 and pin 2 or 3 */\
-&& ! ( ( defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) \
-        || defined(__AVR_ATmega16U4__) || defined(__AVR_ATmega32U4__) \
-        || defined(__AVR_ATmega8__) || defined(__AVR_ATmega48__) || defined(__AVR_ATmega48P__) || defined(__AVR_ATmega48PB__) || defined(__AVR_ATmega88P__) || defined(__AVR_ATmega88PB__) \
-        || defined(__AVR_ATmega168__) || defined(__AVR_ATmega168PA__) || defined(__AVR_ATmega168PB__) || defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328PB__)) \
-&& ((IR_INPUT_PIN == 2) || (IR_INPUT_PIN == 3)) ) /* ATmegas and pin 2 or 3 */
+#if (  defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)) /* ATtinyX5 */ \
+|| defined(__AVR_ATtiny88__) /* MH-ET LIVE Tiny88 */ \
+|| defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) \
+|| defined(__AVR_ATmega16U4__) || defined(__AVR_ATmega32U4__) \
+|| defined(__AVR_ATmega8__) || defined(__AVR_ATmega48__) || defined(__AVR_ATmega48P__) || defined(__AVR_ATmega48PB__) || defined(__AVR_ATmega88P__) || defined(__AVR_ATmega88PB__) \
+|| defined(__AVR_ATmega168__) || defined(__AVR_ATmega168PA__) || defined(__AVR_ATmega168PB__) || defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328PB__) \
+  /* ATmegas with ports 0,1,2 above and ATtiny167 only 2 pins below */ \
+|| ( (defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)) && ( (defined(ARDUINO_AVR_DIGISPARKPRO) && ((IR_INPUT_PIN == 3) || (IR_INPUT_PIN == 9))) /*ATtinyX7(digisparkpro) and pin 3 or 9 */\
+        || (! defined(ARDUINO_AVR_DIGISPARKPRO) && ((IR_INPUT_PIN == 3) || (IR_INPUT_PIN == 14)))) ) /*ATtinyX7(ATTinyCore) and pin 3 or 14 */
+// In this cases we have code provided for generating interrupt on pin change.
+#else
 #define TINY_RECEIVER_USE_ARDUINO_ATTACH_INTERRUPT // cannot use any static ISR vector here
 #endif
 
@@ -101,15 +107,15 @@ void handleReceivedTinyIRData(uint16_t aAddress, uint8_t aCommand, bool isRepeat
 #define IR_RECEIVER_STATE_WAITING_FOR_DATA_SPACE        3
 #define IR_RECEIVER_STATE_WAITING_FOR_DATA_MARK         4
 #define IR_RECEIVER_STATE_WAITING_FOR_STOP_MARK         5
-/*
- * The control and data structure of the state machine
+/**
+ * Control and data variables of the state machine for TinyReceiver
  */
 struct TinyIRReceiverStruct {
     /*
      * State machine
      */
-    uint32_t LastChangeMicros; // microseconds of last Pin Change Interrupt.
-    uint8_t IRReceiverState;
+    uint32_t LastChangeMicros;      ///< microseconds of last Pin Change Interrupt.
+    uint8_t IRReceiverState;        ///< the state of the state machine.
     uint8_t IRRawDataBitCounter;
     /*
      * Data
@@ -120,6 +126,8 @@ struct TinyIRReceiverStruct {
 };
 
 void initPCIInterruptForTinyReceiver();
+
+/** @}*/
 
 #endif // TINY_IR_RECEIVER_H
 

@@ -68,15 +68,15 @@
 void setup() {
     Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL) || defined(ARDUINO_attiny3217)
-    delay(4000); // To be able to connect Serial monitor after reset or power up and before first printout
+    delay(4000); // To be able to connect Serial monitor after reset or power up and before first print out. Do not wait for an attached Serial Monitor!
 #endif
     // Just to know which program is running on my Arduino
 #if defined(ESP8266)
     Serial.println();
 #endif
-//    Serial.println(F("START " __FILE__ " from " __DATE__));
+    Serial.println(F("START " __FILE__ " from " __DATE__));
     initPCIInterruptForTinyReceiver();
-//    Serial.println(F("Ready to receive NEC IR signals at pin " STR(IR_INPUT_PIN)));
+    Serial.println(F("Ready to receive NEC IR signals at pin " STR(IR_INPUT_PIN)));
 }
 
 void loop() {
