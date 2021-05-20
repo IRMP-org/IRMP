@@ -151,6 +151,26 @@ void storeIRTimer(void);
 void restoreIRTimer(void);
 ```
 
+# Examples
+In order to fit the examples to the 8K flash of ATtiny85 and ATtiny88, the [Arduino library ATtinySerialOut](https://github.com/ArminJo/ATtinySerialOut) is required for this CPU's.
+
+### SimpleReceiver + SimpleSender
+This examples are a good starting point.<br/>
+SimpleReceiver can be tested online with [WOKWI](https://wokwi.com/arduino/projects/298945438795432456).
+Click on the receiver while simulation is running to specify individual IR codes.
+
+### MinimalReceiver + SmallReceiver
+If code size matters, look at these examples.<br/>
+MinimalReceiver can be tested online with [WOKWI](https://wokwi.com/arduino/projects/299034264157028877).
+Click on the receiver while simulation is running to specify individual IR codes.
+
+### ReceiverTimingAnalysis
+This example analyzes the signal delivered by your IR receiver module.
+Values can be used to determine the stability of the received signal as well as a hint for determining the protocol.<br/>
+It also computes the MARK_EXCESS_MICROS value, which is the extension of the mark (pulse) duration introduced by the IR receiver module.<br/>
+It can be tested online with [WOKWI](https://wokwi.com/arduino/projects/299033930562011656).
+Click on the receiver while simulation is running to specify individual IR codes.
+
 # Compile options / macros for this library
 To customize the library to different requirements, there are some compile options / macros available, which must be set **before** including the library e.g. with `#include <irmp.c.h>`.<br/>
 Modify it by setting the value to 1 or 0. Or define the macro with the -D compiler option for global compile (the latter is not possible with the Arduino IDE, so consider using [Sloeber](https://eclipse.baeyens.it).<br/>
