@@ -263,6 +263,10 @@ The **tone library (using timer 2) is still available**. You can use it alternat
    http://www.mikrocontroller.net/articles/IRSND
 
 # Revision History
+### Version 3.4.2
+- Fix Timer1 initialization for ATtinyX7 parts for ATTinyCore.
+- Modifying digitalWriteFast.h to be compatible with ATTinyCore Digispark Pro default pin mapping.
+
 ### Version 3.4.1
 - Changed default pins for ATmega328 platform from 3,4,5 to 2,3,4.
 - Adapted to TinyCore 0.0.7.
