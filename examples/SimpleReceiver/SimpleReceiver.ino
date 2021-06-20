@@ -109,8 +109,8 @@ void loop() {
              * Here data is available and is no repetition -> evaluate IR command
              */
             switch (irmp_data.command) {
-            case 0x48:
-            case 0x40:
+            case 0x48: // 72
+            case 0x40: // 64
                 digitalWrite(LED_BUILTIN, LOW);
                 delay(4000);
                 break;
