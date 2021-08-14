@@ -135,10 +135,9 @@ void initIRTimerForSend(void)
 #  elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
 // Timer 1 is a 16 bit counter so we need no prescaler
     ICR1 = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;                    // 1065 for 15 kHz @16 MHz. compare value: 1/15000 of CPU frequency
-    TCCR1A = 0;                                                     // switch CTC Mode on
     TCCR1B = _BV(WGM12) | _BV(WGM13) | _BV(CS10);                   // switch CTC Mode on, set prescaler to 1 / no prescaling
     TCNT1 = 0;
-    TIMSK1 = _BV(OCIE1B);                                           // enable compare match interrupt
+    TIMSK1 = _BV(OCIE1B);                                           // enable compare match B interrupt, compare match A is used by tone library
 
 #  elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
     // TCB1 is used by Tone()

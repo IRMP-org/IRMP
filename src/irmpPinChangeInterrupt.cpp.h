@@ -164,7 +164,7 @@ void irmp_PCI_ISR(void) {
     }
 }
 
-void initPCIInterrupt() {
+void enablePCIInterrupt() {
 #if defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
     attachInterrupt(IRMP_INPUT_PIN, irmp_PCI_ISR, CHANGE); // 14.2 us before LED Feedback compared to 12 if configured with macros and less compatible
 
@@ -235,6 +235,73 @@ void initPCIInterrupt() {
     EIFR |= 1 << INTF1;
     // enable interrupt on next change
     EIMSK |= 1 << INT1;
+#    else
+#      error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined) IRMP_INPUT_PIN must be 2 or 3."
+#    endif // if (IRMP_INPUT_PIN == 2)
+#  endif // defined(__AVR_ATtiny25__)
+#endif // ! defined(__AVR__) || defined(IRMP_USE_ARDUINO_ATTACH_INTERRUPT)
+}
+
+void disablePCIInterrupt() {
+#if defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+    detachInterrupt(IRMP_INPUT_PIN);
+
+#elif ! defined(__AVR__) || defined(IRMP_USE_ARDUINO_ATTACH_INTERRUPT)
+    detachInterrupt(digitalPinToInterrupt(IRMP_INPUT_PIN));
+
+#else
+#  if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+    // clear interrupt bit
+    GIFR |= 1 << PCIF;
+    // disable interrupt on next change
+    GIMSK &= ~(1 << PCIE);
+
+#  elif defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
+#    if defined(ARDUINO_AVR_DIGISPARKPRO)
+#      if (IRMP_INPUT_PIN == 3)
+    // clear interrupt bit
+    EIFR |= 1 << INTF0;
+    // disable interrupt on next change
+    EIMSK &= ~( 1 << INT0);
+#      elif (IRMP_INPUT_PIN == 9)
+    // clear interrupt bit
+    EIFR |= 1 << INTF1;
+    // disable interrupt on next change
+    EIMSK &= ~(1 << INT1);
+#      else
+#        error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined) IRMP_INPUT_PIN must be 9 or 3."
+#      endif // if (IRMP_INPUT_PIN == 9)
+
+#    else // defined(ARDUINO_AVR_DIGISPARKPRO)
+#      if (IRMP_INPUT_PIN == 14)
+    // clear interrupt bit
+    EIFR |= 1 << INTF0;
+    // disable interrupt on next change
+    EIMSK &= ~(1 << INT0);
+#      elif (IRMP_INPUT_PIN == 3)
+    // clear interrupt bit
+    EIFR |= 1 << INTF1;
+    // disable interrupt on next change
+    EIMSK &= ~(1 << INT1);
+#      else
+#        error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined) IRMP_INPUT_PIN must be 14 or 3."
+#      endif // if (IRMP_INPUT_PIN == 14)
+#    endif
+
+#  else // defined(__AVR_ATtiny25__)
+    /*
+     * ATmegas here
+     */
+#    if (IRMP_INPUT_PIN == 2)
+    // clear interrupt bit
+    EIFR |= 1 << INTF0;
+    // disable interrupt on next change
+    EIMSK &= ~(1 << INT0);
+#    elif (IRMP_INPUT_PIN == 3)
+    // clear interrupt bit
+    EIFR |= 1 << INTF1;
+    // disable interrupt on next change
+    EIMSK &= ~(1 << INT1);
 #    else
 #      error "For interrupt mode (IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined) IRMP_INPUT_PIN must be 2 or 3."
 #    endif // if (IRMP_INPUT_PIN == 2)

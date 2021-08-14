@@ -172,7 +172,7 @@
 #endif // defined(ESP8266)
 
 
-#if defined(__AVR_ATmega4809__) // for standard AVR we manage hardware directly in void initPCIInterrupt()
+#if defined(__AVR_ATmega4809__) // for standard AVR we manage hardware directly in void enablePCIInterrupt()
 #define IRMP_USE_ARDUINO_ATTACH_INTERRUPT
 #endif
 

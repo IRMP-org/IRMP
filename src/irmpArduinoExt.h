@@ -129,7 +129,8 @@ void irmp_result_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr);
 void irmp_result_print(IRMP_DATA *aIRMPDataPtr);
 
 void irmp_PCI_ISR(void);
-void initPCIInterrupt(void);
+void enablePCIInterrupt(void);
+void disablePCIInterrupt(void);
 
 void irmp_print_active_protocols(Print *aSerial);
 void irmp_print_protocol_name(Print *aSerial, uint8_t aProtocolNumber);

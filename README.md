@@ -53,7 +53,7 @@ Digispark boards are tested with the recommended [ATTinyCore](https://github.com
 |-|-|-|
 | avr     | ATmega16, ATmega328P, ATmega32U4, ATtinyX5, ATtinyX7 | Uno, Nano, Leonardo, Sparkfun Pro Micro, Digispark etc. |
 | megaavr | ATmega4809 | Uno WiFi Rev 2, Nano Every |
-| samd    | SAMD21G18A | Zero, MKR1000, etc. |
+| samd    | SAMD21G18A | Zero, MKR*, etc. **but not DUE, which is sam architecture** |
 | esp8266 | % | all |
 | esp32   | % | all |
 | stm32   | STM32F1xx     | BluePill |
@@ -265,7 +265,9 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 # Revision History
 ### Version 3.4.2
 - Fix Timer1 initialization for ATtinyX7 parts for ATTinyCore.
-- Modifying digitalWriteFast.h to be compatible with ATTinyCore Digispark Pro default pin mapping.
+- Modifying *digitalWriteFast.h* to be compatible with ATTinyCore Digispark Pro default pin mapping.
+- Renamed `initPCIInterrupt()` to `enablePCIInterrupt()` and added `disablePCIInterrupt()`.
+- Changed return value for `irsnd_send_data()` to be false on error conditions.
 
 ### Version 3.4.1
 - Changed default pins for ATmega328 platform from 3,4,5 to 2,3,4.

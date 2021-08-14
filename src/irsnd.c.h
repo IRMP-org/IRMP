@@ -1056,7 +1056,7 @@ static uint8_t  sircs_additional_bitlen;
 /*
  * @param  do_wait - wait for last command to have ended sending its trailing space before start of new sending.
  *                   For Arduino: Additionally wait for sent command to have ended (including trailing gap).
- * @return value of irsnd_busy. I.e. true if sending was accepted and do_wait was false, false if protocol was not found or do_wait was true;
+ * @return false if protocol was not found or do_wait was false and sending (of former frame) is still in progress.
  */
 #  ifdef __cplusplus
 bool
@@ -1082,6 +1082,9 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
 #endif
     uint16_t        address;
     uint16_t        command;
+    // to avoid [-Wunused-variable] compiler warnings, e.g. if only NUBERT is activated.
+    (void) address;
+    (void) command;
 
     if (do_wait)
     {
@@ -1090,12 +1093,11 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
             // wait for last command to have ended
         }
     }
-#if !defined(ARDUINO)
     else if (irsnd_busy)
     {
+        // Here we do not want to wait, but sending is still in progress and we may overwrite current frame data if not returning here.
         return (FALSE);
     }
-#endif
 
     irsnd_protocol  = irmp_data_p->protocol;
     irsnd_repeat    = irmp_data_p->flags & IRSND_REPETITION_MASK;
@@ -1740,6 +1742,7 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
 
         default:
         {
+            return (FALSE); // Error here: we called irsnd_send_data with a non enabled protocol!
             break;
         }
     }
@@ -1752,9 +1755,11 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
             // Wait for frame and leading space to be sent;
         }
     }
-#endif
+    return true; // next frame may start immediately if do_wait was true
 
+#else
     return irsnd_busy;
+#endif
 }
 
 void

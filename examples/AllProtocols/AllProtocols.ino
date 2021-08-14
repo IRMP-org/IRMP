@@ -33,6 +33,7 @@
  */
 //#define USE_PARALELL_LCD
 #define USE_SERIAL_LCD
+
 /*
  * Define the size of your LCD
  */
@@ -59,6 +60,7 @@
 #define LCD_COLUMNS 20
 #define LCD_ROWS 4
 #endif
+
 
 #include <Arduino.h>
 
@@ -89,6 +91,10 @@ IRMP_DATA irmp_data;
 
 #if defined(USE_SERIAL_LCD) && defined(USE_PARALELL_LCD)
 #error Cannot use parallel and serial LCD simultaneously
+#endif
+
+#if defined(USE_SERIAL_LCD) || defined(USE_PARALELL_LCD)
+#define USE_LCD
 #endif
 
 #if defined(USE_SERIAL_LCD)
@@ -128,7 +134,7 @@ void setup()
     irmp_register_complete_callback_function(&handleReceivedIRData);
 
     Serial.print(F("Ready to receive IR signals of protocols: "));
-    irmp_print_active_protocols(&Serial);
+    irmp_print_active_protocols (&Serial);
 #if defined(ARDUINO_ARCH_STM32)
     Serial.println(F("at pin " IRMP_INPUT_PIN_STRING)); // the internal pin numbers are crazy for the STM32 Boards library
 #else
@@ -148,7 +154,7 @@ void setup()
     myLCD.begin(LCD_COLUMNS, LCD_ROWS);
 #endif
 
-#if defined(USE_SERIAL_LCD) || defined(USE_PARALELL_LCD)
+#if defined(USE_LCD)
     myLCD.print(F("IRMP all  v" VERSION_IRMP));
     myLCD.setCursor(0, 1);
     myLCD.print(F(__DATE__));
@@ -167,7 +173,7 @@ void loop()
          */
         irmp_result_print(&irmp_data);
 
-#if defined(USE_SERIAL_LCD) || defined(USE_PARALELL_LCD)
+#if defined(USE_LCD)
 #  if defined(USE_SERIAL_LCD)
         disableIRTimerInterrupt(); // disable timer interrupt, since it disturbs the serial output
 #  endif
@@ -191,7 +197,7 @@ void loop()
         Serial.print(tVCC);
         Serial.println(F("mV"));
 
-#  if defined(USE_SERIAL_LCD) || defined(USE_PARALELL_LCD)
+#  if defined(USE_LCD)
         myLCD.setCursor(10, 0);
         myLCD.print(' ');
         myLCD.print(tVCC / 1000);
@@ -239,7 +245,7 @@ void handleReceivedIRData()
  */
 void irmp_result_print_LCD()
 {
-#if defined(USE_SERIAL_LCD) || defined(USE_PARALELL_LCD)
+#if defined(USE_LCD)
     static uint8_t sLastProtocolIndex;
     static uint16_t sLastProtocolAddress;
 
@@ -280,8 +286,8 @@ void irmp_result_print_LCD()
         myLCD.setCursor(0, tStartRow);
         myLCD.print(F("P="));
 #  if defined(__AVR__)
-        const char* tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data.protocol]);
-        myLCD.print((__FlashStringHelper *) (tProtocolStringPtr));
+        const char *tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data.protocol]);
+        myLCD.print((__FlashStringHelper*) (tProtocolStringPtr));
 #  else
         myLCD.print(irmp_protocol_names[irmp_data.protocol]);
 #  endif
@@ -364,6 +370,6 @@ void irmp_result_print_LCD()
     }
     myLCD.print(tCommand, HEX);
 
-#endif // defined(USE_SERIAL_LCD) || defined(USE_PARALELL_LCD)
+#endif // defined(USE_LCD)
 }
 

@@ -39,7 +39,7 @@ union Myword {
 };
 
 /*
- * Conversion time is defined as 0.104 milliseconds for 16 MHz Arduino by ADC_PRESCALE in ADCUtils.h.
+ * Conversion time is defined as 0.104 milliseconds by ADC_PRESCALE in ADCUtils.h.
  */
 uint16_t readADCChannel(uint8_t aChannelNumber) {
     Myword tUValue;
@@ -60,7 +60,7 @@ uint16_t readADCChannel(uint8_t aChannelNumber) {
 }
 
 /*
- * Conversion time is defined as 0.104 milliseconds for 16 MHz Arduino by ADC_PRESCALE in ADCUtils.h.
+ * Conversion time is defined as 0.104 milliseconds by ADC_PRESCALE in ADCUtils.h.
  */
 uint16_t readADCChannelWithReference(uint8_t aChannelNumber, uint8_t aReference) {
     Myword tUValue;
@@ -120,7 +120,7 @@ uint16_t readADCChannelWithOversample(uint8_t aChannelNumber, uint8_t aOversampl
 }
 
 /*
- * Conversion time is defined as 0.104 milliseconds for 16 MHz Arduino by ADC_PRESCALE in ADCUtils.h.
+ * Conversion time is defined as 0.104 milliseconds by ADC_PRESCALE in ADCUtils.h.
  */
 uint16_t readADCChannelWithReferenceOversample(uint8_t aChannelNumber, uint8_t aReference, uint8_t aOversampleExponent) {
     uint16_t tSumValue = 0;
@@ -334,24 +334,37 @@ float getVCCVoltage(void) {
 }
 
 /*
- * Read value of 1.1 volt internal channel using VCC as reference.
+ * Or getVCCVoltageMillivolt() * 1023 / 1100
+ */
+uint16_t getVCCVoltageReadingFor1_1VoltReference(void) {
+    checkAndWaitForReferenceAndChannelToSwitch(ADC_1_1_VOLT_CHANNEL_MUX, DEFAULT);
+    uint16_t tVCC = readADCChannelWithReferenceOversample(ADC_1_1_VOLT_CHANNEL_MUX, DEFAULT, 2);
+    /*
+     * Do not switch back ADMUX to enable checkAndWaitForReferenceAndChannelToSwitch() to work correctly for the next measurement
+     */
+    return ((1023L * 1023L) / tVCC);
+}
+
+/*
+ * Read value of 1.1 volt internal channel using VCC (DEFAULT) as reference.
  * Handles reference and channel switching by introducing the appropriate delays.
  * !!! Resolution is only 20 millivolt !!!
  */
 uint16_t getVCCVoltageMillivolt(void) {
-    uint8_t tOldADMUX = checkAndWaitForReferenceAndChannelToSwitch(ADC_1_1_VOLT_CHANNEL_MUX, DEFAULT);
+    checkAndWaitForReferenceAndChannelToSwitch(ADC_1_1_VOLT_CHANNEL_MUX, DEFAULT);
     uint16_t tVCC = readADCChannelWithReferenceOversample(ADC_1_1_VOLT_CHANNEL_MUX, DEFAULT, 2);
-    ADMUX = tOldADMUX;
     /*
-     * Do not wait for reference to settle here, since it may not be necessary
+     * Do not switch back ADMUX to enable checkAndWaitForReferenceAndChannelToSwitch() to work correctly for the next measurement
      */
     return ((1023L * 1100) / tVCC);
 }
 
-void printVCCVoltageMillivolt(Print *aSerial) {
+uint16_t printVCCVoltageMillivolt(Print *aSerial) {
     aSerial->print(F("VCC="));
-    aSerial->print(getVCCVoltageMillivolt());
+    uint16_t tVCCVoltageMillivolt = getVCCVoltageMillivolt();
+    aSerial->print(tVCCVoltageMillivolt);
     aSerial->println(" mV");
+    return tVCCVoltageMillivolt;
 }
 
 /*
@@ -362,9 +375,8 @@ float getTemperature(void) {
     return 0.0;
 #else
     // use internal 1.1 volt as reference
-    uint8_t tOldADMUX = checkAndWaitForReferenceAndChannelToSwitch(ADC_TEMPERATURE_CHANNEL_MUX, INTERNAL);
+    checkAndWaitForReferenceAndChannelToSwitch(ADC_TEMPERATURE_CHANNEL_MUX, INTERNAL);
     float tTemp = (readADCChannelWithReferenceOversample(ADC_TEMPERATURE_CHANNEL_MUX, INTERNAL, 2) - 317);
-    ADMUX = tOldADMUX;
     return (tTemp / 1.22);
 #endif
 }

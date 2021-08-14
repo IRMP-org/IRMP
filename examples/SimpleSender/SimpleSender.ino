@@ -48,12 +48,34 @@
 #define IRSND_PROTOCOL_NAMES        1 // Enable protocol number mapping to protocol strings - requires some FLASH.
 
 #include <irsndSelectMain15Protocols.h>
+// or use only one protocol to save programming space
+//#define IRSND_SUPPORT_NEC_PROTOCOL        1
+
 /*
  * After setting the definitions we can include the code and compile it.
  */
 #include <irsnd.c.h>
 
 IRMP_DATA irsnd_data;
+
+union WordUnion
+{
+    struct
+    {
+        uint8_t LowByte;
+        uint8_t HighByte;
+    } UByte;
+    struct
+    {
+        int8_t LowByte;
+        int8_t HighByte;
+    } Byte;
+    uint8_t UBytes[2];
+    int8_t Bytes[2];
+    uint16_t UWord;
+    int16_t Word;
+    uint8_t *BytePointer;
+};
 
 void setup()
 {
@@ -96,7 +118,11 @@ void setup()
     irsnd_data.flags = 2; // repeat frame 2 times
 #endif
 
-    irsnd_send_data(&irsnd_data, true);
+    // true = wait for frame and trailing space/gap to end. This stores timer state and restores it after sending.
+    if (!irsnd_send_data(&irsnd_data, true))
+    {
+        Serial.println(F("Protocol not found")); // name of protocol is printed by irsnd_data_print()
+    }
     irsnd_data_print(&Serial, &irsnd_data);
 
 }
@@ -107,8 +133,11 @@ void loop()
     irsnd_data.command++;
 #ifdef SEND_SAMSUNG
     // For my Samsung the high byte is the inverse of the low byte
-    irsnd_data.command = ((~tNextCommand) << 8) | tNextCommand;
+    WordUnion tNextCommand; // using WordUnion saves 14 bytes program memory for the next 3 lines
+    tNextCommand.UWord = irsnd_data.command;
+    tNextCommand.UByte.HighByte = ~tNextCommand.UByte.LowByte;
+    irsnd_data.command = tNextCommand.UWord;
 #endif
-    irsnd_send_data(&irsnd_data, true); // true = wait for frame and trailing space/gap to end. This stores timer state and restores it after sending.
+    irsnd_send_data(&irsnd_data, true);
     irsnd_data_print(&Serial, &irsnd_data);
 }

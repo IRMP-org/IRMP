@@ -41,7 +41,7 @@ void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aFeedbackLedPin, bool aI
     irmp_irsnd_LEDFeedback(aFeedbackLedPin);
 
 #  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT
-    initPCIInterrupt();
+    enablePCIInterrupt();
 #  else
     initIRTimerForReceive();
 #  endif
@@ -81,7 +81,7 @@ void irmp_init(void)
     IRMP_DDR &= ~_BV(IRMP_BIT);                                        // set pin to input
 #  endif
 #  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT
-    initPCIInterrupt();
+    enablePCIInterrupt();
 #  else
     initIRTimerForReceive();
 #  endif
