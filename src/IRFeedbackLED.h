@@ -1,7 +1,7 @@
 /*
- * IRFeedbackLed.h
+ * IRFeedbackLED.h
  *
- *  Copyright (C) 2020  Armin Joachimsmeyer
+ *  Copyright (C) 2020-2021  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
@@ -35,7 +35,7 @@
 #  if defined(LED_BUILTIN)
 #define IRMP_FEEDBACK_LED_PIN LED_BUILTIN
 #  else
-#warning IRMP_FEEDBACK_LED_PIN and LED_BUILTIN  not defined. Pin 5 is used for feedback output if enabled. You can change this in IRFeedbackLed.h.
+#warning IRMP_FEEDBACK_LED_PIN and LED_BUILTIN  not defined. Pin 5 is used for feedback output if enabled. You can change this in IRFeedbackLED.h.
 #define IRMP_FEEDBACK_LED_PIN 5 // choose an abitrary pin
 #  endif
 #endif

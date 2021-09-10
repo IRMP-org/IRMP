@@ -8,7 +8,7 @@
  *  Uses a callback function which is called every time a complete IR command was received.
  *  Prints data to LCD connected parallel at pin 4-9 or serial at pin A4, A5
  *
- *  Copyright (C) 2019-2020  Armin Joachimsmeyer
+ *  Copyright (C) 2019-2021  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
@@ -30,14 +30,19 @@
 
 /*
  * Activate the type of LCD you use
+ * Default is serial LCD with 2 rows of 16 characters (1602).
  */
-//#define USE_PARALELL_LCD
+//#define USE_PARALLEL_LCD
+#if !defined(USE_PARALLEL_LCD) && !defined(USE_NO_LCD)
 #define USE_SERIAL_LCD
+#endif
 
 /*
  * Define the size of your LCD
  */
+#if !defined(USE_2004_LCD)
 #define USE_1602_LCD
+#endif
 //#define USE_2004_LCD
 
 /*
@@ -46,7 +51,7 @@
 #if defined(USE_SERIAL_LCD)
 #include <LiquidCrystal_I2C.h> // Use an up to date library version which has the init method
 #endif
-#if defined(USE_PARALELL_LCD)
+#if defined(USE_PARALLEL_LCD)
 #include <LiquidCrystal.h>
 #endif
 
@@ -85,22 +90,22 @@
 /*
  * After setting the definitions we can include the code and compile it.
  */
-#include <irmp.c.h>
+#include <irmp.hpp>
 
 IRMP_DATA irmp_data;
 
-#if defined(USE_SERIAL_LCD) && defined(USE_PARALELL_LCD)
+#if defined(USE_SERIAL_LCD) && defined(USE_PARALLEL_LCD)
 #error Cannot use parallel and serial LCD simultaneously
 #endif
 
-#if defined(USE_SERIAL_LCD) || defined(USE_PARALELL_LCD)
+#if defined(USE_SERIAL_LCD) || defined(USE_PARALLEL_LCD)
 #define USE_LCD
 #endif
 
 #if defined(USE_SERIAL_LCD)
 LiquidCrystal_I2C myLCD(0x27, LCD_COLUMNS, LCD_ROWS);  // set the LCD address to 0x27 for a 20 chars and 2 line display
 #endif
-#if defined(USE_PARALELL_LCD)
+#if defined(USE_PARALLEL_LCD)
 LiquidCrystal myLCD(4, 5, 6, 7, 8, 9);
 #endif
 
@@ -150,7 +155,7 @@ void setup()
     myLCD.clear();
     myLCD.backlight();
 #endif
-#if defined(USE_PARALELL_LCD)
+#if defined(USE_PARALLEL_LCD)
     myLCD.begin(LCD_COLUMNS, LCD_ROWS);
 #endif
 

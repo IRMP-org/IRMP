@@ -39,7 +39,7 @@ Available as Arduino library "IRMP"
 - Send IR frequency is fixed at 38 kHz.
 
 # Minimal version
-For applications only requiring NEC protocol, there is a receiver which has very **small codesize of 500 bytes and does NOT require any timer**. See the MinimalReceiver and IRDispatcherDemo example how to use it. Mapping of pins to interrupts can be found [here](https://github.com/Arduino-IRremote/Arduino-IRremote/tree/master/src/TinyIRReceiver.cpp.h#L307).
+For applications only requiring NEC protocol, there is a receiver which has very **small codesize of 500 bytes and does NOT require any timer**. See the MinimalReceiver and IRDispatcherDemo example how to use it. Mapping of pins to interrupts can be found [here](https://github.com/Arduino-IRremote/Arduino-IRremote/tree/master/src/TinyIRReceiver.hpp#L307).
 
 # Schematic for Arduino UNO
 The VS1838B is used as receiver for all examples and tests. This module has a 120 µs on/low and a 100 µs off/high delay between received signal and output. So it shortens the mark and extends the space by 20 µs.
@@ -173,7 +173,7 @@ It can be tested online with [WOKWI](https://wokwi.com/arduino/projects/29903393
 Click on the receiver while simulation is running to specify individual IR codes.
 
 # Compile options / macros for this library
-To customize the library to different requirements, there are some compile options / macros available, which must be set **before** including the library e.g. with `#include <irmp.c.h>`.<br/>
+To customize the library to different requirements, there are some compile options / macros available, which must be set **before** including the library e.g. with `#include <irmp.hpp>`.<br/>
 Modify it by setting the value to 1 or 0. Or define the macro with the -D compiler option for global compile (the latter is not possible with the Arduino IDE, so consider using [Sloeber](https://eclipse.baeyens.it).<br/>
 
 | Macro | Enable value | Description |
@@ -211,7 +211,7 @@ In both cases the library files itself are located in the `src` directory.<br/>
 If you are using Sloeber as your IDE, you can easily define global symbols with *Properties > Arduino > CompileOptions*.<br/>
 ![Sloeber settings](https://github.com/ArminJo/ServoEasing/blob/master/pictures/SloeberDefineSymbols.png)
 
-# [Timer usage](https://github.com/ukw100/IRMP/blob/master/src/IRTimer.cpp.h#L39)
+# [Timer usage](https://github.com/ukw100/IRMP/blob/master/src/IRTimer.hpp#L39)
 The IRMP **receive** library works by polling the input pin at a rate of 10 to 20 kHz. Default is 15 kHz.<br/>
 Some protocols (NEC, Kaseiko, Denon, RC6, Samsung + Samsg32) can be received **without timer usage**, just by using interrupts from the input pin by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. There are many protocols which **in principle cannot be decoded** in this mode. See [Interrupt example](examples/Interrupt/Interrupt.ino).<br/>
 **In interrupt mode, the `micros()` function is used as timebase.**
@@ -228,7 +228,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 - For STM32 (BluePill) **timer 3 (Servo timer) channel 1** is used as default.<br/>
 
 # Tips and tricks
-- To port the library to another device, you merely have to extend *IRTimer.cpp.h*.
+- To port the library to another device, you merely have to extend *IRTimer.hpp*.
 - The minimal CPU clock required for receiving is 8MHz.
 - To save power, you can use the interrupt mode or polling mode with no-sending detection and power down sleep.
  This is **not available** for ATtiny85 running with the High Speed PLL clock (as on  Digispark boards) 
@@ -248,7 +248,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 ## Sample Protocols
 | | | | |
 |-|-|-|-|
-| ![NEC](pictures/NEC_Paralell.jpg)| ![NEC42](pictures/NEC42.jpg) |![RC5](pictures/RC5.jpg) |![KASEIKYO](pictures/KASEIKYO.jpg) |
+| ![NEC](pictures/NEC_Parallel.jpg)| ![NEC42](pictures/NEC42.jpg) |![RC5](pictures/RC5.jpg) |![KASEIKYO](pictures/KASEIKYO.jpg) |
 | ![DENON](pictures/DENON.jpg) |![GRUNDIG](pictures/GRUNDIG.jpg) |![IR60](pictures/IR60.jpg) |![MATSUSHITA](pictures/MATSUSHITA.jpg) |
 | ![NUBERT](pictures/NUBERT.jpg) |![ONKYO](pictures/ONKYO.jpg) |![RECS80](pictures/RECS80.jpg) |![RUWIDO](pictures/RUWIDO.jpg) |
 | ![SAMSUNG](pictures/SAMSUNG.jpg) |![SIEMENS](pictures/SIEMENS.jpg) |![TELEFUNKEN](pictures/TELEFUNKEN.jpg) |![TELEFUNKEN](pictures/TELEFUNKEN.jpg) |
@@ -268,6 +268,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 - Modifying *digitalWriteFast.h* to be compatible with ATTinyCore Digispark Pro default pin mapping.
 - Renamed `initPCIInterrupt()` to `enablePCIInterrupt()` and added `disablePCIInterrupt()`.
 - Changed return value for `irsnd_send_data()` to be false on error conditions.
+- Renamed *.c.h and *.cpp.h to .hpp.
 
 ### Version 3.4.1
 - Changed default pins for ATmega328 platform from 3,4,5 to 2,3,4.
@@ -371,8 +372,8 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 - Added IR send fuctionality (IRSND).
 - Use `TIMER2_COMPB_vect` to be compatible with tone library.
 - No longer required to call initPCIInterrupt() manually if IRMP_ENABLE_PIN_CHANGE_INTERRUPT is set.
-- Separated code for timer to IRTimer.cpp.h.
-- Separated code for Pin change interrupt to irmpPinChangeInterrupt.cpp.h.
+- Separated code for timer to IRTimer.hpp.
+- Separated code for Pin change interrupt to irmpPinChangeInterrupt.hpp.
 - Fixed wrong pin numbers for BluePill.
 
 ### Version 1.2.2

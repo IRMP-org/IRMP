@@ -1,5 +1,5 @@
 /*
- * irsndArduinoExt.cpp.h - Arduino extensions to the original irsnd.c
+ * irsndArduinoExt.hpp - Arduino extensions to the original irsnd.c
  *
  *  Copyright (C) 2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
@@ -23,10 +23,10 @@
 
 #if defined(ARDUINO)
 
-#undef _IRMP_H_                 // We are in IRSND now! Remove old symbol set from former including irmp.c.h if we use receive and send in the same user program.
-#include "IRTimer.cpp.h"        // include code for timer
-#include "IRFeedbackLed.cpp.h"  // include code for Feedback LED
-#include "irmpprotocols.c.h"    // include protocol strings and array of strings
+#undef _IRMP_H_                 // We are in IRSND now! Remove old symbol set from former including irmp.hpp if we use receive and send in the same user program.
+#include "IRTimer.hpp"          // include code for timer
+#include "IRFeedbackLED.hpp"    // include code for Feedback LED
+#include "irmpprotocols.hpp"    // include protocol strings and array of strings
 
 #if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 uint_fast8_t irsnd_output_pin;

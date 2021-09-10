@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * irmpArduinoExt.cpp.h - Arduino extensions to the original irmp.c
+ * irmpArduinoExt.hpp - Arduino extensions to the original irmp.c
  *
  * Copyright (c) 2019-2020 Armin Joachimsmeyer
  *
@@ -14,13 +14,13 @@
 
 //  // Must be included after declaration of irmp_start_bit_detected etc.
 #if defined(ARDUINO)
-#undef _IRSND_H_                // We are in IRMP now! Remove old symbol maybe set from former including irsnd.c.h.
-#include "IRTimer.cpp.h"        // include code for timer
-#include "IRFeedbackLed.cpp.h"  // include code for Feedback LED
-#include "irmpprotocols.c.h"    // include protocol strings and array of strings
+#undef _IRSND_H_                // We are in IRMP now! Remove old symbol maybe set from former including irsnd.hpp.
+#include "IRTimer.hpp"          // include code for timer
+#include "IRFeedbackLED.hpp"    // include code for Feedback LED
+#include "irmpprotocols.hpp"    // include protocol strings and array of strings
 
 #if defined(IRMP_ENABLE_PIN_CHANGE_INTERRUPT)
-#include "irmpPinChangeInterrupt.cpp.h"
+#include "irmpPinChangeInterrupt.hpp"
 #endif // defined(IRMP_ENABLE_PIN_CHANGE_INTERRUPT)
 
 #if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)

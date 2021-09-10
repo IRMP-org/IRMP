@@ -28,7 +28,7 @@
 #include <Arduino.h>  // for Print
 
 #include "irmpVersion.h"
-#include "IRFeedbackLed.h" // for redefinition of
+#include "IRFeedbackLED.h" // for redefinition of
 
 #include "digitalWriteFast.h" // we use pinModeFast() and digitalReadFast() and digitalWriteFast() in turn
 

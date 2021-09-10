@@ -1,5 +1,5 @@
 /*
- * IRTimer.cpp.h
+ * IRTimer.hpp
  *
  *  Copyright (C) 2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
@@ -654,7 +654,7 @@ void enableIRTimerInterrupt(void)
 #elif defined(TEENSYDUINO)
     sIntervalTimer.begin(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
 #else
-#warning Board / CPU is not covered by definitions using pre-processor symbols -> no timer available. Please extend IRTimer.cpp.h.
+#warning Board / CPU is not covered by definitions using pre-processor symbols -> no timer available. Please extend IRTimer.hpp.
 #endif // defined(__AVR__)
 }
 

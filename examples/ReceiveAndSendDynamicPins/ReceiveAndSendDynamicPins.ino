@@ -78,8 +78,8 @@
  * After setting the definitions we can include the code and compile it.
  */
 #define USE_ONE_TIMER_FOR_IRMP_AND_IRSND // otherwise we get an error on AVR platform: redefinition of 'void __vector_8()
-#include <irmp.c.h>
-#include <irsnd.c.h>
+#include <irmp.hpp>
+#include <irsnd.hpp>
 
 IRMP_DATA irmp_data;
 uint8_t sIRMPInputPin;

@@ -3,7 +3,7 @@
  *
  *  Sends 39 protocols for testing purposes
  *
- *  To disable one of them or to enable other protocols, specify this before the "#include <irmp.c.h>" line.
+ *  To disable one of them or to enable other protocols, specify this before the "#include <irmp.hpp>" line.
  *  If you get warnings of redefining symbols, just ignore them or undefine them first (see Interrupt example).
  *  The exact names can be found in the library file irmpSelectAllProtocols.h (see Callback example).
  *
@@ -44,7 +44,7 @@
 /*
  * After setting the definitions we can include the code and compile it.
  */
-#include <irsnd.c.h>
+#include <irsnd.hpp>
 
 IRMP_DATA irsnd_data;
 

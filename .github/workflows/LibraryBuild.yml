@@ -46,7 +46,7 @@ jobs:
           - ATTinyCore:avr:attinyx5micr:LTO=enable,sketchclock=8pll
           - ATTinyCore:avr:attinyx7micr:LTO=enable,sketchclock=16external,pinmapping=new,millis=enabled
           - TinyCore:avr:tiny32
-# Not yet supported by IRTimer.cpp.h
+# Not yet supported by IRTimer.hpp
 #          - MiniCore:avr:8:bootloader=uart0,eeprom=keep,BOD=2v7,LTO=Os_flto,clock=16MHz_external # ATmega8
 #          - MegaCore:avr:128:bootloader=no_bootloader,eeprom=keep,BOD=2v7,LTO=Os,clock=8MHz_internal # ATmega128
           - esp8266:esp8266:d1_mini:eesz=4M3M,xtal=80

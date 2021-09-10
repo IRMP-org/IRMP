@@ -60,7 +60,7 @@ void irsnd_data_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr);
 
 #if defined(ARDUINO_ARCH_MBED) // Arduino Nano 33 BLE + Sparkfun Apollo3
 #include "mbed.h"
-#define F_CPU 0 // dummy definition to avoid warning at irsnd.c.h:27 #error F_CPU unkown
+#define F_CPU 0 // dummy definition to avoid warning at irsnd.hpp:27 #error F_CPU unkown
 #endif
 
 #if !defined(IR_TIMING_TEST_PIN)              // Only for test purposes
@@ -80,8 +80,8 @@ void irsnd_data_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr);
 #  undef  F_INTERRUPTS
 #  define F_INTERRUPTS              (IRSND_IR_FREQUENCY / 2)   // 19000 interrupts per second
 
-extern volatile uint8_t irsnd_is_on;                // Used by IRTimer.cpp.h
-extern volatile uint8_t irsnd_busy;                 // Used by IRTimer.cpp.h
+extern volatile uint8_t irsnd_is_on;                // Used by IRTimer.hpp
+extern volatile uint8_t irsnd_busy;                 // Used by IRTimer.hpp
 
 #endif /* IRSND_ARDUINO_EXT_H */
 #endif // ARDUINO

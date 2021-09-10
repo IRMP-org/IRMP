@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * IRFeedbackLed.cpp.h - Arduino extensions for IR feedback LED handling
+ * IRFeedbackLED.hpp - Arduino extensions for IR feedback LED handling
  *
- * Copyright (c) 2020 Armin Joachimsmeyer
+ * Copyright (c) 2020-2021 Armin Joachimsmeyer
  *
  * This file is part of IRMP https://github.com/ukw100/IRMP.
  *
@@ -16,7 +16,7 @@
 #ifndef IR_FEEDBACK_LED_CPP_H
 #define IR_FEEDBACK_LED_CPP_H
 
-#include "IRFeedbackLed.h"
+#include "IRFeedbackLED.h"
 
 static bool irmp_irsnd_LedFeedbackEnabled;
 

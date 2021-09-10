@@ -5,7 +5,7 @@
  *  !!! This WILL NOT work for all protocols.!!!
  *  Tested for NEC, Kaseiko, Denon, RC6, Samsung + Samsg32.
  *
- *  To disable one of them or to enable other protocols, specify this before the "#include <irmp.c.h>" line.
+ *  To disable one of them or to enable other protocols, specify this before the "#include <irmp.hpp>" line.
  *  If you get warnings of redefining symbols, just ignore them or undefine them first (see Interrupt example).
  *  The exact names can be found in the library file irmpSelectAllProtocols.h (see Callback example).
  *
@@ -49,7 +49,7 @@
 /*
  * After setting the definitions we can include the code and compile it.
  */
-#include <irmp.c.h>
+#include <irmp.hpp>
 
 IRMP_DATA irmp_data;
 void handleReceivedIRData();

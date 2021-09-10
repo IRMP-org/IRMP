@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * irmpPinChangeInterrupt.cpp.h
+ * irmpPinChangeInterrupt.hpp
  *
  * Functions and ISR for the pin change interrupt functionality for IRMP - For Arduino platform
  * Must be included after irmp_ISR to have all the internal variables of irmp_ISR declared
@@ -125,7 +125,7 @@ void irmp_PCI_ISR(void) {
             }
         }
 
-        // For condition see also line 4203 and 5098 in irmp.c.h
+        // For condition see also line 4203 and 5098 in irmp.hpp
         if (irmp_start_bit_detected && irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
             // Complete length of bit now received -> try to detect end of protocol
 #ifdef PCI_DEBUG

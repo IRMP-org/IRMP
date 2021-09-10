@@ -312,7 +312,7 @@ float getVCCVoltageSimple(void) {
 uint16_t getVCCVoltageMillivoltSimple(void) {
     // use AVCC with external capacitor at AREF pin as reference
     uint16_t tVCC = readADCChannelWithReferenceMultiSamples(ADC_1_1_VOLT_CHANNEL_MUX, DEFAULT, 4);
-    return ((1023L * 1100 * 4) / tVCC);
+    return ((1023L * ADC_INTERNAL_REFERENCE_MILLIVOLT * 4) / tVCC);
 }
 
 /*
@@ -356,7 +356,7 @@ uint16_t getVCCVoltageMillivolt(void) {
     /*
      * Do not switch back ADMUX to enable checkAndWaitForReferenceAndChannelToSwitch() to work correctly for the next measurement
      */
-    return ((1023L * 1100) / tVCC);
+    return ((1023L * ADC_INTERNAL_REFERENCE_MILLIVOLT) / tVCC);
 }
 
 uint16_t printVCCVoltageMillivolt(Print *aSerial) {

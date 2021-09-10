@@ -1,15 +1,24 @@
-/*---------------------------------------------------------------------------------------------------------------------------------------------------
- * irmpprotocols.c.h - irmp protocols
+/*
+ * irmpprotocols.hpp - irmp protocols
  *
- * DO NOT INCLUDE THIS FILE, WILL BE INCLUDED BY IRMP.H or IRSND.H!
+ *  Copyright (C) 2020-2021  Armin Joachimsmeyer
+ *  armin.joachimsmeyer@gmail.com
  *
- * Copyright (c) 2020 Frank Meyer - frank(at)fli4l.de
+ *  This file is part of IRMP https://github.com/ukw100/IRMP.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *---------------------------------------------------------------------------------------------------------------------------------------------------
+ *  IRMP is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *
  */
 
 #ifndef _IRMP_PROTOCOLS_C_H_

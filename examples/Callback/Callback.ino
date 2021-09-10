@@ -55,7 +55,7 @@
 /*
  * After setting the modifiers we can include the code.
  */
-#include <irmp.c.h>
+#include <irmp.hpp>
 
 IRMP_DATA irmp_data;
 
