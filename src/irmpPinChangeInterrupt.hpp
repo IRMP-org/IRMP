@@ -44,11 +44,13 @@ uint32_t irmp_last_change_micros; // microseconds of last Pin Change Interrupt. 
  */
 //#define PCI_DEBUG
 #if defined(ESP8266)
-ICACHE_RAM_ATTR
+void ICACHE_RAM_ATTR irmp_PCI_ISR(void)
 #elif defined(ESP32)
-IRAM_ATTR
+void IRAM_ATTR irmp_PCI_ISR(void)
+#else
+void irmp_PCI_ISR(void)
 #endif
-void irmp_PCI_ISR(void) {
+{
 
     // save IR input level - negative logic, true means inactive / IR pause
     uint_fast8_t irmp_input = input(IRMP_PIN);

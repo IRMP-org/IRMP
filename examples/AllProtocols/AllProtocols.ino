@@ -220,11 +220,12 @@ void loop()
  * In order to enable other interrupts you can call interrupts() (enable interrupt again) after getting data.
  */
 #if defined(ESP8266)
-ICACHE_RAM_ATTR
+void ICACHE_RAM_ATTR handleReceivedIRData()
 #elif defined(ESP32)
-IRAM_ATTR
-#endif
+void IRAM_ATTR handleReceivedIRData()
+#else
 void handleReceivedIRData()
+#endif
 {
 
 #if defined(__AVR__) && defined(ADATE)

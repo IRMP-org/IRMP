@@ -81,14 +81,24 @@ void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed)
 }
 
 /*
+ * This does not work :-(
+ */
+//#if defined(ESP8266)
+//ICACHE_RAM_ATTR
+//#elif defined(ESP32)
+//IRAM_ATTR
+//#endif
+//void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
+/*
  * Internally used from IRMP_ISR() with -oS it is taken as inline function
  */
 #if defined(ESP8266)
-ICACHE_RAM_ATTR
+void ICACHE_RAM_ATTR irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
 #elif defined(ESP32)
-IRAM_ATTR
-#endif
+void IRAM_ATTR irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
+#else
 void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
+#endif
 {
 #if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
     if(irmp_irsnd_LedFeedbackPin != 0) {

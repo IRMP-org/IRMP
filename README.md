@@ -1,7 +1,7 @@
 # [IRMP](https://github.com/ukw100/IRMP) - Infrared Multi Protocol Decoder + Encoder
 Available as Arduino library "IRMP"
 
-### [Version 3.4.2](https://github.com/ukw100/IRMP/archive/master.zip) - work in progress
+### [Version 3.5.1](https://github.com/ukw100/IRMP/archive/master.zip) - work in progress
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/IRMP)
@@ -60,7 +60,7 @@ Digispark boards are tested with the recommended [ATTinyCore](https://github.com
 | STM32F1 | STM32F1xx     | BluePill |
 | apollo3 | Ambiq Apollo3 | Sparkfun Apollo3 + Artemis |
 | mbed    | nRF528x       | Nano 33 BLE |
-| Teensiduino | all       | >= Teensy 3 |
+| Teensiduino | all  - but [limited support](https://forum.pjrc.com/threads/65912-Enable-Continuous-Integration-with-arduino-cli-for-3-party-libraries) | >= Teensy 3 |
 
 # Quick comparison of 4 Arduino IR receiving libraries
 ## This is a short comparison and may not be complete or correct
@@ -263,12 +263,13 @@ The **tone library (using timer 2) is still available**. You can use it alternat
    http://www.mikrocontroller.net/articles/IRSND
 
 # Revision History
-### Version 3.4.2
+### Version 3.5.0
+- Renamed *.c.h and *.cpp.h to .hpp. **You must change: #include <irmp.c.h> to: #include <irmp.hpp>!**
 - Fix Timer1 initialization for ATtinyX7 parts for ATTinyCore.
 - Modifying *digitalWriteFast.h* to be compatible with ATTinyCore Digispark Pro default pin mapping.
 - Renamed `initPCIInterrupt()` to `enablePCIInterrupt()` and added `disablePCIInterrupt()`.
 - Changed return value for `irsnd_send_data()` to be false on error conditions.
-- Renamed *.c.h and *.cpp.h to .hpp.
+- Fixed ICACHE_RAM_ATTR error introduced with 3.4.1.
 
 ### Version 3.4.1
 - Changed default pins for ATmega328 platform from 3,4,5 to 2,3,4.
