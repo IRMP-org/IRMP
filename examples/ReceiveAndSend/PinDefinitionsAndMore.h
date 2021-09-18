@@ -46,7 +46,7 @@
 #define FEEDBACK_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
 #define IRMP_INPUT_PIN      14 // D5
 #define IRSND_OUTPUT_PIN    12 // D6 - D4/2 is internal LED
-#define tone(a,b) void()        // tone() inhibits receive timer
+#define tone(a,b) void()       // tone() inhibits receive timer
 #define noTone(a) void()
 #define TONE_PIN            42 // Dummy for examples using it
 #define IR_TIMING_TEST_PIN  13 // D7

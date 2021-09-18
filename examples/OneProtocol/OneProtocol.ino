@@ -69,9 +69,6 @@
  * More protocol definitions can be found in irmpSelectAllProtocols.h
  */
 
-#ifdef ALTERNATIVE_IR_FEEDBACK_LED_PIN
-#define IRMP_FEEDBACK_LED_PIN   ALTERNATIVE_IR_FEEDBACK_LED_PIN
-#endif
 /*
  * After setting the definitions we can include the code and compile it.
  */
@@ -102,10 +99,7 @@ void setup()
     Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
 #endif
 
-#ifdef ALTERNATIVE_IR_FEEDBACK_LED_PIN
     irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at ALTERNATIVE_IR_FEEDBACK_LED_PIN
-    Serial.print(F("IR feedback pin is " STR(ALTERNATIVE_IR_FEEDBACK_LED_PIN)));
-#endif
 
 }
 
@@ -122,10 +116,9 @@ void loop()
         switch (irmp_data.command)
         {
         case 0x48:
+        case 0x40:
+            Serial.println(F("Received right code an do something"));
             digitalWrite(LED_BUILTIN, HIGH);
-            break;
-        case 0x0B:
-            digitalWrite(LED_BUILTIN, LOW);
             break;
         default:
             break;

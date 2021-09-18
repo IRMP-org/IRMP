@@ -81,15 +81,6 @@ void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed)
 }
 
 /*
- * This does not work :-(
- */
-//#if defined(ESP8266)
-//ICACHE_RAM_ATTR
-//#elif defined(ESP32)
-//IRAM_ATTR
-//#endif
-//void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
-/*
  * Internally used from IRMP_ISR() with -oS it is taken as inline function
  */
 #if defined(ESP8266)
@@ -117,7 +108,7 @@ void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
 #  else
         // hope this is fast enough on other platforms
 #    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
-        // If the built in LED on the board is active LOW
+    // If the built in LED on the board is active LOW
     digitalWrite(IRMP_FEEDBACK_LED_PIN, !aSwitchLedOn);
 #    else
     digitalWrite(IRMP_FEEDBACK_LED_PIN, aSwitchLedOn);

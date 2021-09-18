@@ -219,8 +219,8 @@ void initIRTimerForSend(void)
      * TIM_DIV16 = 1,  //5MHz (5 ticks/us - 1677721.4 us max)
      * TIM_DIV256 = 3 //312.5Khz (1 tick = 3.2us - 26843542.4 us max)
      */
-    timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP);
-    timer1_write(((80 / 16) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY); // 80 holds for 80 and 160 MHz clock!
+    timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP); // must be before timer1_write!
+    timer1_write(((80000000 / 16) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY); // 80000000 holds for 80 and 160 MHz clock!
 
 #elif defined(ESP32)
     // Tasmota requires timer 3 (last of 4 timers)
