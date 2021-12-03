@@ -44,7 +44,7 @@ union WordUnion {
     int8_t Bytes[2];
     uint16_t UWord;
     int16_t Word;
-    uint8_t * BytePointer;
+    uint8_t *BytePointer;
 };
 
 /**
@@ -81,7 +81,7 @@ union LongUnion {
         uint16_t LowWord;
         uint16_t HighWord;
     } UWord;
-    uint8_t UBytes[4];
+    uint8_t UBytes[4]; // seems to have the same code size as using struct UByte
     int8_t Bytes[4];
     uint16_t UWords[2];
     int16_t Words[2];

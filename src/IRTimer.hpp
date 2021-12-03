@@ -86,7 +86,9 @@ IntervalTimer sIntervalTimer;
 
 #endif // defined(_IRMP_H_)
 
-//@formatter:off
+// The eclipse formatter has problems with // comments in undefined code blocks
+// !!! Must be without comment and closed by @formatter:on
+// @formatter:off
 #if defined(_IRMP_H_)
 void initIRTimerForReceive(void)
 #elif defined(_IRSND_H_)
@@ -302,7 +304,7 @@ void initIRTimerForSend(void)
 #endif // defined(__AVR__)
 }
 
-//@formatter:on
+// @formatter:on
 #ifndef TIMER_FUNCTIONS_DEFINED
 #define TIMER_FUNCTIONS_DEFINED
 /** Temporarily storage for timer register*/

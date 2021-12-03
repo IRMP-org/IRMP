@@ -2,7 +2,8 @@
  *  ReceiveAndSend.cpp
  *
  *  Serves as a IR remote macro expander
- *  Receives Samsung32 protocol and on receiving a specified input frame, it sends multiple Samsung32 frames.
+ *  Receives Samsung32 protocol and on receiving a specified input frame,
+ *  it sends multiple Samsung32 frames with appropriate delays in between.
  *  This serves as a Netflix-key emulation for my old Samsung H5273 TV.
  *
  *  Copyright (C) 2019-2020  Armin Joachimsmeyer
@@ -96,7 +97,7 @@ void setup()
     // Just to know which program is running on my Arduino
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRMP));
 
-    // tone before setup, since it kills the IR timer settings
+    // tone before IR setup, since it kills the IR timer settings
     tone(TONE_PIN, 2200);
     digitalWrite(LED_BUILTIN, HIGH);
     delay(400);
@@ -231,13 +232,13 @@ void sendSamsungSmartHubMacro(bool aDoSelect)
         delay(2000); // wait additional time for the Menu load
     }
 
-    for (uint8_t i = 0; i < 4; ++i)
+    for (uint_fast8_t i = 0; i < 4; ++i)
     {
         IRSendWithDelay(0x9E61, 250); // Down arrow. For my Samsung, the high byte of the command is the inverse of the low byte
     }
 
     IRSendWithDelay(0x9D62, 400); // Right arrow
-    for (uint8_t i = 0; i < 2; ++i)
+    for (uint_fast8_t i = 0; i < 2; ++i)
     {
         IRSendWithDelay(0x9E61, 250); // Down arrow
     }

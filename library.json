@@ -11,7 +11,8 @@
   "authors":  [
     {
       "name": "Armin Joachimsmeyer",
-      "email": "armin.joachimsmeyer@gmail.com"
+    "email": "armin.joachimsmeyer@gmail.com",
+    "maintainer": true
     },
     {
       "name": "Frank Meyer",

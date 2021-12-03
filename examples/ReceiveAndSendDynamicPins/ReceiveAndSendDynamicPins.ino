@@ -254,13 +254,13 @@ void sendSamsungSmartHubMacro(bool aDoSelect)
         delay(2000); // wait additional time for the Menu load
     }
 
-    for (uint8_t i = 0; i < 4; ++i)
+    for (uint_fast8_t i = 0; i < 4; ++i)
     {
         IRSendWithDelay(0x9E61, 250); // Down arrow
     }
 
     IRSendWithDelay(0x9D62, 400); // Right arrow
-    for (uint8_t i = 0; i < 2; ++i)
+    for (uint_fast8_t i = 0; i < 2; ++i)
     {
         IRSendWithDelay(0x9E61, 250); // Down arrow
     }

@@ -24,7 +24,7 @@
 #ifndef SRC_ADCUTILS_H_
 #define SRC_ADCUTILS_H_
 
-#if defined(__AVR__) && (! defined(__AVR_ATmega4809__))
+#if defined(__AVR__) && (!defined(__AVR_ATmega4809__))
 #include <Arduino.h>
 #if defined(ADATE)
 
@@ -80,6 +80,7 @@
 #define SHIFT_VALUE_FOR_REFERENCE REFS2
 #define MASK_FOR_ADC_REFERENCE (_BV(REFS0) | _BV(REFS1) | _BV(REFS2))
 #else // AVR_ATtiny85
+
 #define SHIFT_VALUE_FOR_REFERENCE REFS0
 #define MASK_FOR_ADC_REFERENCE (_BV(REFS0) | _BV(REFS1))
 #endif
@@ -118,7 +119,9 @@
 
 uint16_t readADCChannel(uint8_t aChannelNumber);
 uint16_t readADCChannelWithReference(uint8_t aChannelNumber, uint8_t aReference);
+uint16_t waitAndReadADCChannelWithReference(uint8_t aChannelNumber, uint8_t aReference);
 uint16_t readADCChannelWithOversample(uint8_t aChannelNumber, uint8_t aOversampleExponent);
+void setADCMultiplexerAndReferenceForNextConversion(uint8_t aChannelNumber, uint8_t aReference);
 uint16_t readADCChannelWithReferenceOversample(uint8_t aChannelNumber, uint8_t aReference, uint8_t aOversampleExponent);
 uint16_t readADCChannelWithReferenceOversampleFast(uint8_t aChannelNumber, uint8_t aReference, uint8_t aOversampleExponent);
 uint16_t readADCChannelWithReferenceMultiSamples(uint8_t aChannelNumber, uint8_t aReference, uint8_t aNumberOfSamples);
@@ -134,8 +137,12 @@ uint16_t getVCCVoltageMillivoltSimple(void);
 float getTemperatureSimple(void);
 float getVCCVoltage(void);
 uint16_t getVCCVoltageMillivolt(void);
-uint16_t printVCCVoltageMillivolt(Print* aSerial);
-void printVCCVoltageMillivolt(Print* aSerial, uint16_t aVCCVoltageMillivolt);
+uint16_t getVCCVoltageReadingFor1_1VoltReference(void);
+uint16_t printVCCVoltageMillivolt(Print *aSerial);
+void printVCCVoltageMillivolt(Print *aSerial, uint16_t aVCCVoltageMillivolt);
+uint16_t getVoltageMillivolt(uint16_t aVCCVoltageMillivolt, uint8_t aADCChannelForVoltageMeasurement);
+uint16_t getVoltageMillivolt(uint8_t aADCChannelForVoltageMeasurement);
+uint16_t getVoltageMillivoltWith_1_1VoltReference(uint8_t aADCChannelForVoltageMeasurement);
 float getTemperature(void);
 
 #endif // defined(ADATE)

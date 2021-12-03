@@ -13,8 +13,15 @@ on:
     - '**.ino'
     - '**.cpp'
     - '**.h'
+    - '**.hpp'
     - '**LibraryBuild.yml'
   pull_request:
+    paths:
+    - '**.ino'
+    - '**.cpp'
+    - '**.h'
+    - '**.hpp'
+    - '**LibraryBuild.yml'
 
 jobs:
   build:
@@ -30,7 +37,7 @@ jobs:
         # Examples: arduino:avr:uno, arduino:avr:leonardo, arduino:avr:nano, arduino:avr:mega
         # arduino:sam:arduino_due_x, arduino:samd:arduino_zero_native"
         # ATTinyCore:avr:attinyx5:chip=85,clock=1internal, digistump:avr:digispark-tiny, digistump:avr:digispark-pro
-        # STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
+        # STMicroelectronics:stm32:GenF1:pnum=BLUEPILL_F103C8
         # esp8266:esp8266:huzzah:eesz=4M3M,xtal=80, esp32:esp32:featheresp32:FlashFreq=80
         # You may add a suffix behind the fqbn with "|" to specify one board for e.g. different compile options like arduino:avr:uno|trace
         #############################################################################################################
@@ -42,7 +49,6 @@ jobs:
           - arduino:samd:arduino_zero_native
           - arduino:mbed:nano33ble
           - digistump:avr:digispark-tiny:clock=clock16
-          - digistump:avr:digispark-pro
           - ATTinyCore:avr:attinyx5micr:LTO=enable,sketchclock=8pll
           - ATTinyCore:avr:attinyx7micr:LTO=enable,sketchclock=16external,pinmapping=new,millis=enabled
           - TinyCore:avr:tiny32
@@ -51,8 +57,8 @@ jobs:
 #          - MegaCore:avr:128:bootloader=no_bootloader,eeprom=keep,BOD=2v7,LTO=Os,clock=8MHz_internal # ATmega128
           - esp8266:esp8266:d1_mini:eesz=4M3M,xtal=80
           - esp32:esp32:featheresp32:FlashFreq=80
-          - STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
-          - STM32:stm32:GenL0:pnum=THUNDERPACK_L072
+          - STMicroelectronics:stm32:GenF1:pnum=BLUEPILL_F103C8
+          - STMicroelectronics:stm32:GenL0:pnum=THUNDERPACK_L072
           - stm32duino:STM32F1:genericSTM32F103C
           - SparkFun:apollo3:sfe_artemis_nano
 
@@ -67,11 +73,6 @@ jobs:
             platform-url: https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
             required-libraries: ATtinySerialOut
             sketches-exclude: AllProtocols,SendAllProtocols,ReceiveAndSendDynamicPins,ReceiverTimingAnalysis # Does not fit in FLASH # Comma separated list of example names to exclude in build
-
-          - arduino-boards-fqbn: digistump:avr:digispark-pro
-            platform-url: https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
-            required-libraries: ATtinySerialOut
-            sketches-exclude: ReceiveAndSendDynamicPins # No Serial.available() function in ATtinySerialOut
 
           - arduino-boards-fqbn: ATTinyCore:avr:attinyx5micr:LTO=enable,sketchclock=8pll
             platform-url: http://drazzy.com/package_drazzy.com_index.json
@@ -102,15 +103,15 @@ jobs:
             sketches-exclude: MinimalReceiver,AllProtocols # error ".text1' will not fit in region `iram1_0_seg'"
 
           - arduino-boards-fqbn: esp32:esp32:featheresp32:FlashFreq=80
-            platform-url: https://dl.espressif.com/dl/package_esp32_index.json
+            platform-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
             sketches-exclude: MinimalReceiver
 
-          - arduino-boards-fqbn: STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
-            platform-url: https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
+          - arduino-boards-fqbn: STMicroelectronics:stm32:GenF1:pnum=BLUEPILL_F103C8
+            platform-url: https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/main/package_stmicroelectronics_index.json
             sketches-exclude: MinimalReceiver
 
-          - arduino-boards-fqbn: STM32:stm32:GenL0:pnum=THUNDERPACK_L072
-            platform-url: https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
+          - arduino-boards-fqbn: STMicroelectronics:stm32:GenL0:pnum=THUNDERPACK_L072
+            platform-url: https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/main/package_stmicroelectronics_index.json
             sketches-exclude: MinimalReceiver,IRDispatcherDemo
 
           - arduino-boards-fqbn: stm32duino:STM32F1:genericSTM32F103C # Roger Clark version

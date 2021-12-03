@@ -82,7 +82,7 @@ void loop()
     static uint8_t sCommand = 1;
     static uint8_t sRepeats = 0;
 
-    for (uint8_t i = 0; i < sizeof(irsnd_used_protocol_index); ++i)
+    for (uint_fast8_t i = 0; i < sizeof(irsnd_used_protocol_index); ++i)
     {
         irsnd_data.protocol = pgm_read_byte(&irsnd_used_protocol_index[i]);
         irsnd_data.address = sAddress;

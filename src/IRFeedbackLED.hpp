@@ -12,9 +12,9 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
+#ifndef IR_FEEDBACK_LED_HPP
+#define IR_FEEDBACK_LED_HPP
 #if defined(ARDUINO)
-#ifndef IR_FEEDBACK_LED_CPP_H
-#define IR_FEEDBACK_LED_CPP_H
 
 #include "IRFeedbackLED.h"
 
@@ -117,5 +117,6 @@ void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
 #endif
 }
 
-#endif // IR_FEEDBACK_LED_CPP_H
 #endif // defined(ARDUINO)
+#endif // IR_FEEDBACK_LED_HPP
+#pragma once

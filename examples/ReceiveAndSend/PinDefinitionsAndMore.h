@@ -46,17 +46,31 @@
 #define FEEDBACK_LED_IS_ACTIVE_LOW // The LED on my board is active LOW
 #define IRMP_INPUT_PIN      14 // D5
 #define IRSND_OUTPUT_PIN    12 // D6 - D4/2 is internal LED
-#define tone(a,b) void()       // tone() inhibits receive timer
+#define IR_TIMING_TEST_PIN  13 // D7
+
+#define tone(...) void()      // tone() inhibits receive timer
 #define noTone(a) void()
 #define TONE_PIN            42 // Dummy for examples using it
-#define IR_TIMING_TEST_PIN  13 // D7
 
 #elif defined(ESP32)
 #define IRMP_INPUT_PIN      15  // D15
 #define IRSND_OUTPUT_PIN     4  // D4
-#define tone(a,b) void()        // no tone() available on ESP32
-#define noTone(a) void()
-#define TONE_PIN            42 // Dummy for examples using it
+#include <Arduino.h>
+#define TONE_LEDC_CHANNEL        1  // Using channel 1 makes tone() independent of receiving timer -> No need to stop receiving timer.
+void tone(uint8_t _pin, unsigned int frequency){
+    ledcAttachPin(_pin, TONE_LEDC_CHANNEL);
+    ledcWriteTone(TONE_LEDC_CHANNEL, frequency);
+}
+void tone(uint8_t _pin, unsigned int frequency, unsigned long duration){
+    ledcAttachPin(_pin, TONE_LEDC_CHANNEL);
+    ledcWriteTone(TONE_LEDC_CHANNEL, frequency);
+    delay(duration);
+    ledcWriteTone(TONE_LEDC_CHANNEL, 0);
+}
+void noTone(uint8_t _pin){
+    ledcWriteTone(TONE_LEDC_CHANNEL, 0);
+}
+#define TONE_PIN                27  // D27 25 & 26 are DAC0 and 1
 
 #elif defined(ARDUINO_ARCH_STM32) || defined(ARDUINO_ARCH_STM32F1)
 // BluePill in 2 flavors

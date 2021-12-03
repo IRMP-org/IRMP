@@ -53,9 +53,12 @@
 
 #define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH. Must before #include <irmp*>
 
-#include <irmpSelectMain15Protocols.h>  // This enables 15 main protocols
-//#define IRMP_SUPPORT_NEC_PROTOCOL        1 // this enables only one protocol
+//#include <irmpSelectMain15Protocols.h>  // This enables 15 main protocols
+#define IRMP_SUPPORT_NEC_PROTOCOL        1 // this enables only one protocol
 
+/*
+ * We use LED_BUILTIN as feedback for commands 0x40 and 0x48 and cannot use it as feedback LED for receiving
+ */
 #ifdef ALTERNATIVE_IR_FEEDBACK_LED_PIN
 #define IRMP_FEEDBACK_LED_PIN   ALTERNATIVE_IR_FEEDBACK_LED_PIN
 #endif
@@ -67,7 +70,7 @@
 IRMP_DATA irmp_data;
 
 void setup() {
-    pinMode(LED_BUILTIN,OUTPUT);
+    pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL) || defined(ARDUINO_attiny3217)
     delay(4000); // To be able to connect Serial monitor after reset or power up and before first print out. Do not wait for an attached Serial Monitor!
@@ -89,6 +92,9 @@ void setup() {
     Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
 #endif
 
+    /*
+     * We use LED_BUILTIN as feedback for commands 0x40 and 0x48 and cannot use it as feedback LED for receiving
+     */
 #ifdef ALTERNATIVE_IR_FEEDBACK_LED_PIN
     irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at ALTERNATIVE_IR_FEEDBACK_LED_PIN
     Serial.print(F("IR feedback pin is " STR(ALTERNATIVE_IR_FEEDBACK_LED_PIN)));

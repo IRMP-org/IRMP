@@ -18,7 +18,7 @@
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
  *  This file is part of Arduino-IRremote https://github.com/Arduino-IRremote/Arduino-IRremote.
  *
- *  IRMP is free software: you can redistribute it and/or modify
+ *  MinimalReceiver is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
@@ -54,6 +54,9 @@
 //#define DO_NOT_USE_FEEDBACK_LED // activating saves 12 bytes
 #endif
 
+//#define DEBUG // to see if attachInterrupt is used
+//#define TRACE // to see the state of the ISR state machine
+
 /*
  * Second: include the code and compile it.
  */
@@ -62,8 +65,10 @@
 /*
  * Helper macro for getting a macro definition as string
  */
+#if !defined(STR_HELPER)
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
+#endif
 
 void setup() {
     Serial.begin(115200);

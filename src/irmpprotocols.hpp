@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef _IRMP_PROTOCOLS_C_H_
-#define _IRMP_PROTOCOLS_C_H_
+#ifndef IRMP_PROTOCOLS_HPP
+#define IRMP_PROTOCOLS_HPP
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * IR protocol strings for IRMP and IRSND:
@@ -163,4 +163,4 @@ irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM =
     proto_melinera
 };
 
-#endif // _IRMP_PROTOCOLS_C_H_
+#endif // IRMP_PROTOCOLS_HPP

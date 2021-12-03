@@ -7,7 +7,7 @@ Available as Arduino library "IRMP"
 [![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/IRMP)
 [![Commits since latest](https://img.shields.io/github/commits-since/ukw100/irmp/latest)](https://github.com/ukw100/irmp/commits/master)
 [![Build Status](https://github.com/ukw100/irmp/workflows/LibraryBuild/badge.svg)](https://github.com/ukw100/irmp/actions)
-[![Hit Counter](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2Fukw100%2FIRMP)](https://github.com/brentvollebregt/hit-counter)
+[![Hit Counter](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https://github.com/ukw100/IRMP)](https://github.com/brentvollebregt/hit-counter)
 
 ## 50 IR protocols supported and low memory footprint
 - Only 39 protocols can be enabled for receive at the same time, because some of them are quite similar and conflicts with each other.
@@ -39,7 +39,7 @@ Available as Arduino library "IRMP"
 - Send IR frequency is fixed at 38 kHz.
 
 # Minimal version
-For applications only requiring NEC protocol, there is a receiver which has very **small codesize of 500 bytes and does NOT require any timer**. See the MinimalReceiver and IRDispatcherDemo example how to use it. Mapping of pins to interrupts can be found [here](https://github.com/Arduino-IRremote/Arduino-IRremote/tree/master/src/TinyIRReceiver.hpp#L307).
+For applications only requiring NEC protocol, there is a receiver which has very **small codesize of 500 bytes and does NOT require any timer**. See the MinimalReceiver and IRDispatcherDemo example how to use it. Mapping of pins to interrupts can be found [here](https://github.com/Arduino-IRremote/Arduino-IRremote/tree/master/src/TinyIRReceiver.hpp#L259).
 
 # Schematic for Arduino UNO
 The VS1838B is used as receiver for all examples and tests. This module has a 120 µs on/low and a 100 µs off/high delay between received signal and output. So it shortens the mark and extends the space by 20 µs.
@@ -82,8 +82,8 @@ It is dated from **03.02.2021**. If you have complains about the data or request
 | FLASH usage (simple NEC example with 5 prints) | 1820<br/>(4300 for 15 main / 8000 for all 40 protocols)<br/>(+200 for callback)<br/>(+80 for interrupt at pin 2+3)| 1270<br/>(1400 for pin 2+3) | 4830 | 1770 | **900** |
 | RAM usage | 52<br/>(73 / 100 for 15 (main) / 40 protocols) | 62 | 334 | 227 | **19** |
 | Supported platforms | **avr, megaAVR, attiny, Digispark (Pro), esp8266, ESP32, STM32, SAMD 21, Apollo3<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, SAMD 21, SAMD 51 | avr, attiny, [esp8266](https://github.com/crankyoldgit/IRremoteESP8266), esp32, SAM, SAMD | **All platforms with attachInterrupt()** |
-| Last library update | 2/2021 | 4/2018 | 9/2019 | 2/2021 | 2/2021 |
-| Remarks | Decodes 40 protocols concurrently.<br/>39 Protocols to send.<br/>Work in progress. | Only one protocol at a time. | Consists of 5 libraries. **Project containing bugs - 45 issues, no reaction for at least one year.** | Decoding and sending are easy to extend.<br/>Supports **Pronto** codes. | Requires no timer. |
+| Last library update | 2/2021 | 4/2018 | 9/2019 | 10/2021 | 10/2021 |
+| Remarks | Decodes 40 protocols concurrently.<br/>39 Protocols to send. | Only one protocol at a time. | Consists of 5 libraries. **Project containing bugs - 45 issues, no reaction for at least one year.** | Decoding and sending are easy to extend.<br/>Supports **Pronto** codes.<br/>Work in progress. | Requires no timer. |
 
 \* The Hash protocol gives you a hash as code, which may be sufficient to distinguish your keys on the remote, but may not work with some protocols like Mitsubishi
 
@@ -102,7 +102,7 @@ Sending the IR signal starts with saving current timer configuration, setting th
 # API
 ### IRMP
 
-```
+```c++
 // Init functions
 void irmp_init (void);
 void irmp_init(uint_fast8_t aIrmpInputPin);
@@ -123,7 +123,7 @@ void irmp_result_print(IRMP_DATA *aIRMPDataPtr);
 ```
 ### IRSND
 
-```
+```c++
 // Init functions
 void irsnd_init (void);
 // 3 additional init functions if IRMP_IRSND_ALLOW_DYNAMIC_PINS is defined
@@ -141,7 +141,7 @@ void irsnd_stop (void);
 ```
 ### IRMP and IRSND
 
-```
+```c++
 // LED feedback function
 void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed);
 
