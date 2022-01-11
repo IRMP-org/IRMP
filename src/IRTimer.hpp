@@ -311,7 +311,8 @@ void initIRTimerForSend(void)
 #if defined(__AVR__)
 uint8_t sTimerTCCRA;
 uint8_t sTimerTCCRB;
-#  if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__) || defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+#  if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__) || defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) \
+    || defined(__AVR_ATtiny3217__) || defined(__AVR_ATmega4809__)
 uint16_t sTimerOCR; // we have a 12/16 bit timer
 #  else
 uint8_t sTimerOCR;

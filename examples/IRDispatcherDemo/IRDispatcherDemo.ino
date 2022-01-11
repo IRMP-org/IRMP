@@ -29,10 +29,8 @@
 /*
  * Choose the library to be used for IR receiving
  */
-#define USE_TINY_IR_RECEIVER // Recommended, but only for NEC protocol!!! must be specified before including IRCommandDispatcher.hpp to define which IR library to use
+#define USE_TINY_IR_RECEIVER // Recommended, but only for NEC protocol!!! If disabled and IRMP_INPUT_PIN is defined, the IRMP library is used for decoding
 //#define TINY_RECEIVER_USE_ARDUINO_ATTACH_INTERRUPT // costs 112 bytes FLASH + 4bytes RAM
-
-//#define USE_IRMP_LIBRARY // must be specified before including IRCommandDispatcher.hpp to define which IR library to use
 
 #include "PinDefinitionsAndMore.h"
 // Some kind of auto detect library if USE_TINY_IR_RECEIVER is deactivated
@@ -48,7 +46,7 @@
 
 #define IR_INPUT_PIN    2
 
-//#define DO_NOT_USE_FEEDBACK_LED // You can set it here, before the include of IRCommandDispatcher below
+//#define NO_LED_FEEDBACK_CODE // You can set it here, before the include of IRCommandDispatcher below
 
 #if defined(USE_TINY_IR_RECEIVER) && !defined(IR_INPUT_PIN)
   #if defined(IR_RECEIVE_PIN)
@@ -169,11 +167,9 @@ void loop() {
 
     if (doBlink) {
         digitalWrite(LED_BUILTIN, HIGH);
-        IRDispatcher.delayAndCheckForStop(sBlinkDelay);
-        RETURN_IF_STOP; // = if (IRDispatcher.requestToStopReceived) return;
+        DELAY_AND_RETURN_IF_STOP(sBlinkDelay);
         digitalWrite(LED_BUILTIN, LOW);
-        IRDispatcher.delayAndCheckForStop(sBlinkDelay);
-        RETURN_IF_STOP;
+        DELAY_AND_RETURN_IF_STOP(sBlinkDelay);
     }
 
     if (millis() - IRDispatcher.IRReceivedData.MillisOfLastCode > 120000)
@@ -238,11 +234,9 @@ void doLedBlinkStart() {
 void doLedBlink20times() {
     for (int i = 0; i < 20; ++i) {
         digitalWrite(LED_BUILTIN, HIGH);
-        IRDispatcher.delayAndCheckForStop(200);
-        RETURN_IF_STOP; // if (IRDispatcher.requestToStopReceived) return;
+        DELAY_AND_RETURN_IF_STOP(200);
         digitalWrite(LED_BUILTIN, LOW);
-        IRDispatcher.delayAndCheckForStop(200);
-        RETURN_IF_STOP;
+        DELAY_AND_RETURN_IF_STOP(200);
     }
 }
 

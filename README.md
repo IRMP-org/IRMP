@@ -7,7 +7,7 @@ Available as Arduino library "IRMP"
 [![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/IRMP)
 [![Commits since latest](https://img.shields.io/github/commits-since/ukw100/irmp/latest)](https://github.com/ukw100/irmp/commits/master)
 [![Build Status](https://github.com/ukw100/irmp/workflows/LibraryBuild/badge.svg)](https://github.com/ukw100/irmp/actions)
-[![Hit Counter](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https://github.com/ukw100/IRMP)](https://github.com/brentvollebregt/hit-counter)
+[![Hit Counter](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https://github.com/ukw100/IRMP)
 
 ## 50 IR protocols supported and low memory footprint
 - Only 39 protocols can be enabled for receive at the same time, because some of them are quite similar and conflicts with each other.
@@ -201,14 +201,15 @@ Modify it by setting the value to 1 or 0. Or define the macro with the -D compil
 | `IRMP_MEASURE_TIMING` +  `IR_TIMING_TEST_PIN` | defined | For development only. The test pin is switched high at the very beginning and low at the end of the ISR. |
 
 
-### Modifying compile options with Arduino IDE
+### Changing include (*.h) files with Arduino IDE
 First, use *Sketch > Show Sketch Folder (Ctrl+K)*.<br/>
-If you did not yet stored the example as your own sketch, then you are instantly in the right library folder.<br/>
+If you have not yet saved the example as your own sketch, then you are instantly in the right library folder.<br/>
 Otherwise you have to navigate to the parallel `libraries` folder and select the library you want to access.<br/>
-In both cases the library files itself are located in the `src` directory.<br/>
+In both cases the library source and include files are located in the libraries `src` directory.<br/>
+The modification must be renewed for each new library version!
 
 ### Modifying compile options with Sloeber IDE
-If you are using Sloeber as your IDE, you can easily define global symbols with *Properties > Arduino > CompileOptions*.<br/>
+If you are using [Sloeber](https://eclipse.baeyens.it) as your IDE, you can easily define global symbols with *Properties > Arduino > CompileOptions*.<br/>
 ![Sloeber settings](https://github.com/ArminJo/ServoEasing/blob/master/pictures/SloeberDefineSymbols.png)
 
 # [Timer usage](https://github.com/ukw100/IRMP/blob/master/src/IRTimer.hpp#L39)
@@ -263,6 +264,9 @@ The **tone library (using timer 2) is still available**. You can use it alternat
    http://www.mikrocontroller.net/articles/IRSND
 
 # Revision History
+### Version 3.5.2
+- Fixed ATmega4809 bug.
+
 ### Version 3.5.1
 - Fixed ESP8266 `F_CPU` error introduced with 3.4.1.
 
