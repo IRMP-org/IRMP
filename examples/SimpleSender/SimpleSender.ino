@@ -38,6 +38,8 @@
 
 #include <Arduino.h>
 
+//#define SEND_SAMSUNG // else send NEC
+
 /*
  * Set library modifiers first to set output pin etc.
  */
@@ -58,6 +60,7 @@
 
 IRMP_DATA irsnd_data;
 
+#ifdef SEND_SAMSUNG
 union WordUnion
 {
     struct
@@ -76,11 +79,11 @@ union WordUnion
     int16_t Word;
     uint8_t *BytePointer;
 };
+#endif
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
-#if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL) || defined(ARDUINO_attiny3217)
+#if defined(__AVR_ATmega32U4__) || defined(SERIAL_PORT_USBVIRTUAL) || defined(SERIAL_USB) || defined(SERIALUSB_PID) || defined(ARDUINO_attiny3217)
     delay(4000); // To be able to connect Serial monitor after reset or power up and before first print out. Do not wait for an attached Serial Monitor!
 #endif
 #if defined(ESP8266)
@@ -99,7 +102,6 @@ void setup()
     Serial.println(F("Ready to send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
 #endif
 
-//#define SEND_SAMSUNG // else send NEC
 #ifdef SEND_SAMSUNG
     /*
      * Send Samsung32
@@ -119,20 +121,18 @@ void setup()
 #endif
 
     // true = wait for frame and trailing space/gap to end. This stores timer state and restores it after sending.
-    if (!irsnd_send_data(&irsnd_data, true))
-    {
+    if (!irsnd_send_data(&irsnd_data, true)) {
         Serial.println(F("Protocol not found")); // name of protocol is printed by irsnd_data_print()
     }
     irsnd_data_print(&Serial, &irsnd_data);
 
 }
 
-void loop()
-{
+void loop() {
     delay(5000);
     irsnd_data.command++;
 #ifdef SEND_SAMSUNG
-    // For my Samsung the high byte is the inverse of the low byte
+    // For my Samsung remote, the high byte is the inverse of the low byte
     WordUnion tNextCommand; // using WordUnion saves 14 bytes program memory for the next 3 lines
     tNextCommand.UWord = irsnd_data.command;
     tNextCommand.UByte.HighByte = ~tNextCommand.UByte.LowByte;

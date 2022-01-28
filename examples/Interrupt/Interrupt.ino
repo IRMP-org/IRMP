@@ -52,12 +52,13 @@
 #include <irmp.hpp>
 
 IRMP_DATA irmp_data;
+bool sJustReceived;
+
 void handleReceivedIRData();
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
-#if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL) || defined(ARDUINO_attiny3217)
+#if defined(__AVR_ATmega32U4__) || defined(SERIAL_PORT_USBVIRTUAL) || defined(SERIAL_USB) || defined(SERIALUSB_PID) || defined(ARDUINO_attiny3217)
     delay(4000); // To be able to connect Serial monitor after reset or power up and before first printout
 #endif
     // Just to know which program is running on my Arduino
@@ -76,8 +77,11 @@ void setup()
 #endif
 }
 
-void loop()
-{
+void loop() {
+    if (sJustReceived) {
+        sJustReceived = false;
+        irmp_result_print(&irmp_data); // this is not allowed in ISR context for any kind of RTOS
+    }
     /*
      * Put your code here
      */
@@ -97,8 +101,10 @@ void handleReceivedIRData()
 #endif
 {
     irmp_get_data(&irmp_data);
-#if !defined(ARDUINO_ARCH_MBED)
+#if defined(ARDUINO_ARCH_MBED) || defined(ESP32)
+    sJustReceived = true; // Signal new data for main loop, this is the recommended way for handling a callback :-)
+#else
     interrupts(); // enable interrupts
+    irmp_result_print(&irmp_data); // this is not allowed in ISR context for any kind of RTOS
 #endif
-    irmp_result_print(&irmp_data);
 }

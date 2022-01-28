@@ -1,7 +1,7 @@
 # [IRMP](https://github.com/ukw100/IRMP) - Infrared Multi Protocol Decoder + Encoder
 Available as Arduino library "IRMP"
 
-### [Version 3.5.2](https://github.com/ukw100/IRMP/archive/master.zip) - work in progress
+### [Version 3.5.3](https://github.com/ukw100/IRMP/archive/master.zip) - work in progress
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/IRMP)
@@ -266,6 +266,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 # Revision History
 ### Version 3.5.2
 - Fixed ATmega4809 bug.
+- RP2040 support added.
 
 ### Version 3.5.1
 - Fixed ESP8266 `F_CPU` error introduced with 3.4.1.

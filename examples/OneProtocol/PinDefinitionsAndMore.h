@@ -33,12 +33,13 @@
  * ATtinyX5     0           4           3
  * ATtiny167    9           8           5 // Digispark pro number schema
  * ATtiny167    3           2           7
- * ATtiny3217   10          11          3 // TinyCore schema
+ * ATtiny3217  10          11           // TinyCore schema
  * SAMD21       3           4           5
- * ESP8266      14 // D5    12 // D6    %
- * ESP32        15          4           %
- * BluePill     PA6         PA7         PA3
- * APOLLO3      11          12          5
+ * ESP8266     14 // D5    12 // D6     %
+ * ESP32       15           4           %
+ * BluePill   PA6         PA7         PA3
+ * APOLLO3     11          12           5
+ * RP2040       3|GPIO15    4|GPIO16    5|GPIO17
  */
 //#define IRMP_MEASURE_TIMING // For debugging purposes.
 //
@@ -124,38 +125,46 @@ void noTone(uint8_t _pin){
 #define IRSND_OUTPUT_PIN 12
 #define TONE_PIN         5
 
-#elif defined(ARDUINO_ARCH_MBED) // Arduino Nano 33 BLE
-#define IR_RECEIVE_PIN      2
-#define IR_SEND_PIN         3
-#define TONE_PIN            4
-#define APPLICATION_PIN     5
-#define ALTERNATIVE_IR_FEEDBACK_LED_PIN 6 // E.g. used for examples which use LED_BUILDIN for example output.
-#define IR_TIMING_TEST_PIN  7
+#elif defined(ARDUINO_ARCH_MBED) && defined(ARDUINO_ARCH_MBED_NANO) // Arduino Nano 33 BLE, Arduino Nano RP2040 Connect
+#define IRMP_INPUT_PIN      3   // GPIO15 Start with pin 3 since pin 2|GPIO25 is connected to LED on Pi pico
+#define IRSND_OUTPUT_PIN    4   // GPIO16
+#define TONE_PIN            5
+
+#elif defined(ARDUINO_ARCH_RP2040) // Pi Pico with arduino-pico core https://github.com/earlephilhower/arduino-pico
+#define IRMP_INPUT_PIN      15  // to be compatible with the Arduino Nano RP2040 Connect (pin3)
+#define IRSND_OUTPUT_PIN    16
+#define TONE_PIN            17
+
+// If you program the Nano RP2040 Connect with this core, then you must redefine LED_BUILTIN
+// and use the external reset with 1 kOhm to ground to enter UF2 mode
+#undef LED_BUILTIN
+#define LED_BUILTIN          6
 
 #elif defined(TEENSYDUINO)
-#define IR_RECEIVE_PIN      2
-#define IR_SEND_PIN         3
+#define IRMP_INPUT_PIN      2
+#define IRSND_OUTPUT_PIN    3
 #define TONE_PIN            4
-#define APPLICATION_PIN     5
+#if !defined(ALTERNATIVE_IR_FEEDBACK_LED_PIN)
 #define ALTERNATIVE_IR_FEEDBACK_LED_PIN 6 // E.g. used for examples which use LED_BUILDIN for example output.
+#endif
 #define IR_TIMING_TEST_PIN  7
 
 #elif defined(__AVR__)
 #define IRMP_INPUT_PIN      2 // To be compatible with interrupt example, pin 2 is chosen here.
 #define IRSND_OUTPUT_PIN    3
 #define TONE_PIN            4
-#define APPLICATION_PIN     5
+#if !defined(ALTERNATIVE_IR_FEEDBACK_LED_PIN)
 #define ALTERNATIVE_IR_FEEDBACK_LED_PIN 6 // E.g. used for examples which use LED_BUILDIN for example output.
+#endif
 #define IR_TIMING_TEST_PIN 7
 // You can alternatively specify the input pin with port and bit number if you do not have the Arduino pin number at hand
 //#define IRMP_PORT_LETTER D
 //#define IRMP_BIT_NUMBER 2
 
 #elif defined(ARDUINO_ARCH_SAMD)
-#define IR_RECEIVE_PIN      2
-#define IR_SEND_PIN         3
+#define IRMP_INPUT_PIN      2
+#define IRSND_OUTPUT_PIN    3
 #define TONE_PIN            4
-#define APPLICATION_PIN     5
 #if !defined(ALTERNATIVE_IR_FEEDBACK_LED_PIN)
 #define ALTERNATIVE_IR_FEEDBACK_LED_PIN 6 // E.g. used for examples which use LED_BUILDIN for example output.
 #endif
@@ -180,8 +189,9 @@ void noTone(uint8_t _pin){
 #define IRMP_INPUT_PIN      2
 #define IRSND_OUTPUT_PIN    3
 #define TONE_PIN            4
-#define APPLICATION_PIN     5
+#if !defined(ALTERNATIVE_IR_FEEDBACK_LED_PIN)
 #define ALTERNATIVE_IR_FEEDBACK_LED_PIN 6 // E.g. used for examples which use LED_BUILDIN for example output.
+#endif
 #define IR_TIMING_TEST_PIN  7
 #endif // defined(ESP8266)
 
