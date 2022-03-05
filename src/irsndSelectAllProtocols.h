@@ -68,7 +68,7 @@
 #define IRSND_SUPPORT_PENTAX_PROTOCOL           1       // Pentax               >= 10000                 ~150 bytes
 #define IRSND_SUPPORT_S100_PROTOCOL             1       // S100                 >= 10000                 ~150 bytes
 #define IRSND_SUPPORT_ACP24_PROTOCOL            1       // ACP24                >= 10000                 ~150 bytes
-#define IRSND_SUPPORT_TECHNICS_PROTOCOL         0       // TECHNICS             >= 10000                 DON'T CHANGE, NOT SUPPORTED YET!
+#define IRSND_SUPPORT_TECHNICS_PROTOCOL         1       // TECHNICS             >= 10000                 ~200 bytes
 #define IRSND_SUPPORT_PANASONIC_PROTOCOL        1       // PANASONIC Beamer     >= 10000                 ~150 bytes
 #define IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL      1       // Mitsubishi-Heavy Aircondition, similar Timing to Panasonic beamer
 #define IRSND_SUPPORT_IRMP16_PROTOCOL           0       // IRMP specific        >= 15000                 ~250 bytes
