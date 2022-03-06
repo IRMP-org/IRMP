@@ -50,6 +50,32 @@
 #    warning The STM32 port of IRSND uses the ST standard peripheral drivers which are not enabled in your build configuration.
 #  endif
 
+#elif defined (ARM_STM32_OPENCM3)                 // STM32_OPENCM3
+#  define _CONCAT(a,b)                          a##b
+#  define CONCAT(a,b)                           _CONCAT(a,b)
+#  define IRSND_PORT                            CONCAT(GPIO, IRSND_PORT_LETTER)
+#  if defined (ARM_STM32L1)
+#    define IRSND_PORT_RCC                      CONCAT(RCC_GPIO, IRSND_PORT_LETTER)
+#    define IRSND_GPIO_AF                       CONCAT(GPIO_AF_TIM, IRSND_TIMER_NUMBER)
+#  elif defined (STM32F1)
+#    define IRSND_PORT_RCC                      CONCAT(RCC_GPIO, IRSND_PORT_LETTER)
+#  elif  defined (ARM_STM32F3)
+#    define IRSND_PORT_RCC                      CONCAT(RCC_GPIO, IRSND_PORT_LETTER)
+#  elif defined (ARM_STM32F4)
+#    define IRSND_PORT_RCC                      CONCAT(RCC_GPIO, IRSND_PORT_LETTER)
+#    define IRSND_GPIO_AF                       CONCAT(GPIO_AF_TIM, IRSND_TIMER_NUMBER)
+#  endif
+#  define IRSND_BIT                             CONCAT(GPIO, IRSND_BIT_NUMBER)
+#  define IRSND_TIMER                           CONCAT(TIM, IRSND_TIMER_NUMBER)
+#  define IRSND_TIMER_CHANNEL                   CONCAT(TIM_OC, IRSND_TIMER_CHANNEL_NUMBER)
+#  if ((IRSND_TIMER_NUMBER >= 2) && (IRSND_TIMER_NUMBER <= 5)) || ((IRSND_TIMER_NUMBER >= 12) && (IRSND_TIMER_NUMBER <= 14))
+#    define IRSND_TIMER_RCC                     CONCAT(RCC_TIM, IRSND_TIMER_NUMBER)
+#  elif (IRSND_TIMER_NUMBER == 1) || ((IRSND_TIMER_NUMBER >= 8) && (IRSND_TIMER_NUMBER <= 11))
+#    define IRSND_TIMER_RCC                     CONCAT(RCC_TIM, IRSND_TIMER_NUMBER)
+#  else
+#    error IRSND_TIMER_NUMBER not valid.
+#  endif
+
 #elif defined(PIC_C18)
 
 # if defined(__12F1840)

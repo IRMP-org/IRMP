@@ -58,6 +58,17 @@
 #  include <stm32f4xx.h>
 #  define ARM_STM32
 #  define ARM_STM32F4XX
+#  define F_CPU (SysCtlClockGet())
+
+#elif defined(STM32L1) ||  defined(STM32F1) || defined(STM32F3) || defined(STM32F4) // ARM STM32 OPENCM3
+#  include <stdint.h>
+#  include <libopencm3/stm32/gpio.h>
+#  include <libopencm3/stm32/timer.h>
+#  include <libopencm3/cm3/nvic.h>
+#  include <libopencm3/stm32/rcc.h>
+#  include "../config.h"
+#  define ARM_STM32_OPENCM3
+#  define F_CPU rcc_ahb_frequency
 
 #elif defined(USE_HAL_DRIVER)                                                       // ARM STM32 with HAL Library
 #  include "gpio.h"

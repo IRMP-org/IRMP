@@ -13,7 +13,7 @@
  *  !!!!!!!!!!!!!!!!!!!!!
  *
  *
- *  Copyright (C) 2021  Armin Joachimsmeyer
+ *  Copyright (C) 2021-2022  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/ukw100/IRMP.
@@ -31,6 +31,16 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *
+ */
+
+/*
+ * This library can be configured at compile time by the following options / macros:
+ * For more details see: https://github.com/Arduino-IRremote/Arduino-IRremote#compile-options--macros-for-this-library (scroll down)
+ *
+ * - IR_INPUT_PIN           The pin number for TinyIRReceiver IR input.
+ * - IR_FEEDBACK_LED_PIN    The pin number for TinyIRReceiver feedback LED.
+ * - NO_LED_FEEDBACK_CODE   Disables the feedback LED function. Saves 14 bytes program space.
  *
  */
 
@@ -89,9 +99,7 @@ TinyIRReceiverStruct TinyIRReceiverControl;
  * Declaration of the callback function provided by the user application.
  * It is called every time a complete IR command or repeat was received.
  */
-#if defined(ESP8266)
-void ICACHE_RAM_ATTR handleReceivedIRData(uint16_t aAddress, uint8_t aCommand, bool isRepetition);
-#elif defined(ESP32)
+#if defined(ESP32) || defined(ESP8266)
 void IRAM_ATTR handleReceivedIRData(uint16_t aAddress, uint8_t aCommand, bool isRepetition);
 #else
 void handleReceivedIRData(uint16_t aAddress, uint8_t aCommand, bool isRepetition);
@@ -102,7 +110,7 @@ void handleReceivedIRData(uint16_t aAddress, uint8_t aCommand, bool isRepetition
  * It handles the NEC protocol decoding and calls the user callback function on complete.
  * 5 us + 3 us for push + pop for a 16MHz ATmega
  */
-#if defined(ESP8266) || defined(ESP32)
+#if defined(ESP32) || defined(ESP8266)
 void IRAM_ATTR IRPinChangeInterruptHandler(void)
 #else
 void IRPinChangeInterruptHandler(void)
@@ -339,7 +347,7 @@ void enablePCIInterruptForTinyReceiver()
     attachInterrupt(IR_INPUT_PIN, IRPinChangeInterruptHandler, CHANGE); // 2.2 us more than version configured with macros and not compatible
 
 #elif !defined(__AVR__) || defined(TINY_RECEIVER_USE_ARDUINO_ATTACH_INTERRUPT)
-    // costs 112 bytes FLASH + 4bytes RAM
+    // costs 112 bytes program space + 4 bytes RAM
     attachInterrupt(digitalPinToInterrupt(IR_INPUT_PIN), IRPinChangeInterruptHandler, CHANGE);
 #  ifdef DEBUG
     Serial.println(F("Use attachInterrupt for pin=" STR(IR_INPUT_PIN)));
@@ -440,7 +448,7 @@ void disablePCIInterruptForTinyReceiver()
     detachInterrupt(IR_INPUT_PIN);
 
 #elif !defined(__AVR__) || defined(TINY_RECEIVER_USE_ARDUINO_ATTACH_INTERRUPT)
-    // costs 112 bytes FLASH + 4bytes RAM
+    // costs 112 bytes program space + 4 bytes RAM
     detachInterrupt(digitalPinToInterrupt(IR_INPUT_PIN));
 #else
 #  if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)

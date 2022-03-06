@@ -27,15 +27,15 @@
 /*
  * Pin mapping table for different platforms
  *
- * Platform     IR input    IR output   Tone
- * -----------------------------------------
+ * Platform     IR input    IR output   Tone      Core/Pin schema
+ * --------------------------------------------------------------
  * DEFAULT/AVR  2           3           4
- * ATtinyX5     0           4           3
- * ATtiny167    9           8           5 // Digispark pro number schema
- * ATtiny167    3           2           7
- * ATtiny3217  10          11           // TinyCore schema
+ * ATtinyX5     0|PB0       4|PB4       3|PB3
+ * ATtiny167    3|PA3       2|PA2       7|PA7     ATTinyCore
+ * ATtiny167    9|PA3       8|PA2       5|PA7     Digispark pro
+ * ATtiny3217  18|PA1      19|PA2       0|PA4     MegaTinyCore
  * SAMD21       3           4           5
- * ESP8266     14 // D5    12 // D6     %
+ * ESP8266     14|D5       12|D6        %
  * ESP32       15           4           %
  * BluePill   PA6         PA7         PA3
  * APOLLO3     11          12           5
@@ -115,10 +115,10 @@ void noTone(uint8_t _pin){
 #define TONE_PIN         9
 #define IR_TIMING_TEST_PIN 8
 
-#elif defined(__AVR_ATtiny3217__)
-#define IRMP_INPUT_PIN   10
-#define IRSND_OUTPUT_PIN 11
-#define TONE_PIN         3
+#elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+#define IRMP_INPUT_PIN   18
+#define IRSND_OUTPUT_PIN 19
+#define TONE_PIN          0
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
 #define IRMP_INPUT_PIN   11
@@ -203,5 +203,7 @@ void noTone(uint8_t _pin){
 /*
  * Helper macro for getting a macro definition as string
  */
+#if !defined(STR_HELPER)
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
+#endif

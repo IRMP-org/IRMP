@@ -181,6 +181,8 @@
     //Nothing here to do here -> See irsndconfig.h
 #elif defined (ARM_STM32)                                               // STM32
     //Nothing here to do here -> See irsndconfig.h
+#elif defined (ARM_STM32_OPENCM3)                                       // STM32_OPENCM3
+    //Nothing here to do here -> See irsndconfig.h
 #elif defined (ARM_STM32_HAL)                                           // STM32 with Hal Library
     //Nothing here to do here -> See irsndconfig.h
 #elif defined (__xtensa__)                                              // ESP8266
@@ -504,6 +506,15 @@
 #  define IRSND_FREQ_40_KHZ                     (IRSND_FREQ_TYPE) (40000)
 #  define IRSND_FREQ_56_KHZ                     (IRSND_FREQ_TYPE) (56000)
 #  define IRSND_FREQ_455_KHZ                    (IRSND_FREQ_TYPE) (455000)
+#elif defined (ARM_STM32_OPENCM3)               // STM32_OPENCM3
+#  define IRSND_FREQ_TYPE                       uint32_t
+#  define IRSND_FREQ_30_KHZ                     (IRSND_FREQ_TYPE) (30000)
+#  define IRSND_FREQ_32_KHZ                     (IRSND_FREQ_TYPE) (32000)
+#  define IRSND_FREQ_36_KHZ                     (IRSND_FREQ_TYPE) (36000)
+#  define IRSND_FREQ_38_KHZ                     (IRSND_FREQ_TYPE) (38000)
+#  define IRSND_FREQ_40_KHZ                     (IRSND_FREQ_TYPE) (40000)
+#  define IRSND_FREQ_56_KHZ                     (IRSND_FREQ_TYPE) (56000)
+#  define IRSND_FREQ_455_KHZ                    (IRSND_FREQ_TYPE) (455000)
 #elif defined (ARM_STM32_HAL)                   // STM32 with Hal Library
 #  define IRSND_FREQ_TYPE                       uint32_t
 #  define IRSND_FREQ_30_KHZ                     (IRSND_FREQ_TYPE) (30000)
@@ -583,7 +594,13 @@ irsnd_on (void)
         TIM_CCxCmd(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_CCx_Enable);      // enable OC-output (is being disabled in TIM_SelectOCxM())
         TIM_Cmd(IRSND_TIMER, ENABLE);                   // enable counter
 
+        #  elif defined (ARM_STM32_OPENCM3)                     // STM32_OPENCM3
+        TIM_EGR(IRSND_TIMER) = TIM_EGR_UG;              // Generate an update event to reload the Prescaler and the Repetition counter values immediately
+        timer_enable_oc_output(IRSND_TIMER, IRSND_TIMER_CHANNEL);      // enable OC-output
+        timer_enable_counter(IRSND_TIMER);              // enable counter
+
 #  elif defined (ARM_STM32_HAL)                         // STM32 with Hal Library
+        IRSND_TIMER->EGR = TIM_EGR_UG;                  // Generate an update event to reload the Prescaler and the Repetition counter values immediately
         HAL_TIM_PWM_Start(&IRSND_TIMER_HANDLER, IRSND_TIMER_CHANNEL_NUMBER);
 
 #  elif defined (TEENSY_ARM_CORTEX_M4)                  // TEENSY
@@ -661,6 +678,10 @@ irsnd_off (void)
         TIM_SelectOCxM(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_ForcedAction_InActive);    // force output inactive
         TIM_CCxCmd(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_CCx_Enable);                   // enable OC-output (is being disabled in TIM_SelectOCxM())
         TIM_SetCounter(IRSND_TIMER, 0);                                                 // reset counter value
+
+#  elif defined (ARM_STM32_OPENCM3)                                                     // STM32_OPENCM3
+        timer_disable_oc_output(IRSND_TIMER, IRSND_TIMER_CHANNEL);                      // disable OC-output
+        timer_disable_counter(IRSND_TIMER);                                             // disable counter
 
 #  elif defined (ARM_STM32_HAL)                                                         // STM32
         HAL_TIM_PWM_Stop(&IRSND_TIMER_HANDLER, IRSND_TIMER_CHANNEL_NUMBER);
@@ -788,6 +809,39 @@ irsnd_set_freq (IRSND_FREQ_TYPE freq)
         TIM_SetAutoreload(IRSND_TIMER, freq - 1);
         /* Set duty cycle */
         TIM_SetCompare1(IRSND_TIMER, (freq + 1) / 2);
+
+#  elif defined (ARM_STM32_OPENCM3)                                                         // ARM_STM32_OPENCM3
+        static uint32_t      TimeBaseFreq = 0;
+
+        if (TimeBaseFreq == 0)
+        {
+#    if ((IRSND_TIMER_NUMBER >= 2) && (IRSND_TIMER_NUMBER <= 5)) || ((IRSND_TIMER_NUMBER >= 12) && (IRSND_TIMER_NUMBER <= 14))
+            if (rcc_apb1_frequency == rcc_ahb_frequency)
+            {
+               TimeBaseFreq = rcc_apb1_frequency;
+            }
+            else
+            {
+               TimeBaseFreq = rcc_apb1_frequency * 2;
+            }
+#    else
+            if (rcc_apb2_frequency == rcc_ahb_frequency)
+            {
+               TimeBaseFreq = rcc_apb2_frequency;
+            }
+            else
+            {
+               TimeBaseFreq = rcc_apb2_frequency * 2;
+            }
+#    endif
+        }
+
+        freq = TimeBaseFreq/freq;
+
+        /* Set frequency */
+        timer_set_period(IRSND_TIMER, freq - 1);
+        /* Set duty cycle */
+        timer_set_oc_value(IRSND_TIMER, TIM_OC1, (freq + 1) / 2);
 
 #  elif defined (ARM_STM32_HAL)                                                            // STM32 with Hal Library
 
@@ -941,6 +995,51 @@ irsnd_init (void)
         /* Preload configuration */
         TIM_ARRPreloadConfig(IRSND_TIMER, ENABLE);
         TIM_OC1PreloadConfig(IRSND_TIMER, TIM_OCPreload_Enable);
+
+        irsnd_set_freq (IRSND_FREQ_36_KHZ);                                         // set default frequency
+
+#  elif defined (ARM_STM32_OPENCM3)                                         // ARM_STM32_OPENCM3
+
+       /* GPIOx clock enable */
+#    if defined (STM32L1) || defined (STM32F1) || defined (STM32F3) || defined (STM32F4)
+        rcc_periph_clock_enable(IRSND_PORT_RCC);
+#    endif
+
+        /* GPIO Configuration */
+#    if defined (STM32L) || defined (STM32F4)
+        gpio_mode_setup(IRSND_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, IRSND_BIT);
+        gpio_set_output_options(IRSND_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, IRSND_BIT);
+        gpio_set_af(IRSND_PORT, IRSND_GPIO_AF, (uint8_t)IRSND_BIT_NUMBER);
+#    elif defined (STM32F1)
+        gpio_set_mode(IRSND_PORT, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, IRSND_BIT);
+#    elif defined (STM32F3)
+        gpio_mode_setup(IRSND_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, IRSND_BIT);
+        gpio_set_output_options(IRSND_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, IRSND_BIT);
+        //gpio_set_af(IRSND_PORT, IRSND_GPIO_AF, (uint8_t)IRSND_BIT_NUMBER);
+
+#    endif
+
+        /* TIMx clock enable */
+#    if ((IRSND_TIMER_NUMBER >= 2) && (IRSND_TIMER_NUMBER <= 5)) || ((IRSND_TIMER_NUMBER >= 12) && (IRSND_TIMER_NUMBER <= 14))
+        rcc_periph_clock_enable(IRSND_TIMER_RCC);
+#    else
+        rcc_periph_clock_enable(IRSND_TIMER_RCC);
+#    endif
+
+        /* Time base configuration */
+        timer_set_mode(IRSND_TIMER, 0, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
+                timer_set_period(IRSND_TIMER, -1);     // set dummy value (don't set to 0), will be initialized later
+                timer_set_prescaler(IRSND_TIMER, 0);
+
+        /* PWM1 Mode configuration */
+        timer_set_oc_mode(IRSND_TIMER, TIM_OC1, TIM_OCM_PWM1);
+        timer_enable_oc_output(IRSND_TIMER, TIM_OC1);
+        timer_set_oc_value(IRSND_TIMER, TIM_OC1, 0);         // will be initialized later
+        timer_set_oc_polarity_high(IRSND_TIMER, TIM_OC1);
+
+        /* Preload configuration */
+        timer_enable_preload(IRSND_TIMER);
+        timer_enable_oc_preload(IRSND_TIMER, TIM_OC1);
 
         irsnd_set_freq (IRSND_FREQ_36_KHZ);                                         // set default frequency
 

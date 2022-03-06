@@ -83,9 +83,9 @@ void irmp_PCI_ISR(void)
         if (irmp_start_bit_detected) {
             irmp_pause_time += tTicks;
         } else { // start pulse here -> set pause or time between repetitions
-            if (tTicks > 0xFFFF) {
+            if (tTicks > UINT16_MAX) {
                 // avoid overflow for 16 bit key_repetition_len
-                tTicks = 0xFFFF;
+                tTicks = UINT16_MAX;
             }
             key_repetition_len = tTicks;
         }

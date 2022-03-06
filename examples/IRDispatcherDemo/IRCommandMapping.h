@@ -29,7 +29,7 @@
 
 #ifdef USE_KEYES_REMOTE_CLONE
 #define IR_REMOTE_NAME "KEYES_CLONE"
-// Codes for the KEYES CLONE remote control with 17 Keys with number pad above direction control
+// Codes for the KEYES CLONE remote control with 17 keys with number pad above direction control
 #if defined(USE_IRMP_LIBRARY)
 #define IR_ADDRESS 0xFF00 // IRMP interprets NEC addresses always as 16 bit
 #else

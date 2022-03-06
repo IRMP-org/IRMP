@@ -74,6 +74,15 @@
 #    warning The STM32 port of IRMP uses the ST standard peripheral drivers which are not enabled in your build configuration.
 #  endif
 
+#elif defined (ARM_STM32_OPENCM3)
+#  define _CONCAT(a,b)                          a##b
+#  define CONCAT(a,b)                           _CONCAT(a,b)
+#  define IRMP_PORT                             CONCAT(GPIO, IRMP_PORT_LETTER)
+#  define IRMP_PORT_RCC                         CONCAT(RCC_GPIO, IRMP_PORT_LETTER)
+#  define IRMP_BIT                              CONCAT(GPIO, IRMP_BIT_NUMBER)
+#  define IRMP_PIN                              IRMP_PORT   // for use with input(x) below
+#  define input(x)                              (gpio_get(x, IRMP_BIT))
+
 #elif defined (ARM_STM32_HAL)
 #  define IRMP_BIT                              IRMP_BIT_NUMBER
 #  define IRMP_PIN                              IRMP_BIT_NUMBER   // for use with input(x) below
@@ -164,6 +173,20 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #  warning MITSU_HEAVY protocol disabled
 #  undef IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL
 #  define IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL      0
+#endif
+
+#if IRMP_SUPPORT_KASEIKYO_PROTOCOL == 1 && IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL == 1
+#  warning KASEIKYO protocol conflicts wih MITSU_HEAVY, please enable only one of both protocols
+#  warning MITSU_HEAVY protocol disabled
+#  undef IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL
+#  define IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL      0
+#endif
+
+#if IRMP_SUPPORT_PANASONIC_PROTOCOL == 1 && IRMP_SUPPORT_KASEIKYO_PROTOCOL == 1
+#  warning PANASONIC protocol conflicts wih KASEIKYO, please enable only one of both protocols
+#  warning PANASONIC protocol disabled
+#  undef IRMP_SUPPORT_PANASONIC_PROTOCOL
+#  define IRMP_SUPPORT_PANASONIC_PROTOCOL      0
 #endif
 
 #if IRMP_SUPPORT_RC5_PROTOCOL == 1 && IRMP_SUPPORT_ORTEK_PROTOCOL == 1

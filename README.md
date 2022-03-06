@@ -1,13 +1,14 @@
 # [IRMP](https://github.com/ukw100/IRMP) - Infrared Multi Protocol Decoder + Encoder
 Available as Arduino library "IRMP"
 
-### [Version 3.5.3](https://github.com/ukw100/IRMP/archive/master.zip) - work in progress
+### [Version 3.6.1](https://github.com/ukw100/IRMP/archive/master.zip) - work in progress
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/IRMP)
 [![Commits since latest](https://img.shields.io/github/commits-since/ukw100/irmp/latest)](https://github.com/ukw100/irmp/commits/master)
 [![Build Status](https://github.com/ukw100/irmp/workflows/LibraryBuild/badge.svg)](https://github.com/ukw100/irmp/actions)
-[![Hit Counter](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https://github.com/ukw100/IRMP)
+![Hit Counter](https://visitor-badge.laobi.icu/badge?page_id=ukw100_IRMP)
+
 
 ## 50 IR protocols supported and low memory footprint
 - Only 39 protocols can be enabled for receive at the same time, because some of them are quite similar and conflicts with each other.
@@ -262,9 +263,13 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 ### German
    http://www.mikrocontroller.net/articles/IRMP<br/>
    http://www.mikrocontroller.net/articles/IRSND
+### German Forum
+   https://www.mikrocontroller.net/topic/irmp-infrared-multi-protocol-decoder?goto=6996113#6996137
 
 # Revision History
-### Version 3.5.2
+### Version 3.6.0
+- Improved timings by Jörg R.
+- Support for NEC 8 bit address.
 - Fixed ATmega4809 bug.
 - RP2040 support added.
 

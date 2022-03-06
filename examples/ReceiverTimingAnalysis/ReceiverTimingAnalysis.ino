@@ -98,7 +98,7 @@ void processTmingValue(struct timingStruct *aTimingStruct, uint16_t aValue)
     if (aTimingStruct->SampleCount == 0)
     {
         // initialize values
-        aTimingStruct->minimum = 0xFFFF;
+        aTimingStruct->minimum = UINT16_MAX;
         aTimingStruct->maximum = 0;
         aTimingStruct->SumForAverage = 0;
     }
