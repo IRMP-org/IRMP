@@ -76,6 +76,7 @@
  */
 #define IRMP_PROTOCOL_NAMES              1 // Enable protocol number mapping to protocol strings - needs some program memory ~ 420 bytes here
 #define IRMP_USE_COMPLETE_CALLBACK       1 // Enable callback functionality
+//#define NO_LED_FEEDBACK_CODE   // Activate this if you want to suppress LED feedback or if you do not have a LED. This saves 14 bytes code and 2 clock cycles per interrupt.
 
 #if __SIZEOF_INT__ == 4
 #define F_INTERRUPTS                     20000 // Instead of default 15000 to support LEGO + RCMM protocols

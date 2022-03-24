@@ -27,6 +27,10 @@
 #ifndef IR_FEEDBACK_LED_H
 #define IR_FEEDBACK_LED_H
 
+// define it for convenience reasons. It is an empty function, if NO_LED_FEEDBACK_CODE is enabled
+void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed);          // set the mode
+
+#if !defined(NO_LED_FEEDBACK_CODE)
 /*
  * Set IRMP_FEEDBACK_LED_PIN to a reasonable value
  * defining it to 0 disables LED feedback function otherwise LED_BUILTIN (if available) is taken as feedback LED.
@@ -40,11 +44,11 @@
 #  endif
 #endif
 
-void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed);          // set the mode
 void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn);          // set set pin
 constexpr auto irmp_blink13 = irmp_irsnd_LEDFeedback;       // alias for irmp_blink13
 constexpr auto irmp_LEDFeedback = irmp_irsnd_LEDFeedback;   // alias for irmp_LEDFeedback
 constexpr auto irsnd_LEDFeedback = irmp_irsnd_LEDFeedback;  // alias for irsnd_LEDFeedback
 
+#endif // !defined(NO_LED_FEEDBACK_CODE)
 #endif // IR_FEEDBACK_LED_H
 #endif // defined(ARDUINO)

@@ -3160,7 +3160,9 @@ uint_fast8_t irmp_ISR(void)
 #endif // IRMP_USE_CALLBACK == 1
 
 #if defined(ARDUINO)
+#  if !defined(NO_LED_FEEDBACK_CODE)
     irmp_DoLEDFeedback(irmp_input);
+#  endif
 #endif
 
     irmp_log(irmp_input);                                                       // log ir signal, if IRMP_LOGGING defined

@@ -14,9 +14,17 @@
 
 #ifndef IR_FEEDBACK_LED_HPP
 #define IR_FEEDBACK_LED_HPP
+
 #if defined(ARDUINO)
 
 #include "IRFeedbackLED.h"
+
+#if defined(NO_LED_FEEDBACK_CODE)
+void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed)
+{
+    (void)aEnableBlinkLed;
+}
+#else // defined(NO_LED_FEEDBACK_CODE)
 
 static bool irmp_irsnd_LedFeedbackEnabled;
 
@@ -117,6 +125,7 @@ void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
 #endif
 }
 
+#endif // !defined(NO_LED_FEEDBACK_CODE)
 #endif // defined(ARDUINO)
 #endif // IR_FEEDBACK_LED_HPP
 #pragma once

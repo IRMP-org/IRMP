@@ -102,10 +102,12 @@ void IRAM_ATTR irmp_DoLEDFeedback(bool aSwitchLedOff)
 void irmp_DoLEDFeedback(bool aSwitchLedOff)
 #endif
 {
+#if !defined(NO_LED_FEEDBACK_CODE)
     if (irmp_irsnd_LedFeedbackEnabled)
     {
         irmp_irsnd_SetFeedbackLED(!aSwitchLedOff);
     }
+#endif
 }
 
 /*

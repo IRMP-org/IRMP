@@ -30,6 +30,8 @@
  */
 #include "PinDefinitionsAndMore.h" // Sets input pin to 3
 
+//#define NO_LED_FEEDBACK_CODE   // Activate this if you want to suppress LED feedback or if you do not have a LED. This saves 14 bytes code and 2 clock cycles per interrupt.
+
 #define IRMP_PROTOCOL_NAMES 1 // Enable protocol number mapping to protocol strings - requires some FLASH.
 
 //#define IRMP_SUPPORT_SIRCS_PROTOCOL      1
