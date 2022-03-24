@@ -99,7 +99,7 @@ extern uint_fast8_t irmp_InputPin; // global variable to hold input pin number. 
 #define IRMP_INPUT_PIN              irmp_InputPin
 #else // defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
 #  if !defined(IRMP_INPUT_PIN)                                       // Arduino IDE uses IRMP_INPUT_PIN instead of PORT and BIT
-#define IRMP_INPUT_PIN              3
+#define IRMP_INPUT_PIN              2
 #  endif
 #endif
 
