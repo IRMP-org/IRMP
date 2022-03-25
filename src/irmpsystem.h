@@ -115,7 +115,7 @@
 
 #include <string.h>
 
-#ifdef UNIX_OR_WINDOWS                                                              // Analyze on Unix/Linux or Windows
+#if defined(UNIX_OR_WINDOWS)                                                              // Analyze on Unix/Linux or Windows
 #  include <stdio.h>
 #  include <stdlib.h>
 #  define F_CPU 8000000L
@@ -225,7 +225,7 @@ typedef unsigned short                  uint_fast16_t;
 #  define IRSND_PIC_CCP2                2                                           // PIC C18 RC1 = PWM2 module
 #endif
 
-#ifndef TRUE
+#if !defined(TRUE)
 #  define TRUE                          1
 #  define FALSE                         0
 #endif
@@ -238,7 +238,7 @@ typedef unsigned short                  uint_fast16_t;
 #if defined(PIC_C18)
 #  define IRMP_PACKED_STRUCT
 #else
-#  ifndef IRMP_PACKED_STRUCT
+#  if !defined(IRMP_PACKED_STRUCT)
 #    define IRMP_PACKED_STRUCT          __attribute__ ((__packed__))
 #  endif
 #endif

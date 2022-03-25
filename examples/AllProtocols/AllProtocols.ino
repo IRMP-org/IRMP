@@ -128,7 +128,7 @@ uint32_t volatile sMillisOfLastVoltagePrint;
 void setup()
 {
     Serial.begin(115200);
-#if defined(__AVR_ATmega32U4__) || defined(SERIAL_PORT_USBVIRTUAL) || defined(SERIAL_USB) || defined(SERIALUSB_PID) || defined(ARDUINO_attiny3217) \
+#if defined(__AVR_ATmega32U4__) || defined(SERIAL_PORT_USBVIRTUAL) || defined(SERIAL_USB) /*stm32duino*/|| defined(USBCON) /*STM32_stm32*/|| defined(SERIALUSB_PID) || defined(ARDUINO_attiny3217) \
     || defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
     delay(4000); // To be able to connect Serial monitor after reset or power on and before first printout
 #endif
@@ -141,11 +141,7 @@ void setup()
 
     Serial.print(F("Ready to receive IR signals of protocols: "));
     irmp_print_active_protocols (&Serial);
-#if defined(ARDUINO_ARCH_STM32)
-    Serial.println(F("at pin " IRMP_INPUT_PIN_STRING)); // the internal pin numbers are crazy for the STM32 Boards library
-#else
     Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
-#endif
 
 #if defined(__AVR__) && !(defined(__AVR_ATmega4809__) || defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__))
     getVCCVoltageMillivoltSimple(); // to initialize ADC mux and reference

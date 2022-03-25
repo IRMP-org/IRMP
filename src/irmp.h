@@ -13,7 +13,7 @@
 #ifndef _IRMP_H_
 #define _IRMP_H_
 
-#ifndef IRMP_USE_AS_LIB
+#if !defined(IRMP_USE_AS_LIB)
 #  define IRMPCONFIG_STAGE1_H
 #  include "irmpconfig.h"
 #  undef IRMPCONFIG_STAGE1_H
@@ -21,13 +21,13 @@
 
 #include "irmpsystem.h"
 
-#ifndef IRMP_USE_AS_LIB
+#if !defined(IRMP_USE_AS_LIB)
 #  define IRMPCONFIG_STAGE2_H
 #  include "irmpconfig.h"
 #  undef IRMPCONFIG_STAGE2_H
 #endif
 
-#ifdef ARDUINO
+#if defined(ARDUINO)
 #  include "irmpArduinoExt.h"
 
 #elif defined (__AVR_XMEGA__)
@@ -70,7 +70,7 @@
 #  define IRMP_BIT                              CONCAT(GPIO_Pin_, IRMP_BIT_NUMBER)
 #  define IRMP_PIN                              IRMP_PORT   // for use with input(x) below
 #  define input(x)                              (GPIO_ReadInputDataBit(x, IRMP_BIT))
-#  ifndef USE_STDPERIPH_DRIVER
+#  if !defined(USE_STDPERIPH_DRIVER)
 #    warning The STM32 port of IRMP uses the ST standard peripheral drivers which are not enabled in your build configuration.
 #  endif
 

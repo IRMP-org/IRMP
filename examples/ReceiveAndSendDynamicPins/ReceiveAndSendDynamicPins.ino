@@ -54,7 +54,7 @@
 
 /*
  * Allow dynamic specification of input and output pins.
- * Requires additional 200 bytes program space.
+ * Requires additional 200 bytes program memory.
  * This must be first, it is used in PinDefinitionsAndMore.h
  */
 #define IRMP_IRSND_ALLOW_DYNAMIC_PINS
@@ -96,7 +96,7 @@ void setup()
 
     pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(115200);
-#if defined(__AVR_ATmega32U4__) || defined(SERIAL_PORT_USBVIRTUAL) || defined(SERIAL_USB) || defined(SERIALUSB_PID) || defined(ARDUINO_attiny3217)
+#if defined(__AVR_ATmega32U4__) || defined(SERIAL_PORT_USBVIRTUAL) || defined(SERIAL_USB) /*stm32duino*/|| defined(USBCON) /*STM32_stm32*/|| defined(SERIALUSB_PID) || defined(ARDUINO_attiny3217)
     delay(4000); // To be able to connect Serial monitor after reset or power up and before first print out. Do not wait for an attached Serial Monitor!
 #endif
 #if defined(ESP8266)
@@ -214,7 +214,7 @@ void sendSamsungSmartHubMacro(bool aDoSelect)
 
     if (millis() < tWaitTimeAfterBoot)
     {
-        // division by 1000 and printing requires much (8%) program space
+        // division by 1000 and printing requires much (8%) program memory
         Serial.print(F("It is "));
         Serial.print(millis() / 1000);
         Serial.print(F(" seconds after boot, Samsung H5273 TV requires "));

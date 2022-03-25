@@ -1,7 +1,7 @@
 /*
  *  PinDefinitionsAndMore.h
  *
- *  Contains pin definitions for IRremote examples for various platforms
+ *  Contains pin definitions for IRMP examples for various platforms
  *  as well as definitions for feedback LED and tone() and includes
  *
  *  Copyright (C) 2020-2021  Armin Joachimsmeyer
@@ -78,9 +78,7 @@ void noTone(uint8_t _pin){
 // Timer 3 of IRMP blocks PA6, PA7, PB0, PB1 for use by Servo or tone()
 #define FEEDBACK_LED_IS_ACTIVE_LOW // The LED on the BluePill is active LOW
 #define IRMP_INPUT_PIN          PA6
-#define IRMP_INPUT_PIN_STRING   "PA6"
 #define IRSND_OUTPUT_PIN        PA7
-#define IRSND_OUTPUT_PIN_STRING "PA7"
 #define TONE_PIN                PA3
 #define IR_TIMING_TEST_PIN      PA5
 

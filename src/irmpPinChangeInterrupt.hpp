@@ -102,7 +102,7 @@ void irmp_PCI_ISR(void)
          * IRMP may be waiting for stop bit, but detects it only at the next call, so do one additional call.
          * !!! ATTENTION !!! This will NOT work if we try to receive simultaneously two protocols which are only different in length like NEC16 and NEC42
          */
-#ifdef PCI_DEBUG
+#if defined(PCI_DEBUG)
         Serial.write('x');
         if (irmp_bit > 0 && irmp_bit == irmp_param.complete_len)
         {
@@ -111,13 +111,13 @@ void irmp_PCI_ISR(void)
 #endif
         if (irmp_start_bit_detected && irmp_bit == irmp_param.complete_len && irmp_param.stop_bit == TRUE) {
             // Try to detect a nec repeat irmp_bit is 0
-#ifdef PCI_DEBUG
+#if defined(PCI_DEBUG)
             irmp_debug_print(F("R"));
 #endif
             PAUSE_LEN irmp_pause_time_store = irmp_pause_time;
             irmp_pause_time = STOP_BIT_PAUSE_LEN_MIN + 1; // set pause time to minimal pause required to detect a stop bit
             irmp_ISR(); // Call to detect a NEC repeat
-#ifdef PCI_DEBUG
+#if defined(PCI_DEBUG)
             irmp_debug_print(F("E")); // print info after call
             Serial.println();
 #endif
@@ -130,13 +130,13 @@ void irmp_PCI_ISR(void)
         // For condition see also line 4203 and 5098 in irmp.hpp
         if (irmp_start_bit_detected && irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
             // Complete length of bit now received -> try to detect end of protocol
-#ifdef PCI_DEBUG
+#if defined(PCI_DEBUG)
             irmp_debug_print(F("S")); // print info before call
 #endif
             PAUSE_LEN irmp_pause_time_store = irmp_pause_time;
             irmp_pause_time = STOP_BIT_PAUSE_LEN_MIN + 1; // set pause time to minimal pause required to detect a stop bit
             irmp_ISR(); // Call to detect end of protocol, irmp_param.stop_bit (printed as Sb) should be set to 0 if stop bit was successfully detected.
-#ifdef PCI_DEBUG
+#if defined(PCI_DEBUG)
             irmp_debug_print(F("E")); // print info after call
             Serial.println();
 #endif
@@ -154,7 +154,7 @@ void irmp_PCI_ISR(void)
                     || (irmp_bit == irmp_param.complete_len - 2 && tTicks > irmp_param.pause_1_len_max))
             && (irmp_param.flags & IRMP_PARAM_FLAG_IS_MANCHESTER) && irmp_start_bit_detected)
     {
-#  ifdef PCI_DEBUG
+#  if defined(PCI_DEBUG)
     Serial.println('M'); // Try to detect a Manchester end of protocol
 #  endif
     irmp_pause_time = 2 * irmp_param.pause_1_len_max;

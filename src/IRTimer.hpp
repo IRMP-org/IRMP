@@ -34,7 +34,7 @@
 // NO GUARD here, we have the GUARD below with #ifdef _IRSND_H_ and #ifdef _IRMP_H_.
 #include "IRTimer.h"
 
-#ifndef TIMER_DECLARED
+#if !defined(TIMER_DECLARED)
 #define TIMER_DECLARED
 #  if defined(ESP32)
 static hw_timer_t *sReceiveAndSendInterruptTimer = NULL;
@@ -319,7 +319,7 @@ void initIRTimerForSend(void)
 }
 
 // @formatter:on
-#ifndef TIMER_FUNCTIONS_DEFINED
+#if !defined(TIMER_FUNCTIONS_DEFINED)
 #define TIMER_FUNCTIONS_DEFINED
 /** Temporarily storage for timer register*/
 #if defined(__AVR__)
@@ -687,7 +687,7 @@ void enableIRTimerInterrupt(void) {
  * If both irmp and irsnd are used, compile it only once in the second step, when all variables are declared.
  */
 #if (! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) || ( defined(IRMP_ARDUINO_EXT_H) && defined(IRSND_ARDUINO_EXT_H) )) && ! defined(ISR_DEFINED)
-#ifndef ISR_DEFINED
+#if !defined(ISR_DEFINED)
 #define ISR_DEFINED
 #endif
 /*

@@ -16,7 +16,7 @@
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change settings from 1 to 0 if you want to disable one or more decoders.
- * This saves program space.
+ * This saves program memory.
  *
  * 1 enable  decoder
  * 0 disable decoder

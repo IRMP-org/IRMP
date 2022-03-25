@@ -87,7 +87,7 @@ void setup()
 
     pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(115200);
-#if defined(__AVR_ATmega32U4__) || defined(SERIAL_PORT_USBVIRTUAL) || defined(SERIAL_USB) || defined(SERIALUSB_PID) || defined(ARDUINO_attiny3217)
+#if defined(__AVR_ATmega32U4__) || defined(SERIAL_PORT_USBVIRTUAL) || defined(SERIAL_USB) /*stm32duino*/|| defined(USBCON) /*STM32_stm32*/|| defined(SERIALUSB_PID) || defined(ARDUINO_attiny3217)
     delay(4000); // To be able to connect Serial monitor after reset or power up and before first print out. Do not wait for an attached Serial Monitor!
 #endif
 #if defined(ESP8266)
@@ -111,13 +111,8 @@ void setup()
 
     Serial.print(F("Ready to receive IR signals of protocols: "));
     irmp_print_active_protocols(&Serial);
-#if defined(ARDUINO_ARCH_STM32)
-    Serial.println(F("at pin " IRMP_INPUT_PIN_STRING)); // the internal pin numbers are crazy for the STM32 Boards library
-    Serial.println(F("Ready to send IR signals at pin " IRSND_OUTPUT_PIN_STRING));// the internal pin numbers are crazy for the STM32 Boards library
-#else
     Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
     Serial.println(F("Ready to send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
-#endif
 
     irsnd_data.protocol = IRMP_SAMSUNG32_PROTOCOL;
     irsnd_data.address = 0x0707;
@@ -192,7 +187,7 @@ void sendSamsungSmartHubMacro(bool aDoSelect)
 
     if (millis() < tWaitTimeAfterBoot)
     {
-        // division by 1000 and printing requires much (8%) program space
+        // division by 1000 and printing requires much (8%) program memory
         Serial.print(F("It is "));
         Serial.print(millis() / 1000);
         Serial.print(F(" seconds after boot, Samsung H5273 TV requires "));

@@ -25,27 +25,27 @@
  * F_INTERRUPTS: number of interrupts per second, should be in the range from 10000 to 20000, typically 15000
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#ifndef F_INTERRUPTS
+#if !defined(F_INTERRUPTS)
 #  define F_INTERRUPTS                          15000   // interrupts per second
 #endif
 
 #if ! defined(ARDUINO)
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change settings from 1 to 0 if you want to disable one or more encoders.
- * This saves program space.
+ * This saves program memory.
  * 1 enable  encoder
  * 0 disable encoder
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-// typical protocols, disable here!             Enable  Remarks                 F_INTERRUPTS            Program Space
+// typical protocols, disable here!             Enable  Remarks                 F_INTERRUPTS            program memory
 #define IRSND_SUPPORT_SIRCS_PROTOCOL            1       // Sony SIRCS           >= 10000                 ~200 bytes
 #define IRSND_SUPPORT_NEC_PROTOCOL              1       // NEC + APPLE          >= 10000                 ~100 bytes
 #define IRSND_SUPPORT_SAMSUNG_PROTOCOL          1       // Samsung + Samsung32  >= 10000                 ~300 bytes
 #define IRSND_SUPPORT_MATSUSHITA_PROTOCOL       1       // Matsushita           >= 10000                 ~200 bytes
 #define IRSND_SUPPORT_KASEIKYO_PROTOCOL         1       // Kaseikyo             >= 10000                 ~300 bytes
 
-// more protocols, enable here!                 Enable  Remarks                 F_INTERRUPTS            Program Space
+// more protocols, enable here!                 Enable  Remarks                 F_INTERRUPTS            program memory
 #define IRSND_SUPPORT_DENON_PROTOCOL            0       // DENON, Sharp         >= 10000                 ~200 bytes
 #define IRSND_SUPPORT_RC5_PROTOCOL              0       // RC5                  >= 10000                 ~150 bytes
 #define IRSND_SUPPORT_RC6_PROTOCOL              0       // RC6                  >= 10000                 ~250 bytes
@@ -58,7 +58,7 @@
 #define IRSND_SUPPORT_SIEMENS_PROTOCOL          0       // Siemens, Gigaset     >= 15000                 ~150 bytes
 #define IRSND_SUPPORT_NOKIA_PROTOCOL            0       // Nokia                >= 10000                 ~400 bytes
 
-// exotic protocols, enable here!               Enable  Remarks                 F_INTERRUPTS            Program Space
+// exotic protocols, enable here!               Enable  Remarks                 F_INTERRUPTS            program memory
 #define IRSND_SUPPORT_BOSE_PROTOCOL             0       // BOSE                 >= 10000                 ~100 bytes
 #define IRSND_SUPPORT_KATHREIN_PROTOCOL         0       // Kathrein             >= 10000                 DON'T CHANGE, NOT SUPPORTED YET!
 #define IRSND_SUPPORT_NUBERT_PROTOCOL           0       // NUBERT               >= 10000                 ~100 bytes
@@ -191,7 +191,7 @@
  * Use Callbacks to indicate output signal or something else
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#ifndef IRSND_USE_CALLBACK
+#if !defined(IRSND_USE_CALLBACK)
 #  define IRSND_USE_CALLBACK                    0                       // flag: 0 = don't use callbacks, 1 = use callbacks, default is 0
 #endif
 

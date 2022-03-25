@@ -14,11 +14,11 @@
 #define _IRSND_H_
 
 #include "irmpsystem.h"
-#ifndef IRSND_USE_AS_LIB
+#if !defined(IRSND_USE_AS_LIB)
 #  include "irsndconfig.h"
 #endif
 
-#ifdef ARDUINO
+#if defined(ARDUINO)
 #  include "irsndArduinoExt.h"
 
 #elif defined (ARM_STM32)                         // STM32
@@ -46,7 +46,7 @@
 #  else
 #    error IRSND_TIMER_NUMBER not valid.
 #  endif
-#  ifndef USE_STDPERIPH_DRIVER
+#  if !defined(USE_STDPERIPH_DRIVER)
 #    warning The STM32 port of IRSND uses the ST standard peripheral drivers which are not enabled in your build configuration.
 #  endif
 

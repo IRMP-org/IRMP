@@ -182,9 +182,9 @@ Modify it by setting the value to 1 or 0. Or define the macro with the -D compil
 | `IRMP_INPUT_PIN` | 2 | The pin number which gets compiled in, if not using `IRMP_IRSND_ALLOW_DYNAMIC_PINS`. See also [PinDefinitionsAndMore.h](https://github.com/ukw100/IRMP/master/examples/OneProtocol/PinDefinitionsAndMore.h#L32) |
 | `IRMP_FEEDBACK_LED_PIN` | `LED_BUILTIN` | The pin number for the feedback led which gets compiled in, if not using `IRMP_IRSND_ALLOW_DYNAMIC_PINS`. |
 | `FEEDBACK_LED_IS_ACTIVE_LOW` | disabled | Required on some boards (like my like my BluePill and my ESP8266 board), where the feedback LED is active low. |
-| `NO_LED_FEEDBACK_CODE` | disabled | Enable it to disable the feedback LED function. Saves 30 bytes program space. |
-| `IRMP_IRSND_ALLOW_DYNAMIC_PINS` | disabled | Allows to specify pin number at irmp_init() - see above. This requires additional program space. |
-| `IRMP_PROTOCOL_NAMES` | 0 / disabled | Enable protocol number mapping to protocol strings - needs some program space. |
+| `NO_LED_FEEDBACK_CODE` | disabled | Enable it to disable the feedback LED function. Saves 30 bytes program memory. |
+| `IRMP_IRSND_ALLOW_DYNAMIC_PINS` | disabled | Allows to specify pin number at irmp_init() - see above. This requires additional program memory. |
+| `IRMP_PROTOCOL_NAMES` | 0 / disabled | Enable protocol number mapping to protocol strings - needs some program memory. |
 | `IRMP_USE_COMPLETE_CALLBACK` | 0 / disabled | Use Callback if complete data was received. Requires call to irmp_register_complete_callback_function(). |
 | `IRMP_ENABLE_PIN_CHANGE_INTERRUPT` | disabled | Use [Arduino attachInterrupt()](https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/) and do **no polling with timer ISR**. This **restricts the available input pins and protocols**. The results are equivalent to results acquired with a sampling rate of 15625 Hz (chosen to avoid time consuming divisions). For AVR boards an own interrupt handler for  INT0 or INT1 is used instead of Arduino attachInterrupt().  |
 | `IRMP_ENABLE_RELEASE_DETECTION` | 0 / disabled | If user releases a key on the remote control, last protocol/address/command will be returned with flag `IRMP_FLAG_RELEASE` set. |
@@ -204,7 +204,7 @@ These next macros for **TinyIRReceiver** must be defined in your program before 
 |-|-|-|
 | `IR_INPUT_PIN` | 2 | The pin number for TinyIRReceiver IR input, which gets compiled in. |
 | `IR_FEEDBACK_LED_PIN` | `LED_BUILTIN` | The pin number for TinyIRReceiver feedback LED, which gets compiled in. |
-| `NO_LED_FEEDBACK_CODE` | disabled | Enable it to disable the feedback LED function. Saves 14 bytes program space. |
+| `NO_LED_FEEDBACK_CODE` | disabled | Enable it to disable the feedback LED function. Saves 14 bytes program memory. |
 
 
 ### Changing include (*.h) files with Arduino IDE

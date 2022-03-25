@@ -60,7 +60,7 @@
 
 IRMP_DATA irsnd_data;
 
-#ifdef SEND_SAMSUNG
+#if defined(SEND_SAMSUNG)
 union WordUnion
 {
     struct
@@ -83,7 +83,7 @@ union WordUnion
 
 void setup() {
     Serial.begin(115200);
-#if defined(__AVR_ATmega32U4__) || defined(SERIAL_PORT_USBVIRTUAL) || defined(SERIAL_USB) || defined(SERIALUSB_PID) || defined(ARDUINO_attiny3217)
+#if defined(__AVR_ATmega32U4__) || defined(SERIAL_PORT_USBVIRTUAL) || defined(SERIAL_USB) /*stm32duino*/|| defined(USBCON) /*STM32_stm32*/|| defined(SERIALUSB_PID) || defined(ARDUINO_attiny3217)
     delay(4000); // To be able to connect Serial monitor after reset or power up and before first print out. Do not wait for an attached Serial Monitor!
 #endif
 #if defined(ESP8266)
@@ -96,13 +96,9 @@ void setup() {
     irsnd_init();
     irmp_irsnd_LEDFeedback(true); // Enable send signal feedback at LED_BUILTIN
 
-#if defined(ARDUINO_ARCH_STM32)
-    Serial.println(F("Ready to send IR signals at pin " IRSND_OUTPUT_PIN_STRING)); // the internal pin numbers are crazy for the STM32 Boards library
-#else
     Serial.println(F("Ready to send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
-#endif
 
-#ifdef SEND_SAMSUNG
+#if defined(SEND_SAMSUNG)
     /*
      * Send Samsung32
      */
@@ -131,7 +127,7 @@ void setup() {
 void loop() {
     delay(5000);
     irsnd_data.command++;
-#ifdef SEND_SAMSUNG
+#if defined(SEND_SAMSUNG)
     // For my Samsung remote, the high byte is the inverse of the low byte
     WordUnion tNextCommand; // using WordUnion saves 14 bytes program memory for the next 3 lines
     tNextCommand.UWord = irsnd_data.command;

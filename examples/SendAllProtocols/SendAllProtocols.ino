@@ -51,7 +51,7 @@ IRMP_DATA irsnd_data;
 void setup()
 {
     Serial.begin(115200);
-#if defined(__AVR_ATmega32U4__) || defined(SERIAL_PORT_USBVIRTUAL) || defined(SERIAL_USB) || defined(SERIALUSB_PID) || defined(ARDUINO_attiny3217)
+#if defined(__AVR_ATmega32U4__) || defined(SERIAL_PORT_USBVIRTUAL) || defined(SERIAL_USB) /*stm32duino*/|| defined(USBCON) /*STM32_stm32*/|| defined(SERIALUSB_PID) || defined(ARDUINO_attiny3217)
     delay(4000); // To be able to connect Serial monitor after reset or power up and before first print out. Do not wait for an attached Serial Monitor!
 #endif
 #if defined(ESP8266)
@@ -68,11 +68,7 @@ void setup()
     irsnd_init();
     irmp_irsnd_LEDFeedback(true); // Enable send signal feedback at LED_BUILTIN
 
-#if defined(ARDUINO_ARCH_STM32)
-    Serial.println(F("Ready to send IR signals at pin " IRSND_OUTPUT_PIN_STRING)); // the internal pin numbers are crazy for the STM32 Boards library
-#else
     Serial.println(F("Ready to send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
-#endif
     delay(1000);
 }
 

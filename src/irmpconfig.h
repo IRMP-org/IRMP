@@ -17,7 +17,7 @@
 #  error please include only irmp.h, not irmpconfig.h
 #endif
 
-#ifdef IRMPCONFIG_STAGE1_H
+#if defined(IRMPCONFIG_STAGE1_H)
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change IRMP_32_BIT here
@@ -34,7 +34,7 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifndef IRMP_32_BIT
+#if !defined(IRMP_32_BIT)
 #  if __SIZEOF_INT__ == 4
 #  define IRMP_32_BIT     1                                                                               // use 32 bit command value, 0 or 1
 #  else
@@ -44,25 +44,25 @@
 
 #endif // IRMPCONFIG_STAGE1_H
 
-#ifdef IRMPCONFIG_STAGE2_H
+#if defined(IRMPCONFIG_STAGE2_H)
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change F_INTERRUPTS if you change the number of interrupts per second,
  * Normally, F_INTERRUPTS should be in the range from 10000 to 15000, typical is 15000
- * A value above 15000 costs additional program space, absolute maximum value is 20000.
+ * A value above 15000 costs additional program memory, absolute maximum value is 20000.
  * A value of 20000 is needed for Support of LEGO and RCMM, but it prevents using PENTAX or GREE
  *  since for 20000 they have 8 bit overflow issues because of the long start bits.
  * On PIC with XC8/C18 Compiler, use 15151 as the correct value.
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#ifndef F_INTERRUPTS
+#if !defined(F_INTERRUPTS)
 #  define F_INTERRUPTS                          15000                           // interrupts per second, 66,66us, min: 10000, max: 20000, typ: 15000
 #endif
 
 #if ! defined(ARDUINO)
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change settings from 1 to 0 if you want to disable one or more decoders.
- * This saves program space.
+ * This saves program memory.
  *
  * 1 enable  decoder
  * 0 disable decoder
@@ -70,7 +70,7 @@
  * The standard decoders are enabled per default.
  * Less common protocols are disabled here, you need to enable them manually.
  *
- * If you want to use FDC or RCCAR simultaneous with RC5 protocol, additional program space is required.
+ * If you want to use FDC or RCCAR simultaneous with RC5 protocol, additional program memory is required.
  * If you don't need RC5 when using FDC/RCCAR, you should disable RC5.
  * You cannot enable both DENON and RUWIDO, only enable one of them.
  *---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -81,13 +81,13 @@
  * If you use a RF receiver, deactivate all IR protocols!
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-// typical protocols, disable here!             Enable  Remarks                 F_INTERRUPTS            Program Space
+// typical protocols, disable here!             Enable  Remarks                 F_INTERRUPTS            program memory
 #define IRMP_SUPPORT_SIRCS_PROTOCOL             1       // Sony SIRCS           >= 10000                 ~150 bytes
 #define IRMP_SUPPORT_NEC_PROTOCOL               1       // NEC + APPLE + ONKYO  >= 10000                 ~300 bytes
 #define IRMP_SUPPORT_SAMSUNG_PROTOCOL           1       // Samsung + Samsg32    >= 10000                 ~300 bytes
 #define IRMP_SUPPORT_KASEIKYO_PROTOCOL          1       // Kaseikyo             >= 10000                 ~250 bytes
 
-// more protocols, enable here!                 Enable  Remarks                 F_INTERRUPTS            Program Space
+// more protocols, enable here!                 Enable  Remarks                 F_INTERRUPTS            program memory
 #define IRMP_SUPPORT_JVC_PROTOCOL               0       // JVC                  >= 10000                 ~150 bytes
 #define IRMP_SUPPORT_NEC16_PROTOCOL             0       // NEC16                >= 10000                 ~100 bytes
 #define IRMP_SUPPORT_NEC42_PROTOCOL             0       // NEC42                >= 10000                 ~300 bytes
@@ -100,7 +100,7 @@
 #define IRMP_SUPPORT_SIEMENS_PROTOCOL           0       // Siemens Gigaset      >= 15000                 ~550 bytes
 #define IRMP_SUPPORT_NOKIA_PROTOCOL             0       // Nokia                >= 10000                 ~300 bytes
 
-// exotic protocols, enable here!               Enable  Remarks                 F_INTERRUPTS            Program Space
+// exotic protocols, enable here!               Enable  Remarks                 F_INTERRUPTS            program memory
 #define IRMP_SUPPORT_BOSE_PROTOCOL              0       // BOSE                 >= 10000                 ~150 bytes
 #define IRMP_SUPPORT_KATHREIN_PROTOCOL          0       // Kathrein             >= 10000                 ~200 bytes
 #define IRMP_SUPPORT_NUBERT_PROTOCOL            0       // NUBERT               >= 10000                  ~50 bytes
@@ -262,7 +262,7 @@
  * Usually IR sensors are low active, RF receivers are high active. Change here if you use a RF receiver!
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#ifndef IRMP_HIGH_ACTIVE
+#if !defined(IRMP_HIGH_ACTIVE)
 #  define IRMP_HIGH_ACTIVE                      0                       // set to 1 if you use a RF receiver!
 #endif
 
@@ -272,7 +272,7 @@
  * If user releases a key on the remote control, last protocol/address/command will be returned with flag IRMP_FLAG_RELEASE set
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#ifndef IRMP_ENABLE_RELEASE_DETECTION
+#if !defined(IRMP_ENABLE_RELEASE_DETECTION)
 #  define IRMP_ENABLE_RELEASE_DETECTION         0                       // enable detection of key releases
 #endif
 
@@ -280,7 +280,7 @@
  * Set IRMP_LOGGING to 1 if want to log data to UART with 9600Bd
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#ifndef IRMP_LOGGING
+#if !defined(IRMP_LOGGING)
 #  define IRMP_LOGGING                          0                       // 1: log IR signal (scan), 0: do not. default is 0
 #endif
 
@@ -289,7 +289,7 @@
  * If you enable external logging, you have also to enable IRMP_LOGGING above
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#ifndef IRMP_EXT_LOGGING
+#if !defined(IRMP_EXT_LOGGING)
 #  define IRMP_EXT_LOGGING                      0                       // 1: use external logging, 0: do not. default is 0
 #endif
 
@@ -297,7 +297,7 @@
  * Set IRMP_PROTOCOL_NAMES to 1 if want to access protocol names (for logging etc), costs ~300 bytes RAM!
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#ifndef IRMP_PROTOCOL_NAMES
+#if !defined(IRMP_PROTOCOL_NAMES)
 #  define IRMP_PROTOCOL_NAMES                   0                       // 1: access protocol names, 0: do not. default is 0
 #endif
 
@@ -305,7 +305,7 @@
  * Use Callbacks to indicate input signal
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#ifndef IRMP_USE_CALLBACK
+#if !defined(IRMP_USE_CALLBACK)
 #  define IRMP_USE_CALLBACK                     0                       // 1: use callbacks. 0: do not. default is 0
 #endif
 
@@ -314,7 +314,7 @@
  * Can be used to disable the timer irq and enter a sleep mode to save power
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#ifndef IRMP_USE_IDLE_CALL
+#if !defined(IRMP_USE_IDLE_CALL)
 #  define IRMP_USE_IDLE_CALL                    0                       // 1: use idle calls. 0: do not. default is 0
 #endif
 
@@ -322,7 +322,7 @@
  * Use Callback if complete data was received
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#ifndef IRMP_USE_COMPLETE_CALLBACK
+#if !defined(IRMP_USE_COMPLETE_CALLBACK)
 #  define IRMP_USE_COMPLETE_CALLBACK           0       // 1: use callback. 0: do not. default is 0
 #endif
 
@@ -332,7 +332,7 @@
  */
 #if defined(_CHIBIOS_RT_) || defined(_CHIBIOS_NIL_)
 
-#  ifndef IRMP_USE_EVENT
+#  if !defined(IRMP_USE_EVENT)
 #    define IRMP_USE_EVENT                      0                       // 1: use event. 0: do not. default is 0
 #  endif
 

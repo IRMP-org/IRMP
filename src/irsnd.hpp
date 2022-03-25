@@ -23,7 +23,7 @@
 
 #include "irsnd.h"
 
-#ifndef F_CPU
+#if !defined(F_CPU)
 #  error F_CPU unkown
 #endif
 
@@ -488,7 +488,7 @@
 #define IRSND_ACP24_0_PAUSE_LEN                     (uint8_t)(F_INTERRUPTS * ACP24_0_PAUSE_TIME + 0.5)
 #define IRSND_ACP24_FRAME_REPEAT_PAUSE_LEN          (uint16_t)(F_INTERRUPTS * ACP24_FRAME_REPEAT_PAUSE_TIME + 0.5)                // use uint16_t!
 
-#ifdef PIC_C18                                  // PIC C18
+#if defined(PIC_C18)                                  // PIC C18
 #  define IRSND_FREQ_TYPE                       uint8_t
 #  define IRSND_FREQ_30_KHZ                     (IRSND_FREQ_TYPE) ((F_CPU / 30000  / 2 / Pre_Scaler / PIC_Scaler) - 1)
 #  define IRSND_FREQ_32_KHZ                     (IRSND_FREQ_TYPE) ((F_CPU / 32000  / 2 / Pre_Scaler / PIC_Scaler) - 1)
@@ -584,7 +584,7 @@ irsnd_on (void)
 {
     if (! irsnd_is_on)
     {
-#ifndef ANALYZE
+#if !defined(ANALYZE)
 #  if defined(PIC_C18)                                  // PIC C18
         PWMon();
         // IRSND_PIN = 0; // output mode -> enable PWM outout pin (0=PWM on, 1=PWM off)
@@ -667,7 +667,7 @@ irsnd_off (void)
 {
     if (irsnd_is_on)
     {
-#ifndef ANALYZE
+#if !defined(ANALYZE)
 
 #  if defined(PIC_C18)                                                                  // PIC C18
         PWMoff();
@@ -754,7 +754,7 @@ extern void pwm_init(uint16_t freq);
 static void
 irsnd_set_freq (IRSND_FREQ_TYPE freq)
 {
-#ifndef ANALYZE
+#if !defined(ANALYZE)
 #  if defined(PIC_C18)                                                                      // PIC C18 or XC8
 #    if defined(__12F1840)                                                                  // XC8
         TRISA2=0;
@@ -922,7 +922,7 @@ irsnd_set_freq (IRSND_FREQ_TYPE freq)
 void
 irsnd_init (void)
 {
-#ifndef ANALYZE
+#if !defined(ANALYZE)
 #  if defined(PIC_C18)                                                      // PIC C18 or XC8 compiler
 #    if ! defined(__12F1840)                                                // only C18:
         OpenTimer;
@@ -1964,7 +1964,7 @@ irsnd_ISR (void)
                 }
                 else
                 {
-#ifdef ANALYZE
+#if defined(ANALYZE)
                     if (irsnd_is_on)
                     {
                         putchar ('0');
@@ -1981,7 +1981,7 @@ irsnd_ISR (void)
             {
                 // wait for trailing space/gap before stop/repeating
                 packet_repeat_pause_counter++;
-#ifdef ANALYZE
+#if defined(ANALYZE)
                 if (irsnd_is_on)
                 {
                     putchar ('0');
@@ -3324,7 +3324,7 @@ irsnd_ISR (void)
         }
     }
 
-#ifdef ANALYZE
+#if defined(ANALYZE)
     if (irsnd_is_on)
     {
         putchar ('0');
@@ -3338,7 +3338,7 @@ irsnd_ISR (void)
     return irsnd_busy;
 }
 
-#ifdef ANALYZE
+#if defined(ANALYZE)
 
 // main function - for unix/linux + windows only!
 // AVR: see main.c!

@@ -45,7 +45,7 @@ void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aFeedbackLedPin, bool aI
 #  else
     initIRTimerForReceive();
 #  endif
-#  ifdef IRMP_MEASURE_TIMING
+#  if defined(IRMP_MEASURE_TIMING)
     pinModeFast(IR_TIMING_TEST_PIN, OUTPUT);
 #  endif
 }
@@ -74,7 +74,7 @@ void irmp_init(uint_fast8_t aIrmpInputPin)
 
 void irmp_init(void)
 {
-#  ifdef IRMP_INPUT_PIN
+#  if defined(IRMP_INPUT_PIN)
     pinModeFast(IRMP_INPUT_PIN, INPUT);                                 // set pin to input
 #  else
     IRMP_PORT &= ~_BV(IRMP_BIT);                                        // deactivate pullup
@@ -85,7 +85,7 @@ void irmp_init(void)
 #  else
     initIRTimerForReceive();
 #  endif
-#  ifdef IRMP_MEASURE_TIMING
+#  if defined(IRMP_MEASURE_TIMING)
     pinModeFast(IR_TIMING_TEST_PIN, OUTPUT);
 #  endif
 }

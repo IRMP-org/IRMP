@@ -662,7 +662,7 @@
 #define STOP_BIT_PAUSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * STOP_BIT_PAUSE_TIME_MIN + 0.5) + 1)      // minimum stop bit pause len
 
 // XC8 Compiler does not support variadic macros
-#ifdef ANALYZE
+#if defined(ANALYZE)
 #  define ANALYZE_PUTCHAR(a)                    { if (! silent)             { putchar (a);          } }
 #  define ANALYZE_ONLY_NORMAL_PUTCHAR(a)        { if (! silent && !verbose) { putchar (a);          } }
 // #  define ANALYZE_PRINTF(...)                { if (verbose)              { printf (__VA_ARGS__); } }
@@ -751,11 +751,11 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #    include "irmpextlog.h"
 #  else                                                                 // normal UART log (IRMP_EXT_LOGGING == 0)
 #    define BAUD                                    9600L
-#  ifndef UNIX_OR_WINDOWS
+#  if !defined(UNIX_OR_WINDOWS)
 #    include <util/setbaud.h>
 #  endif
 
-#ifdef UBRR0H
+#if defined(UBRR)0H
 
 #define UART0_UBRRH                             UBRR0H
 #define UART0_UBRRL                             UBRR0L
@@ -765,7 +765,7 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #define UART0_UDRE_BIT_VALUE                    (1<<UDRE0)
 #define UART0_UCSZ1_BIT_VALUE                   (1<<UCSZ01)
 #define UART0_UCSZ0_BIT_VALUE                   (1<<UCSZ00)
-#ifdef URSEL0
+#if defined(URSEL)0
 #define UART0_URSEL_BIT_VALUE                   (1<<URSEL0)
 #else
 #define UART0_URSEL_BIT_VALUE                   (0)
@@ -784,7 +784,7 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #define UART0_UDRE_BIT_VALUE                    (1<<UDRE)
 #define UART0_UCSZ1_BIT_VALUE                   (1<<UCSZ1)
 #define UART0_UCSZ0_BIT_VALUE                   (1<<UCSZ0)
-#ifdef URSEL
+#if defined(URSEL)
 #define UART0_URSEL_BIT_VALUE                   (1<<URSEL)
 #else
 #define UART0_URSEL_BIT_VALUE                   (0)
@@ -805,7 +805,7 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 void
 irmp_uart_init (void)
 {
-#ifndef UNIX_OR_WINDOWS
+#if !defined(UNIX_OR_WINDOWS)
 #if defined(ARM_STM32F4XX)
     GPIO_InitTypeDef GPIO_InitStructure;
     USART_InitTypeDef USART_InitStructure;
@@ -962,7 +962,7 @@ irmp_uart_init (void)
 void
 irmp_uart_putc (unsigned char ch)
 {
-#ifndef UNIX_OR_WINDOWS
+#if !defined(UNIX_OR_WINDOWS)
 #if defined(ARM_STM32F4XX) || defined(ARM_STM32F10X) || defined(ARM_STM32F30X)
     // warten bis altes Byte gesendet wurde
     while (USART_GetFlagStatus(STM32_UART_COM, USART_FLAG_TXE) == RESET)
@@ -2349,7 +2349,7 @@ gpio_t                                          gpioIRin;               // use l
 #endif
 
 
-#ifdef ANALYZE
+#if defined(ANALYZE)
 #define input(x)                                (x)
 static uint_fast8_t                             IRMP_PIN;
 #endif
@@ -2359,7 +2359,7 @@ static uint_fast8_t                             IRMP_PIN;
  *  @details  Configures IRMP input pin
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#ifndef ANALYZE
+#if !defined(ANALYZE)
 #if ! defined(ARDUINO)
 void
 irmp_init (void)
@@ -2460,7 +2460,7 @@ irmp_init (void)
 #endif
 }
 #endif // ! defined(ARDUINO)
-#endif // ifndef ANALYZE
+#endif // if !defined(ANALYZE)
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  *  Get IRMP data
  *  @details  gets decoded IRMP data
@@ -3064,7 +3064,7 @@ irmp_store_bit2 (uint_fast8_t value)
 }
 #endif // IRMP_SUPPORT_RC5_PROTOCOL == 1 && (IRMP_SUPPORT_FDC_PROTOCOL == 1 || IRMP_SUPPORT_RCCAR_PROTOCOL == 1)
 
-#ifdef ANALYZE
+#if defined(ANALYZE)
 static uint32_t s_curSample = 0;
 static uint32_t s_startBitSample = 0;
 #endif
@@ -3136,7 +3136,7 @@ uint_fast8_t irmp_ISR(void)
 #endif
     uint_fast8_t            irmp_input;                                             // input value
 
-#ifdef ANALYZE
+#if defined(ANALYZE)
     time_counter++;
 #endif // ANALYZE
 
@@ -3174,7 +3174,7 @@ uint_fast8_t irmp_ISR(void)
             if (! irmp_input)                                                   // receiving burst?
             {                                                                   // yes...
 //              irmp_busy_flag = TRUE;
-#ifdef ANALYZE
+#if defined(ANALYZE)
                 if (! irmp_pulse_time)
                 {
                     s_startBitSample = s_curSample;
@@ -5457,7 +5457,7 @@ uint_fast8_t irmp_ISR(void)
     return (irmp_ir_detected);
 }
 
-#ifdef ANALYZE
+#if defined(ANALYZE)
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * main functions - for Unix/Linux + Windows only!
