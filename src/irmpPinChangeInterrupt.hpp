@@ -20,7 +20,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
  */
 
@@ -43,9 +43,7 @@ uint32_t irmp_last_change_micros; // microseconds of last Pin Change Interrupt. 
  * Requires micros() for timing.
  */
 //#define PCI_DEBUG
-#if defined(ESP8266)
-void ICACHE_RAM_ATTR irmp_PCI_ISR(void)
-#elif defined(ESP32)
+#if defined(ESP8266) || defined(ESP32)
 void IRAM_ATTR irmp_PCI_ISR(void)
 #else
 void irmp_PCI_ISR(void)
@@ -382,4 +380,3 @@ void irmp_debug_print(const char *aMessage, bool aDoShortOutput)
 }
 
 #endif // IRMP_PIN_CHANGE_INTERRUPT_HPP
-#pragma once

@@ -17,16 +17,17 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
  */
 
-#ifndef _LONG_UNION_H
-#define _LONG_UNION_H
+#if !defined(_WORD_UNION_H) || !defined(_LONG_UNION_H)
 
 #include <Arduino.h>
 #include <stdint.h>
 
+#ifndef _WORD_UNION_H
+#define _WORD_UNION_H
 /**
  * Union to specify parts / manifestations of a 16 bit Word without casts and shifts.
  * It also supports the compiler generating small code.
@@ -46,7 +47,10 @@ union WordUnion {
     int16_t Word;
     uint8_t *BytePointer;
 };
+#endif // _WORD_UNION_H
 
+#ifndef _LONG_UNION_H
+#define _LONG_UNION_H
 /**
  * Union to specify parts / manifestations of a 32 bit Long without casts and shifts.
  * It also supports the compiler generating small code.
@@ -88,6 +92,6 @@ union LongUnion {
     uint32_t ULong;
     int32_t Long;
 };
-
 #endif // _LONG_UNION_H
-#pragma once
+
+#endif //  !defined(_WORD_UNION_H) || !defined(_LONG_UNION_H)

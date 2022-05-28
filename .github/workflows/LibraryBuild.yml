@@ -8,12 +8,14 @@
 # This is the name of the workflow, visible on GitHub UI.
 name: LibraryBuild
 on:
+  workflow_dispatch: # To run it manually
+    description: 'manual build check'
   push: # see: https://help.github.com/en/actions/reference/events-that-trigger-workflows#pull-request-event-pull_request
     paths:
     - '**.ino'
     - '**.cpp'
-    - '**.h'
     - '**.hpp'
+    - '**.h'
     - '**LibraryBuild.yml'
   pull_request:
     paths:
@@ -70,6 +72,8 @@ jobs:
         include:
           - arduino-boards-fqbn: arduino:megaavr:nona4809:mode=off
             sketches-exclude: MinimalReceiver,IRDispatcherDemo
+            build-properties: # the flags were put in compiler.cpp.extra_flags
+              All: -DNO_LED_FEEDBACK_CODE
 
           - arduino-boards-fqbn: digistump:avr:digispark-tiny:clock=clock16
             platform-url: https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
@@ -120,6 +124,8 @@ jobs:
           - arduino-boards-fqbn: STMicroelectronics:stm32:GenL0:pnum=THUNDERPACK_L072
             platform-url: https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/main/package_stmicroelectronics_index.json
             sketches-exclude: MinimalReceiver,IRDispatcherDemo
+            build-properties: # the flags were put in compiler.cpp.extra_flags
+              All: -DNO_LED_FEEDBACK_CODE
 
           - arduino-boards-fqbn: stm32duino:STM32F1:genericSTM32F103C # Roger Clark version
             platform-url: http://dan.drown.org/stm32duino/package_STM32duino_index.json

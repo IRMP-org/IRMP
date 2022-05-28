@@ -177,7 +177,7 @@ Click on the receiver while simulation is running to specify individual IR codes
 To customize the library to different requirements, there are some compile options / macros available, which must be set **before** including the library e.g. with `#include <irmp.hpp>`.<br/>
 Modify it by setting the value to 1 or 0. Or define the macro with the -D compiler option for global compile (the latter is not possible with the Arduino IDE, so consider using [Sloeber](https://eclipse.baeyens.it).<br/>
 
-| Macro | Default value | Description |
+| Name | Default value | Description |
 |-|-|-|
 | `IRMP_INPUT_PIN` | 2 | The pin number which gets compiled in, if not using `IRMP_IRSND_ALLOW_DYNAMIC_PINS`. See also [PinDefinitionsAndMore.h](https://github.com/ukw100/IRMP/master/examples/OneProtocol/PinDefinitionsAndMore.h#L32) |
 | `IRMP_FEEDBACK_LED_PIN` | `LED_BUILTIN` | The pin number for the feedback led which gets compiled in, if not using `IRMP_IRSND_ALLOW_DYNAMIC_PINS`. |
@@ -191,7 +191,7 @@ Modify it by setting the value to 1 or 0. Or define the macro with the -D compil
 | `IRMP_HIGH_ACTIVE` | 0 / disabled | Set to 1 if you use a RF receiver, which has an active HIGH output signal. |
 | `IRMP_32_BIT` | 0 / disabled | This enables MERLIN protocol, but decreases performance for AVR. Enabled by default for 32 bit platforms. |
 | `F_INTERRUPTS` | 15000 | The IRMP sampling frequency.|
-| `USE_ONE_TIMER_FOR_IRMP_AND_IRSND` | disabled | **Must** be defined if you use receiving and sending simultaneously, since both use the same timer resource. |
+| `USE_ONE_TIMER_FOR_IRMP_AND_IRSND` | disabled | **Must** be defined if you use receiving and sending simultaneously, since both use the same timer resource. **Must not** be enabled if you only use receiving. |
 | `IRSND_USE_CALLBACK` | 0 / disabled | Calls a function if send output signal changes to active (sending the IR signal). |
 | `IR_OUTPUT_IS_ACTIVE_LOW` | disabled | Output LOW for active IR signal. Use it if IR LED is connected between VCC and output pin. |
 | `IRSND_GENERATE_NO_SEND_RF` | disabled | Do not generate the carrier frequency (of 38 kHz), just simulate an active low receiver signal. |

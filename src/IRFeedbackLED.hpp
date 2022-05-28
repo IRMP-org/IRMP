@@ -20,6 +20,7 @@
 #include "IRFeedbackLED.h"
 
 #if defined(NO_LED_FEEDBACK_CODE)
+// dummy void function in this case
 void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed)
 {
     (void)aEnableBlinkLed;
@@ -91,9 +92,7 @@ void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed)
 /*
  * Internally used from IRMP_ISR() with -oS it is taken as inline function
  */
-#if defined(ESP8266)
-void ICACHE_RAM_ATTR irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
-#elif defined(ESP32)
+#if defined(ESP8266) || defined(ESP32)
 void IRAM_ATTR irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
 #else
 void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
@@ -128,4 +127,3 @@ void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
 #endif // !defined(NO_LED_FEEDBACK_CODE)
 #endif // defined(ARDUINO)
 #endif // IR_FEEDBACK_LED_HPP
-#pragma once

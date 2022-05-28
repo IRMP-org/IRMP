@@ -17,7 +17,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
  */
 
@@ -728,12 +728,8 @@ ISR(TCD0_OVF_vect)
 ISR(TIMER2_COMPB_vect)
 #  endif // defined(__AVR_ATmega16__)
 
-#elif defined(ESP8266)
-// Required because irmp_ISR is declared as uint8_t
-void ICACHE_RAM_ATTR irmp_timer_ISR(void)
-
-#elif defined(ESP32)
-IRAM_ATTR void irmp_timer_ISR(void)
+#elif defined(ESP8266) || defined(ESP32)
+void IRAM_ATTR irmp_timer_ISR(void)
 
 #elif defined(ARDUINO_ARCH_SAMD)
 void TC3_Handler(void)

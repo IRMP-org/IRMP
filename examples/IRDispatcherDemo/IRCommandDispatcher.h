@@ -23,7 +23,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  */
 
 #ifndef _IR_COMMAND_DISPATCHER_H
@@ -56,7 +56,7 @@ struct IRDataForCommandDispatcherStruct {
     uint16_t address;           // to distinguish between multiple senders
     uint16_t command;
     bool isRepeat;
-    uint32_t MillisOfLastCode;  // millis() of last IR command received - for timeouts etc.
+    uint32_t MillisOfLastCode;  // millis() of last IR command -including repeats!- received - for timeouts etc.
     volatile bool isAvailable;  // flag for a polling interpreting function, that a new command has arrived.
 };
 
@@ -75,7 +75,7 @@ public:
     void init();
 
     bool checkAndRunNonBlockingCommands();
-    void checkAndRunSuspendedBlockingCommands();
+    bool checkAndRunSuspendedBlockingCommands();
     bool delayAndCheckForStop(uint16_t aDelayMillis);
 
     // The main dispatcher function
@@ -90,6 +90,7 @@ public:
     uint8_t BlockingCommandToRunNext = COMMAND_INVALID; // Storage for command currently suspended to allow the current command to end, before it is called by main loop
     /*
      * Flag for running blocking commands to terminate. To check, you can use "if (requestToStopReceived) return;" (available as macro RETURN_IF_STOP).
+     * Is reset by next IR command received. Can be reset by main loop, if command has stopped.
      */
     volatile bool requestToStopReceived;
     /*

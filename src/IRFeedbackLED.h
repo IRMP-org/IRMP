@@ -17,7 +17,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
  */
 
@@ -40,7 +40,7 @@ void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed);          // set the mode
 #define IRMP_FEEDBACK_LED_PIN LED_BUILTIN
 #  else
 #warning IRMP_FEEDBACK_LED_PIN and LED_BUILTIN  not defined. Pin 5 is used for feedback output if enabled. You can change this in IRFeedbackLED.h.
-#define IRMP_FEEDBACK_LED_PIN 5 // choose an abitrary pin
+#define IRMP_FEEDBACK_LED_PIN 5 // choose an arbitrary pin
 #  endif
 #endif
 

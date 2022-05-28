@@ -29,7 +29,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  */
 #ifndef _IR_COMMAND_DISPATCHER_HPP
 #define _IR_COMMAND_DISPATCHER_HPP
@@ -38,11 +38,21 @@
 
 #include "IRCommandDispatcher.h"
 
-//#define INFO // activate this out to see serial info output
-//#define DEBUG // activate this out to see serial info output
-#if defined(DEBUG) && !defined(INFO)
-// Propagate level
-#define INFO
+/*
+ * Enable this to see information on each call.
+ * Since there should be no library which uses Serial, it should only be enabled for development purposes.
+ */
+#if defined(INFO)
+#define LOCAL_INFO
+#else
+//#define LOCAL_INFO // This enables info output only for this file
+#endif
+#if defined(DEBUG)
+#define LOCAL_DEBUG
+// Propagate debug level
+#define LOCAL_INFO
+#else
+//#define LOCAL_DEBUG // This enables debug output only for this file
 #endif
 
 IRCommandDispatcher IRDispatcher;
@@ -50,7 +60,7 @@ IRCommandDispatcher IRDispatcher;
 #if defined(USE_TINY_IR_RECEIVER)
 #include "TinyIRReceiver.hpp" // included in "IRremote" library
 
-#if defined(INFO)
+#if defined(LOCAL_INFO)
 #define CD_INFO_PRINT(...)      Serial.print(__VA_ARGS__);
 #define CD_INFO_PRINTLN(...)    Serial.println(__VA_ARGS__);
 #else
@@ -139,11 +149,9 @@ void handleReceivedIRData()
 
     if (IRDispatcher.IRReceivedData.address == IR_ADDRESS) {
         IRDispatcher.checkAndCallCommand(true);
-#if defined(INFO)
-        } else {
+    } else {
         CD_INFO_PRINT(F("Wrong address. Expected 0x"));
         CD_INFO_PRINTLN(IR_ADDRESS, HEX);
-#endif
     }
 }
 #endif
@@ -165,14 +173,14 @@ void IRCommandDispatcher::checkAndCallCommand(bool aCallAlsoBlockingCommands) {
             /*
              * Command found
              */
-#if defined(INFO)
+#if defined(LOCAL_INFO)
             const __FlashStringHelper *tCommandName = reinterpret_cast<const __FlashStringHelper*>(IRMapping[i].CommandString);
 #endif
             /*
              * Check for repeat and if it is allowed for the current command
              */
             if (IRReceivedData.isRepeat && !(IRMapping[i].Flags & IR_COMMAND_FLAG_REPEATABLE)) {
-#if defined(DEBUG)
+#if defined(LOCAL_DEBUG)
                 Serial.print(F("Repeats of command \""));
                 Serial.print(tCommandName);
                 Serial.println("\" not accepted");
@@ -184,7 +192,7 @@ void IRCommandDispatcher::checkAndCallCommand(bool aCallAlsoBlockingCommands) {
              * Do not accept recursive call of the same command
              */
             if (currentBlockingCommandCalled == IRReceivedData.command) {
-#if defined(DEBUG)
+#if defined(LOCAL_DEBUG)
                 Serial.print(F("Recursive command \""));
                 Serial.print(tCommandName);
                 Serial.println("\" not accepted");
@@ -277,10 +285,11 @@ bool IRCommandDispatcher::delayAndCheckForStop(uint16_t aDelayMillis) {
 
 /*
  * Intended to be called from main loop
+ * @return true, if command was called
  */
-void IRCommandDispatcher::checkAndRunSuspendedBlockingCommands() {
+bool IRCommandDispatcher::checkAndRunSuspendedBlockingCommands() {
     /*
-     * search IR code or take last rejected command and call associated function
+     * Take last rejected command and call associated function
      */
     if (BlockingCommandToRunNext != COMMAND_INVALID) {
 
@@ -291,7 +300,9 @@ void IRCommandDispatcher::checkAndRunSuspendedBlockingCommands() {
         BlockingCommandToRunNext = COMMAND_INVALID;
         IRReceivedData.isRepeat = false;
         checkAndCallCommand(true);
+        return true;
     }
+    return false;
 }
 
 void IRCommandDispatcher::printIRCommandString(Print *aSerial) {
@@ -309,5 +320,10 @@ void IRCommandDispatcher::setRequestToStopReceived() {
     requestToStopReceived = true;
 }
 
+#if defined(LOCAL_DEBUG)
+#undef LOCAL_DEBUG
+#endif
+#if defined(LOCAL_INFO)
+#undef LOCAL_INFO
+#endif
 #endif // _IR_COMMAND_DISPATCHER_HPP
-#pragma once

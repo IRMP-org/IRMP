@@ -3093,9 +3093,7 @@ static uint32_t s_startBitSample = 0;
 /*
  * 4 us idle, 45 us at start of each pulse @16 MHz ATmega 328p
  */
-#if defined(ESP8266)
-bool ICACHE_RAM_ATTR irmp_ISR(void)
-#elif defined(ESP32)
+#if defined(ESP8266) || defined(ESP32)
 bool IRAM_ATTR irmp_ISR(void)
 #else
 #  ifdef __cplusplus

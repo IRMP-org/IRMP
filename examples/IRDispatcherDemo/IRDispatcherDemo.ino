@@ -20,7 +20,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
  */
 
@@ -32,7 +32,7 @@
 #define USE_TINY_IR_RECEIVER // Recommended, but only for NEC protocol!!! If disabled and IRMP_INPUT_PIN is defined, the IRMP library is used for decoding
 //#define TINY_RECEIVER_USE_ARDUINO_ATTACH_INTERRUPT // costs 112 bytes program memory + 4 bytes RAM
 
-#include "PinDefinitionsAndMore.h"
+#include "PinDefinitionsAndMore.h" //Define macros for input and output pin etc.
 // Some kind of auto detect library if USE_TINY_IR_RECEIVER is deactivated
 #if !defined(USE_TINY_IR_RECEIVER)
 #  if defined(IR_RECEIVE_PIN)
@@ -133,9 +133,8 @@ void setup() {
 
 #if !defined(ESP8266) && !defined(NRF5)
     // play feedback tone before setup, since it kills the IR timer settings
-    tone(TONE_PIN, 1000);
+    tone(TONE_PIN, 1000, 50);
     delay(50);
-    noTone(TONE_PIN);
 #endif
 
     IRDispatcher.init(); // This just calls irmp_init()

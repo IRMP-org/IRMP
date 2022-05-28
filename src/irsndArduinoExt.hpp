@@ -17,7 +17,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
  */
 
@@ -38,6 +38,7 @@ uint_fast8_t irsnd_output_pin;
 void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow)
 {
     irsnd_output_pin = aIrsndOutputPin;
+#if !defined(NO_LED_FEEDBACK_CODE)
     irmp_irsnd_LedFeedbackPin = aFeedbackLedPin;
     irmp_irsnd_LedFeedbackPinIsActiveLow = aIrmpLedFeedbackPinIsActiveLow;
 
@@ -45,6 +46,10 @@ void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin, bool
      * enable feedback LED if (aFeedbackLedPin != 0)
      */
     irmp_irsnd_LEDFeedback(aFeedbackLedPin);
+#else
+    (void) aFeedbackLedPin; // to avoid compiler warnings
+    (void) aIrmpLedFeedbackPinIsActiveLow; // to avoid compiler warnings
+#endif
 
     // Do not call irsnd_init_and_store_timer() here, it is done at irsnd_send_data().
     pinMode(irsnd_output_pin, OUTPUT);
@@ -59,7 +64,11 @@ void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin, bool
  */
 void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin)
 {
+#if defined(NO_LED_FEEDBACK_CODE)
+    irsnd_init(aIrsndOutputPin, aFeedbackLedPin, false);
+#else
     irsnd_init(aIrsndOutputPin, aFeedbackLedPin, irmp_irsnd_LedFeedbackPinIsActiveLow);
+#endif
 }
 
 /*
@@ -67,7 +76,12 @@ void irsnd_init(uint_fast8_t aIrsndOutputPin, uint_fast8_t aFeedbackLedPin)
  */
 void irsnd_init(uint_fast8_t aIrsndOutputPin)
 {
+#if defined(NO_LED_FEEDBACK_CODE)
+    irsnd_init(aIrsndOutputPin, 0, false);
+#else
     irsnd_init(aIrsndOutputPin, irmp_irsnd_LedFeedbackPin, irmp_irsnd_LedFeedbackPinIsActiveLow);
+#endif
+
 #  if defined(IRMP_FEEDBACK_LED_PIN)
     // set pin if we have one at hand
     irmp_irsnd_LedFeedbackPin = IRMP_FEEDBACK_LED_PIN;
@@ -96,9 +110,7 @@ static void irsnd_set_freq(IRSND_FREQ_TYPE freq __attribute__((unused)))
 /*
  * Called from irsnd_ISR to set the IR output
  */
-#if defined(ESP8266)
-void ICACHE_RAM_ATTR irsnd_on(void)
-#elif defined(ESP32)
+#if defined(ESP8266) || defined(ESP32)
 void IRAM_ATTR irsnd_on(void)
 #else
 void irsnd_on(void)
@@ -106,28 +118,28 @@ void irsnd_on(void)
 {
     if (!irsnd_is_on)
     {
+#if !defined(NO_LED_FEEDBACK_CODE)
         if (irmp_irsnd_LedFeedbackEnabled)
         {
-#if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
+#  if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
             irmp_irsnd_SetFeedbackLED(true);
-#else
-#  if defined(IRMP_FEEDBACK_LED_PIN)
-#    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
+#  else
+#    if defined(IRMP_FEEDBACK_LED_PIN)
+#      if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
             // If the built in LED on the board is active LOW
             digitalWriteFast(IRMP_FEEDBACK_LED_PIN, LOW);
-#    else
+#      else
             digitalWriteFast(IRMP_FEEDBACK_LED_PIN, HIGH);
+#      endif
 #    endif
 #  endif
-#endif
         }
+#endif
         irsnd_is_on = TRUE; // evaluated at ISR
     }
 }
 
-#if defined(ESP8266)
-void ICACHE_RAM_ATTR irsnd_off(void)
-#elif defined(ESP32)
+#if defined(ESP8266) || defined(ESP32)
 void IRAM_ATTR irsnd_off(void)
 #else
 void irsnd_off(void)
@@ -135,23 +147,24 @@ void irsnd_off(void)
 {
     if (irsnd_is_on)
     {
+#if !defined(NO_LED_FEEDBACK_CODE)
         // Manage feedback LED
-
         if (irmp_irsnd_LedFeedbackEnabled)
         {
-#if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
+#  if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
             irmp_irsnd_SetFeedbackLED(false);
-#else
-#  if defined(IRMP_FEEDBACK_LED_PIN)
-#    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
+#  else
+#    if defined(IRMP_FEEDBACK_LED_PIN)
+#      if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
             // If the built in LED on the board is active LOW
             digitalWriteFast(IRMP_FEEDBACK_LED_PIN, HIGH);
-#    else
+#      else
             digitalWriteFast(IRMP_FEEDBACK_LED_PIN, LOW);
+#      endif
 #    endif
 #  endif
-#endif
         }
+#endif
         irsnd_is_on = FALSE;
     }
 }

@@ -25,7 +25,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
  */
 
@@ -88,9 +88,7 @@ void loop() {
  * Since this function is executed in Interrupt handler context, make it short and do not use delay() etc.
  * In order to enable other interrupts you can call sei() (enable interrupt again) after getting data.
  */
-#if defined(ESP8266)
-void ICACHE_RAM_ATTR handleReceivedIRData()
-#elif defined(ESP32)
+#if defined(ESP8266) || defined(ESP32)
 void IRAM_ATTR handleReceivedIRData()
 #else
 void handleReceivedIRData()
