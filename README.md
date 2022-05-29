@@ -1,7 +1,7 @@
 # [IRMP](https://github.com/ukw100/IRMP) - Infrared Multi Protocol Decoder + Encoder
 Available as Arduino library "IRMP"
 
-### [Version 3.6.1](https://github.com/ukw100/IRMP/archive/master.zip) - work in progress
+### [Version 3.6.2](https://github.com/ukw100/IRMP/archive/master.zip) - work in progress
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/IRMP)
@@ -272,6 +272,9 @@ The **tone library (using timer 2) is still available**. You can use it alternat
    https://www.mikrocontroller.net/topic/irmp-infrared-multi-protocol-decoder?goto=6996113#6996137
 
 # Revision History
+### Version 3.6.1
+- Fixed NO_LED_FEEDBACK_CODE bug.
+
 ### Version 3.6.0
 - Improved timings by Jörg R.
 - Support for NEC 8 bit address.
