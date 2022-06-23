@@ -15,5 +15,3 @@
 #define VERSION_IRMP_MINOR 6
 
 #endif /* SRC_LIB_IRMPVERSION_H_ */
-
-#pragma once

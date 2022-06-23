@@ -110,16 +110,11 @@ void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
         }
     }
 #elif defined(IRMP_FEEDBACK_LED_PIN)
-#  if defined(__AVR__) // As far as I know, there is no active-low built in LED for AVR platform boards
-    digitalWriteFast(IRMP_FEEDBACK_LED_PIN, aSwitchLedOn);
-#  else
-        // hope this is fast enough on other platforms
-#    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
+#  if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
     // If the built in LED on the board is active LOW
-    digitalWrite(IRMP_FEEDBACK_LED_PIN, !aSwitchLedOn);
-#    else
-    digitalWrite(IRMP_FEEDBACK_LED_PIN, aSwitchLedOn);
-#    endif
+    digitalWriteFast(IRMP_FEEDBACK_LED_PIN, !aSwitchLedOn);
+#  else
+    digitalWriteFast(IRMP_FEEDBACK_LED_PIN, aSwitchLedOn);
 #  endif
 #endif
 }
