@@ -272,6 +272,9 @@ The **tone library (using timer 2) is still available**. You can use it alternat
    https://www.mikrocontroller.net/topic/irmp-infrared-multi-protocol-decoder?goto=6996113#6996137
 
 # Revision History
+### Version 3.6.2
+- Added Kaseikyo Panasonic decode.
+
 ### Version 3.6.1
 - Fixed NO_LED_FEEDBACK_CODE bug.
 

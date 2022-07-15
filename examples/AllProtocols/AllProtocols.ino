@@ -28,45 +28,6 @@
  *
  */
 
-/*
- * Activate the type of LCD you use
- * Default is serial LCD with 2 rows of 16 characters (1602).
- */
-//#define USE_PARALLEL_LCD
-#if !defined(USE_PARALLEL_LCD) && !defined(USE_NO_LCD)
-#define USE_SERIAL_LCD
-#endif
-
-/*
- * Define the size of your LCD
- */
-#if !defined(USE_2004_LCD)
-#define USE_1602_LCD
-#endif
-//#define USE_2004_LCD
-
-/*
- * Imports and definitions for LCD
- */
-#if defined(USE_SERIAL_LCD)
-#include <LiquidCrystal_I2C.h> // Use an up to date library version which has the init method
-#endif
-#if defined(USE_PARALLEL_LCD)
-#include <LiquidCrystal.h>
-#endif
-
-#if defined(USE_1602_LCD)
-// definitions for a 1602 LCD
-#define LCD_COLUMNS 16
-#define LCD_ROWS 2
-#endif
-#if defined(USE_2004_LCD)
-// definitions for a 2004 LCD
-#define LCD_COLUMNS 20
-#define LCD_ROWS 4
-#endif
-
-
 #include <Arduino.h>
 
 #include "PinDefinitionsAndMore.h"
@@ -95,12 +56,32 @@
 
 IRMP_DATA irmp_data;
 
-#if defined(USE_SERIAL_LCD) && defined(USE_PARALLEL_LCD)
-#error Cannot use parallel and serial LCD simultaneously
+/*
+ * Activate the type of LCD you use
+ * Default is serial LCD with 2 rows of 16 characters (1602).
+ */
+//#define USE_NO_LCD
+//#define USE_PARALLEL_LCD
+#if defined(USE_PARALLEL_LCD)
+#include <LiquidCrystal.h>
+#elif !defined(USE_NO_LCD)
+#define USE_SERIAL_LCD
+#include <LiquidCrystal_I2C.h> // Use an up to date library version, which has the init method
 #endif
 
-#if defined(USE_SERIAL_LCD) || defined(USE_PARALLEL_LCD)
-#define USE_LCD
+/*
+ * Define the size of your LCD
+ */
+//#define USE_2004_LCD
+#if defined(USE_2004_LCD)
+// definitions for a 2004 LCD
+#define LCD_COLUMNS 20
+#define LCD_ROWS 4
+#else
+#define USE_1602_LCD
+// definitions for a 1602 LCD
+#define LCD_COLUMNS 16
+#define LCD_ROWS 2
 #endif
 
 #if defined(USE_SERIAL_LCD)
@@ -110,20 +91,20 @@ LiquidCrystal_I2C myLCD(0x27, LCD_COLUMNS, LCD_ROWS);  // set the LCD address to
 LiquidCrystal myLCD(4, 5, 6, 7, 8, 9);
 #endif
 
-#if defined(__AVR__) && !(defined(__AVR_ATmega4809__) || defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__))
+#if defined(USE_SERIAL_LCD) || defined(USE_PARALLEL_LCD)
+#define USE_LCD
+#  if defined(__AVR__) && defined(ADCSRA) && defined(ADATE)
 // For cyclically display of VCC
 #include "ADCUtils.hpp"
 #define MILLIS_BETWEEN_VOLTAGE_PRINT 5000
+uint32_t volatile sMillisOfLastVoltagePrint;
+#  endif
 #endif
 
 void handleReceivedIRData();
-void irmp_result_print_LCD();
+void printIRResultOnLCD();
 
 bool volatile sIRMPDataAvailable = false;
-
-#if defined(__AVR__) && !(defined(__AVR_ATmega4809__) || defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__))
-uint32_t volatile sMillisOfLastVoltagePrint;
-#endif
 
 void setup()
 {
@@ -140,10 +121,10 @@ void setup()
     irmp_register_complete_callback_function(&handleReceivedIRData);
 
     Serial.print(F("Ready to receive IR signals of protocols: "));
-    irmp_print_active_protocols (&Serial);
+    irmp_print_active_protocols(&Serial);
     Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
 
-#if defined(__AVR__) && !(defined(__AVR_ATmega4809__) || defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__))
+#if defined(USE_LCD) && defined(__AVR__) && defined(ADCSRA) && defined(ADATE)
     getVCCVoltageMillivoltSimple(); // to initialize ADC mux and reference
 #endif
 
@@ -179,14 +160,14 @@ void loop()
 #  if defined(USE_SERIAL_LCD)
         disableIRTimerInterrupt(); // disable timer interrupt, since it disturbs the serial output
 #  endif
-        irmp_result_print_LCD();
+        printIRResultOnLCD();
 #  if defined(USE_SERIAL_LCD)
         enableIRTimerInterrupt();
 #  endif
 #endif
     }
 
-#if defined(__AVR__) && defined(ADATE)
+#if defined(USE_LCD) && defined(__AVR__) && defined(ADCSRA) && defined(ADATE)
     /*
      * Periodically print VCC
      */
@@ -195,18 +176,12 @@ void loop()
         sMillisOfLastVoltagePrint = millis();
         uint16_t tVCC = getVCCVoltageMillivoltSimple();
 
-        Serial.print(F("VCC="));
-        Serial.print(tVCC);
-        Serial.println(F("mV"));
-
-#  if defined(USE_LCD)
         myLCD.setCursor(10, 0);
         myLCD.print(' ');
         myLCD.print(tVCC / 1000);
         myLCD.print('.');
         myLCD.print(((tVCC + 5) / 10) % 100);
         myLCD.print('V');
-#  endif
     }
 #endif
 }
@@ -244,7 +219,7 @@ void handleReceivedIRData()
  * 3 milliseconds for repeat output
  *
  */
-void irmp_result_print_LCD()
+void printIRResultOnLCD()
 {
 #if defined(USE_LCD)
     static uint8_t sLastProtocolIndex;
@@ -252,7 +227,6 @@ void irmp_result_print_LCD()
 
 #  if (LCD_ROWS >= 4)
     static uint8_t sLastCommandPrintPosition = 13;
-
     const uint8_t tStartRow = 2;
 
 #  else
@@ -285,7 +259,6 @@ void irmp_result_print_LCD()
          * Show protocol name
          */
         myLCD.setCursor(0, tStartRow);
-        myLCD.print(F("P="));
 #  if defined(__AVR__)
         const char *tProtocolStringPtr = (char*) pgm_read_word(&irmp_protocol_names[irmp_data.protocol]);
         myLCD.print((__FlashStringHelper*) (tProtocolStringPtr));

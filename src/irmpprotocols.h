@@ -346,7 +346,7 @@ typedef uint8_t     PAUSE_LEN;
 #define TECHNICS_COMPLETE_DATA_LEN              22                              // complete length
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * KASEIKYO:
+ * KASEIKYO: 48 bit
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #define KASEIKYO_START_BIT_PULSE_TIME           3456.0e-6                       // 3380 usec pulse
@@ -357,7 +357,7 @@ typedef uint8_t     PAUSE_LEN;
 #define KASEIKYO_AUTO_REPETITION_PAUSE_TIME       74.0e-3                       // repetition after 74 ms
 #define KASEIKYO_FRAME_REPEAT_PAUSE_TIME          74.0e-3                       // frame repeat after 74 ms
 #define KASEIKYO_ADDRESS_OFFSET                  0                              // skip 0 bits
-#define KASEIKYO_ADDRESS_LEN                    16                              // read 16 address bits
+#define KASEIKYO_ADDRESS_LEN                    16                              // read 16 address / manufacturer bits
 #define KASEIKYO_COMMAND_OFFSET                 28                              // skip 28 bits (16 manufacturer & 4 parity & 8 genre)
 #define KASEIKYO_COMMAND_LEN                    12                              // read 12 command bits (10 real command & 2 id)
 #define KASEIKYO_COMPLETE_DATA_LEN              48                              // complete length
@@ -367,7 +367,7 @@ typedef uint8_t     PAUSE_LEN;
 #define KASEIKYO_FLAGS                          0                               // flags
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * PANASONIC (Beamer), start bit timings similar to KASEIKYO
+ * PANASONIC (Beamer), start bit timings similar to KASEIKYO   56 bit
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #define PANASONIC_START_BIT_PULSE_TIME           3600.0e-6                      // 3600 usec pulse
@@ -388,7 +388,7 @@ typedef uint8_t     PAUSE_LEN;
 #define PANASONIC_FLAGS                          0                              // flags
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
- * MITSUBISHI-Heavy Aircondition, timings similar to PANASONIC beamer
+ * MITSUBISHI-Heavy Aircondition, timings similar to PANASONIC beamer  88 bit
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #define MITSU_HEAVY_START_BIT_PULSE_TIME          3200.0e-6                     // 3600 usec pulse

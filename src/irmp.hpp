@@ -198,17 +198,6 @@
 #define MITSU_HEAVY_0_PAUSE_LEN_MIN             ((uint_fast8_t)(F_INTERRUPTS * MITSU_HEAVY_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
 #define MITSU_HEAVY_0_PAUSE_LEN_MAX             ((uint_fast8_t)(F_INTERRUPTS * MITSU_HEAVY_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 
-#define VINCENT_START_BIT_PULSE_LEN_MIN         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define VINCENT_START_BIT_PULSE_LEN_MAX         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define VINCENT_START_BIT_PAUSE_LEN_MIN         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define VINCENT_START_BIT_PAUSE_LEN_MAX         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define VINCENT_PULSE_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * VINCENT_PULSE_TIME * MIN_TOLERANCE_40 + 0.5) - 1)
-#define VINCENT_PULSE_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * VINCENT_PULSE_TIME * MAX_TOLERANCE_40 + 0.5) + 1)
-#define VINCENT_1_PAUSE_LEN_MIN                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_1_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
-#define VINCENT_1_PAUSE_LEN_MAX                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_1_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
-#define VINCENT_0_PAUSE_LEN_MIN                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
-#define VINCENT_0_PAUSE_LEN_MAX                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
-
 #define PANASONIC_START_BIT_PULSE_LEN_MIN       ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
 #define PANASONIC_START_BIT_PULSE_LEN_MAX       ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
 #define PANASONIC_START_BIT_PAUSE_LEN_MIN       ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
@@ -219,6 +208,17 @@
 #define PANASONIC_1_PAUSE_LEN_MAX               ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_1_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 #define PANASONIC_0_PAUSE_LEN_MIN               ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
 #define PANASONIC_0_PAUSE_LEN_MAX               ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+
+#define VINCENT_START_BIT_PULSE_LEN_MIN         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
+#define VINCENT_START_BIT_PULSE_LEN_MAX         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define VINCENT_START_BIT_PAUSE_LEN_MIN         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
+#define VINCENT_START_BIT_PAUSE_LEN_MAX         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define VINCENT_PULSE_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * VINCENT_PULSE_TIME * MIN_TOLERANCE_40 + 0.5) - 1)
+#define VINCENT_PULSE_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * VINCENT_PULSE_TIME * MAX_TOLERANCE_40 + 0.5) + 1)
+#define VINCENT_1_PAUSE_LEN_MIN                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_1_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
+#define VINCENT_1_PAUSE_LEN_MAX                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_1_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define VINCENT_0_PAUSE_LEN_MIN                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
+#define VINCENT_0_PAUSE_LEN_MAX                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 
 #define RECS80_START_BIT_PULSE_LEN_MIN          ((uint_fast8_t)(F_INTERRUPTS * RECS80_START_BIT_PULSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
 #define RECS80_START_BIT_PULSE_LEN_MAX          ((uint_fast8_t)(F_INTERRUPTS * RECS80_START_BIT_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
@@ -2475,10 +2475,7 @@ uint_fast8_t
 #endif
 irmp_get_data (IRMP_DATA * irmp_data_p)
 {
-    uint_fast8_t   rtc = FALSE;
-#if IRMP_SUPPORT_MERLIN_PROTOCOL == 1
-    uint_fast8_t   cmd_len = 0;
-#endif
+    uint_fast8_t   tReturnCode = FALSE;
 
     if (irmp_ir_detected)
     {
@@ -2489,17 +2486,17 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 if ((irmp_command >> 8) == (~irmp_command & 0x00FF))
                 {
                     irmp_command &= 0xff;
-                    irmp_command |= irmp_id << 8;
-                    rtc = TRUE;
+//                    irmp_command |= irmp_id << 8; // for samsung32 irmp_id looks to be the same as irmp_command
+                    tReturnCode = TRUE;
                 }
                 break;
 
-#if IRMP_SUPPORT_SAMSUNG48_PROTOCOL == 1
+#  if IRMP_SUPPORT_SAMSUNG48_PROTOCOL == 1
             case IRMP_SAMSUNG48_PROTOCOL:
                 irmp_command = (irmp_command & 0x00FF) | ((irmp_id & 0x00FF) << 8);
-                rtc = TRUE;
+                tReturnCode = TRUE;
                 break;
-#endif
+#  endif
 #endif
 
 #if IRMP_SUPPORT_NEC_PROTOCOL == 1
@@ -2511,7 +2508,6 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                         irmp_address &= 0xff;
                     }
                     irmp_command &= 0xff;
-                    rtc = TRUE;
                 }
                 else if (irmp_address == 0x87EE)
                 {
@@ -2519,25 +2515,40 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                     irmp_protocol = IRMP_APPLE_PROTOCOL;
                     irmp_address = (irmp_command & 0xFF00) >> 8; // address was received in command!
                     irmp_command &= 0x00FF;
-                    rtc = TRUE;
                 }
                 else
                 {
                     ANALYZE_PRINTF1 ("ONKYO protocol detected\n");
                     irmp_protocol = IRMP_ONKYO_PROTOCOL;
-                    rtc = TRUE;
                 }
+                tReturnCode = TRUE;
                 break;
-#endif
 
-
-#if IRMP_SUPPORT_NEC_PROTOCOL == 1
             case IRMP_VINCENT_PROTOCOL:
                 if ((irmp_command >> 8) == (irmp_command & 0x00FF))
                 {
                     irmp_command &= 0xff;
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
+                break;
+#endif
+
+#if IRMP_SUPPORT_KASEIKYO_PROTOCOL == 1
+            case IRMP_KASEIKYO_PROTOCOL:
+                /*
+                 * Todo AJ 14.7.22 The bit before the command (not existent bit 16 of command) is skipped and I have a Panasonic remote where it is 1 for 2 buttons
+                 * and the 4 LSB command bits are always zero for this remote
+                 */
+                if( irmp_address == 0x2002) // PANASONIC_VENDOR_ID_CODE
+                {
+                    ANALYZE_PRINTF1 ("Kaseikyo_Panasonic protocol detected\n");
+                    irmp_protocol = IRMP_PANASONIC_PROTOCOL;
+                    irmp_command = irmp_command >> 4; // remove the 4 zero bits
+                    irmp_address = (irmp_command & 0xF00) >> 8; // LSB address (genre1) was received in command!
+                    irmp_address |= irmp_flags & 0xF0; // MSB of address(genre2 bits) are located in MSB of the flag byte
+                    irmp_command &= 0x00FF;
+                }
+                tReturnCode = TRUE;
                 break;
 #endif
 
@@ -2546,7 +2557,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 if ((irmp_command >> 8) == (~irmp_command & 0x00FF))
                 {
                     irmp_command &= 0xff;
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 break;
 #endif
@@ -2555,7 +2566,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
             case IRMP_MERLIN_PROTOCOL:
                 if (irmp_bit == 10)
                 {
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 else if (irmp_bit >= 19 && ((irmp_bit - 3) % 8 == 0))
                 {
@@ -2564,8 +2575,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                         irmp_command >>= 1;
                         irmp_command |= ((irmp_address & 1) << (irmp_bit - 12));
                         irmp_address >>= 1;
-                        cmd_len = (irmp_bit - 11) >> 3;
-                        rtc = TRUE;
+                        tReturnCode = TRUE;
                     }
                 }
                 break;
@@ -2577,7 +2587,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 if (((irmp_command >> 1) & 0x0001) == (~irmp_command & 0x0001))
                 {
                     irmp_command >>= 1;
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 break;
 #endif
@@ -2585,27 +2595,27 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
             case IRMP_KATHREIN_PROTOCOL:
                 if (irmp_command != 0x0000)
                 {
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 break;
 #endif
 #if IRMP_SUPPORT_RC5_PROTOCOL == 1
             case IRMP_RC5_PROTOCOL:
                 irmp_address &= ~0x20;                              // clear toggle bit
-                rtc = TRUE;
+                tReturnCode = TRUE;
                 break;
 #endif
 #if IRMP_SUPPORT_S100_PROTOCOL == 1
             case IRMP_S100_PROTOCOL:
                 irmp_address &= ~0x20;                              // clear toggle bit
-                rtc = TRUE;
+                tReturnCode = TRUE;
                 break;
 #endif
 #if IRMP_SUPPORT_IR60_PROTOCOL == 1
             case IRMP_IR60_PROTOCOL:
                 if (irmp_command != 0x007d)                         // 0x007d (== 62<<1 + 1) is start instruction frame
                 {
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 else
                 {
@@ -2622,7 +2632,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 irmp_command = ((irmp_command & 0x1000) >> 2) | // V-Bit:  V  0  0  0  0  0  0  0  0  0  0
                                ((irmp_command & 0x0003) << 8) | // C-Bits: 0  C1 C0 0  0  0  0  0  0  0  0
                                ((irmp_command & 0x0FF0) >> 4);  // D-Bits:          D7 D6 D5 D4 D3 D2 D1 D0
-                rtc = TRUE;                                     // Summe:  V  C1 C0 D7 D6 D5 D4 D3 D2 D1 D0
+                tReturnCode = TRUE;                                     // Summe:  V  C1 C0 D7 D6 D5 D4 D3 D2 D1 D0
                 break;
 #endif
 
@@ -2634,13 +2644,13 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                     {
                         irmp_command >>= 5;
                         irmp_command &= 0x7F;
-                        rtc = TRUE;
+                        tReturnCode = TRUE;
                     }
                     else if ((irmp_command & 0x1f) == 0x10)     // key released: 000 01 (LSB)
                     {
                         irmp_command >>= 5;
                         irmp_command |= 0x80;
-                        rtc = TRUE;
+                        tReturnCode = TRUE;
                     }
                     else
                     {
@@ -2661,7 +2671,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 if ((irmp_command & 0x000F) == crc)
                 {
                     irmp_command >>= 4;
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 else
                 {
@@ -2679,7 +2689,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 {
                     irmp_address >>= 3;
                     irmp_command >>= 6;
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 break;
 #endif
@@ -2700,7 +2710,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 if (((irmp_command + (0x0055 + (channel << 4))) & 0x7F) == checksum)
                 {                                                   // checksum correct?
                     irmp_address = channel + 1;                     // set address to channel + 1
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 break;
             }
@@ -2708,12 +2718,12 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
 
             default:
             {
-                rtc = TRUE;
+                tReturnCode = TRUE;
                 break;
             }
         }
 
-        if (rtc)
+        if (tReturnCode)
         {
             irmp_data_p->protocol = irmp_protocol;
             irmp_data_p->address  = irmp_address;
@@ -2732,7 +2742,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
         irmp_ir_detected = FALSE;
     }
 
-    return rtc;
+    return tReturnCode;
 }
 
 #if IRMP_USE_CALLBACK == 1

@@ -288,7 +288,7 @@ const uint8_t irmp_used_protocol_index[] PROGMEM =
 #if IRMP_SUPPORT_TECHNICS_PROTOCOL == 1
     IRMP_TECHNICS_PROTOCOL,
 #endif
-#if IRMP_SUPPORT_PANASONIC_PROTOCOL == 1
+#if IRMP_SUPPORT_PANASONIC_PROTOCOL == 1 || IRMP_SUPPORT_KASEIKYO_PROTOCOL == 1 // Panasonic vendor ID for kaseikyo
     IRMP_PANASONIC_PROTOCOL,
 #endif
 #if IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL == 1
@@ -469,7 +469,7 @@ const char * const irmp_used_protocol_names[] PROGMEM =
 #if IRMP_SUPPORT_TECHNICS_PROTOCOL == 1
     proto_technics,
 #endif
-#if IRMP_SUPPORT_PANASONIC_PROTOCOL == 1
+#if IRMP_SUPPORT_PANASONIC_PROTOCOL == 1 || IRMP_SUPPORT_KASEIKYO_PROTOCOL == 1 // Panasonic vendor ID for kaseikyo
     proto_panasonic,
 #endif
 #if IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL == 1

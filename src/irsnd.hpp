@@ -2235,7 +2235,7 @@ irsnd_ISR (void)
                         pause_0_len                 = IRSND_KASEIKYO_0_PAUSE_LEN - 1;
                         has_stop_bit                = KASEIKYO_STOP_BIT;
                         complete_data_len           = KASEIKYO_COMPLETE_DATA_LEN;
-                        n_auto_repetitions          = (repeat_counter == 0) ? KASEIKYO_FRAMES : 1;          // 2 frames auto repetition if first frame
+                        n_auto_repetitions          = KASEIKYO_FRAMES;                                      // 1 frame
                         auto_repetition_pause_len   = IRSND_KASEIKYO_AUTO_REPETITION_PAUSE_LEN;             // 75 ms pause
                         repeat_frame_pause_len      = IRSND_KASEIKYO_FRAME_REPEAT_PAUSE_LEN;
                         irsnd_set_freq (IRSND_FREQ_38_KHZ);

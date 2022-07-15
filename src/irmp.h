@@ -182,13 +182,6 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #  define IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL      0
 #endif
 
-#if IRMP_SUPPORT_PANASONIC_PROTOCOL == 1 && IRMP_SUPPORT_KASEIKYO_PROTOCOL == 1
-#  warning PANASONIC protocol conflicts wih KASEIKYO, please enable only one of both protocols
-#  warning PANASONIC protocol disabled
-#  undef IRMP_SUPPORT_PANASONIC_PROTOCOL
-#  define IRMP_SUPPORT_PANASONIC_PROTOCOL      0
-#endif
-
 #if IRMP_SUPPORT_RC5_PROTOCOL == 1 && IRMP_SUPPORT_ORTEK_PROTOCOL == 1
 #  warning RC5 protocol conflicts wih ORTEK, please enable only one of both protocols
 #  warning ORTEK protocol disabled
