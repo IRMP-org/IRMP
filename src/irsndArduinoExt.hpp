@@ -165,7 +165,7 @@ void irsnd_off(void)
 #  endif
         }
 #endif
-        irsnd_is_on = FALSE;
+        irsnd_is_on = FALSE; // evaluated at ISR
     }
 }
 

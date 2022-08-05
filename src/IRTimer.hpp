@@ -220,6 +220,13 @@ void initIRTimerForSend(void)
     TIFR2 = _BV(OCF2B) | _BV(OCF2A) | _BV(TOV2);                    // reset interrupt flags
     TIMSK2 = _BV(OCIE2B);                                           // enable TIMER2_COMPB_vect interrupt to be compatible with tone() library
 
+#  elif defined(TCCR1B)  // __AVR_ATtiny88__ here
+    TCCR1A = 0;
+    TCCR1B = _BV(WGM12) | _BV(CS10);                                // CTC mode, no prescaling
+    OCR1A = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;                   // 209 for 76000 interrupts per second @ 16MHz
+    TCNT1 = 0;
+    TIMSK1 = _BV(OCIE1A);                                           // Timer/Counter1, Output Compare A Match Interrupt Enable
+
 #  else // if defined(__AVR_ATmega16__) etc
 #error "This AVR CPU is not supported by IRMP"
 #  endif // if defined(__AVR_ATmega16__)
@@ -407,13 +414,24 @@ void storeIRTimer(void) {
     sTimerOCRB = TCD0.CTRLC;
     sTimerTIMSK = TCD0.INTCTRL;
 
-#elif defined(__AVR__)
-// store current timer state
+#elif defined(OCF2B)  // __AVR_ATmega328__ here
+    // store current timer state
     sTimerTCCRA = TCCR2A;
     sTimerTCCRB = TCCR2B;
     sTimerOCR = OCR2A;
     sTimerOCRB = OCR2B;
     sTimerTIMSK = TIMSK2;
+
+#elif defined(TCCR1B)  // __AVR_ATtiny88__ here
+    // store current timer state
+    sTimerTCCRA = TCCR1A;
+    sTimerTCCRB = TCCR1B;
+    sTimerOCR = OCR1A;
+    sTimerOCRB = OCR1B;
+    sTimerTIMSK = TIMSK1;
+
+#elif defined(__AVR__)
+// #error "This AVR CPU is not supported by IRMP"
 
 #elif defined(ESP8266)
     sTimerLoadValue= T1L;
@@ -499,12 +517,23 @@ void restoreIRTimer(void) {
     TCD0.INTCTRL = sTimerTIMSK;
     TCD0.CTRLA = sTimerTCCRA;
 
-#elif defined(__AVR__)
+#elif defined(OCF2B)  // __AVR_ATmega328__ here
     TCCR2A = sTimerTCCRA;
     TCCR2B = sTimerTCCRB;
     OCR2A = sTimerOCR;
     OCR2B = sTimerOCRB;
     TIMSK2 = sTimerTIMSK;
+
+#elif defined(TCCR1B)  // __AVR_ATtiny88__ here
+    // store current timer state
+     TCCR1A = sTimerTCCRA;
+     TCCR1B = sTimerTCCRB;
+     OCR1A = sTimerOCR;
+     OCR1B = sTimerOCRB;
+     TIMSK1 = sTimerTIMSK;
+
+#elif defined(__AVR__)
+// #error "This AVR CPU is not supported by IRMP"
 
 #elif defined(ESP8266)
     timer1_write(sTimerLoadValue);
@@ -573,8 +602,15 @@ void disableIRTimerInterrupt(void) {
 #  elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
     TCD0.INTCTRL = 0;           // overflow interrupt
 
-#  else
+#  elif defined(OCF2B)  // __AVR_ATmega328__ here
     TIMSK2 = 0; // disable interrupt
+
+#  elif defined(TCCR1B)  // __AVR_ATtiny88__ here
+    TIMSK1 = 0;
+
+#  else
+// #error "This AVR CPU is not supported by IRMP"
+
 #  endif // defined(__AVR_ATmega16__)
 
 #elif defined(ESP8266)
@@ -638,8 +674,15 @@ void enableIRTimerInterrupt(void) {
 #  elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
     TCD0.INTCTRL = TCD_OVF_bm;      // overflow interrupt
 
-#  else
+#  elif defined(OCF2B)  // __AVR_ATmega328__ here
     TIMSK2 = _BV(OCIE2B); // enable interrupt
+
+#  elif defined(TCCR1B)  // __AVR_ATtiny88__ here
+    TIMSK1 = _BV(OCIE1A);
+
+#  else
+// #error "This AVR CPU is not supported by IRMP"
+
 #  endif // defined(__AVR_ATmega16__)
 
 #elif defined(ESP8266)
@@ -724,8 +767,15 @@ ISR(TIMER3_COMPB_vect)
 #  elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
 ISR(TCD0_OVF_vect)
 
-#  else
+#  elif defined(OCF2B)  // __AVR_ATmega328__ here
 ISR(TIMER2_COMPB_vect)
+
+#  elif defined(TCCR1B)  // __AVR_ATtiny88__ here
+ISR(TIMER1_COMPB_vect)
+
+#  else
+// #error "This AVR CPU is not supported by IRMP"
+
 #  endif // defined(__AVR_ATmega16__)
 
 #elif defined(ESP8266) || defined(ESP32)
@@ -751,7 +801,7 @@ void irmp_timer_ISR(void)
 #endif // defined(__AVR__)
 
 // Start of ISR
-        {
+{
 #if defined(ARDUINO_ARCH_SAMD)
     TC3->COUNT16.INTFLAG.bit.MC0 = 1; // Clear interrupt
 #endif

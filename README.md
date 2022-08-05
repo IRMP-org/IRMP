@@ -274,6 +274,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 # Revision History
 ### Version 3.6.2
 - Added Kaseikyo Panasonic decode.
+- Added ATtiny88 / AVR timer1 timer support.
 
 ### Version 3.6.1
 - Fixed NO_LED_FEEDBACK_CODE bug.
@@ -421,7 +422,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 - Added ESP8266 + ESP32 support.
 
 # CI
-Since Travis CI is unreliable and slow (5 times slower), the library examples are now tested with GitHub Actions for the following boards:
+Since Travis CI is slow (5 times slower), the library examples are now tested with GitHub Actions for the following boards:
 
 - arduino:avr:uno
 - arduino:avr:mega
