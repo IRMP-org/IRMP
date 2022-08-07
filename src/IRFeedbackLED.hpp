@@ -12,8 +12,8 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifndef IR_FEEDBACK_LED_HPP
-#define IR_FEEDBACK_LED_HPP
+#ifndef _IR_FEEDBACK_LED_HPP
+#define _IR_FEEDBACK_LED_HPP
 
 #if defined(ARDUINO)
 
@@ -121,4 +121,4 @@ void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
 
 #endif // !defined(NO_LED_FEEDBACK_CODE)
 #endif // defined(ARDUINO)
-#endif // IR_FEEDBACK_LED_HPP
+#endif // _IR_FEEDBACK_LED_HPP

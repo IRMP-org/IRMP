@@ -11,8 +11,8 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifndef IRSND_SELECT_PROTOCOLS_H
-#define IRSND_SELECT_PROTOCOLS_H
+#ifndef _IRSND_SELECT_PROTOCOLS_H
+#define _IRSND_SELECT_PROTOCOLS_H
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change settings from 1 to 0 if you want to disable one or more encoders.
@@ -41,4 +41,4 @@
 #define IRSND_SUPPORT_SIEMENS_PROTOCOL          1       // Siemens, Gigaset     >= 15000                 ~150 bytes
 #define IRSND_SUPPORT_NOKIA_PROTOCOL            1       // Nokia                >= 10000                 ~400 bytes
 
-#endif // IRSND_SELECT_PROTOCOLS_H
+#endif // _IRSND_SELECT_PROTOCOLS_H

@@ -12,8 +12,8 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifndef IRSND_SELECT_PROTOCOLS_H
-#define IRSND_SELECT_PROTOCOLS_H
+#ifndef _IRSND_SELECT_PROTOCOLS_H
+#define _IRSND_SELECT_PROTOCOLS_H
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change settings from 1 to 0 if you want to disable one or more encoders.
@@ -82,4 +82,4 @@
 #define IRMP_SUPPORT_RF_X10_PROTOCOL            0       // RF PC X10 (Medion)   >= 15000                 ~250 bytes
 #define IRMP_SUPPORT_RF_MEDION_PROTOCOL         0       // RF PC Medion         >= 15000                 ~250 bytes
 
-#endif // IRSND_SELECT_PROTOCOLS_H
+#endif // _IRSND_SELECT_PROTOCOLS_H

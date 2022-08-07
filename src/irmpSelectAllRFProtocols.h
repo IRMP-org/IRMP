@@ -11,8 +11,8 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifndef IRMP_SELECT_PROTOCOLS_H
-#define IRMP_SELECT_PROTOCOLS_H
+#ifndef _IRMP_SELECT_ALL_RF_PROTOCOLS_H
+#define _IRMP_SELECT_ALL_RF_PROTOCOLS_H
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change settings from 1 to 0 if you want to disable one or more decoders.
@@ -34,4 +34,4 @@
 // Usually IR sensors are low active, RF receivers are high active.
 #define IRMP_HIGH_ACTIVE                        1       // set to 1 if you use a RF receiver!
 
-#endif // IRMP_SELECT_PROTOCOLS_H
+#endif // _IRMP_SELECT_ALL_RF_PROTOCOLS_H

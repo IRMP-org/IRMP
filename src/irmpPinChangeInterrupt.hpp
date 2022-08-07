@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef IRMP_PIN_CHANGE_INTERRUPT_HPP
-#define IRMP_PIN_CHANGE_INTERRUPT_HPP
+#ifndef _IRMP_PIN_CHANGE_INTERRUPT_HPP
+#define _IRMP_PIN_CHANGE_INTERRUPT_HPP
 
 //#define PCI_DEBUG
 
@@ -379,4 +379,4 @@ void irmp_debug_print(const char *aMessage, bool aDoShortOutput)
     Serial.println();
 }
 
-#endif // IRMP_PIN_CHANGE_INTERRUPT_HPP
+#endif // _IRMP_PIN_CHANGE_INTERRUPT_HPP

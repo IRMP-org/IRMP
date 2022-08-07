@@ -1,7 +1,7 @@
 # [IRMP](https://github.com/ukw100/IRMP) - Infrared Multi Protocol Decoder + Encoder
 Available as Arduino library "IRMP"
 
-### [Version 3.6.2](https://github.com/ukw100/IRMP/archive/master.zip) - work in progress
+### [Version 3.6.3](https://github.com/ukw100/IRMP/archive/master.zip) - work in progress
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/IRMP)
@@ -272,7 +272,10 @@ The **tone library (using timer 2) is still available**. You can use it alternat
    https://www.mikrocontroller.net/topic/irmp-infrared-multi-protocol-decoder?goto=6996113#6996137
 
 # Revision History
+### Version 3.6.3
+
 ### Version 3.6.2
+- Fixed FEEDBACK_LED_IS_ACTIVE_LOW bug.
 - Added Kaseikyo Panasonic decode.
 - Added ATtiny88 / AVR timer1 timer support.
 
@@ -422,16 +425,26 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 - Added ESP8266 + ESP32 support.
 
 # CI
-Since Travis CI is slow (5 times slower), the library examples are now tested with GitHub Actions for the following boards:
+The library examples are tested with GitHub Actions for the following boards:
 
 - arduino:avr:uno
+- arduino:avr:leonardo
 - arduino:avr:mega
-- arduino:samd:arduino_zero_edbg
-- digistump:avr:digispark-tiny16
-- digistump:avr:digispark-pro (ATtiny167)
-- ATTinyCore:avr:attinyx5:chip=85,clock=8internal
-- esp8266:esp8266:huzzah:eesz=4M3M,xtal=80
+- arduino:megaavr:nona4809:mode=off
+- arduino:samd:arduino_zero_native
+- arduino:mbed:nano33ble
+- arduino:mbed_rp2040:pico
+- rp2040:rp2040:arduino_nano_connect
+- digistump:avr:digispark-tiny:clock=clock16
+- ATTinyCore:avr:attinyx5micr:LTO=enable,sketchclock=8pll
+- ATTinyCore:avr:attinyx7micr:LTO=enable,sketchclock=16external,pinmapping=new,millis=enabled
+- ATTinyCore:avr:attinyx8micr:LTO=enable,sketchclock=16external,pinmapping=mhtiny,millis=enabled  # ATtiny88 China clone board @16 MHz
+- TinyCore:avr:tiny32
+- esp8266:esp8266:d1_mini:eesz=4M3M,xtal=80
 - esp32:esp32:featheresp32:FlashFreq=80
-- STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
+- STMicroelectronics:stm32:GenF1:pnum=BLUEPILL_F103C8
+- STMicroelectronics:stm32:GenL0:pnum=THUNDERPACK_L072
+- stm32duino:STM32F1:genericSTM32F103C
+- SparkFun:apollo3:sfe_artemis_nano
 
 #### If you find this library useful, please give it a star.

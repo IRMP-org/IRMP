@@ -24,8 +24,8 @@
 // NO GUARD here, we have the GUARD below with #ifdef _IRSND_H_ and #ifdef _IRMP_H_.
 
 #if defined(ARDUINO)
-#ifndef IR_FEEDBACK_LED_H
-#define IR_FEEDBACK_LED_H
+#ifndef _IR_FEEDBACK_LED_H
+#define _IR_FEEDBACK_LED_H
 
 // define it for convenience reasons. It is an empty function, if NO_LED_FEEDBACK_CODE is enabled
 void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed);          // set the mode
@@ -50,5 +50,5 @@ constexpr auto irmp_LEDFeedback = irmp_irsnd_LEDFeedback;   // alias for irmp_LE
 constexpr auto irsnd_LEDFeedback = irmp_irsnd_LEDFeedback;  // alias for irsnd_LEDFeedback
 
 #endif // !defined(NO_LED_FEEDBACK_CODE)
-#endif // IR_FEEDBACK_LED_H
+#endif // _IR_FEEDBACK_LED_H
 #endif // defined(ARDUINO)

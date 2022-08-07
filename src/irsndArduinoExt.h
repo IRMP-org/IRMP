@@ -22,8 +22,8 @@
  */
 
 #if defined(ARDUINO)
-#ifndef IRSND_ARDUINO_EXT_H
-#define IRSND_ARDUINO_EXT_H
+#ifndef _IRSND_ARDUINO_EXT_H
+#define _IRSND_ARDUINO_EXT_H
 
 #include "irmpVersion.h"
 
@@ -83,5 +83,5 @@ void irsnd_data_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr);
 extern volatile uint8_t irsnd_is_on;                // Used by IRTimer.hpp
 extern volatile uint8_t irsnd_busy;                 // Used by IRTimer.hpp
 
-#endif /* IRSND_ARDUINO_EXT_H */
+#endif /* _IRSND_ARDUINO_EXT_H */
 #endif // ARDUINO

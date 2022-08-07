@@ -729,10 +729,10 @@ void enableIRTimerInterrupt(void) {
 /*
  * If both irmp and irsnd are used, compile it only once in the second step, when all variables are declared.
  */
-#if (! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) || ( defined(IRMP_ARDUINO_EXT_H) && defined(IRSND_ARDUINO_EXT_H) )) && ! defined(ISR_DEFINED)
-#if !defined(ISR_DEFINED)
+#if (! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) || ( defined(_IRMP_ARDUINO_EXT_H) && defined(_IRSND_ARDUINO_EXT_H) )) && ! defined(ISR_DEFINED)
+#  if !defined(ISR_DEFINED)
 #define ISR_DEFINED
-#endif
+#  endif
 /*
  * ISR is active while signal is sent AND during the trailing pause of IR frame
  * Called every 13.5us
@@ -755,10 +755,10 @@ ISR(TIMER0_COMPB_vect)
 ISR(TIMER1_COMPB_vect)
 #    endif
 
-#elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
+#  elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
 ISR(TCB0_INT_vect)
 
-#elif defined(__AVR_ATmega8__)
+#  elif defined(__AVR_ATmega8__)
 ISR(TIMER2_COMP_vect)
 
 #  elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
@@ -886,4 +886,4 @@ void irmp_timer_ISR(void)
     digitalWriteFast(IR_TIMING_TEST_PIN, LOW); // 2 clock cycles
 #endif
 }
-#endif // (! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) || ( defined(IRMP_ARDUINO_EXT_H) && defined(IRSND_ARDUINO_EXT_H) )) && ! defined(ISR_DEFINED)
+#endif // (! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) || ( defined(_IRMP_ARDUINO_EXT_H) && defined(_IRSND_ARDUINO_EXT_H) )) && ! defined(ISR_DEFINED)

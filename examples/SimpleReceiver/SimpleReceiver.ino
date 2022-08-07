@@ -90,7 +90,7 @@ void setup() {
      */
 #if defined(ALTERNATIVE_IR_FEEDBACK_LED_PIN)
     irmp_irsnd_LEDFeedback(true); // Enable receive signal feedback at ALTERNATIVE_IR_FEEDBACK_LED_PIN
-    Serial.print(F("IR feedback pin is " STR(ALTERNATIVE_IR_FEEDBACK_LED_PIN)));
+    Serial.println(F("IR feedback pin is " STR(ALTERNATIVE_IR_FEEDBACK_LED_PIN)));
 #endif
 
 }

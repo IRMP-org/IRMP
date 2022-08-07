@@ -22,8 +22,8 @@
  */
 
 #if defined(ARDUINO)
-#ifndef IRMP_ARDUINO_EXT_H
-#define IRMP_ARDUINO_EXT_H
+#ifndef _IRMP_ARDUINO_EXT_H
+#define _IRMP_ARDUINO_EXT_H
 
 #include <Arduino.h>  // for Print
 
@@ -138,5 +138,5 @@ void irmp_print_protocol_name(Print *aSerial, uint8_t aProtocolNumber);
 extern const uint8_t irmp_used_protocol_index[] PROGMEM;
 extern const char *const irmp_used_protocol_names[] PROGMEM;
 
-#endif // IRMP_ARDUINO_EXT_H
+#endif // _IRMP_ARDUINO_EXT_H
 #endif // ARDUINO

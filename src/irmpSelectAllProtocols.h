@@ -14,8 +14,8 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifndef IRMP_SELECT_PROTOCOLS_H
-#define IRMP_SELECT_PROTOCOLS_H
+#ifndef _IRMP_SELECT_PROTOCOLS_H
+#define _IRMP_SELECT_PROTOCOLS_H
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change settings from 1 to 0 if you want to disable one or more decoders.
@@ -105,4 +105,4 @@
 #define IRMP_SUPPORT_RF_MEDION_PROTOCOL         0       // RF PC Medion         >= 15000                 ~250 bytes
 
 
-#endif // IRMP_SELECT_PROTOCOLS_H
+#endif // _IRMP_SELECT_ALL_PROTOCOLS_H

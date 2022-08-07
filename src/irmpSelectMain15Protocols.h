@@ -11,8 +11,8 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifndef IRMP_SELECT_PROTOCOLS_H
-#define IRMP_SELECT_PROTOCOLS_H
+#ifndef _IRMP_SELECT_PROTOCOLS_H
+#define _IRMP_SELECT_PROTOCOLS_H
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Change settings from 1 to 0 (or deactivate it) if you want to disable one or more decoders.
@@ -49,4 +49,4 @@
 #define IRMP_SUPPORT_SIEMENS_PROTOCOL           1       // Siemens Gigaset      >= 15000                 ~550 bytes
 #define IRMP_SUPPORT_NOKIA_PROTOCOL             1       // Nokia                >= 10000                 ~300 bytes
 
-#endif // IRMP_SELECT_PROTOCOLS_H
+#endif // _IRMP_SELECT_PROTOCOLS_H

@@ -24,7 +24,7 @@
 // NO GUARD here, we have the GUARD below with #ifdef _IRSND_H_ and #ifdef _IRMP_H_.
 
 #if defined(ARDUINO)
-#if ! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) && defined(IRMP_ARDUINO_EXT_H) && defined(IRSND_ARDUINO_EXT_H)
+#if ! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) && defined(_IRMP_ARDUINO_EXT_H) && defined(_IRSND_ARDUINO_EXT_H)
 #error You seem to use receive and send in one sketch but forget to define USE_ONE_TIMER_FOR_IRMP_AND_IRSND before the includes. Unfortunately this cannot be done automatically.
 #endif
 
