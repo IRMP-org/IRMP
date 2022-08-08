@@ -20,14 +20,31 @@ Available as Arduino library "IRMP"
 |-|-|-|
 | ![Nano running AllProtocol example](pictures/NEC.jpg) | ![YouTube Video](pictures/KASEIKYO+Remote.jpg) | [![Instructable](https://github.com/ArminJo/Arduino-OpenWindowAlarm/blob/master/pictures/instructables-logo-v2.png)](https://www.instructables.com/id/IR-Remote-Analyzer-Receiver-With-Arduino) |
 
-<br><br>
-# List of protocols
-- Sony SIRCS, NEC + APPLE + ONKYO, Samsung + Samsg32, Kaseikyo
-- JVC, NEC16, NEC42, Matsushita, DENON, Sharp, RC5, RC6 & RC6A, IR60 (SDA2008) Grundig, Siemens Gigaset, Nokia
-- BOSE, Kathrein, NUBERT, FAN (ventilator), SPEAKER (~NUBERT), Bang & Olufsen, RECS80 (SAA3004), RECS80EXT (SAA3008), Thomson, NIKON camera, Netbox keyboard, ORTEK (Hama), Telefunken 1560, FDC3402 keyboard, RC Car, iRobot Roomba, RUWIDO, T-Home, A1 TV BOX, LEGO Power RC, RCMM 12,24, or 32, LG Air Condition, Samsung48, Merlin, Pentax, S100, ACP24, TECHNICS, PANASONIC Beamer, Mitsubishi Aircond, VINCENT, SAMSUNG AH, GREE CLIMATE, RCII T+A, RADIO e.g. TEVION, METZ<br/>
-- **NEC, Kaseiko, Denon, RC6, Samsung + Samsg32** were successfully tested in **interrupt mode**, but there are many protocols which **in principle cannot be decoded** in this mode.
+<br/>
 
-<br><br>
+# List of protocols
+`   Sony SIRCS   ` &nbsp; &nbsp; `   NEC + APPLE + ONKYO   ` &nbsp; &nbsp; `   Samsung + Samsg32   ` &nbsp; &nbsp; `   Kaseikyo   `
+
+`   JVC   ` &nbsp; &nbsp; `   NEC16 + NEC42   ` &nbsp; &nbsp; `   Matsushita   ` &nbsp; &nbsp; `   DENON   `
+&nbsp; &nbsp; `   Sharp   ` &nbsp; &nbsp; `   RC5   ` &nbsp; &nbsp; `   RC6 & RC6A   ` &nbsp; &nbsp; `   IR60 (SDA2008) Grundig   `
+&nbsp; &nbsp; `   Siemens Gigaset   ` &nbsp; &nbsp; `   Nokia   `
+
+`   BOSE   ` &nbsp; &nbsp; `   Kathrein   ` &nbsp; &nbsp; `   NUBERT   ` &nbsp; &nbsp; `   FAN (ventilator)   `
+&nbsp; &nbsp; `   SPEAKER (~NUBERT   ` &nbsp; &nbsp; `   Bang & Olufsen   ` &nbsp; &nbsp; `   RECS80 (SAA3004)   `<br/>
+&nbsp; &nbsp; `   RECS80EXT (SAA3008)   ` &nbsp; &nbsp; `   Thomson   ` &nbsp; &nbsp; `   NIKON camera   `
+&nbsp; &nbsp; `   Netbox keyboard   ` &nbsp; &nbsp; `   ORTEK (Hama)   ` &nbsp; &nbsp; `   Telefunken 1560   `<br/>
+&nbsp; &nbsp; `   FDC3402 keyboard   ` &nbsp; &nbsp; `   RC Car   ` &nbsp; &nbsp; `   iRobot Roomba   `
+&nbsp; &nbsp; `   RUWIDO   ` &nbsp; &nbsp; `   T-Home   ` &nbsp; &nbsp; `   A1 TV BOX   ` &nbsp; &nbsp;`   LEGO Power RC   `<br/>
+&nbsp; &nbsp; `   RCMM 12,24, or 32   ` &nbsp; &nbsp; `   LG Air Condition   ` &nbsp; &nbsp; `   Samsung48   `
+&nbsp; &nbsp; `   Merlin   ` &nbsp; &nbsp; `   Pentax   ` &nbsp; &nbsp; `   S100   ` &nbsp; &nbsp; `   ACP24   ` &nbsp; &nbsp; `   TECHNICS   `<br/>
+&nbsp; &nbsp; `   PANASONIC Beamer   ` &nbsp; &nbsp; `   Mitsubishi Aircond   ` &nbsp; &nbsp; `   VINCENT   `
+&nbsp; &nbsp; `   SAMSUNG AH   ` &nbsp; &nbsp; `   GREE CLIMATE   `  &nbsp; &nbsp; `   RCII T+A   `<br/>
+ &nbsp; &nbsp; `   RADIO e.g. TEVION   ` &nbsp; &nbsp; `   METZ   `
+
+`   NEC   ` &nbsp; &nbsp; `   Kaseiko   ` &nbsp; &nbsp; `   Denon   ` &nbsp; &nbsp; `   RC6   ` &nbsp; &nbsp; `   Samsung + Samsg32   ` &nbsp; were successfully tested in **interrupt mode**, but there are many protocols which **in principle cannot be decoded** in this mode.
+
+<br/>
+
 # Features
 - You may use **every pin for input or output**.
 - Interrupt mode for major protocols.
@@ -40,20 +57,23 @@ Available as Arduino library "IRMP"
 
 # Restrictions
 - Send IR frequency is fixed at 38 kHz.
-<br><br>
+<br/>
+
 # Minimal version
 For applications only requiring NEC protocol, there is a receiver which has very **small codesize of 500 bytes and does NOT require any timer**. See the MinimalReceiver and IRDispatcherDemo example how to use it. Mapping of pins to interrupts can be found [here](https://github.com/Arduino-IRremote/Arduino-IRremote/tree/master/src/TinyIRReceiver.hpp#L259).
-<br><br>
+<br/>
+
 # Schematic for Arduino UNO
 The VS1838B is used as receiver for all examples and tests. This module has a 120 µs on/low and a 100 µs off/high delay between received signal and output. So it shortens the mark and extends the space by 20 µs.
 | IR-Receiver connection | Serial LCD connection |
 |---|---|
 ![Fritzing schematic for Arduino UNO](extras/IRMP_UNO_Steckplatine.png) | ![Fritzing schematic for Arduino UNO + LCD](extras/IRMP_UNO_LCD_Steckplatine.png)
-<br><br>
+<br/>
+
 # Supported Arduino architectures / CPU's / boards
 Digispark boards are tested with the recommended [ATTinyCore](https://github.com/SpenceKonde/ATTinyCore) using `New Style` pin mapping for the pro board.
 | Architecture | CPU | Board |
-|-|-|-|
+|:---|---:|----:|
 | avr     | ATmega16, ATmega328P, ATmega32U4, ATtinyX5, ATtinyX7 | Uno, Nano, Leonardo, Sparkfun Pro Micro, Digispark etc. |
 | megaavr | ATmega4809 | Uno WiFi Rev 2, Nano Every |
 | samd    | SAMD21G18A | Zero, MKR*, etc. **but not DUE, which is sam architecture** |
@@ -64,7 +84,8 @@ Digispark boards are tested with the recommended [ATTinyCore](https://github.com
 | apollo3 | Ambiq Apollo3 | Sparkfun Apollo3 + Artemis |
 | mbed    | nRF528x       | Nano 33 BLE |
 | Teensiduino | all  - but [limited support](https://forum.pjrc.com/threads/65912-Enable-Continuous-Integration-with-arduino-cli-for-3-party-libraries) | >= Teensy 3 |
-<br><br>
+<br/>
+
 # Quick comparison of 4 Arduino IR receiving libraries
 ## This is a short comparison and may not be complete or correct
 I created this comparison matrix for [myself](https://github.com/ArminJo) in order to choose a small IR lib for my project and to have a quick overview, when to choose which library.<br/>
@@ -90,7 +111,8 @@ It is dated from **03.02.2021**. If you have complains about the data or request
 
 \* The Hash protocol gives you a hash as code, which may be sufficient to distinguish your keys on the remote, but may not work with some protocols like Mitsubishi
 
-<br><br>
+<br/>
+
 # Pin usage
 You may use **every pin for input or output**, just define it like `#define IRMP_INPUT_PIN 2` and `#define IRSND_OUTPUT_PIN 3`. The PWM of the output pin is generated by software bit banging.
 
@@ -99,11 +121,14 @@ If you want to use pin numbers for input, output and LED feedback specified at r
 The `irmp_init` and `irsnd_init` function then allows up to 3 parameters `uint_fast8_t aIrmpInputPin/aIrsndOutputPin, uint_fast8_t aIrmpFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow`.<br/>
 Be aware, only one pin and enable flag for receive and send feedback LED is supported.
 
+<br/>
+
 # Receiving and sending simultaneously
 Receiving and sending is possible with this library, but since we use only 1 timer, receiving is inhibited while sending the IR signal.<br/>
 Sending the IR signal starts with saving current timer configuration, setting the timer to the send configuration / frequency, sending the signal (and waiting for the gap after the signal) and then automatically reset the timer to its previous (receiving) configuration.
 
-<br><br>
+<br/>
+
 # API
 ### IRMP
 
@@ -156,7 +181,8 @@ void enableIRTimerInterrupt(void);
 void storeIRTimer(void);
 void restoreIRTimer(void);
 ```
-<br><br>
+<br/>
+
 # Examples
 In order to fit the examples to the 8K flash of ATtiny85 and ATtiny88, the [Arduino library ATtinySerialOut](https://github.com/ArminJo/ATtinySerialOut) is required for this CPU's.
 
@@ -176,7 +202,9 @@ Values can be used to determine the stability of the received signal as well as 
 It also computes the MARK_EXCESS_MICROS value, which is the extension of the mark (pulse) duration introduced by the IR receiver module.<br/>
 It can be tested online with [WOKWI](https://wokwi.com/arduino/projects/299033930562011656).
 Click on the receiver while simulation is running to specify individual IR codes.
-<br><br>
+
+<br/>
+
 # Compile options / macros for this library
 To customize the library to different requirements, there are some compile options / macros available, which must be set **before** including the library e.g. with `#include <irmp.hpp>`.<br/>
 Modify it by setting the value to 1 or 0. Or define the macro with the -D compiler option for global compile (the latter is not possible with the Arduino IDE, so consider using [Sloeber](https://eclipse.baeyens.it).<br/>
@@ -222,6 +250,8 @@ The modification must be renewed for each new library version!
 If you are using [Sloeber](https://eclipse.baeyens.it) as your IDE, you can easily define global symbols with *Properties > Arduino > CompileOptions*.<br/>
 ![Sloeber settings](https://github.com/ArminJo/ServoEasing/blob/master/pictures/SloeberDefineSymbols.png)
 
+<br/>
+
 # [Timer usage](https://github.com/IRMP-org/IRMP/blob/master/src/IRTimer.hpp#L39)
 The IRMP **receive** library works by polling the input pin at a rate of 10 to 20 kHz. Default is 15 kHz.<br/>
 Some protocols (NEC, Kaseiko, Denon, RC6, Samsung + Samsg32) can be received **without timer usage**, just by using interrupts from the input pin by defining `IRMP_ENABLE_PIN_CHANGE_INTERRUPT`. There are many protocols which **in principle cannot be decoded** in this mode. See [Interrupt example](examples/Interrupt/Interrupt.ino).<br/>
@@ -238,6 +268,8 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 - For ESP8266 and ESP32 **timer1** is used.
 - For STM32 (BluePill) **timer 3 (Servo timer) channel 1** is used as default.<br/>
 
+<br/>
+
 # Tips and tricks
 - To port the library to another device, you merely have to extend *IRTimer.hpp*.
 - The minimal CPU clock required for receiving is 8MHz.
@@ -250,6 +282,8 @@ The **tone library (using timer 2) is still available**. You can use it alternat
  For 3 diodes it requires factor 2.5 e.g. from 150 ohm to 60 ohm.
 - A lot of recent IR diodes can be powered with max. 200 mA at 50% duty cycle, but for this you will require an external driver / transistor / (mos)fet.
 - In order to fit the examples to the 8K flash of ATtiny85 and ATtiny88, the [Arduino library ATtinySerialOut](https://github.com/ArminJo/ATtinySerialOut) is required for this CPU's.
+
+<br/>
 
 # [AllProtocol](examples/AllProtocols/AllProtocols.ino) example
 | Serial LCD output | Arduino Serial Monitor output |
@@ -264,6 +298,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 | ![NUBERT](pictures/NUBERT.jpg) |![ONKYO](pictures/ONKYO.jpg) |![RECS80](pictures/RECS80.jpg) |![RUWIDO](pictures/RUWIDO.jpg) |
 | ![SAMSUNG](pictures/SAMSUNG.jpg) |![SIEMENS](pictures/SIEMENS.jpg) |![TELEFUNKEN](pictures/TELEFUNKEN.jpg) |![TELEFUNKEN](pictures/TELEFUNKEN.jpg) |
 
+<br/>
 
 # Documentation at mikrocontroller.net
 ### English
@@ -274,6 +309,8 @@ The **tone library (using timer 2) is still available**. You can use it alternat
    http://www.mikrocontroller.net/articles/IRSND
 ### German Forum
    https://www.mikrocontroller.net/topic/irmp-infrared-multi-protocol-decoder?goto=6996113#6996137
+
+<br/>
 
 # Revision History
 ### Version 3.6.3
@@ -287,7 +324,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 - Fixed NO_LED_FEEDBACK_CODE bug.
 
 ### Version 3.6.0
-- Improved timings by Jörg R.
+- Improved timings by JÃ¶rg R.
 - Support for NEC 8 bit address.
 - Fixed ATmega4809 bug.
 - RP2040 support added.
