@@ -14,7 +14,7 @@
  * ATmega164, ATmega324, ATmega644,  ATmega644P, ATmega1284, ATmega1284P
  * ATmega88,  ATmega88P, ATmega168,  ATmega168P, ATmega328P
  *
- * This file is part of IRMP https://github.com/ukw100/IRMP.
+ * This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

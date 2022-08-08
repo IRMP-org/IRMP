@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2019-2020 Armin Joachimsmeyer
  *
- * This file is part of IRMP https://github.com/ukw100/IRMP.
+ * This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

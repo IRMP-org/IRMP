@@ -4,7 +4,7 @@ about: Only if something isn't working as expected 🤔, otherwise please open a
 assignees: ArminJo
 ---
 
-If you have handling problems or questions, consider to open a discussion https://github.com/ukw100/IRMP/discussions instead of an issue.
+If you have handling problems or questions, consider to open a discussion https://github.com/IRMP-org/IRMP/discussions instead of an issue.
 
 ## Bug Report
 
