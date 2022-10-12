@@ -29,7 +29,7 @@ jobs:
   build:
     name: ${{ matrix.arduino-boards-fqbn }} - test compiling examples
 
-    runs-on: ubuntu-18.04 # I picked Ubuntu to use shell scripts.
+    runs-on: ubuntu-latest # I picked Ubuntu to use shell scripts.
 
     strategy:
       matrix:
@@ -58,8 +58,8 @@ jobs:
           - ATTinyCore:avr:attinyx8micr:LTO=enable,sketchclock=16external,pinmapping=mhtiny,millis=enabled  # ATtiny88 China clone board @16 MHz
           - TinyCore:avr:tiny32
 # Not yet supported by IRTimer.hpp
-#          - MiniCore:avr:8:bootloader=uart0,eeprom=keep,BOD=2v7,LTO=Os_flto,clock=16MHz_external # ATmega8
-#          - MegaCore:avr:128:bootloader=no_bootloader,eeprom=keep,BOD=2v7,LTO=Os,clock=8MHz_internal # ATmega128
+          - MiniCore:avr:8:bootloader=uart0,eeprom=keep,BOD=2v7,LTO=Os_flto,clock=16MHz_external # ATmega8
+          - MegaCore:avr:128:bootloader=no_bootloader,eeprom=keep,BOD=2v7,LTO=Os,clock=8MHz_internal # ATmega128
           - esp8266:esp8266:d1_mini:eesz=4M3M,xtal=80
           - esp32:esp32:featheresp32:FlashFreq=80
           - STMicroelectronics:stm32:GenF1:pnum=BLUEPILL_F103C8
@@ -104,16 +104,15 @@ jobs:
           - arduino-boards-fqbn: rp2040:rp2040:arduino_nano_connect
             platform-url: https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
 
+          - arduino-boards-fqbn: MiniCore:avr:8:bootloader=uart0,eeprom=keep,BOD=2v7,LTO=Os_flto,clock=16MHz_external
+            platform-url: https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
+            arduino-platform: MiniCore:avr,arduino:avr # gcc is taken from arduino:avr
+            sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins,SendAllProtocols,MinimalReceiver,IRDispatcherDemo,Interrupt  # Does not fit in FLASH
 
-#          - arduino-boards-fqbn: MiniCore:avr:8:bootloader=uart0,eeprom=keep,BOD=2v7,LTO=Os_flto,clock=16MHz_external
-#            platform-url: https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
-#            arduino-platform: MiniCore:avr,arduino:avr # gcc is taken from arduino:avr
-#            sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
-
-#          - arduino-boards-fqbn: MegaCore:avr:128:bootloader=no_bootloader,eeprom=keep,BOD=2v7,LTO=Os,clock=8MHz_internal
-#            platform-url: https://mcudude.github.io/MegaCore/package_MCUdude_MegaCore_index.json
-#            arduino-platform: MegaCore:avr,arduino:avr # gcc is taken from arduino:avr
-#            sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
+          - arduino-boards-fqbn: MegaCore:avr:128:bootloader=no_bootloader,eeprom=keep,BOD=2v7,LTO=Os,clock=8MHz_internal
+            platform-url: https://mcudude.github.io/MegaCore/package_MCUdude_MegaCore_index.json
+            arduino-platform: MegaCore:avr,arduino:avr # gcc is taken from arduino:avr
+            sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
 
           - arduino-boards-fqbn: esp8266:esp8266:d1_mini:eesz=4M3M,xtal=80
             platform-url: https://arduino.esp8266.com/stable/package_esp8266com_index.json

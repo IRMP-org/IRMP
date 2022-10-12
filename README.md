@@ -23,25 +23,25 @@ Available as Arduino library "IRMP"
 <br/>
 
 # List of protocols
-`   Sony SIRCS   ` &nbsp; &nbsp; `   NEC + APPLE + ONKYO   ` &nbsp; &nbsp; `   Samsung + Samsg32   ` &nbsp; &nbsp; `   Kaseikyo   `
+` Sony SIRCS ` &nbsp; &nbsp; ` NEC + APPLE + ONKYO ` &nbsp; &nbsp; ` Samsung + Samsg32 ` &nbsp; &nbsp; ` Kaseikyo `
 
-`   JVC   ` &nbsp; &nbsp; `   NEC16 + NEC42   ` &nbsp; &nbsp; `   Matsushita   ` &nbsp; &nbsp; `   DENON   `
-&nbsp; &nbsp; `   Sharp   ` &nbsp; &nbsp; `   RC5   ` &nbsp; &nbsp; `   RC6 & RC6A   ` &nbsp; &nbsp; `   IR60 (SDA2008) Grundig   `
-&nbsp; &nbsp; `   Siemens Gigaset   ` &nbsp; &nbsp; `   Nokia   `
+` JVC ` &nbsp; &nbsp; ` NEC16 + NEC42 ` &nbsp; &nbsp; ` Matsushita ` &nbsp; &nbsp; ` DENON `
+&nbsp; &nbsp; ` Sharp ` &nbsp; &nbsp; ` RC5 ` &nbsp; &nbsp; ` RC6 & RC6A ` &nbsp; &nbsp; ` IR60 (SDA2008) Grundig `
+&nbsp; &nbsp; ` Siemens Gigaset ` &nbsp; &nbsp; ` Nokia `
 
-`   BOSE   ` &nbsp; &nbsp; `   Kathrein   ` &nbsp; &nbsp; `   NUBERT   ` &nbsp; &nbsp; `   FAN (ventilator)   `
-&nbsp; &nbsp; `   SPEAKER (~NUBERT   ` &nbsp; &nbsp; `   Bang & Olufsen   ` &nbsp; &nbsp; `   RECS80 (SAA3004)   `<br/>
-&nbsp; &nbsp; `   RECS80EXT (SAA3008)   ` &nbsp; &nbsp; `   Thomson   ` &nbsp; &nbsp; `   NIKON camera   `
-&nbsp; &nbsp; `   Netbox keyboard   ` &nbsp; &nbsp; `   ORTEK (Hama)   ` &nbsp; &nbsp; `   Telefunken 1560   `<br/>
-&nbsp; &nbsp; `   FDC3402 keyboard   ` &nbsp; &nbsp; `   RC Car   ` &nbsp; &nbsp; `   iRobot Roomba   `
-&nbsp; &nbsp; `   RUWIDO   ` &nbsp; &nbsp; `   T-Home   ` &nbsp; &nbsp; `   A1 TV BOX   ` &nbsp; &nbsp;`   LEGO Power RC   `<br/>
-&nbsp; &nbsp; `   RCMM 12,24, or 32   ` &nbsp; &nbsp; `   LG Air Condition   ` &nbsp; &nbsp; `   Samsung48   `
-&nbsp; &nbsp; `   Merlin   ` &nbsp; &nbsp; `   Pentax   ` &nbsp; &nbsp; `   S100   ` &nbsp; &nbsp; `   ACP24   ` &nbsp; &nbsp; `   TECHNICS   `<br/>
-&nbsp; &nbsp; `   PANASONIC Beamer   ` &nbsp; &nbsp; `   Mitsubishi Aircond   ` &nbsp; &nbsp; `   VINCENT   `
-&nbsp; &nbsp; `   SAMSUNG AH   ` &nbsp; &nbsp; `   GREE CLIMATE   `  &nbsp; &nbsp; `   RCII T+A   `<br/>
- &nbsp; &nbsp; `   RADIO e.g. TEVION   ` &nbsp; &nbsp; `   METZ   `
+` BOSE ` &nbsp; &nbsp; ` Kathrein ` &nbsp; &nbsp; ` NUBERT ` &nbsp; &nbsp; ` FAN (ventilator) `
+&nbsp; &nbsp; ` SPEAKER (~NUBERT) ` &nbsp; &nbsp; ` Bang & Olufsen ` &nbsp; &nbsp; ` RECS80 (SAA3004) `<br/>
+&nbsp; &nbsp; ` RECS80EXT (SAA3008) ` &nbsp; &nbsp; ` Thomson ` &nbsp; &nbsp; ` NIKON camera `
+&nbsp; &nbsp; ` Netbox keyboard ` &nbsp; &nbsp; ` ORTEK (Hama) ` &nbsp; &nbsp; ` Telefunken 1560 `<br/>
+&nbsp; &nbsp; ` FDC3402 keyboard ` &nbsp; &nbsp; ` RC Car ` &nbsp; &nbsp; ` iRobot Roomba `
+&nbsp; &nbsp; ` RUWIDO ` &nbsp; &nbsp; ` T-Home ` &nbsp; &nbsp; ` A1 TV BOX ` &nbsp; &nbsp;` LEGO Power RC `<br/>
+&nbsp; &nbsp; ` RCMM 12,24, or 32 ` &nbsp; &nbsp; ` LG Air Condition ` &nbsp; &nbsp; ` Samsung48 `
+&nbsp; &nbsp; ` Merlin ` &nbsp; &nbsp; ` Pentax ` &nbsp; &nbsp; ` S100 ` &nbsp; &nbsp; ` ACP24 ` &nbsp; &nbsp; ` TECHNICS `<br/>
+&nbsp; &nbsp; ` PANASONIC Beamer ` &nbsp; &nbsp; ` Mitsubishi Aircond ` &nbsp; &nbsp; ` VINCENT `
+&nbsp; &nbsp; ` SAMSUNG AH ` &nbsp; &nbsp; ` GREE CLIMATE `  &nbsp; &nbsp; ` RCII T+A `<br/>
+ &nbsp; &nbsp; ` RADIO e.g. TEVION ` &nbsp; &nbsp; ` METZ `
 
-`   NEC   ` &nbsp; &nbsp; `   Kaseiko   ` &nbsp; &nbsp; `   Denon   ` &nbsp; &nbsp; `   RC6   ` &nbsp; &nbsp; `   Samsung + Samsg32   ` &nbsp; were successfully tested in **interrupt mode**, but there are many protocols which **in principle cannot be decoded** in this mode.
+` NEC ` &nbsp; &nbsp; ` Kaseiko ` &nbsp; &nbsp; ` Denon ` &nbsp; &nbsp; ` RC6 ` &nbsp; &nbsp; ` Samsung + Samsg32 ` &nbsp; were successfully tested in **interrupt mode**, but there are many protocols which **in principle cannot be decoded** in this mode.
 
 <br/>
 
@@ -278,8 +278,8 @@ The **tone library (using timer 2) is still available**. You can use it alternat
  because of the high startup time from sleep of 4 to 5 ms for this clock. You have to use the ISP to [rewrite the CKSEL fuses](https://github.com/ArminJo/micronucleus-firmware/blob/master/utils/Write%2085%20Fuses%20E2%20DF%20FF%20-%20ISP%20Mode%20%3D%208MHz%20without%20BOD%20and%20Pin5.cmd) and to load the program.
  - The best way to **increase the IR power** is to use 2 or 3 IR diodes in series. 
  One diode requires 1.1 to 1.5 volt so you can supply 3 diodes with a 5 volt output.To keep the current, 
- you must reduce the resistor by (5 - 1.3) / (5 - 2.6) = 1.5 e.g. from 150 ohm to 100 ohm for 25 mA and 2 diodes with 1.3 volt and a 5 volt supply.
- For 3 diodes it requires factor 2.5 e.g. from 150 ohm to 60 ohm.
+ you must reduce the resistor by (5 - 1.3) / (5 - 2.6) = 1.5 e.g. from 150 &ohm; to 100 &ohm; for 25 mA and 2 diodes with 1.3 volt and a 5 volt supply.
+ For 3 diodes it requires factor 2.5 e.g. from 150 &ohm; to 60 &ohm;.
 - A lot of recent IR diodes can be powered with max. 200 mA at 50% duty cycle, but for this you will require an external driver / transistor / (mos)fet.
 - In order to fit the examples to the 8K flash of ATtiny85 and ATtiny88, the [Arduino library ATtinySerialOut](https://github.com/ArminJo/ATtinySerialOut) is required for this CPU's.
 

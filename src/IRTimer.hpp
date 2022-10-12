@@ -225,7 +225,11 @@ void initIRTimerForSend(void)
     TCCR1B = _BV(WGM12) | _BV(CS10);                                // CTC mode, no prescaling
     OCR1A = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;                   // 209 for 76000 interrupts per second @ 16MHz
     TCNT1 = 0;
+#    if defined(TIMSK1)
     TIMSK1 = _BV(OCIE1A);                                           // Timer/Counter1, Output Compare A Match Interrupt Enable
+#    else // ATmega128 ?
+    TIMSK = _BV(OCIE1A);                                            // Timer/Counter1, Output Compare A Match Interrupt Enable
+#    endif
 
 #  else // if defined(__AVR_ATmega16__) etc
 #error "This AVR CPU is not supported by IRMP"
@@ -428,7 +432,11 @@ void storeIRTimer(void) {
     sTimerTCCRB = TCCR1B;
     sTimerOCR = OCR1A;
     sTimerOCRB = OCR1B;
+#    if defined(TIMSK1)
     sTimerTIMSK = TIMSK1;
+#    else
+    sTimerTIMSK = TIMSK;
+#    endif
 
 #elif defined(__AVR__)
 // #error "This AVR CPU is not supported by IRMP"
@@ -530,8 +538,11 @@ void restoreIRTimer(void) {
      TCCR1B = sTimerTCCRB;
      OCR1A = sTimerOCR;
      OCR1B = sTimerOCRB;
+#    if defined(TIMSK1)
      TIMSK1 = sTimerTIMSK;
-
+#    else
+     TIMSK = sTimerTIMSK;
+#    endif
 #elif defined(__AVR__)
 // #error "This AVR CPU is not supported by IRMP"
 
@@ -606,7 +617,11 @@ void disableIRTimerInterrupt(void) {
     TIMSK2 = 0; // disable interrupt
 
 #  elif defined(TCCR1B)  // __AVR_ATtiny88__ here
+#    if defined(TIMSK1)
     TIMSK1 = 0;
+#    else
+    TIMSK = 0;
+#    endif
 
 #  else
 // #error "This AVR CPU is not supported by IRMP"
@@ -678,7 +693,11 @@ void enableIRTimerInterrupt(void) {
     TIMSK2 = _BV(OCIE2B); // enable interrupt
 
 #  elif defined(TCCR1B)  // __AVR_ATtiny88__ here
+#    if defined(TIMSK1)
     TIMSK1 = _BV(OCIE1A);
+#    else
+    TIMSK = _BV(OCIE1A);
+#    endif
 
 #  else
 // #error "This AVR CPU is not supported by IRMP"
