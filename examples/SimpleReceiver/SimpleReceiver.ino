@@ -55,6 +55,7 @@
 
 //#include <irmpSelectMain15Protocols.h>  // This enables 15 main protocols
 #define IRMP_SUPPORT_NEC_PROTOCOL        1 // this enables only one protocol
+//#define IRMP_SUPPORT_SIRCS_PROTOCOL      1 // this enables only one protocol
 
 /*
  * We use LED_BUILTIN as feedback for commands 0x40 and 0x48 and cannot use it as feedback LED for receiving

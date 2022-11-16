@@ -94,7 +94,7 @@ jobs:
           - arduino-boards-fqbn: ATTinyCore:avr:attinyx7micr:LTO=enable,sketchclock=16external,pinmapping=new,millis=enabled
             platform-url: http://drazzy.com/package_drazzy.com_index.json
             required-libraries: ATtinySerialOut
-            sketches-exclude: ReceiveAndSendDynamicPins # No Serial.available() function in ATtinySerialOut
+            sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # No Serial.available() function in ATtinySerialOut
 
           - arduino-boards-fqbn: TinyCore:avr:tiny32
             platform-url: https://raw.githubusercontent.com/xukangmin/TinyCore/master/avr/package/package_tinycore_index.json
@@ -141,7 +141,7 @@ jobs:
             sketches-exclude: MinimalReceiver
 
       # Do not cancel all jobs / architectures if one job fails
-#      fail-fast: false
+      fail-fast: false
 
     steps:
       - name: Checkout

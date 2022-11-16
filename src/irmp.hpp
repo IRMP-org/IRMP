@@ -2499,6 +2499,22 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
 #  endif
 #endif
 
+#if IRMP_SUPPORT_SIRCS_PROTOCOL == 1
+            case IRMP_SIRCS_PROTOCOL:
+                // Concatenate high byte of command and low byte of address
+                irmp_address <<= 7;
+                irmp_address = irmp_address | irmp_command >> 8;
+                // Command is 7 bytes, so add the 8.th bit of command to address
+                irmp_address <<= 1;
+                if ((irmp_command & 0x80))
+                {
+                    irmp_address++;
+                }
+                irmp_command &= 0x7F;
+                tReturnCode = TRUE;
+                break;
+#endif
+
 #if IRMP_SUPPORT_NEC_PROTOCOL == 1
             case IRMP_NEC_PROTOCOL:
                 if ((irmp_command >> 8) == (~irmp_command & 0x00FF))

@@ -87,7 +87,7 @@ IRMP_DATA irmp_data;
 #endif
 
 #if defined(USE_SERIAL_LCD)
-LiquidCrystal_I2C myLCD(0x27, LCD_COLUMNS, LCD_ROWS);  // set the LCD address to 0x27 for a 20 chars and 2 line display
+LiquidCrystal_I2C myLCD(0x27, LCD_COLUMNS, LCD_ROWS);  // set the LCD address to 0x27 for a 16 chars and 2 line display
 #endif
 #if defined(USE_PARALLEL_LCD)
 //LiquidCrystal myLCD(4, 5, 6, 7, 8, 9);
@@ -106,6 +106,7 @@ uint32_t volatile sMillisOfLastVoltagePrint;
 
 void handleReceivedIRData();
 void printIRResultOnLCD();
+size_t printHex(uint16_t aHexByteValue);
 
 bool volatile sIRMPDataAvailable = false;
 
@@ -144,6 +145,7 @@ void setup()
 #endif
 
 #if defined(USE_LCD)
+    myLCD.setCursor(0, 0);
     myLCD.print(F("IRMP all  v" VERSION_IRMP));
     myLCD.setCursor(0, 1);
     myLCD.print(F(__DATE__));
@@ -183,11 +185,10 @@ void loop()
         sMillisOfLastVoltagePrint = millis();
         uint16_t tVCC = getVCCVoltageMillivoltSimple();
 
-        myLCD.setCursor(10, 0);
-        myLCD.print(' ');
-        myLCD.print(tVCC / 1000);
-        myLCD.print('.');
-        myLCD.print(((tVCC + 5) / 10) % 100);
+        char tVoltageString[5];
+        dtostrf(tVCC / 1000.0, 4, 2, tVoltageString);
+        myLCD.setCursor(11, 0);
+        myLCD.print(tVoltageString);
         myLCD.print('V');
     }
 #endif
@@ -277,15 +278,15 @@ void printIRResultOnLCD()
          * Show address
          */
         myLCD.setCursor(0, tStartRow + 1);
-        myLCD.print(F("A=0x"));
-        myLCD.print(irmp_data.address, HEX);
+        myLCD.print(F("A="));
+        printHex(irmp_data.address);
 
 #  if (LCD_COLUMNS > 16)
         /*
          * Print prefix of command here, since it is constant string
          */
         myLCD.setCursor(9, tStartRow + 1);
-        myLCD.print(F("C=0x"));
+        myLCD.print(F("C="));
 #  endif
     }
     else
@@ -320,22 +321,17 @@ void printIRResultOnLCD()
     {
         sLastCommand = tCommand;
         /*
-         * Print prefix of command
-         */
-        myLCD.setCursor(9, tStartRow + 1);
-
-        /*
          * Print prefix for 8/16 bit commands
          */
         if (tCommand >= 0x100)
         {
-            myLCD.print(F("0x"));
-            sLastCommandPrintPosition = 11;
+            sLastCommandPrintPosition = 9;
         }
         else
         {
-            myLCD.print(F("C=0x"));
-            sLastCommandPrintPosition = 13;
+            myLCD.setCursor(9, tStartRow + 1);
+            myLCD.print(F("C="));
+            sLastCommandPrintPosition = 11;
         }
     }
 #  endif
@@ -344,13 +340,17 @@ void printIRResultOnLCD()
      * Command data
      */
     myLCD.setCursor(sLastCommandPrintPosition, tStartRow + 1);
-    if (irmp_data.command < 0x10)
-    {
-        // leading 0
-        myLCD.print('0');
-    }
-    myLCD.print(tCommand, HEX);
+    printHex(tCommand);
 
 #endif // defined(USE_LCD)
 }
 
+size_t printHex(uint16_t aHexByteValue) {
+    myLCD.print(F("0x"));
+    size_t tPrintSize = 2;
+    if (aHexByteValue < 0x10 || (aHexByteValue > 0x100 && aHexByteValue < 0x1000)) {
+        myLCD.print('0'); // leading 0
+        tPrintSize++;
+    }
+    return myLCD.print(aHexByteValue, HEX) + tPrintSize;
+}
