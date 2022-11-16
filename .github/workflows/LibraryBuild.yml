@@ -159,6 +159,6 @@ jobs:
           arduino-board-fqbn: ${{ matrix.arduino-boards-fqbn }}
           platform-url: ${{ matrix.platform-url }}
 #          arduino-platform: ${{ matrix.arduino-platform }}
-          required-libraries: 'LiquidCrystal I2C,${{ matrix.required-libraries }}'
+          required-libraries: 'LiquidCrystal,${{ matrix.required-libraries }}'
           sketches-exclude: ${{ matrix.sketches-exclude }}
 #          debug-install: true

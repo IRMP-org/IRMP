@@ -58,15 +58,17 @@ IRMP_DATA irmp_data;
 
 /*
  * Activate the type of LCD you use
- * Default is serial LCD with 2 rows of 16 characters (1602).
+ * Default is parallel LCD with 2 rows of 16 characters (1602).
+ * Serial LCD has the disadvantage, that the first repeat is not detected,
+ * because of the long lasting serial communication.
  */
 //#define USE_NO_LCD
-//#define USE_PARALLEL_LCD
-#if defined(USE_PARALLEL_LCD)
-#include <LiquidCrystal.h>
-#elif !defined(USE_NO_LCD)
-#define USE_SERIAL_LCD
+//#define USE_SERIAL_LCD
+#if defined(USE_SERIAL_LCD)
 #include <LiquidCrystal_I2C.h> // Use an up to date library version, which has the init method
+#elif !defined(USE_NO_LCD)
+#include <LiquidCrystal.h>
+#define USE_PARALLEL_LCD
 #endif
 
 /*
@@ -88,7 +90,8 @@ IRMP_DATA irmp_data;
 LiquidCrystal_I2C myLCD(0x27, LCD_COLUMNS, LCD_ROWS);  // set the LCD address to 0x27 for a 20 chars and 2 line display
 #endif
 #if defined(USE_PARALLEL_LCD)
-LiquidCrystal myLCD(4, 5, 6, 7, 8, 9);
+//LiquidCrystal myLCD(4, 5, 6, 7, 8, 9);
+LiquidCrystal myLCD(7, 8, 3, 4, 5, 6);
 #endif
 
 #if defined(USE_SERIAL_LCD) || defined(USE_PARALLEL_LCD)
@@ -123,6 +126,9 @@ void setup()
     Serial.print(F("Ready to receive IR signals of protocols: "));
     irmp_print_active_protocols(&Serial);
     Serial.println(F("at pin " STR(IRMP_INPUT_PIN)));
+#if defined(USE_SERIAL_LCD)
+    Serial.println(F("With serial LCD connection, the first repeat is not detected, because of the long lasting serial communication!"));
+#endif
 
 #if defined(USE_LCD) && defined(__AVR__) && defined(ADCSRA) && defined(ADATE)
     getVCCVoltageMillivoltSimple(); // to initialize ADC mux and reference
@@ -158,7 +164,8 @@ void loop()
 
 #if defined(USE_LCD)
 #  if defined(USE_SERIAL_LCD)
-        disableIRTimerInterrupt(); // disable timer interrupt, since it disturbs the serial output
+        // This suppresses the receive of the 1. NEC repeat
+        disableIRTimerInterrupt(); // disable timer interrupt, since it disturbs the LCD serial output
 #  endif
         printIRResultOnLCD();
 #  if defined(USE_SERIAL_LCD)

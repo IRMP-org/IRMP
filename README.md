@@ -89,25 +89,24 @@ Digispark boards are tested with the recommended [ATTinyCore](https://github.com
 # Quick comparison of 4 Arduino IR receiving libraries
 ## This is a short comparison and may not be complete or correct
 I created this comparison matrix for [myself](https://github.com/ArminJo) in order to choose a small IR lib for my project and to have a quick overview, when to choose which library.<br/>
-It is dated from **03.02.2021**. If you have complains about the data or request for extensions, please send a PM or open a discussion.
+It is dated from **24.06.2022**. If you have complains about the data or request for extensions, please send a PM or open a discussion.
 
-| Subject | [IRMP](https://github.com/IRMP-org/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**mostly unmaintained** | [IRremote](https://github.com/Arduino-IRremote/Arduino-IRremote) | [Minimal NEC](https://github.com/Arduino-IRremote/Arduino-IRremote/tree/master/examples/MinimalReceiver) |
-|---------|------|-----------|--------|----------|----------|
-| Number of protocols | **50** | Nec + Panasonic + Hash \* | 12 + Hash \* | 17 + Hash \* | NEC |
-| 3.Party libs needed| % | PinChangeInterrupt if not pin 2 or 3 | % | % | % |
-| Timing method receive | Timer2 or interrupt for pin 2 or 3 | **Interrupt** | Timer2 or interrupt for pin 2 or 3 | Timer2 or interrupt for NEC | **Interrupt** |
-| Timing method send | PWM and timing with Timer2 interrupts | Timer2 interrupts | Timer2 and blocking wait | PWM with Timer2 and blocking wait with delayMicroseconds() | % |
-| Send pins| All | All | All ? | Timer dependent | % |
-| Decode method | OnTheFly | OnTheFly | RAM | RAM | OnTheFly |
-| Encode method | OnTheFly | OnTheFly | OnTheFly | OnTheFly or RAM | % |
-| Callback suppport | x | % | % | % | x |
-| Repeat handling | Receive + Send (partially) | % | ? | Receive + Send | x |
-| LED feedback | x | % | x | x | x |
-| FLASH usage (simple NEC example with 5 prints) | 1820<br/>(4300 for 15 main / 8000 for all 40 protocols)<br/>(+200 for callback)<br/>(+80 for interrupt at pin 2+3)| 1270<br/>(1400 for pin 2+3) | 4830 | 1770 | **900** |
-| RAM usage | 52<br/>(73 / 100 for 15 (main) / 40 protocols) | 62 | 334 | 227 | **19** |
-| Supported platforms | **avr, megaAVR, attiny, Digispark (Pro), esp8266, ESP32, STM32, SAMD 21, Apollo3<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, SAMD 21, SAMD 51 | avr, attiny, [esp8266](https://github.com/crankyoldgit/IRremoteESP8266), esp32, SAM, SAMD | **All platforms with attachInterrupt()** |
-| Last library update | 2/2021 | 4/2018 | 9/2019 | 10/2021 | 10/2021 |
-| Remarks | Decodes 40 protocols concurrently.<br/>39 Protocols to send. | Only one protocol at a time. | Consists of 5 libraries. **Project containing bugs - 45 issues, no reaction for at least one year.** | Decoding and sending are easy to extend.<br/>Supports **Pronto** codes.<br/>Work in progress. | Requires no timer. |
+| Subject | [IRMP](https://github.com/IRMP-org/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**mostly unmaintained** | [IRremote](https://github.com/Arduino-IRremote/Arduino-IRremote) | [Minimal NEC](https://github.com/Arduino-IRremote/Arduino-IRremote/tree/master/examples/MinimalReceiver) | [IRsmallDecoder](https://github.com/LuisMiCa/IRsmallDecoder)
+|---------|------|-----------|--------|----------|----------|----------|
+| Number of protocols | **50** | Nec + Panasonic + Hash \* | 12 + Hash \* | 17 + PulseDistance + Hash \* | NEC | NEC + RC5 + Sony + Samsung |
+| Timing method receive | Timer2 or interrupt for pin 2 or 3 | **Interrupt** | Timer2 or interrupt for pin 2 or 3 | Timer2 | **Interrupt** | **Interrupt** |
+| Timing method send | PWM and timing with Timer2 interrupts | Timer2 interrupts | Timer2 and blocking wait | PWM with Timer2 and/or blocking wait with delay<br/>Microseconds() | blocking wait with delay<br/>Microseconds() | % |
+| Send pins| All | All | All ? | Timer dependent | All | % |
+| Decode method | OnTheFly | OnTheFly | RAM | RAM | OnTheFly | OnTheFly |
+| Encode method | OnTheFly | OnTheFly | OnTheFly | OnTheFly or RAM | OnTheFly | % |
+| Callback suppport | x | % | % | x | x | % |
+| Repeat handling | Receive + Send (partially) | % | ? | Receive + Send | Receive + Send | Receive |
+| LED feedback | x | % | x | x | Receive | % |
+| FLASH usage (simple NEC example with 5 prints) | 1820<br/>(4300 for 15 main / 8000 for all 40 protocols)<br/>(+200 for callback)<br/>(+80 for interrupt at pin 2+3)| 1270<br/>(1400 for pin 2+3) | 4830 | 1770 | **900** | ?1100? |
+| RAM usage | 52<br/>(73 / 100 for 15 (main) / 40 protocols) | 62 | 334 | 227 | **19** | 29 |
+| Supported platforms | **avr, megaavr, attiny, Digispark (Pro), esp8266, ESP32, STM32, SAMD 21, Apollo3<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, SAMD 21, SAMD 51 | avr, attiny, [esp8266](https://github.com/crankyoldgit/IRremoteESP8266), esp32, SAM, SAMD | **All platforms with attach<br/>Interrupt()** | **All platforms with attach<br/>Interrupt()** |
+| Last library update | 6/2022 | 4/2018 | 3/2022 | 6/2022 | 6/2022 | 2/2022 |
+| Remarks | Decodes 40 protocols concurrently.<br/>39 Protocols to send.<br/>Work in progress. | Only one protocol at a time. | Consists of 5 libraries. **Project containing bugs - 45 issues, no reaction for at least one year.** | Universal decoder and encoder.<br/>Supports **Pronto** codes and sending of raw timing values. | Requires no timer. | Requires no timer. |
 
 \* The Hash protocol gives you a hash as code, which may be sufficient to distinguish your keys on the remote, but may not work with some protocols like Mitsubishi
 
@@ -293,7 +292,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 ## Sample Protocols
 | | | | |
 |-|-|-|-|
-| ![NEC](pictures/NEC_Parallel.jpg)| ![NEC42](pictures/NEC42.jpg) |![RC5](pictures/RC5.jpg) |![KASEIKYO](pictures/KASEIKYO.jpg) |
+| ![NEC](pictures/NEC_Parallel.jpg) | ![NEC42](pictures/NEC42.jpg) |![RC5](pictures/RC5.jpg) |![KASEIKYO](pictures/KASEIKYO.jpg) |
 | ![DENON](pictures/DENON.jpg) |![GRUNDIG](pictures/GRUNDIG.jpg) |![IR60](pictures/IR60.jpg) |![MATSUSHITA](pictures/MATSUSHITA.jpg) |
 | ![NUBERT](pictures/NUBERT.jpg) |![ONKYO](pictures/ONKYO.jpg) |![RECS80](pictures/RECS80.jpg) |![RUWIDO](pictures/RUWIDO.jpg) |
 | ![SAMSUNG](pictures/SAMSUNG.jpg) |![SIEMENS](pictures/SIEMENS.jpg) |![TELEFUNKEN](pictures/TELEFUNKEN.jpg) |![TELEFUNKEN](pictures/TELEFUNKEN.jpg) |
