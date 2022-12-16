@@ -71,6 +71,15 @@ jobs:
         # With sketches-exclude you may exclude specific examples for a board. Use a comma separated list.
         #############################################################################################################
         include:
+          - arduino-boards-fqbn: arduino:avr:uno
+            required-libraries: LiquidCrystal I2C
+            build-properties: # the flags were put in compiler.cpp.extra_flags
+              AllProtocols: -DUSE_SERIAL_LCD
+
+          - arduino-boards-fqbn: arduino:avr:leonardo
+            build-properties: # the flags were put in compiler.cpp.extra_flags
+              AllProtocols: -DUSE_NO_LCD
+
           - arduino-boards-fqbn: arduino:megaavr:nona4809:mode=off
             sketches-exclude: MinimalReceiver,IRDispatcherDemo
             build-properties: # the flags were put in compiler.cpp.extra_flags
@@ -141,7 +150,7 @@ jobs:
             sketches-exclude: MinimalReceiver
 
       # Do not cancel all jobs / architectures if one job fails
-      fail-fast: false
+#      fail-fast: false
 
     steps:
       - name: Checkout

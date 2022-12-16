@@ -96,7 +96,7 @@ LiquidCrystal myLCD(7, 8, 3, 4, 5, 6);
 
 #if defined(USE_SERIAL_LCD) || defined(USE_PARALLEL_LCD)
 #define USE_LCD
-#  if defined(__AVR__) && defined(ADCSRA) && defined(ADATE)
+#  if defined(ADC_UTILS_ARE_AVAILABLE)
 // For cyclically display of VCC
 #include "ADCUtils.hpp"
 #define MILLIS_BETWEEN_VOLTAGE_PRINT 5000
@@ -131,7 +131,7 @@ void setup()
     Serial.println(F("With serial LCD connection, the first repeat is not detected, because of the long lasting serial communication!"));
 #endif
 
-#if defined(USE_LCD) && defined(__AVR__) && defined(ADCSRA) && defined(ADATE)
+#if defined(USE_LCD) && defined(ADC_UTILS_ARE_AVAILABLE)
     getVCCVoltageMillivoltSimple(); // to initialize ADC mux and reference
 #endif
 
@@ -176,7 +176,7 @@ void loop()
 #endif
     }
 
-#if defined(USE_LCD) && defined(__AVR__) && defined(ADCSRA) && defined(ADATE)
+#if defined(USE_LCD) && defined(ADC_UTILS_ARE_AVAILABLE)
     /*
      * Periodically print VCC
      */
@@ -206,7 +206,7 @@ void handleReceivedIRData()
 #endif
 {
 
-#if defined(__AVR__) && defined(ADATE)
+#if defined(USE_LCD) && defined(ADC_UTILS_ARE_AVAILABLE)
     // reset voltage display timer
     sMillisOfLastVoltagePrint = millis();
 #endif

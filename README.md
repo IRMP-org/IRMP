@@ -64,7 +64,7 @@ For applications only requiring NEC protocol, there is a receiver which has very
 <br/>
 
 # Schematic for Arduino UNO
-The VS1838B is used as receiver for all examples and tests. This module has a 120 µs on/low and a 100 µs off/high delay between received signal and output. So it shortens the mark and extends the space by 20 µs.
+The VS1838B is used as receiver for all examples and tests. This module has a 120 &micro;s on/low and a 100 &micro;s off/high delay between received signal and output. So it shortens the mark and extends the space by 20 &micro;s.
 | IR-Receiver connection | Serial LCD connection |
 |---|---|
 ![Fritzing schematic for Arduino UNO](extras/IRMP_UNO_Steckplatine.png) | ![Fritzing schematic for Arduino UNO + LCD](extras/IRMP_UNO_LCD_Steckplatine.png)
@@ -185,13 +185,22 @@ void restoreIRTimer(void);
 # Examples
 In order to fit the examples to the 8K flash of ATtiny85 and ATtiny88, the [Arduino library ATtinySerialOut](https://github.com/ArminJo/ATtinySerialOut) is required for this CPU's.
 
+### AllProtocols
+Receives up to 40 protocols concurrently and **displays the short result on a 1602 LCD**. The LCD can be connected parallel or serial (I2C).<br/>
+
 ### SimpleReceiver + SimpleSender
 This examples are a good starting point.<br/>
 SimpleReceiver can be tested online with [WOKWI](https://wokwi.com/arduino/projects/298945438795432456).
 Click on the receiver while simulation is running to specify individual IR codes.
 
-### MinimalReceiver + SmallReceiver
-If code size matters, look at these examples.<br/>
+#### MinimalReceiver + MinimalSender
+If **code size** matters, look at these examples.<br/>
+The **MinimalReceiver** example uses the **TinyReceiver** library  which can **only receive NEC and FAST codes, but does not require any timer**.<br/>
+MinimalReceiver can be tested online with [WOKWI](https://wokwi.com/arduino/projects/339264565653013075).
+Click on the receiver while simulation is running to specify individual IR codes.
+
+### SmallReceiver
+If the protocol is not NEC and code size matters, look at this example.<br/>
 MinimalReceiver can be tested online with [WOKWI](https://wokwi.com/arduino/projects/299034264157028877).
 Click on the receiver while simulation is running to specify individual IR codes.
 
@@ -284,7 +293,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 
 <br/>
 
-# [AllProtocol](examples/AllProtocols/AllProtocols.ino) example
+# [AllProtocols](examples/AllProtocols/AllProtocols.ino) example
 | Serial LCD output | Arduino Serial Monitor output |
 |-|-|
 | ![LCD start](pictures/Start.jpg) | ![Serial Monitor](pictures/AllProtocol_SerialMonitor.png) |

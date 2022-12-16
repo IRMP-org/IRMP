@@ -58,9 +58,14 @@
 #include <irmp.hpp>
 
 IRMP_DATA irmp_data;
-bool sJustReceived;
+
+#define PROCESS_IR_RESULT_IN_MAIN_LOOP
+#if defined(PROCESS_IR_RESULT_IN_MAIN_LOOP) || defined(ARDUINO_ARCH_MBED) || defined(ESP32)
+volatile bool sIRDataJustReceived = false;
+#endif
 
 void handleReceivedIRData();
+void evaluateIRCommand(uint16_t aAddress, uint16_t aCommand, uint8_t aFlags);
 
 void setup()
 {
@@ -84,20 +89,27 @@ void setup()
 
 void loop()
 {
-    if(sJustReceived){
-        sJustReceived = false;
-    irmp_result_print(&irmp_data); // this is not allowed in ISR context for any kind of RTOS
+#if defined(PROCESS_IR_RESULT_IN_MAIN_LOOP) || defined(ARDUINO_ARCH_MBED) || defined(ESP32)
+    if (sIRDataJustReceived)
+    {
+        sIRDataJustReceived = false;
+        evaluateIRCommand(irmp_data.address, irmp_data.command, irmp_data.flags);
+        irmp_result_print(&irmp_data); // this is not allowed in ISR context for any kind of RTOS
     }
-
+#endif
     /*
      * Put your code here
      */
 }
 
 /*
+ * Callback function
  * Here we know, that data is available.
- * Since this function is executed in Interrupt handler context, make it short and do not use delay() etc.
- * In order to enable other interrupts you can call sei() (enable interrupt again) after getting data.
+ * This function is executed in ISR (Interrupt Service Routine) context (interrupts are blocked here).
+ * Make it short and fast and keep in mind, that you can not use delay(), prints longer than print buffer size etc.,
+ * because they require interrupts enabled to return.
+ * In order to enable other interrupts you can call sei() (enable interrupt again) after evaluating/copying data.
+ * Good practice, but somewhat more complex, is to copy relevant data and signal receiving to main loop.
  */
 #if defined(ESP8266)
 void ICACHE_RAM_ATTR handleReceivedIRData()
@@ -112,20 +124,36 @@ void handleReceivedIRData()
     interrupts(); // enable interrupts
 #endif
 
+#if defined(PROCESS_IR_RESULT_IN_MAIN_LOOP) || defined(ARDUINO_ARCH_MBED) || defined(ESP32)
+    /*
+     * Set flag to trigger printing of results in main loop,
+     * since printing should not be done in a callback function
+     * running in ISR (Interrupt Service Routine) context where interrupts are disabled.
+     */
+    sIRDataJustReceived = true;
+#else
+    interrupts(); // enable interrupts
+    evaluateIRCommand(irmp_data.address, irmp_data.command, irmp_data.flags);
+    irmp_result_print(&irmp_data); // This is not recommended, but simpler and works, except for any kind of RTOS like on ESP and MBED.
+#endif
+}
+
+void evaluateIRCommand(uint16_t aAddress, uint16_t aCommand, uint8_t aFlags)
+{
     /*
      * Filter for commands from the WM010 IR Remote
      */
-    if (irmp_data.address == 0xF708)
+    if (aAddress == 0xF708)
     {
         /*
          * Skip repetitions of command
          */
-        if (!(irmp_data.flags & IRMP_FLAG_REPETITION))
+        if (!(aAddress & IRMP_FLAG_REPETITION))
         {
             /*
-             * Evaluate IR command
+             * Evaluation of IR command
              */
-            switch (irmp_data.command)
+            switch (aAddress)
             {
             case 0x48:
                 digitalWrite(LED_BUILTIN, HIGH);
@@ -138,9 +166,4 @@ void handleReceivedIRData()
             }
         }
     }
-#if defined(ARDUINO_ARCH_MBED) || defined(ESP32)
-    sJustReceived = true; // Signal new data for main loop, this is the recommended way for handling a callback :-)
-#else
-    irmp_result_print(&irmp_data); // this is not allowed in ISR context for any kind of RTOS
-#endif
 }
