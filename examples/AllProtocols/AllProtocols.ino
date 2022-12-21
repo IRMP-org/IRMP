@@ -8,7 +8,7 @@
  *  Uses a callback function which is called every time a complete IR command was received.
  *  Prints data to LCD connected parallel at pin 4-9 or serial at pin A4, A5
  *
- *  Copyright (C) 2019-2021  Armin Joachimsmeyer
+ *  Copyright (C) 2019-2022  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/IRMP-org/IRMP.

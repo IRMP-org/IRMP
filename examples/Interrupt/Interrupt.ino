@@ -9,7 +9,7 @@
  *  If you get warnings of redefining symbols, just ignore them or undefine them first (see Interrupt example).
  *  The exact names can be found in the library file irmpSelectAllProtocols.h (see Callback example).
  *
- *  Copyright (C) 2019-2021  Armin Joachimsmeyer
+ *  Copyright (C) 2019-2022  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/IRMP-org/IRMP.

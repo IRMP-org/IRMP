@@ -1,7 +1,7 @@
 /*
  *  SimpleSender.cpp
  *
- *  Sends Samsung protocol frames.
+ *  Sends NEC or Samsung protocol frames.
  *  Is able to send IR protocol data of 15 main protocols.
  *
  *      Sony SIRCS
@@ -50,7 +50,8 @@
 #define IRSND_PROTOCOL_NAMES        1 // Enable protocol number mapping to protocol strings - requires some FLASH.
 
 #include <irsndSelectMain15Protocols.h>
-// or use only one protocol to save programming space
+// or disable #include <irsndSelectMain15Protocols.h> and use only one protocol to save programming space
+//#define IRSND_SUPPORT_NEC_PROTOCOL        1
 //#define IRSND_SUPPORT_NEC_PROTOCOL        1
 
 /*

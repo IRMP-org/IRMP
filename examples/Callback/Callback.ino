@@ -4,7 +4,7 @@
  *  Uses a callback function which is called every time a complete IR command was received.
  *  This example additionally filters commands from a remote control named WM010 sending NEC commands
  *
- *  Copyright (C) 2019-2020  Armin Joachimsmeyer
+ *  Copyright (C) 2019-2022  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/IRMP-org/IRMP.

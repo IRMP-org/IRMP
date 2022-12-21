@@ -1,19 +1,35 @@
+<div align = center>
+
 # [IRMP](https://github.com/IRMP-org/IRMP) - Infrared Multi Protocol Decoder + Encoder
-Available as Arduino library "IRMP"
+A library enabling the sending & receiving of infra-red signals. Supports 50 different protocols with a low memory footprint.
 
-### [Version 3.6.3](https://github.com/IRMP-org/IRMP/archive/master.zip) - work in progress
+[![Badge License: GPLv3](https://img.shields.io/badge/License-GPLv3-brightgreen.svg)](https://www.gnu.org/licenses/gpl-3.0)
+ &nbsp; &nbsp; 
+[![Badge Version](https://img.shields.io/github/v/release/IRMP-org/IRMP?include_prereleases&color=yellow&logo=DocuSign&logoColor=white)](https://github.com/IRMP-org/IRMP/releases/latest)
+ &nbsp; &nbsp; 
+[![Badge Commits since latest](https://img.shields.io/github/commits-since/IRMP-org/IRMP/latest?color=yellow)](https://github.com/IRMP-org/IRMP/commits/master)
+ &nbsp; &nbsp; 
+[![Badge Build Status](https://github.com/IRMP-org/IRMP/workflows/LibraryBuild/badge.svg)](https://github.com/IRMP-org/IRMP/actions)
+ &nbsp; &nbsp; 
+![Badge Hit Counter](https://visitor-badge.laobi.icu/badge?page_id=IRMP-org_IRMP)
+<br/>
+<br/>
+[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Installation instructions](https://www.ardu-badge.com/badge/irmp.svg?)](https://www.ardu-badge.com/IRMP)
-[![Commits since latest](https://img.shields.io/github/commits-since/IRMP-org/IRMP/latest)](https://github.com/IRMP-org/IRMP/commits/master)
-[![Build Status](https://github.com/IRMP-org/IRMP/workflows/LibraryBuild/badge.svg)](https://github.com/IRMP-org/IRMP/actions)
-![Hit Counter](https://visitor-badge.laobi.icu/badge?page_id=ukw100_IRMP)
+Available as [Arduino library "IRMP"](https://www.arduinolibraries.info/libraries/irmp).
+
+[![Button Install](https://img.shields.io/badge/Install-brightgreen?logoColor=white&logo=GitBook)](https://www.ardu-badge.com/IRMP)
+ &nbsp; &nbsp; 
+[![Button Changelog](https://img.shields.io/badge/Changelog-blue?logoColor=white&logo=AzureArtifacts)](https://github.com/IRMP-org/IRMP#revision-history)
+
+</div>
 
 
-## 50 IR protocols supported and low memory footprint
-- Only 39 protocols can be enabled for receive at the same time, because some of them are quite similar and conflicts with each other.
+# Features
+- Total of 50 IR protocols supported.
+- Up to 39 protocols can be enabled for receive at the same time, because some of the 50 protocols are quite similar and conflicts with each other.
 - 39 protocols are available for send.
-- FLASH usage in bytes: 1500 for one protocol, 4300 for 15 main and 8000 for all 39 protocols.
+- Low memory footprint. FLASH usage in bytes: 1500 for one protocol, 4300 for 15 main and 8000 for all 39 protocols.
 - RAM usage in bytes: 52, 73 and 100.
 
 | Nano running AllProtocol example | YouTube Video | Instructable |
@@ -327,12 +343,13 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 - Fixed FEEDBACK_LED_IS_ACTIVE_LOW bug.
 - Added Kaseikyo Panasonic decode.
 - Added ATtiny88 / AVR timer1 timer support.
+- Fixed unexpected leading space for irsnd_send_data(...,false).
 
 ### Version 3.6.1
 - Fixed NO_LED_FEEDBACK_CODE bug.
 
 ### Version 3.6.0
-- Improved timings by JÃ¶rg R.
+- Improved timings by Jörg R.
 - Support for NEC 8 bit address.
 - Fixed ATmega4809 bug.
 - RP2040 support added.

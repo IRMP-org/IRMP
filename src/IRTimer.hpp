@@ -364,7 +364,8 @@ uint16_t sTimerCompareCapureValue;
  * But for AVR saving the timer settings is possible anyway, since it only consists of saving registers.
  * This helps cooperation with other libraries using the same timer.
  */
-void storeIRTimer(void) {
+void storeIRTimer(void)
+{
 #if defined(__AVR_ATmega16__)
     sTimerTCCRA = TCCR2;
     sTimerOCR = OCR2;
@@ -471,7 +472,8 @@ void storeIRTimer(void) {
 /*
  * Restore settings of the timer e.g. for IRSND
  */
-void restoreIRTimer(void) {
+void restoreIRTimer(void)
+{
 #if defined(__AVR_ATmega16__)
     TCCR2 = sTimerTCCRA;
     OCR2 = sTimerOCR;
@@ -585,7 +587,8 @@ void restoreIRTimer(void) {
  * NOT used if IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined
  * Initialize timer to generate interrupts at a rate F_INTERRUPTS (15000) per second to poll the input pin.
  */
-void disableIRTimerInterrupt(void) {
+void disableIRTimerInterrupt(void)
+{
 #if defined(__AVR__)
 // Use Timer 2
 #  if defined(__AVR_ATmega16__)
@@ -661,7 +664,8 @@ void disableIRTimerInterrupt(void) {
 }
 
 // used by AllProtocols example
-void enableIRTimerInterrupt(void) {
+void enableIRTimerInterrupt(void)
+{
 #if defined(__AVR__)
 // Use Timer 2
 #  if defined(__AVR_ATmega16__)
@@ -875,13 +879,16 @@ void irmp_timer_ISR(void)
             // This in turn calls irsnd_on() or irsnd_off(). Empty call requires additional 0.7 us.
             if (!irsnd_ISR())
             {
+                // End of frame
                 restoreIRTimer();
 #  if ! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
 // only send mode required -> disable interrupt
                 disableIRTimerInterrupt();
 #  endif
+                sDivider = 1; // to call irsnd_ISR() directly at next interrupt
+            } else {
+                sDivider = 4;
             }
-            sDivider = 4;
         }
     } // if(irsnd_busy)
 #endif // defined(_IRSND_H_) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
