@@ -170,4 +170,5 @@ jobs:
 #          arduino-platform: ${{ matrix.arduino-platform }}
           required-libraries: 'LiquidCrystal,${{ matrix.required-libraries }}'
           sketches-exclude: ${{ matrix.sketches-exclude }}
+          build-properties: ${{ toJson(matrix.build-properties) }}
 #          debug-install: true

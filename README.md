@@ -24,6 +24,7 @@ Available as [Arduino library "IRMP"](https://www.arduinolibraries.info/librarie
 
 </div>
 
+<br/>
 
 # Features
 - Total of 50 IR protocols supported.
@@ -31,6 +32,8 @@ Available as [Arduino library "IRMP"](https://www.arduinolibraries.info/librarie
 - 39 protocols are available for send.
 - Low memory footprint. FLASH usage in bytes: 1500 for one protocol, 4300 for 15 main and 8000 for all 39 protocols.
 - RAM usage in bytes: 52, 73 and 100.
+
+<br/>
 
 | Nano running AllProtocol example | YouTube Video | Instructable |
 |-|-|-|

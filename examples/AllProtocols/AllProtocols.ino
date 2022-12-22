@@ -102,11 +102,12 @@ LiquidCrystal myLCD(7, 8, 3, 4, 5, 6);
 #define MILLIS_BETWEEN_VOLTAGE_PRINT 5000
 uint32_t volatile sMillisOfLastVoltagePrint;
 #  endif
+
+void printIRResultOnLCD();
+size_t printHex(uint16_t aHexByteValue);
 #endif
 
 void handleReceivedIRData();
-void printIRResultOnLCD();
-size_t printHex(uint16_t aHexByteValue);
 
 bool volatile sIRMPDataAvailable = false;
 
@@ -218,6 +219,7 @@ void handleReceivedIRData()
     sIRMPDataAvailable = true;
 }
 
+#if defined(USE_LCD)
 /*
  * LCD output for 1602 and 2004 LCDs
  * 40 - 55 Milliseconds per initial output for a 1602 LCD
@@ -229,7 +231,6 @@ void handleReceivedIRData()
  */
 void printIRResultOnLCD()
 {
-#if defined(USE_LCD)
     static uint8_t sLastProtocolIndex;
     static uint16_t sLastProtocolAddress;
 
@@ -341,8 +342,6 @@ void printIRResultOnLCD()
      */
     myLCD.setCursor(sLastCommandPrintPosition, tStartRow + 1);
     printHex(tCommand);
-
-#endif // defined(USE_LCD)
 }
 
 size_t printHex(uint16_t aHexByteValue) {
@@ -354,3 +353,4 @@ size_t printHex(uint16_t aHexByteValue) {
     }
     return myLCD.print(aHexByteValue, HEX) + tPrintSize;
 }
+#endif // defined(USE_LCD)

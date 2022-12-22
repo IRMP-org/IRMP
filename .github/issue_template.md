@@ -96,4 +96,4 @@ Please delete all unchecked lines above :-)
 - [] The title of the issue is helpful and relevant.
 - [] I checked, if at least one of the examples was working.
 
-** We will start to close issues that do not follow these guidelines as it doesn't help the contributors who spend time trying to solve issues if the community ignores guidelines!**
+** We will start to close or delete issues that do not follow these guidelines as it doesn't help the contributors who spend time trying to solve issues if the community ignores guidelines!**
