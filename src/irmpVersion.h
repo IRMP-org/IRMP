@@ -10,10 +10,10 @@
 #ifndef _IRMPVERSION_H
 #define _IRMPVERSION_H
 
-#define VERSION_IRMP "3.6.2"
+#define VERSION_IRMP "3.6.3"
 #define VERSION_IRMP_MAJOR 3
 #define VERSION_IRMP_MINOR 6
-#define VERSION_IRMP_PATCH 2
+#define VERSION_IRMP_PATCH 3
 
 /*
  * Macro to convert 3 version parts into an integer

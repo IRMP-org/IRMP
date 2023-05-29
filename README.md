@@ -341,7 +341,10 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 <br/>
 
 # Revision History
+### Version 3.6.4
+
 ### Version 3.6.3
+- Fixed ESP32 send timer bug.
 
 ### Version 3.6.2
 - Fixed FEEDBACK_LED_IS_ACTIVE_LOW bug.
