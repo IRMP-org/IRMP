@@ -25,8 +25,8 @@
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
@@ -73,7 +73,7 @@ void IRCommandDispatcher::init() {
 }
 
 /*
- * This is the TinyReceiver callback function which is called if a complete command was received
+ * This is the TinyReceiver callback function, which is called if a complete command was received
  * It checks for right address and then call the dispatcher
  */
 #if defined(ESP8266) || defined(ESP32)
@@ -120,7 +120,7 @@ void IRCommandDispatcher::init() {
 }
 
 /*
- * This is the callback function which is called if a complete command was received
+ * This is the callback function, which is called if a complete command was received
  */
 #if defined(ESP8266) || defined(ESP32)
 IRAM_ATTR

@@ -20,8 +20,8 @@
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
@@ -64,13 +64,6 @@ IRMP_DATA irmp_data;
  */
 //#define USE_NO_LCD
 //#define USE_SERIAL_LCD
-#if defined(USE_SERIAL_LCD)
-#include <LiquidCrystal_I2C.h> // Use an up to date library version, which has the init method
-#elif !defined(USE_NO_LCD)
-#include <LiquidCrystal.h>
-#define USE_PARALLEL_LCD
-#endif
-
 /*
  * Define the size of your LCD
  */
@@ -87,9 +80,12 @@ IRMP_DATA irmp_data;
 #endif
 
 #if defined(USE_SERIAL_LCD)
+#include <LiquidCrystal_I2C.h> // Use an up to date library version, which has the init method
 LiquidCrystal_I2C myLCD(0x27, LCD_COLUMNS, LCD_ROWS);  // set the LCD address to 0x27 for a 16 chars and 2 line display
-#endif
-#if defined(USE_PARALLEL_LCD)
+
+#elif !defined(USE_NO_LCD)
+#include <LiquidCrystal.h>
+#define USE_PARALLEL_LCD
 //LiquidCrystal myLCD(4, 5, 6, 7, 8, 9);
 LiquidCrystal myLCD(7, 8, 3, 4, 5, 6);
 #endif
@@ -142,7 +138,7 @@ void setup()
     myLCD.backlight();
 #endif
 #if defined(USE_PARALLEL_LCD)
-    myLCD.begin(LCD_COLUMNS, LCD_ROWS);
+    myLCD.begin(LCD_COLUMNS, LCD_ROWS); // This also clears display
 #endif
 
 #if defined(USE_LCD)

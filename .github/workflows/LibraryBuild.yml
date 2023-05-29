@@ -81,7 +81,7 @@ jobs:
               AllProtocols: -DUSE_NO_LCD
 
           - arduino-boards-fqbn: arduino:megaavr:nona4809:mode=off
-            sketches-exclude: MinimalReceiver,IRDispatcherDemo
+            sketches-exclude: TinyReceiver,IRDispatcherDemo
             build-properties: # the flags were put in compiler.cpp.extra_flags
               All: -DNO_LED_FEEDBACK_CODE
 
@@ -116,7 +116,7 @@ jobs:
           - arduino-boards-fqbn: MiniCore:avr:8:bootloader=uart0,eeprom=keep,BOD=2v7,LTO=Os_flto,clock=16MHz_external
             platform-url: https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
             arduino-platform: MiniCore:avr,arduino:avr # gcc is taken from arduino:avr
-            sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins,SendAllProtocols,MinimalReceiver,IRDispatcherDemo,Interrupt  # Does not fit in FLASH
+            sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins,SendAllProtocols,TinyReceiver,IRDispatcherDemo,Interrupt  # Does not fit in FLASH
 
           - arduino-boards-fqbn: MegaCore:avr:128:bootloader=no_bootloader,eeprom=keep,BOD=2v7,LTO=Os,clock=8MHz_internal
             platform-url: https://mcudude.github.io/MegaCore/package_MCUdude_MegaCore_index.json
@@ -125,29 +125,29 @@ jobs:
 
           - arduino-boards-fqbn: esp8266:esp8266:d1_mini:eesz=4M3M,xtal=80
             platform-url: https://arduino.esp8266.com/stable/package_esp8266com_index.json
-            sketches-exclude: MinimalReceiver,AllProtocols # error ".text1' will not fit in region `iram1_0_seg'"
+            sketches-exclude: TinyReceiver,AllProtocols # error ".text1' will not fit in region `iram1_0_seg'"
 
           - arduino-boards-fqbn: esp32:esp32:featheresp32:FlashFreq=80
             platform-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
-            sketches-exclude: MinimalReceiver
+            sketches-exclude: TinyReceiver
 
           - arduino-boards-fqbn: STMicroelectronics:stm32:GenF1:pnum=BLUEPILL_F103C8
             platform-url: https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/main/package_stmicroelectronics_index.json
-            sketches-exclude: MinimalReceiver
+            sketches-exclude: TinyReceiver
 
           - arduino-boards-fqbn: STMicroelectronics:stm32:GenL0:pnum=THUNDERPACK_L072
             platform-url: https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/main/package_stmicroelectronics_index.json
-            sketches-exclude: MinimalReceiver,IRDispatcherDemo
+            sketches-exclude: TinyReceiver,IRDispatcherDemo
             build-properties: # the flags were put in compiler.cpp.extra_flags
               All: -DNO_LED_FEEDBACK_CODE
 
           - arduino-boards-fqbn: stm32duino:STM32F1:genericSTM32F103C # Roger Clark version
             platform-url: http://dan.drown.org/stm32duino/package_STM32duino_index.json
-            sketches-exclude: MinimalReceiver
+            sketches-exclude: TinyReceiver
 
           - arduino-boards-fqbn: SparkFun:apollo3:sfe_artemis_nano
             platform-url: https://raw.githubusercontent.com/sparkfun/Arduino_Apollo3/master/package_sparkfun_apollo3_index.json
-            sketches-exclude: MinimalReceiver
+            sketches-exclude: TinyReceiver
 
       # Do not cancel all jobs / architectures if one job fails
 #      fail-fast: false

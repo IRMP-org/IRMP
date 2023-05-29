@@ -13,8 +13,8 @@
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
@@ -24,9 +24,10 @@
 #ifndef _ADC_UTILS_H
 #define _ADC_UTILS_H
 
+#include <Arduino.h>
+
 #if defined(__AVR__) && defined(ADCSRA) && defined(ADATE) && (!defined(__AVR_ATmega4809__))
 #define ADC_UTILS_ARE_AVAILABLE
-#include <Arduino.h>
 
 // PRESCALE4 => 13 * 4 = 52 microseconds per ADC conversion at 1 MHz Clock => 19,2 kHz
 #define ADC_PRESCALE2    1 // 26 microseconds per ADC conversion at 1 MHz

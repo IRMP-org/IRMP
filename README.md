@@ -1,7 +1,8 @@
 <div align = center>
 
 # [IRMP](https://github.com/IRMP-org/IRMP) - Infrared Multi Protocol Decoder + Encoder
-A library enabling the sending & receiving of infra-red signals. Supports 50 different protocols with a low memory footprint.
+A library enabling the sending & receiving of infra-red signals with a low memory footprint.<br/>
+Supports 50 different protocols.
 
 [![Badge License: GPLv3](https://img.shields.io/badge/License-GPLv3-brightgreen.svg)](https://www.gnu.org/licenses/gpl-3.0)
  &nbsp; &nbsp; 
