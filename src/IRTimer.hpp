@@ -249,9 +249,11 @@ void initIRTimerForSend(void)
 #elif defined(ESP32)
     // Tasmota requires timer 3 (last of 4 timers)
     // Use timer with 1 microsecond resolution, main clock is 80MHZ
-    sReceiveAndSendInterruptTimer = timerBegin(3, 80, true);
-    timerAttachInterrupt(sReceiveAndSendInterruptTimer, irmp_timer_ISR, true);
-    timerAlarmWrite(sReceiveAndSendInterruptTimer, ((getApbFrequency() / 80) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY, true);
+    if(sReceiveAndSendInterruptTimer == NULL) {
+        sReceiveAndSendInterruptTimer = timerBegin(3, 80, true);
+        timerAttachInterrupt(sReceiveAndSendInterruptTimer, irmp_timer_ISR, false); // false -> level interrupt, true -> edge interrupt, but this is not supported :-(
+        timerAlarmWrite(sReceiveAndSendInterruptTimer, ((getApbFrequency() / 80) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY, true);
+    }
     timerAlarmEnable(sReceiveAndSendInterruptTimer);
 
 #  if defined(DEBUG) && defined(ESP32)
@@ -364,8 +366,7 @@ uint16_t sTimerCompareCapureValue;
  * But for AVR saving the timer settings is possible anyway, since it only consists of saving registers.
  * This helps cooperation with other libraries using the same timer.
  */
-void storeIRTimer(void)
-{
+void storeIRTimer(void) {
 #if defined(__AVR_ATmega16__)
     sTimerTCCRA = TCCR2;
     sTimerOCR = OCR2;
@@ -472,8 +473,7 @@ void storeIRTimer(void)
 /*
  * Restore settings of the timer e.g. for IRSND
  */
-void restoreIRTimer(void)
-{
+void restoreIRTimer(void) {
 #if defined(__AVR_ATmega16__)
     TCCR2 = sTimerTCCRA;
     OCR2 = sTimerOCR;
@@ -587,8 +587,7 @@ void restoreIRTimer(void)
  * NOT used if IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined
  * Initialize timer to generate interrupts at a rate F_INTERRUPTS (15000) per second to poll the input pin.
  */
-void disableIRTimerInterrupt(void)
-{
+void disableIRTimerInterrupt(void) {
 #if defined(__AVR__)
 // Use Timer 2
 #  if defined(__AVR_ATmega16__)
@@ -635,7 +634,9 @@ void disableIRTimerInterrupt(void)
     timer1_detachInterrupt(); // disables interrupt too
 
 #elif defined(ESP32)
-    timerAlarmDisable(sReceiveAndSendInterruptTimer);
+    if (sReceiveAndSendInterruptTimer != NULL) {
+        timerAlarmDisable(sReceiveAndSendInterruptTimer);
+    }
 
 #elif defined(STM32F1xx) || defined(ARDUINO_ARCH_STM32)     // STM32duino by ST Microsystems.
     sReceiveAndSendInterruptTimer.setMode(LL_TIM_CHANNEL_CH1, TIMER_DISABLED);
@@ -664,8 +665,7 @@ void disableIRTimerInterrupt(void)
 }
 
 // used by AllProtocols example
-void enableIRTimerInterrupt(void)
-{
+void enableIRTimerInterrupt(void) {
 #if defined(__AVR__)
 // Use Timer 2
 #  if defined(__AVR_ATmega16__)
@@ -712,7 +712,9 @@ void enableIRTimerInterrupt(void)
     timer1_attachInterrupt(irmp_timer_ISR); // enables interrupt too
 
 #elif defined(ESP32)
-    timerAlarmEnable(sReceiveAndSendInterruptTimer);
+    if (sReceiveAndSendInterruptTimer != NULL) {
+        timerAlarmEnable(sReceiveAndSendInterruptTimer);
+    }
 
 #elif defined(__STM32F1__) || defined(ARDUINO_ARCH_STM32F1) // Recommended original Arduino_STM32 by Roger Clark.
     // http://dan.drown.org/stm32duino/package_STM32duino_index.json
