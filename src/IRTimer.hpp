@@ -164,6 +164,7 @@ void initIRTimerForSend(void)
 
 #  elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__) // TinyCore boards
     // use one ramp mode and overflow interrupt
+#    if defined(MILLIS_USE_TIMERA0)
     TCD0.CTRLA = 0;                                                 // reset enable bit in order to unprotect the other bits
     TCD0.CTRLB = TCD_WGMODE_ONERAMP_gc;                             // must be set since it is used by PWM
 //    TCD0.CMPBSET = 80;
@@ -185,7 +186,18 @@ void initIRTimerForSend(void)
 //    while ((TCD0.STATUS & TCD_ENRDY_bm) == 0); // Wait for Enable Ready to be high - I guess it is not required
     // enable timer - this locks the other bits and static registers and activates values in double buffered registers
     TCD0.CTRLA = TCD_ENABLE_bm | TCD_CLKSEL_SYSCLK_gc| TCD_CNTPRES_DIV1_gc; // System clock, no prescale, no synchronization prescaler
+#    else
+    TCA0.SINGLE.CTRLD = 0;                                      // Single mode - required at least for MegaTinyCore
+    TCA0.SINGLE.CTRLB = TCA_SINGLE_WGMODE_NORMAL_gc;            // Normal mode, top = PER
+    TCA0.SINGLE.PER = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;     // 1332 for 15 kHz, 262 for 76000 interrupts per second @ 20MHz
 
+    TCA0.SINGLE.INTFLAGS = TCA_SINGLE_OVF_bm;                   // reset interrupt flags
+    TCA0.SINGLE.INTCTRL = TCA_SINGLE_OVF_bm;                    // overflow interrupt
+    // check enable ready
+//    while ((TCA0.SINGLE.STATUS & TCD_ENRDY_bm) == 0); // Wait for Enable Ready to be high - I guess it is not required
+    // enable timer - this locks the other bits and static registers and activates values in double buffered registers
+    TCA0.SINGLE.CTRLA = TCA_SINGLE_ENABLE_bm | TCA_SINGLE_CLKSEL_DIV1_gc; // System clock
+#    endif
 #  elif defined(__AVR_ATmega8__)
 #    if (F_CPU / IR_INTERRUPT_FREQUENCY) <= 256                     // for 8 bit timer
     TCCR2 = _BV(WGM21) | _BV(CS20);                                 // CTC mode, no prescale
@@ -414,11 +426,19 @@ void storeIRTimer(void) {
 
 #elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
     // store settings used for PWM
+#  if defined(MILLIS_USE_TIMERA0)
     sTimerTCCRA = TCD0.CTRLA;
     sTimerTCCRB = TCD0.CTRLB;
     sTimerOCR = TCD0.CMPBCLR;
     sTimerOCRB = TCD0.CTRLC;
     sTimerTIMSK = TCD0.INTCTRL;
+#  else
+    sTimerTCCRA = TCA0.SINGLE.CTRLA;
+    sTimerTCCRB = TCA0.SINGLE.CTRLB;
+    sTimerOCR = TCA0.SINGLE.PER;
+    sTimerOCRB = TCA0.SINGLE.CTRLC;
+    sTimerTIMSK = TCA0.SINGLE.INTCTRL;
+#  endif
 
 #elif defined(OCF2B)  // __AVR_ATmega328__ here
     // store current timer state
@@ -520,12 +540,21 @@ void restoreIRTimer(void) {
 
 #elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
     // restore settings used for PWM
+#    if defined(MILLIS_USE_TIMERA0)
     TCD0.CTRLA = 0; // unlock timer
     TCD0.CTRLB = sTimerTCCRB;
     TCD0.CMPBCLR = sTimerOCR;
     TCD0.CTRLC = sTimerOCRB;
     TCD0.INTCTRL = sTimerTIMSK;
     TCD0.CTRLA = sTimerTCCRA;
+#    else
+    TCA0.SINGLE.CTRLA = 0; // unlock timer
+    TCA0.SINGLE.CTRLB = sTimerTCCRB;
+    TCA0.SINGLE.PER = sTimerOCR;
+    TCA0.SINGLE.CTRLC = sTimerOCRB;
+    TCA0.SINGLE.INTCTRL = sTimerTIMSK;
+    TCA0.SINGLE.CTRLA = sTimerTCCRA;
+#    endif
 
 #elif defined(OCF2B)  // __AVR_ATmega328__ here
     TCCR2A = sTimerTCCRA;
@@ -613,7 +642,11 @@ void disableIRTimerInterrupt(void) {
     TIMSK3 = 0;                 // disable interrupt
 
 #  elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+#    if defined(MILLIS_USE_TIMERA0)
     TCD0.INTCTRL = 0;           // overflow interrupt
+#    else
+    TCA0.SINGLE.INTCTRL = 0;           // overflow interrupt
+#    endif
 
 #  elif defined(OCF2B)  // __AVR_ATmega328__ here
     TIMSK2 = 0; // disable interrupt
@@ -691,7 +724,11 @@ void enableIRTimerInterrupt(void) {
     TIMSK3 = _BV(OCIE3B);           // enable interrupt
 
 #  elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+#    if defined(MILLIS_USE_TIMERA0)
     TCD0.INTCTRL = TCD_OVF_bm;      // overflow interrupt
+#    else
+    TCA0.SINGLE.INTCTRL = TCA_SINGLE_OVF_bm;      // overflow interrupt
+#    endif
 
 #  elif defined(OCF2B)  // __AVR_ATmega328__ here
     TIMSK2 = _BV(OCIE2B); // enable interrupt
@@ -790,7 +827,11 @@ ISR(TIMER2_COMP_vect)
 ISR(TIMER3_COMPB_vect)
 
 #  elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+#    if defined(MILLIS_USE_TIMERA0)
 ISR(TCD0_OVF_vect)
+#    else
+ISR(TCA0_OVF_vect)
+#    endif
 
 #  elif defined(OCF2B)  // __AVR_ATmega328__ here
 ISR(TIMER2_COMPB_vect)
@@ -837,7 +878,11 @@ void irmp_timer_ISR(void)
 #endif
 #if defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
     // must reset interrupt flag here
+#  if defined(MILLIS_USE_TIMERA0)
     TCD0.INTFLAGS = TCD_OVF_bm;
+#  else
+    TCA0.SINGLE.INTFLAGS = TCA_SINGLE_OVF_bm;
+#  endif
 #endif
 
 #if (defined(_IRSND_H_) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND))

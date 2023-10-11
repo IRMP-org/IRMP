@@ -83,15 +83,15 @@ Available as [Arduino library "IRMP"](https://www.arduinolibraries.info/librarie
 For applications only requiring NEC protocol, there is a receiver which has very **small codesize of 500 bytes and does NOT require any timer**. See the MinimalReceiver and IRDispatcherDemo example how to use it. Mapping of pins to interrupts can be found [here](https://github.com/Arduino-IRremote/Arduino-IRremote/tree/master/src/TinyIRReceiver.hpp#L259).
 <br/>
 
-# Schematic for Arduino UNO
+# Schematic for Arduino Uno
 The VS1838B is used as receiver for all examples and tests. This module has a 120 &micro;s on/low and a 100 &micro;s off/high delay between received signal and output. So it shortens the mark and extends the space by 20 &micro;s.
 | IR-Receiver connection | Serial LCD connection |
 |---|---|
-![Fritzing schematic for Arduino UNO](extras/IRMP_UNO_Steckplatine.png) | ![Fritzing schematic for Arduino UNO + LCD](extras/IRMP_UNO_LCD_Steckplatine.png)
+![Fritzing schematic for Arduino Uno](extras/IRMP_UNO_Steckplatine.png) | ![Fritzing schematic for Arduino Uno + LCD](extras/IRMP_UNO_LCD_Steckplatine.png)
 <br/>
 
 # Supported Arduino architectures / CPU's / boards
-Digispark boards are tested with the recommended [ATTinyCore](https://github.com/SpenceKonde/ATTinyCore) using `New Style` pin mapping for the pro board.
+ATtiny and Digispark boards are tested with the recommended [ATTinyCore](https://github.com/SpenceKonde/ATTinyCore) using `New Style` pin mapping for the pro board.
 | Architecture | CPU | Board |
 |:---|---:|----:|
 | avr     | ATmega16, ATmega328P, ATmega32U4, ATtinyX5, ATtinyX7 | Uno, Nano, Leonardo, Sparkfun Pro Micro, Digispark etc. |
@@ -106,14 +106,17 @@ Digispark boards are tested with the recommended [ATTinyCore](https://github.com
 | Teensiduino | all  - but [limited support](https://forum.pjrc.com/threads/65912-Enable-Continuous-Integration-with-arduino-cli-for-3-party-libraries) | >= Teensy 3 |
 <br/>
 
-# Quick comparison of 4 Arduino IR receiving libraries
-## This is a short comparison and may not be complete or correct
-I created this comparison matrix for [myself](https://github.com/ArminJo) in order to choose a small IR lib for my project and to have a quick overview, when to choose which library.<br/>
-It is dated from **24.06.2022**. If you have complains about the data or request for extensions, please send a PM or open a discussion.
+# Quick comparison of 5 Arduino IR receiving libraries
+**This is a short comparison and may not be complete or correct.**
 
-| Subject | [IRMP](https://github.com/IRMP-org/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**mostly unmaintained** | [IRremote](https://github.com/Arduino-IRremote/Arduino-IRremote) | [Minimal NEC](https://github.com/Arduino-IRremote/Arduino-IRremote/tree/master/examples/MinimalReceiver) | [IRsmallDecoder](https://github.com/LuisMiCa/IRsmallDecoder)
+I created this comparison matrix for [myself](https://github.com/ArminJo) in order to choose a small IR lib for my project and to have a quick overview, when to choose which library.<br/>
+It is dated from **24.06.2022** and updated 10/2023. If you have complains about the data or request for extensions, please send a PM or open a discussion.
+
+[Here](https://github.com/crankyoldgit/IRremoteESP8266) you find an **ESP8266/ESP32** version of IRremote with an **[impressive list of supported protocols](https://github.com/crankyoldgit/IRremoteESP8266/blob/master/SupportedProtocols.md)**.
+
+| Subject | [IRMP](https://github.com/IRMP-org/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**mostly unmaintained** | [IRremote](https://github.com/Arduino-IRremote/Arduino-IRremote) | [TinyIR](https://github.com/Arduino-IRremote/Arduino-IRremote/tree/master/examples/TinyReceiver/TinyReceiver.ino) | [IRsmallDecoder](https://github.com/LuisMiCa/IRsmallDecoder)
 |---------|------|-----------|--------|----------|----------|----------|
-| Number of protocols | **50** | Nec + Panasonic + Hash \* | 12 + Hash \* | 17 + PulseDistance + Hash \* | NEC | NEC + RC5 + Sony + Samsung |
+| Number of protocols | **50** | Nec + Panasonic + Hash \* | 12 + Hash \* | 17 + PulseDistance + Hash \* | NEC + FAST | NEC + RC5 + Sony + Samsung |
 | Timing method receive | Timer2 or interrupt for pin 2 or 3 | **Interrupt** | Timer2 or interrupt for pin 2 or 3 | Timer2 | **Interrupt** | **Interrupt** |
 | Timing method send | PWM and timing with Timer2 interrupts | Timer2 interrupts | Timer2 and blocking wait | PWM with Timer2 and/or blocking wait with delay<br/>Microseconds() | blocking wait with delay<br/>Microseconds() | % |
 | Send pins| All | All | All ? | Timer dependent | All | % |
@@ -125,8 +128,8 @@ It is dated from **24.06.2022**. If you have complains about the data or request
 | FLASH usage (simple NEC example with 5 prints) | 1820<br/>(4300 for 15 main / 8000 for all 40 protocols)<br/>(+200 for callback)<br/>(+80 for interrupt at pin 2+3)| 1270<br/>(1400 for pin 2+3) | 4830 | 1770 | **900** | ?1100? |
 | RAM usage | 52<br/>(73 / 100 for 15 (main) / 40 protocols) | 62 | 334 | 227 | **19** | 29 |
 | Supported platforms | **avr, megaavr, attiny, Digispark (Pro), esp8266, ESP32, STM32, SAMD 21, Apollo3<br/>(plus arm and pic for non Arduino IDE)** | avr, esp8266 | avr, SAMD 21, SAMD 51 | avr, attiny, [esp8266](https://github.com/crankyoldgit/IRremoteESP8266), esp32, SAM, SAMD | **All platforms with attach<br/>Interrupt()** | **All platforms with attach<br/>Interrupt()** |
-| Last library update | 6/2022 | 4/2018 | 3/2022 | 6/2022 | 6/2022 | 2/2022 |
-| Remarks | Decodes 40 protocols concurrently.<br/>39 Protocols to send.<br/>Work in progress. | Only one protocol at a time. | Consists of 5 libraries. **Project containing bugs - 45 issues, no reaction for at least one year.** | Universal decoder and encoder.<br/>Supports **Pronto** codes and sending of raw timing values. | Requires no timer. | Requires no timer. |
+| Last library update | 5/2023 | 4/2018 | 11/2022 | 9/2023 | 5/2023 | 2/2022 |
+| Remarks | Decodes 40 protocols concurrently.<br/>39 Protocols to send.<br/>Work in progress. | Only one protocol at a time. | Consists of 5 libraries. **Project containing bugs - 63 issues, 10 pull requests.* | Universal decoder and encoder.<br/>Supports **Pronto** codes and sending of raw timing values. | Requires no timer. | Requires no timer. |
 
 \* The Hash protocol gives you a hash as code, which may be sufficient to distinguish your keys on the remote, but may not work with some protocols like Mitsubishi
 
@@ -262,7 +265,7 @@ Modify it by setting the value to 1 or 0. Or define the macro with the -D compil
 These next macros for **TinyIRReceiver** must be defined in your program before the line `#include <TinyIRReceiver.hpp>` to take effect.
 | Name | Default value | Description |
 |:---|---:|----|
-| `IR_INPUT_PIN` | 2 | The pin number for TinyIRReceiver IR input, which gets compiled in. |
+| `IR_RECEIVE_PIN` | 2 | The pin number for TinyIRReceiver IR input, which gets compiled in. |
 | `IR_FEEDBACK_LED_PIN` | `LED_BUILTIN` | The pin number for TinyIRReceiver feedback LED, which gets compiled in. |
 | `NO_LED_FEEDBACK_CODE` | disabled | Enable it to disable the feedback LED function. Saves 14 bytes program memory. |
 
@@ -356,7 +359,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 - Fixed NO_LED_FEEDBACK_CODE bug.
 
 ### Version 3.6.0
-- Improved timings by Jörg R.
+- Improved timings by Jï¿½rg R.
 - Support for NEC 8 bit address.
 - Fixed ATmega4809 bug.
 - RP2040 support added.

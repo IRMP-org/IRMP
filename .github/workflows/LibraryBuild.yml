@@ -52,7 +52,7 @@ jobs:
           - arduino:mbed:nano33ble
           - arduino:mbed_rp2040:pico
           - rp2040:rp2040:arduino_nano_connect
-          - digistump:avr:digispark-tiny:clock=clock16
+#          - digistump:avr:digispark-tiny:clock=clock16
           - ATTinyCore:avr:attinyx5micr:LTO=enable,sketchclock=8pll
           - ATTinyCore:avr:attinyx7micr:LTO=enable,sketchclock=16external,pinmapping=new,millis=enabled
           - ATTinyCore:avr:attinyx8micr:LTO=enable,sketchclock=16external,pinmapping=mhtiny,millis=enabled  # ATtiny88 China clone board @16 MHz
@@ -85,10 +85,10 @@ jobs:
             build-properties: # the flags were put in compiler.cpp.extra_flags
               All: -DNO_LED_FEEDBACK_CODE
 
-          - arduino-boards-fqbn: digistump:avr:digispark-tiny:clock=clock16
-            platform-url: https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
-            required-libraries: ATtinySerialOut
-            sketches-exclude: AllProtocols,SendAllProtocols,ReceiveAndSendDynamicPins,ReceiverTimingAnalysis # Does not fit in FLASH # Comma separated list of example names to exclude in build
+#          - arduino-boards-fqbn: digistump:avr:digispark-tiny:clock=clock16
+#            platform-url: https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
+#            required-libraries: ATtinySerialOut
+#            sketches-exclude: AllProtocols,SendAllProtocols,ReceiveAndSendDynamicPins,ReceiverTimingAnalysis # Does not fit in FLASH # Comma separated list of example names to exclude in build
 
           - arduino-boards-fqbn: ATTinyCore:avr:attinyx5micr:LTO=enable,sketchclock=8pll
             platform-url: http://drazzy.com/package_drazzy.com_index.json
@@ -172,3 +172,4 @@ jobs:
           sketches-exclude: ${{ matrix.sketches-exclude }}
           build-properties: ${{ toJson(matrix.build-properties) }}
 #          debug-install: true
+          cli-version: 0.33.0 # to avoid errors for ATTinyCore
