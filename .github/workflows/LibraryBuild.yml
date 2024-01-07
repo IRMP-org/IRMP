@@ -90,6 +90,9 @@ jobs:
 #            required-libraries: ATtinySerialOut
 #            sketches-exclude: AllProtocols,SendAllProtocols,ReceiveAndSendDynamicPins,ReceiverTimingAnalysis # Does not fit in FLASH # Comma separated list of example names to exclude in build
 
+#
+# ATTinyCore
+#
           - arduino-boards-fqbn: ATTinyCore:avr:attinyx5micr:LTO=enable,sketchclock=8pll
             platform-url: http://drazzy.com/package_drazzy.com_index.json
             required-libraries: ATtinySerialOut
@@ -107,6 +110,7 @@ jobs:
 
           - arduino-boards-fqbn: TinyCore:avr:tiny32
             platform-url: https://raw.githubusercontent.com/xukangmin/TinyCore/master/avr/package/package_tinycore_index.json
+            sketches-exclude: TinySender,TinyReceiver # PIN_PA6' was not declared etc.
 
           - arduino-boards-fqbn: arduino:mbed_rp2040:pico
 

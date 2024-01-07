@@ -154,7 +154,7 @@ void noTone(uint8_t aPinNumber){
 #endif
 #define IR_TIMING_TEST_PIN  7
 
-#elif defined(__AVR__)
+#elif defined(__AVR__) // Standard AVR Boards like Uno, Nano
 #define IRMP_INPUT_PIN      2 // To be compatible with interrupt example, pin 2 is chosen here.
 #define IRSND_OUTPUT_PIN    3
 #define TONE_PIN            4

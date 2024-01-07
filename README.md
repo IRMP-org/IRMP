@@ -25,6 +25,10 @@ Available as [Arduino library "IRMP"](https://www.arduinolibraries.info/librarie
 
 </div>
 
+#### If you find this library useful, please give it a star.
+
+&#x1F30E; [Google Translate](https://translate.google.com/translate?sl=en&u=https://github.com/IRMP-org/IRMP)
+
 <br/>
 
 # Features
@@ -93,7 +97,7 @@ The VS1838B is used as receiver for all examples and tests. This module has a 12
 # Supported Arduino architectures / CPU's / boards
 ATtiny and Digispark boards are tested with the recommended [ATTinyCore](https://github.com/SpenceKonde/ATTinyCore) using `New Style` pin mapping for the pro board.
 | Architecture | CPU | Board |
-|:---|---:|----:|
+|-|-:|-:|
 | avr     | ATmega16, ATmega328P, ATmega32U4, ATtinyX5, ATtinyX7 | Uno, Nano, Leonardo, Sparkfun Pro Micro, Digispark etc. |
 | megaavr | ATmega4809 | Uno WiFi Rev 2, Nano Every |
 | samd    | SAMD21G18A | Zero, MKR*, etc. **but not DUE, which is sam architecture** |
@@ -115,7 +119,7 @@ It is dated from **24.06.2022** and updated 10/2023. If you have complains about
 [Here](https://github.com/crankyoldgit/IRremoteESP8266) you find an **ESP8266/ESP32** version of IRremote with an **[impressive list of supported protocols](https://github.com/crankyoldgit/IRremoteESP8266/blob/master/SupportedProtocols.md)**.
 
 | Subject | [IRMP](https://github.com/IRMP-org/IRMP) | [IRLremote](https://github.com/NicoHood/IRLremote) | [IRLib2](https://github.com/cyborg5/IRLib2)<br/>**mostly unmaintained** | [IRremote](https://github.com/Arduino-IRremote/Arduino-IRremote) | [TinyIR](https://github.com/Arduino-IRremote/Arduino-IRremote/tree/master/examples/TinyReceiver/TinyReceiver.ino) | [IRsmallDecoder](https://github.com/LuisMiCa/IRsmallDecoder)
-|---------|------|-----------|--------|----------|----------|----------|
+|-|-|-|-|-|-|-|
 | Number of protocols | **50** | Nec + Panasonic + Hash \* | 12 + Hash \* | 17 + PulseDistance + Hash \* | NEC + FAST | NEC + RC5 + Sony + Samsung |
 | Timing method receive | Timer2 or interrupt for pin 2 or 3 | **Interrupt** | Timer2 or interrupt for pin 2 or 3 | Timer2 | **Interrupt** | **Interrupt** |
 | Timing method send | PWM and timing with Timer2 interrupts | Timer2 interrupts | Timer2 and blocking wait | PWM with Timer2 and/or blocking wait with delay<br/>Microseconds() | blocking wait with delay<br/>Microseconds() | % |
@@ -241,7 +245,7 @@ To customize the library to different requirements, there are some compile optio
 Modify it by setting the value to 1 or 0. Or define the macro with the -D compiler option for global compile (the latter is not possible with the Arduino IDE, so consider using [Sloeber](https://eclipse.baeyens.it).<br/>
 
 | Name | Default value | Description |
-|:---|---:|----|
+|-|-:|-|
 | `IRMP_INPUT_PIN` | 2 | The pin number which gets compiled in, if not using `IRMP_IRSND_ALLOW_DYNAMIC_PINS`. See also [PinDefinitionsAndMore.h](https://github.com/IRMP-org/IRMP/master/examples/OneProtocol/PinDefinitionsAndMore.h#L32) |
 | `IRMP_FEEDBACK_LED_PIN` | `LED_BUILTIN` | The pin number for the feedback led which gets compiled in, if not using `IRMP_IRSND_ALLOW_DYNAMIC_PINS`. |
 | `FEEDBACK_LED_IS_ACTIVE_LOW` | disabled | Required on some boards (like my like my BluePill and my ESP8266 board), where the feedback LED is active low. |
@@ -264,7 +268,7 @@ Modify it by setting the value to 1 or 0. Or define the macro with the -D compil
 
 These next macros for **TinyIRReceiver** must be defined in your program before the line `#include <TinyIRReceiver.hpp>` to take effect.
 | Name | Default value | Description |
-|:---|---:|----|
+|-|-:|-|
 | `IR_RECEIVE_PIN` | 2 | The pin number for TinyIRReceiver IR input, which gets compiled in. |
 | `IR_FEEDBACK_LED_PIN` | `LED_BUILTIN` | The pin number for TinyIRReceiver feedback LED, which gets compiled in. |
 | `NO_LED_FEEDBACK_CODE` | disabled | Enable it to disable the feedback LED function. Saves 14 bytes program memory. |
@@ -522,5 +526,3 @@ The library examples are tested with GitHub Actions for the following boards:
 - STMicroelectronics:stm32:GenL0:pnum=THUNDERPACK_L072
 - stm32duino:STM32F1:genericSTM32F103C
 - SparkFun:apollo3:sfe_artemis_nano
-
-#### If you find this library useful, please give it a star.
