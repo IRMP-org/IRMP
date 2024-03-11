@@ -90,10 +90,6 @@ void IRSendWithDelay(uint16_t aCommand, uint16_t aDelayMillis);
 
 void setup()
 {
-#if defined(MCUSR)
-    MCUSR = 0; // To reset old boot flags for next boot
-#endif
-
     pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(115200);
 #if defined(__AVR_ATmega32U4__) || defined(SERIAL_PORT_USBVIRTUAL) || defined(SERIAL_USB) /*stm32duino*/|| defined(USBCON) /*STM32_stm32*/|| defined(SERIALUSB_PID) || defined(ARDUINO_attiny3217)
