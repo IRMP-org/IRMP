@@ -95,13 +95,15 @@ The VS1838B is used as receiver for all examples and tests. This module has a 12
 <br/>
 
 # Supported Arduino architectures / CPU's / boards
+For **ESP8266/ESP32**, [this library](https://github.com/crankyoldgit/IRremoteESP8266) supports an [impressive set of protocols and a lot of air conditioners](https://github.com/crankyoldgit/IRremoteESP8266/blob/master/SupportedProtocols.md)<br/>
+<br/>
 ATtiny and Digispark boards are tested with the recommended [ATTinyCore](https://github.com/SpenceKonde/ATTinyCore) using `New Style` pin mapping for the pro board.
 | Architecture | CPU | Board |
 |-|-:|-:|
 | avr     | ATmega16, ATmega328P, ATmega32U4, ATtinyX5, ATtinyX7 | Uno, Nano, Leonardo, Sparkfun Pro Micro, Digispark etc. |
 | megaavr | ATmega4809 | Uno WiFi Rev 2, Nano Every |
 | samd    | SAMD21G18A | Zero, MKR*, etc. **but not DUE, which is sam architecture** |
-| esp8266 | % | all |
+| esp8266 | All protocols does not fit in IRAM | all |
 | esp32   | % | all |
 | stm32   | STM32F1xx     | BluePill |
 | STM32F1 | STM32F1xx     | BluePill |
