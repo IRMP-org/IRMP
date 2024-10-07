@@ -2335,12 +2335,12 @@ static volatile uint_fast8_t                    irmp_ir_detected = FALSE;
 static volatile uint_fast8_t                    irmp_protocol;
 static volatile uint_fast16_t                   irmp_address;
 #if IRMP_32_BIT == 1
-static volatile uint_fast32_t                   irmp_command;
+static uint_fast32_t                            irmp_command;
 #else
-static volatile uint_fast16_t                   irmp_command;
+static uint_fast16_t                            irmp_command; // removed volatile, because it is only used in irmp_get_data and therefore volatile makes no sense
 #endif
 static volatile uint_fast16_t                   irmp_id;                // only used for SAMSUNG protocol
-static volatile uint_fast8_t                    irmp_flags;
+static uint_fast8_t                             irmp_flags; // removed volatile, because it is only used in irmp_get_data and therefore volatile makes no sense
 // static volatile uint_fast8_t                 irmp_busy_flag;
 
 #if defined(__MBED__)

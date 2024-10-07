@@ -105,7 +105,7 @@ extern uint_fast8_t irmp_InputPin; // global variable to hold input pin number. 
 
 #if defined(IRMP_INPUT_PIN)
 #  if defined(__AVR__)
-#    define input(x)                digitalReadFast(IRMP_INPUT_PIN)
+#    define input(x)                (__builtin_constant_p(IRMP_INPUT_PIN) ) ? digitalReadFast(IRMP_INPUT_PIN) : digitalRead(IRMP_INPUT_PIN)
 #  else
 #    define input(x)                digitalRead(IRMP_INPUT_PIN)
 #  endif

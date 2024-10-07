@@ -35,14 +35,14 @@
  * ATtiny167    9|PA3       8|PA2       5|PA7     Digispark original core
  * ATtiny84      |PB2        |PA4        |PA3     ATTinyCore
  * ATtiny88     3|PD3       4|PD4       9|PB1     ATTinyCore
- * ATtiny3217  18|PA1      19|PA2      20|PA3     MegaTinyCore
+ * ATtiny3216  14|PA1      15|PA2      16|PA3     MegaTinyCore
  * ATtiny1604   2           3|PA5       %
  * ATtiny816   14|PA1      16|PA3       1|PA5     MegaTinyCore
  * ATtiny1614   8|PA1      10|PA3       1|PA5     MegaTinyCore
  * SAMD21       3           4           5
  * ESP8266      14|D5       12|D6       %
  * ESP32        15          4          27
- * ESP32-C3     6           7          10
+ * ESP32-C3     2           3           4
  * BluePill     PA6         PA7       PA3
  * APOLLO3      11          12          5
  * RP2040       3|GPIO15    4|GPIO16    5|GPIO17
@@ -93,10 +93,10 @@
 // Tiny Core Dev board
 // https://www.tindie.com/products/xkimi/tiny-core-16-dev-board-attiny1616/ - Out of Stock
 // https://www.tindie.com/products/xkimi/tiny-core-32-dev-board-attiny3217/ - Out of Stock
-#define IR_RECEIVE_PIN   PIN_PA1 // use 18 instead of PIN_PA1 for TinyCore32
-#define IR_SEND_PIN      PIN_PA2 // 19
-#define TONE_PIN         PIN_PA3 // 20
-#define APPLICATION_PIN  PIN_PA0 // 0
+#define IR_RECEIVE_PIN   PIN_PA1 // 14 use 18 instead of PIN_PA1 for TinyCore32
+#define IR_SEND_PIN      PIN_PA2 // 15, 19 for TinyCore32
+#define TONE_PIN         PIN_PA3 // 16, 20 for TinyCore32
+#define APPLICATION_PIN  PIN_PC3 // 13, PIN_PA0 is RESET
 #undef LED_BUILTIN               // No LED available on the TinyCore 32 board, take the one on the programming board which is connected to the DAC output
 #define LED_BUILTIN      PIN_PA6 // use 2 instead of PIN_PA6 for TinyCore32
 
@@ -172,7 +172,14 @@
 
 #define tone(...) void()      // tone() inhibits receive timer
 #define noTone(a) void()
-#define TONE_PIN                42 // Dummy for examples using it
+#define TONE_PIN                42 // Dummy for examples using it#
+
+#elif defined(ARDUINO_NOLOGO_ESP32C3_SUPER_MINI)
+#define FEEDBACK_LED_IS_ACTIVE_LOW // The LED on my board (D8) is active LOW
+#define IR_RECEIVE_PIN           2
+#define IR_SEND_PIN              3
+#define TONE_PIN                 4
+#define APPLICATION_PIN         10
 
 #elif defined(CONFIG_IDF_TARGET_ESP32C3) || defined(ARDUINO_ESP32C3_DEV)
 #define NO_LED_FEEDBACK_CODE   // The  WS2812 on pin 8 of AI-C3 board crashes if used as receive feedback LED, other I/O pins are working...
@@ -230,7 +237,8 @@ void noTone(uint8_t aPinNumber){
 #define IR_SEND_PIN     12
 #define TONE_PIN         5
 
-#elif defined(ARDUINO_ARCH_MBED) && defined(ARDUINO_ARCH_MBED_NANO) // Arduino Nano 33 BLE
+#elif defined(ARDUINO_ARCH_MBED) && defined(ARDUINO_ARCH_MBED_NANO) // Arduino Nano 33 BLE and Arduino Nano Connect layout for MBED
+// Must be before ARDUINO_ARCH_RP2040, since it is the layout for the MBED core of Arduino Nano Connect
 #define IR_RECEIVE_PIN      3   // GPIO15 Start with pin 3 since pin 2|GPIO25 is connected to LED on Pi pico
 #define IR_SEND_PIN         4   // GPIO16
 #define TONE_PIN            5
@@ -330,12 +338,6 @@ void noTone(uint8_t aPinNumber){
 
 #if !defined (FLASHEND)
 #define FLASHEND 0xFFFF // Dummy value for platforms where FLASHEND is not defined
-#endif
-#if !defined (RAMEND)
-#define RAMEND 0xFFFF // Dummy value for platforms where RAMEND is not defined
-#endif
-#if !defined (RAMSIZE)
-#define RAMSIZE 0xFFFF // Dummy value for platforms where RAMSIZE is not defined
 #endif
 
 /*

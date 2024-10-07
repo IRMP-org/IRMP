@@ -262,11 +262,17 @@ void initIRTimerForSend(void)
     // Tasmota requires timer 3 (last of 4 timers)
     // Use timer with 1 microsecond resolution, main clock is 80MHZ
     if(sReceiveAndSendInterruptTimer == NULL) {
+#  if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
+        sReceiveAndSendInterruptTimer = timerBegin(1000000); // Only 1 parameter is required. 1000000 corresponds to 1 MHz / 1 uSec. After successful setup the timer will automatically start.
+        timerAttachInterrupt(sReceiveAndSendInterruptTimer, irmp_timer_ISR);
+        timerAlarm(sReceiveAndSendInterruptTimer, ((getApbFrequency() / 80) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY, true, 0); // 0 in the last parameter is repeat forever
+#  else
         sReceiveAndSendInterruptTimer = timerBegin(3, 80, true);
         timerAttachInterrupt(sReceiveAndSendInterruptTimer, irmp_timer_ISR, false); // false -> level interrupt, true -> edge interrupt, but this is not supported :-(
         timerAlarmWrite(sReceiveAndSendInterruptTimer, ((getApbFrequency() / 80) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY, true);
+#endif
     }
-    timerAlarmEnable(sReceiveAndSendInterruptTimer);
+    enableIRTimerInterrupt();
 
 #  if defined(DEBUG) && defined(ESP32)
     Serial.print("CPU frequency=");
@@ -470,7 +476,9 @@ void storeIRTimer(void) {
 #if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
     // If we do not use receive, we have no timer defined at the first call of this function
 #  if defined(ESP32)
-    sTimerAlarmValue = timerAlarmRead(sReceiveAndSendInterruptTimer);
+#    if ESP_ARDUINO_VERSION < ESP_ARDUINO_VERSION_VAL(3, 0, 0)
+            sTimerAlarmValue = timerAlarmRead(sReceiveAndSendInterruptTimer);
+#    endif
 
 #  elif defined(STM32F1xx)
     sTimerOverflowValue = sReceiveAndSendInterruptTimer.getOverflow(TICK_FORMAT);
@@ -583,7 +591,12 @@ void restoreIRTimer(void) {
 
 #if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
 #  if defined(ESP32)
+#    if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
+    // we have no timerAlarmRead, so we just initialize timer again.
+    timerAlarm(sReceiveAndSendInterruptTimer, ((getApbFrequency() / 80) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY, true, 0); // 0 in the last parameter is repeat forever
+#    else
     timerAlarmWrite(sReceiveAndSendInterruptTimer, sTimerAlarmValue, true);
+#    endif
 
 #  elif defined(STM32F1xx)
     sReceiveAndSendInterruptTimer.setOverflow(sTimerOverflowValue, TICK_FORMAT);
@@ -668,7 +681,11 @@ void disableIRTimerInterrupt(void) {
 
 #elif defined(ESP32)
     if (sReceiveAndSendInterruptTimer != NULL) {
-        timerAlarmDisable(sReceiveAndSendInterruptTimer);
+#    if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
+        timerStop(sReceiveAndSendInterruptTimer);
+#    else
+            timerAlarmDisable(sReceiveAndSendInterruptTimer);
+#    endif
     }
 
 #elif defined(STM32F1xx) || defined(ARDUINO_ARCH_STM32)     // STM32duino by ST Microsystems.
@@ -750,7 +767,11 @@ void enableIRTimerInterrupt(void) {
 
 #elif defined(ESP32)
     if (sReceiveAndSendInterruptTimer != NULL) {
+#  if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)  // timerAlarm() enables it automatically
+        timerStart(sReceiveAndSendInterruptTimer);
+#  else
         timerAlarmEnable(sReceiveAndSendInterruptTimer);
+#  endif
     }
 
 #elif defined(__STM32F1__) || defined(ARDUINO_ARCH_STM32F1) // Recommended original Arduino_STM32 by Roger Clark.
@@ -902,20 +923,20 @@ void irmp_timer_ISR(void)
         {
 #  if defined(IRSND_GENERATE_NO_SEND_RF)
             // output is active low
-            digitalWriteFast(IRSND_OUTPUT_PIN, IR_OUTPUT_ACTIVE_LEVEL); // output is active low
+            if (__builtin_constant_p(IRSND_OUTPUT_PIN) ) { digitalWriteFast(IRSND_OUTPUT_PIN, IR_OUTPUT_ACTIVE_LEVEL);} else { digitalWrite(IRSND_OUTPUT_PIN, IR_OUTPUT_ACTIVE_LEVEL);}
 #  else
             if(sDivider & 0x01) // true / inactive if sDivider is 3 or 1, so we start with active and end with inactive
             {
-                digitalWriteFast(IRSND_OUTPUT_PIN, IR_OUTPUT_INACTIVE_LEVEL);
+                if (__builtin_constant_p(IRSND_OUTPUT_PIN) ) { digitalWriteFast(IRSND_OUTPUT_PIN, IR_OUTPUT_INACTIVE_LEVEL);} else { digitalWrite(IRSND_OUTPUT_PIN, IR_OUTPUT_INACTIVE_LEVEL);}
             } else {
-                digitalWriteFast(IRSND_OUTPUT_PIN, IR_OUTPUT_ACTIVE_LEVEL);
+                if (__builtin_constant_p(IRSND_OUTPUT_PIN) ) { digitalWriteFast(IRSND_OUTPUT_PIN, IR_OUTPUT_ACTIVE_LEVEL);} else { digitalWrite(IRSND_OUTPUT_PIN, IR_OUTPUT_ACTIVE_LEVEL);}
             }
 
 
 #  endif // defined(IRSND_GENERATE_NO_SEND_RF)
         } else {
             // irsnd off here
-            digitalWriteFast(IRSND_OUTPUT_PIN, IR_OUTPUT_INACTIVE_LEVEL);
+            if (__builtin_constant_p(IRSND_OUTPUT_PIN) ) { digitalWriteFast(IRSND_OUTPUT_PIN, IR_OUTPUT_INACTIVE_LEVEL);} else { digitalWrite(IRSND_OUTPUT_PIN, IR_OUTPUT_INACTIVE_LEVEL);}
         }
 
         /*

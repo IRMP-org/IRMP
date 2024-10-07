@@ -56,8 +56,8 @@ jobs:
           - ATTinyCore:avr:attinyx5micr:LTO=enable,sketchclock=8pll
           - ATTinyCore:avr:attinyx7micr:LTO=enable,sketchclock=16external,pinmapping=new,millis=enabled
           - ATTinyCore:avr:attinyx8micr:LTO=enable,sketchclock=16external,pinmapping=mhtiny,millis=enabled  # ATtiny88 China clone board @16 MHz
-          - TinyCore:avr:tiny32
-# Not yet supported by IRTimer.hpp
+          - megaTinyCore:megaavr:atxy6:chip=1616,clock=16internal
+          - megaTinyCore:megaavr:atxy7:chip=3217,clock=16internal
           - MiniCore:avr:8:bootloader=uart0,eeprom=keep,BOD=2v7,LTO=Os_flto,clock=16MHz_external # ATmega8
           - MegaCore:avr:128:bootloader=no_bootloader,eeprom=keep,BOD=2v7,LTO=Os,clock=8MHz_internal # ATmega128
           - esp8266:esp8266:d1_mini:eesz=4M3M,xtal=80
@@ -108,9 +108,19 @@ jobs:
             required-libraries: ATtinySerialOut
             sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # No Serial.available() function in ATtinySerialOut
 
-          - arduino-boards-fqbn: TinyCore:avr:tiny32
-            platform-url: https://raw.githubusercontent.com/xukangmin/TinyCore/master/avr/package/package_tinycore_index.json
+#
+# megaTinyCore
+#
+          - arduino-boards-fqbn: megaTinyCore:megaavr:atxy6:chip=1616,clock=16internal
+            arduino-platform: megaTinyCore:megaavr
+            platform-url: http://drazzy.com/package_drazzy.com_index.json
             sketches-exclude: TinySender,TinyReceiver # PIN_PA6' was not declared etc.
+
+          - arduino-boards-fqbn: megaTinyCore:megaavr:atxy7:chip=3217,clock=16internal
+            arduino-platform: megaTinyCore:megaavr
+            platform-url: http://drazzy.com/package_drazzy.com_index.json
+            sketches-exclude: TinySender,TinyReceiver # PIN_PA6' was not declared etc.
+
 
           - arduino-boards-fqbn: arduino:mbed_rp2040:pico
 
@@ -126,7 +136,9 @@ jobs:
             platform-url: https://mcudude.github.io/MegaCore/package_MCUdude_MegaCore_index.json
             arduino-platform: MegaCore:avr,arduino:avr # gcc is taken from arduino:avr
             sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
-
+#
+# ESP
+#
           - arduino-boards-fqbn: esp8266:esp8266:d1_mini:eesz=4M3M,xtal=80
             platform-url: https://arduino.esp8266.com/stable/package_esp8266com_index.json
             sketches-exclude: TinyReceiver,AllProtocols # error ".text1' will not fit in region `iram1_0_seg'"
@@ -176,4 +188,4 @@ jobs:
           sketches-exclude: ${{ matrix.sketches-exclude }}
           build-properties: ${{ toJson(matrix.build-properties) }}
 #          debug-install: true
-          cli-version: 0.33.0 # to avoid errors for ATTinyCore
+#          cli-version: 0.33.0 # to avoid errors for ATTinyCore

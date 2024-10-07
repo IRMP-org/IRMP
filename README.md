@@ -21,7 +21,7 @@ Available as [Arduino library "IRMP"](https://www.arduinolibraries.info/librarie
 
 [![Button Install](https://img.shields.io/badge/Install-brightgreen?logoColor=white&logo=GitBook)](https://www.ardu-badge.com/IRMP)
  &nbsp; &nbsp; 
-[![Button Changelog](https://img.shields.io/badge/Changelog-blue?logoColor=white&logo=AzureArtifacts)](https://github.com/IRMP-org/IRMP#revision-history)
+[![Button Changelog](https://img.shields.io/badge/Changelog-blue?logoColor=white&logo=AzureArtifacts)](https://github.com/IRMP-org/IRMP?tab=readme-ov-file#revision-history)
 
 </div>
 

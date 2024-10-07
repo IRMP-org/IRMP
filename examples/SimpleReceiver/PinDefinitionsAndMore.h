@@ -33,7 +33,7 @@
  * ATtinyX5     0|PB0       4|PB4       3|PB3
  * ATtiny167    3|PA3       2|PA2       7|PA7     ATTinyCore
  * ATtiny167    9|PA3       8|PA2       5|PA7     Digispark pro
- * ATtiny3217  18|PA1      19|PA2       0|PA4     MegaTinyCore
+ * ATtiny3216  14|PA1      15|PA2      16|PA3     MegaTinyCore
  * SAMD21       3           4           5
  * ESP8266     14|D5       12|D6        %
  * ESP32       15           4           %
@@ -128,9 +128,9 @@ void noTone(uint8_t aPinNumber){
 #define IR_TIMING_TEST_PIN 8
 
 #elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
-#define IRMP_INPUT_PIN   18
-#define IRSND_OUTPUT_PIN 19
-#define TONE_PIN          0
+#define IRMP_INPUT_PIN   PIN_PA1 // 14 use 18 instead of PIN_PA1 for TinyCore32
+#define IRSND_OUTPUT_PIN PIN_PA2 // 15, 19 for TinyCore32
+#define TONE_PIN         PIN_PA3 // 16, 20 for TinyCore32
 
 #elif defined(ARDUINO_ARCH_APOLLO3)
 #define IRMP_INPUT_PIN   11
