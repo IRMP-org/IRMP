@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/IRMP-org/IRMP"
   },
-  "version": "3.6.3",
+  "version": "3.6.4",
   "exclude": "pictures",
   "authors":  [
     {
