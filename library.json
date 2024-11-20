@@ -1,13 +1,13 @@
 {
   "name": "IRMP",
+  "version": "3.6.4",
   "keywords": "infrared, ir, remote",
   "description": "Receive and Send infrared signals from your remote.",
+  "homepage": "https://github.com/IRMP-org/IRMP",
   "repository": {
     "type": "git",
-    "url": "https://github.com/IRMP-org/IRMP"
+    "url": "https://github.com/IRMP-org/IRMP.git"
   },
-  "version": "3.6.4",
-  "exclude": "pictures",
   "authors":  [
     {
       "name": "Armin Joachimsmeyer",
@@ -21,12 +21,8 @@
   ],
   "license": "GPL-3.0-or-later",
   "frameworks": "arduino",
-  "platforms": [
-    "atmelavr",
-    "atmelmegaavr",
-    "atmelsam",
-    "espressif8266",
-    "espressif32",
-    "ststm32"
-  ]
+  "platforms": ["atmelavr", "atmelmegaavr", "atmelsam", "espressif8266", "espressif32", "ststm32"],
+  "headers": ["irmp.hpp", "irsnd.hpp"],
+  "examples": "examples/*/*.ino",
+  "export": {"exclude": [".github", "pictures"]}
 }

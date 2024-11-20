@@ -169,7 +169,11 @@ void enablePCIInterrupt() {
     attachInterrupt(IRMP_INPUT_PIN, irmp_PCI_ISR, CHANGE); // 14.2 us before LED Feedback compared to 12 if configured with macros and less compatible
 
 #elif ! defined(__AVR__) || defined(IRMP_USE_ARDUINO_ATTACH_INTERRUPT)
+#  if defined(ARDUINO_ARCH_SAMD) // see https://www.arduino.cc/reference/tr/language/functions/external-interrupts/attachinterrupt/ paragraph: Syntax
+    attachInterrupt(IRMP_INPUT_PIN, irmp_PCI_ISR, CHANGE);
+#  else
     attachInterrupt(digitalPinToInterrupt(IRMP_INPUT_PIN), irmp_PCI_ISR, CHANGE);
+#  endif
 
 #else
 #  if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)

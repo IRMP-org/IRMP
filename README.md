@@ -482,7 +482,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 - IRSND enabled for non AVR platforms.
 
 ### Version 2.0.0
-- Added IR send fuctionality (IRSND).
+- Added IR send functionality (IRSND).
 - Use `TIMER2_COMPB_vect` to be compatible with tone library.
 - No longer required to call initPCIInterrupt() manually if IRMP_ENABLE_PIN_CHANGE_INTERRUPT is set.
 - Separated code for timer to IRTimer.hpp.

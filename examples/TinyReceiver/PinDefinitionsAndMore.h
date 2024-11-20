@@ -39,7 +39,8 @@
  * ATtiny1604   2           3|PA5       %
  * ATtiny816   14|PA1      16|PA3       1|PA5     MegaTinyCore
  * ATtiny1614   8|PA1      10|PA3       1|PA5     MegaTinyCore
- * SAMD21       3           4           5
+ * MKR*         1           3           4
+ * SAMD         2           3           4
  * ESP8266      14|D5       12|D6       %
  * ESP32        15          4          27
  * ESP32-C3     2           3           4
@@ -192,9 +193,12 @@
 #include <Arduino.h>
 
 // tone() is included in ESP32 core since 2.0.2
-#if !defined(ESP_ARDUINO_VERSION_VAL)
-#define ESP_ARDUINO_VERSION_VAL(major, minor, patch) 12345678
-#endif
+#  if !defined(ESP_ARDUINO_VERSION)
+#define ESP_ARDUINO_VERSION 0x010101 // Version 1.1.1
+#  endif
+#  if !defined(ESP_ARDUINO_VERSION_VAL)
+#define ESP_ARDUINO_VERSION_VAL(major, minor, patch) ((major << 16) | (minor << 8) | (patch))
+#  endif
 #if ESP_ARDUINO_VERSION  <= ESP_ARDUINO_VERSION_VAL(2, 0, 2)
 #define TONE_LEDC_CHANNEL        1  // Using channel 1 makes tone() independent of receiving timer -> No need to stop receiving timer.
 void tone(uint8_t aPinNumber, unsigned int aFrequency){
@@ -285,7 +289,11 @@ void noTone(uint8_t aPinNumber){
 #define _IR_TIMING_TEST_PIN 7
 
 #elif defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_SAM)
+#  if defined(USE_ARDUINO_MKR_PIN_LAYOUT)
+#define IR_RECEIVE_PIN      1 // Pin 2 on MKR is not interrupt capable, see https://www.arduino.cc/reference/tr/language/functions/external-interrupts/attachinterrupt/
+#  else
 #define IR_RECEIVE_PIN      2
+#  endif
 #define IR_SEND_PIN         3
 #define TONE_PIN            4
 #define APPLICATION_PIN     5
