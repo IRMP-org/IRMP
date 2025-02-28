@@ -245,7 +245,7 @@ typedef unsigned short                  uint_fast16_t;
 
 typedef struct IRMP_PACKED_STRUCT IRMP_DATA
 {
-    uint8_t                             protocol;                                   // protocol, e.g. NEC_PROTOCOL
+    uint8_t                             protocol;                                   // protocol, e.g. IRMP_NEC_PROTOCOL
     uint16_t                            address;                                    // address
     uint16_t                            command;                                    // command
     uint8_t                             flags;                                      // flags, e.g. repetition

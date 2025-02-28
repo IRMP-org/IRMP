@@ -37,7 +37,7 @@
 #if !defined(TIMER_DECLARED)
 #define TIMER_DECLARED
 #  if defined(ESP32)
-static hw_timer_t *sReceiveAndSendInterruptTimer = NULL;
+static hw_timer_t *sReceiveAndSendInterruptTimer = nullptr;
 
 // BluePill in 2 flavors see https://samuelpinches.com.au/3d-printer/cutting-through-some-confusion-on-stm32-and-arduino/
 #  elif defined(__STM32F1__) || defined(ARDUINO_ARCH_STM32F1) // Recommended original Arduino_STM32 by Roger Clark.
@@ -261,7 +261,7 @@ void initIRTimerForSend(void)
 #elif defined(ESP32)
     // Tasmota requires timer 3 (last of 4 timers)
     // Use timer with 1 microsecond resolution, main clock is 80MHZ
-    if(sReceiveAndSendInterruptTimer == NULL) {
+    if(sReceiveAndSendInterruptTimer == nullptr) {
 #  if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
         sReceiveAndSendInterruptTimer = timerBegin(1000000); // Only 1 parameter is required. 1000000 corresponds to 1 MHz / 1 uSec. After successful setup the timer will automatically start.
         timerAttachInterrupt(sReceiveAndSendInterruptTimer, irmp_timer_ISR);
@@ -342,7 +342,7 @@ void initIRTimerForSend(void)
     sReceiveAndSendInterruptTimer.attach(irmp_timer_ISR, std::chrono::microseconds(1000000 / IR_INTERRUPT_FREQUENCY));
 
 #elif defined(ARDUINO_ARCH_RP2040) // Raspberry Pi Pico, Adafruit Feather RP2040, etc.
-    add_repeating_timer_us(-1000000 / IR_INTERRUPT_FREQUENCY, IRTimerInterruptHandlerHelper, NULL, &sReceiveAndSendInterruptTimer); // 13.15 us
+    add_repeating_timer_us(-1000000 / IR_INTERRUPT_FREQUENCY, IRTimerInterruptHandlerHelper, nullptr, &sReceiveAndSendInterruptTimer); // 13.15 us
 
 #elif defined(TEENSYDUINO)
     sReceiveAndSendInterruptTimer.begin(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
@@ -617,7 +617,7 @@ void restoreIRTimer(void) {
     sReceiveAndSendInterruptTimer.attach(irmp_timer_ISR, std::chrono::microseconds(1000000 / IR_INTERRUPT_FREQUENCY));
 
 #elif defined(ARDUINO_ARCH_RP2040)
-    add_repeating_timer_us(-1000000 / IR_INTERRUPT_FREQUENCY, IRTimerInterruptHandlerHelper, NULL, &sReceiveAndSendInterruptTimer);
+    add_repeating_timer_us(-1000000 / IR_INTERRUPT_FREQUENCY, IRTimerInterruptHandlerHelper, nullptr, &sReceiveAndSendInterruptTimer);
 
 #  elif defined(TEENSYDUINO)
     sReceiveAndSendInterruptTimer.update(1000000 / IR_INTERRUPT_FREQUENCY);
@@ -680,7 +680,7 @@ void disableIRTimerInterrupt(void) {
     timer1_detachInterrupt(); // disables interrupt too
 
 #elif defined(ESP32)
-    if (sReceiveAndSendInterruptTimer != NULL) {
+    if (sReceiveAndSendInterruptTimer != nullptr) {
 #    if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
         timerStop(sReceiveAndSendInterruptTimer);
 #    else
@@ -766,7 +766,7 @@ void enableIRTimerInterrupt(void) {
     timer1_attachInterrupt(irmp_timer_ISR); // enables interrupt too
 
 #elif defined(ESP32)
-    if (sReceiveAndSendInterruptTimer != NULL) {
+    if (sReceiveAndSendInterruptTimer != nullptr) {
 #  if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)  // timerAlarm() enables it automatically
         timerStart(sReceiveAndSendInterruptTimer);
 #  else
@@ -798,7 +798,7 @@ void enableIRTimerInterrupt(void) {
     sReceiveAndSendInterruptTimer.attach(irmp_timer_ISR, std::chrono::microseconds(1000000 / IR_INTERRUPT_FREQUENCY));
 
 #elif defined(ARDUINO_ARCH_RP2040)
-    add_repeating_timer_us(-1000000 / IR_INTERRUPT_FREQUENCY, IRTimerInterruptHandlerHelper, NULL, &sReceiveAndSendInterruptTimer);
+    add_repeating_timer_us(-1000000 / IR_INTERRUPT_FREQUENCY, IRTimerInterruptHandlerHelper, nullptr, &sReceiveAndSendInterruptTimer);
 
 #elif defined(TEENSYDUINO)
     sReceiveAndSendInterruptTimer.begin(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);

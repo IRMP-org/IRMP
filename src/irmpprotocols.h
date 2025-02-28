@@ -25,7 +25,7 @@
  */
 #define IRMP_UNKNOWN_PROTOCOL                    0              // unknown protocol
 #define IRMP_SIRCS_PROTOCOL                      1              // Sony
-#define IRMP_NEC_PROTOCOL                        2              // NEC with 32 bits, 16 address + 8 + 8 command bits, Pioneer, JVC, Toshiba, NoName etc.
+#define IRMP_NEC_PROTOCOL                        2              // NEC with 32 bits, 16 address + 8 (+ 8 generated) command bits, Pioneer, JVC, Toshiba, NoName etc.
 #define IRMP_SAMSUNG_PROTOCOL                    3              // Samsung
 #define IRMP_MATSUSHITA_PROTOCOL                 4              // Matsushita
 #define IRMP_KASEIKYO_PROTOCOL                   5              // Kaseikyo (Panasonic etc)

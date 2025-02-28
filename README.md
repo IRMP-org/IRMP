@@ -242,6 +242,24 @@ Click on the receiver while simulation is running to specify individual IR codes
 
 <br/>
 
+# Tips and tricks
+- To port the library to another device, you merely have to extend *IRTimer.hpp*.
+- The minimal CPU clock required for receiving is 8MHz.
+- To save power, you can use the interrupt mode or polling mode with no-sending detection and power down sleep.
+ This is **not available** for ATtiny85 running with the High Speed PLL clock (as on  Digispark boards) 
+ because of the high startup time from sleep of 4 to 5 ms for this clock. You have to use the ISP to [rewrite the CKSEL fuses](https://github.com/ArminJo/micronucleus-firmware/blob/master/utils/Write%2085%20Fuses%20E2%20DF%20FF%20-%20ISP%20Mode%20%3D%208MHz%20without%20BOD%20and%20Pin5.cmd) and to load the program.
+ - The best way to **increase the IR power** is to use 2 or 3 IR diodes in series. 
+ One diode requires 1.1 to 1.5 volt so you can supply 3 diodes with a 5 volt output.To keep the current, 
+ you must reduce the resistor by (5 - 1.3) / (5 - 2.6) = 1.5 e.g. from 150 &ohm; to 100 &ohm; for 25 mA and 2 diodes with 1.3 volt and a 5 volt supply.
+ For 3 diodes it requires factor 2.5 e.g. from 150 &ohm; to 60 &ohm;.
+- A lot of recent IR diodes can be powered with max. 200 mA at 50% duty cycle, but for this you will require an external driver / transistor / (mos)fet.
+- In order to fit the examples to the 8K flash of ATtiny85 and ATtiny88, the [Arduino library ATtinySerialOut](https://github.com/ArminJo/ATtinySerialOut) is required for this CPU's.
+- Sending `IRMP_NEC_PROTOCOL` requires a full 16 bit address. Thus for sending plain NEC with 8 bit address, the 16 bit address must be computed with
+`address |= ~((address & 0xFF) << 8);`
+
+<br/>
+
+
 # Compile options / macros for this library
 To customize the library to different requirements, there are some compile options / macros available, which must be set **before** including the library e.g. with `#include <irmp.hpp>`.<br/>
 Modify it by setting the value to 1 or 0. Or define the macro with the -D compiler option for global compile (the latter is not possible with the Arduino IDE, so consider using [Sloeber](https://eclipse.baeyens.it).<br/>
@@ -304,21 +322,6 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 - For Apollo3 **Timer 3 segment B** is used.
 - For ESP8266 and ESP32 **timer1** is used.
 - For STM32 (BluePill) **timer 3 (Servo timer) channel 1** is used as default.<br/>
-
-<br/>
-
-# Tips and tricks
-- To port the library to another device, you merely have to extend *IRTimer.hpp*.
-- The minimal CPU clock required for receiving is 8MHz.
-- To save power, you can use the interrupt mode or polling mode with no-sending detection and power down sleep.
- This is **not available** for ATtiny85 running with the High Speed PLL clock (as on  Digispark boards) 
- because of the high startup time from sleep of 4 to 5 ms for this clock. You have to use the ISP to [rewrite the CKSEL fuses](https://github.com/ArminJo/micronucleus-firmware/blob/master/utils/Write%2085%20Fuses%20E2%20DF%20FF%20-%20ISP%20Mode%20%3D%208MHz%20without%20BOD%20and%20Pin5.cmd) and to load the program.
- - The best way to **increase the IR power** is to use 2 or 3 IR diodes in series. 
- One diode requires 1.1 to 1.5 volt so you can supply 3 diodes with a 5 volt output.To keep the current, 
- you must reduce the resistor by (5 - 1.3) / (5 - 2.6) = 1.5 e.g. from 150 &ohm; to 100 &ohm; for 25 mA and 2 diodes with 1.3 volt and a 5 volt supply.
- For 3 diodes it requires factor 2.5 e.g. from 150 &ohm; to 60 &ohm;.
-- A lot of recent IR diodes can be powered with max. 200 mA at 50% duty cycle, but for this you will require an external driver / transistor / (mos)fet.
-- In order to fit the examples to the 8K flash of ATtiny85 and ATtiny88, the [Arduino library ATtinySerialOut](https://github.com/ArminJo/ATtinySerialOut) is required for this CPU's.
 
 <br/>
 

@@ -5456,12 +5456,12 @@ uint_fast8_t irmp_ISR(void)
 #endif
 
 #if (defined(_CHIBIOS_RT_) || defined(_CHIBIOS_NIL_)) && IRMP_USE_EVENT == 1
-    if (IRMP_EVENT_THREAD_PTR != NULL && irmp_ir_detected)
+    if (IRMP_EVENT_THREAD_PTR != nullptr && irmp_ir_detected)
         chEvtSignalI(IRMP_EVENT_THREAD_PTR,IRMP_EVENT_BIT);
 #endif
 
 #if IRMP_USE_COMPLETE_CALLBACK == 1
-    if (irmp_complete_callback_function != NULL && irmp_ir_detected) {
+    if (irmp_complete_callback_function != nullptr && irmp_ir_detected) {
         irmp_complete_callback_function();
     }
 #endif
@@ -5759,7 +5759,7 @@ next_tick (void)
                 }
                 else if (key == '\r' || key == '\t' || key == KEY_ESCAPE || (key >= 0x80 && key <= 0x9F))                 // function keys
                 {
-                    const char * p = (const char *) NULL;
+                    const char * p = (const char *) nullptr;
 
                     switch (key)
                     {
