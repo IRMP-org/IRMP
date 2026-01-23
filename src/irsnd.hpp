@@ -592,7 +592,7 @@ irsnd_on (void)
         // IRSND_PIN = 0; // output mode -> enable PWM outout pin (0=PWM on, 1=PWM off)
 
 #  elif defined (ARM_STM32)                             // STM32
-        TIM_SelectOCxM(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_OCMode_PWM1); // enable PWM as OC-mode
+        IRSND_TIMER->EGR = TIM_PSCReloadMode_Immediate; // Generate an update event to reload the Prescaler and the Repetition counter values immediately
         TIM_CCxCmd(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_CCx_Enable);      // enable OC-output (is being disabled in TIM_SelectOCxM())
         TIM_Cmd(IRSND_TIMER, ENABLE);                   // enable counter
 
@@ -676,10 +676,8 @@ irsnd_off (void)
         // IRSND_PIN = 1; //input mode -> disbale PWM output pin (0=PWM on, 1=PWM off)
 
 #  elif defined (ARM_STM32)                                                             // STM32
-        TIM_Cmd(IRSND_TIMER, DISABLE);                                                  // disable counter
-        TIM_SelectOCxM(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_ForcedAction_InActive);    // force output inactive
-        TIM_CCxCmd(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_CCx_Enable);                   // enable OC-output (is being disabled in TIM_SelectOCxM())
-        TIM_SetCounter(IRSND_TIMER, 0);                                                 // reset counter value
+        TIM_CCxCmd(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_CCx_Disable);                   // disable OC-output
+        TIM_Cmd(IRSND_TIMER, DISABLE);
 
 #  elif defined (ARM_STM32_OPENCM3)                                                     // STM32_OPENCM3
         timer_disable_oc_output(IRSND_TIMER, IRSND_TIMER_CHANNEL);                      // disable OC-output
