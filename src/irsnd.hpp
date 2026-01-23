@@ -1891,7 +1891,7 @@ irsnd_send_data(IRMP_DATA *irmp_data_p, uint8_t do_wait)
             break;
         }
 // @formatter:on
-}
+    }
 #if defined(ARDUINO)
     storeIRTimer(); // store current timer state to enable alternately send and receive with the same timer
     initIRTimerForSend(); // Setup timer and interrupts for sending
