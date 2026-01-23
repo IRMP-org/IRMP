@@ -738,7 +738,7 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #  define  STM32_UART_COM     USART2
 #  define  STM32_UART_BAUD    115200                                    // 115200 Baud
 #  include "stm32f4xx_usart.h"
-#elif defined(ARM_STM32F10X)
+#elif defined(ARM_STM32F10X) || defined(ARM_STM32F30X)
 #  define  STM32_UART_COM     USART3                                    // UART3 on PB10
 #elif defined(ARDUINO)                                                  // Arduino Serial implementation
 #  include "HardwareSerial.h"
