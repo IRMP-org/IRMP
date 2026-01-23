@@ -1683,7 +1683,7 @@ irsnd_send_data(IRMP_DATA *irmp_data_p, uint8_t do_wait)
         case IRMP_IR60_PROTOCOL:
         {
             command = (bitsrevervse (0x7d, IR60_COMMAND_LEN) << 7) | bitsrevervse (irmp_data_p->command, IR60_COMMAND_LEN);
-#if 0
+#if 1
             irsnd_buffer[0] = command >> 6 | 0x01;                                                              // 1011111S (start instruction frame)
             irsnd_buffer[1] = (command & 0x7F) << 1;                                                            // CCCCCCC_ (2nd frame)
 #else
