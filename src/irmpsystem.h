@@ -109,6 +109,8 @@
 #elif defined(IRMP_CHIBIOS_HAL)                                                     // ChibiOS HAL
 #  include "hal.h"
 
+#elif defined(PICO_RP2040)                                                          // rp2040 with the pico-sdk
+
 #else
 #  define ATMEL_AVR                                                                 // ATMEL AVR
 #endif

@@ -98,7 +98,7 @@ IntervalTimer sReceiveAndSendInterruptTimer;
 #endif // defined(_IRMP_H_)
 
 // The eclipse formatter has problems with // comments in undefined code blocks
-// !!! Must be without comment and closed by @formatter:on
+// !!! Must be without trailing comment and closed by @formatter:on
 // @formatter:off
 #if defined(_IRMP_H_)
 void initIRTimerForReceive(void)

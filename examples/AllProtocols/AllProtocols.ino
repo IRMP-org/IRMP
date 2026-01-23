@@ -80,11 +80,11 @@ IRMP_DATA irmp_data;
 #endif
 
 #if defined(USE_SERIAL_LCD)
-#include <LiquidCrystal_I2C.h> // Use an up to date library version, which has the init method
+#include "LiquidCrystal_I2C.hpp" // Use an up to date library version, which has the init method
 LiquidCrystal_I2C myLCD(0x27, LCD_COLUMNS, LCD_ROWS);  // set the LCD address to 0x27 for a 16 chars and 2 line display
 
 #elif !defined(USE_NO_LCD)
-#include <LiquidCrystal.h>
+#include "LiquidCrystal.h"
 #define USE_PARALLEL_LCD
 //LiquidCrystal myLCD(4, 5, 6, 7, 8, 9);
 LiquidCrystal myLCD(7, 8, 3, 4, 5, 6);

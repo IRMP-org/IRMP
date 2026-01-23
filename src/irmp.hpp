@@ -2450,6 +2450,9 @@ irmp_init (void)
 #elif defined(_CHIBIOS_HAL_)
     // ChibiOS HAL automatically initializes all pins according to the board config file, no need to repeat here
 
+#elif defined(PICO_RP2040)
+   // maybe initialize rp2040 stuff
+
 #else                                                                   // AVR
     IRMP_PORT &= ~(1<<IRMP_BIT);                                        // deactivate pullup
     IRMP_DDR &= ~(1<<IRMP_BIT);                                         // set pin to input
