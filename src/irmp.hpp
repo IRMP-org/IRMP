@@ -4356,10 +4356,19 @@ uint_fast8_t irmp_ISR(void)
 #endif
 #if IRMP_SUPPORT_MANCHESTER == 1
                     if ((irmp_param.flags & IRMP_PARAM_FLAG_IS_MANCHESTER) &&
+                        (irmp_param.protocol != IRMP_RC6_PROTOCOL || irmp_param.complete_len != RC6_COMPLETE_DATA_LEN_LONG) && // not RC6A
                         irmp_pause_time >= 2 * irmp_param.pause_1_len_max && irmp_bit >= irmp_param.complete_len - 2 && !irmp_param.stop_bit)
                     {                                                       // special manchester decoder
                         got_light = TRUE;                                   // this is a lie, but generates a stop bit ;-)
                         irmp_param.stop_bit = TRUE;                         // set flag
+                    }
+                    else if ((irmp_param.flags & IRMP_PARAM_FLAG_IS_MANCHESTER) &&
+                        irmp_param.protocol == IRMP_RC6_PROTOCOL && irmp_param.complete_len == RC6_COMPLETE_DATA_LEN_LONG && // RC6A
+                            irmp_pause_time >= 2 * irmp_param.pause_1_len_max) // this pause indicates the end
+                    {                                                       // special manchester decoder
+                        got_light = TRUE;                                   // this is a lie, but generates a stop bit ;-)
+                        irmp_param.stop_bit = TRUE;                         // set flag
+                        irmp_param.complete_len = irmp_bit + 1;             // at least 1 more bit will be added at last position
                     }
                     else
 #endif // IRMP_SUPPORT_MANCHESTER == 1
@@ -4599,6 +4608,11 @@ uint_fast8_t irmp_ISR(void)
 #endif
                         {
 #if IRMP_SUPPORT_RC6_PROTOCOL == 1
+                            if (irmp_param.protocol == IRMP_RC6_PROTOCOL && irmp_param.complete_len == irmp_bit + 1) // RC6A
+                            {
+                                    irmp_param.complete_len++; // this is the last position and 2 bits (instead of only 1) will be added
+                            }
+
                             if (irmp_param.protocol == IRMP_RC6_PROTOCOL && irmp_bit == 4 && irmp_pulse_time > RC6_TOGGLE_BIT_LEN_MIN)         // RC6 toggle bit
                             {
                                 ANALYZE_PUTCHAR ('T');
@@ -5362,6 +5376,14 @@ uint_fast8_t irmp_ISR(void)
                         if (irmp_param.protocol == IRMP_RC6_PROTOCOL && irmp_param.complete_len == RC6_COMPLETE_DATA_LEN_LONG)     // RC6 mode = 6?
                         {
                             irmp_protocol = IRMP_RC6A_PROTOCOL;
+                        }
+                        else if (irmp_param.protocol == IRMP_RC6_PROTOCOL && irmp_param.complete_len == RC6_COMPLETE_DATA_LEN_20)       // RC6 mode = 6?
+                        {
+                            irmp_protocol = IRMP_RC6A20_PROTOCOL;
+                        }
+                        else if (irmp_param.protocol == IRMP_RC6_PROTOCOL && irmp_param.complete_len == RC6_COMPLETE_DATA_LEN_28)       // RC6 mode = 6?
+                        {
+                            irmp_protocol = IRMP_RC6A28_PROTOCOL;
                         }
                         else
 #endif // IRMP_SUPPORT_RC6_PROTOCOL == 1

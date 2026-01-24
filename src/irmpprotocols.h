@@ -85,8 +85,10 @@
 #define RF_X10_PROTOCOL                         58              // RF PC X10 Remote Control (Medion, Pollin 721815)
 #define RF_MEDION_PROTOCOL                      59              // RF PC Medion Remote Control (Medion)
 #define IRMP_MELINERA_PROTOCOL                  60
+#define IRMP_RC6A20_PROTOCOL                    61              // RC6A20, e.g. Sky+
+#define IRMP_RC6A28_PROTOCOL                    62              // RC6A28, e.g. Sky Q (Sky+ Pro)
 
-#define IRMP_N_PROTOCOLS                        60              // number of supported protocols
+#define IRMP_N_PROTOCOLS                        62              // number of supported protocols
 
 #if defined(UNIX_OR_WINDOWS) || IRMP_PROTOCOL_NAMES == 1 || IRSND_PROTOCOL_NAMES == 1
 extern const char proto_unknown[]       PROGMEM;
@@ -151,6 +153,8 @@ extern const char proto_rf_gen24[]      PROGMEM;
 extern const char proto_rf_x10[]        PROGMEM;
 extern const char proto_rf_medion[]     PROGMEM;
 extern const char proto_melinera[]      PROGMEM;
+extern const char proto_rc6a20[]        PROGMEM;
+extern const char proto_rc6a28[]        PROGMEM;
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -533,6 +537,8 @@ typedef uint8_t     PAUSE_LEN;
 #define RC6_COMMAND_OFFSET                      13                              // skip 12 bits ("1" + 3 mode + 1 toggle + 8 address)
 #define RC6_COMMAND_LEN                         8                               // read 8 command bits
 #define RC6_COMPLETE_DATA_LEN_SHORT             21                              // complete length
+#define RC6_COMPLETE_DATA_LEN_20                25                              // complete length
+#define RC6_COMPLETE_DATA_LEN_28                33                              // complete length
 #define RC6_COMPLETE_DATA_LEN_LONG              36                              // complete length
 #define RC6_STOP_BIT                            0                               // has no stop bit
 #define RC6_LSB                                 0                               // MSB...LSB
