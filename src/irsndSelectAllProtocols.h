@@ -66,7 +66,7 @@
 #define IRSND_SUPPORT_LGAIR_PROTOCOL            1       // LG Air Condition     >= 10000                 ~150 bytes.
 #define IRSND_SUPPORT_SAMSUNG48_PROTOCOL        1       // Samsung48            >= 10000                 ~100 bytes
 #define IRSND_SUPPORT_PENTAX_PROTOCOL           1       // Pentax               >= 10000                 ~150 bytes
-#define IRSND_SUPPORT_S100_PROTOCOL             1       // S100                 >= 10000                 ~150 bytes
+#define IRSND_SUPPORT_S100_PROTOCOL             0       // S100                 >= 10000                 DON'T CHANGE, NOT SUPPORTED YET!
 #define IRSND_SUPPORT_ACP24_PROTOCOL            1       // ACP24                >= 10000                 ~150 bytes
 #define IRSND_SUPPORT_TECHNICS_PROTOCOL         1       // TECHNICS             >= 10000                 ~200 bytes
 #define IRSND_SUPPORT_PANASONIC_PROTOCOL        1       // PANASONIC Beamer     >= 10000                 ~150 bytes
