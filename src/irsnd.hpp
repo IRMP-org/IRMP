@@ -693,7 +693,7 @@ irsnd_off (void)
 
 #  elif defined (ARM_STM32)                                                             // STM32
         TIM_CCxCmd(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_CCx_Disable);                   // disable OC-output
-        TIM_Cmd(IRSND_TIMER, DISABLE);
+        TIM_Cmd(IRSND_TIMER, DISABLE);                                                  // disable counter
 
 #  elif defined (ARM_STM32_OPENCM3)                                                     // STM32_OPENCM3
         timer_disable_oc_output(IRSND_TIMER, IRSND_TIMER_CHANNEL);                      // disable OC-output
