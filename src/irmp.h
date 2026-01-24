@@ -106,6 +106,11 @@
 #  define IRMP_PIN                              IRMP_GPIO_STRUCT->IDR
 #  define input(x)                              ((x) & (1 << IRMP_BIT))
 
+#elif defined (PICO_RP2040)
+#  define IRMP_BIT                              IRMP_BIT_NUMBER
+#  define IRMP_PIN                              IRMP_BIT_NUMBER // for use with input(x) below
+#  define input(x)                              (gpio_get(x))
+
 #elif defined (TEENSY_ARM_CORTEX_M4)
 #  define input(x)                              ((uint8_t)(digitalReadFast(x)))
 
@@ -255,8 +260,8 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #  define IRMP_SUPPORT_RECS80EXT_PROTOCOL       0
 #endif
 
-#if IRMP_SUPPORT_LEGO_PROTOCOL == 1 && F_INTERRUPTS < 20000
-#  warning F_INTERRUPTS too low, LEGO protocol disabled (should be at least 20000)
+#if IRMP_SUPPORT_LEGO_PROTOCOL == 1 && F_INTERRUPTS < 19000
+#  warning F_INTERRUPTS too low, LEGO protocol disabled (should be at least 19000)
 #  undef IRMP_SUPPORT_LEGO_PROTOCOL
 #  define IRMP_SUPPORT_LEGO_PROTOCOL            0
 #endif
@@ -297,8 +302,8 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #  define IRMP_SUPPORT_NEC_PROTOCOL             1
 #endif
 
-#if IRMP_SUPPORT_RCMM_PROTOCOL == 1 && F_INTERRUPTS < 20000
-#  warning F_INTERRUPTS too low, RCMM protocol disabled (should be at least 20000)
+#if IRMP_SUPPORT_RCMM_PROTOCOL == 1 && F_INTERRUPTS < 19000
+#  warning F_INTERRUPTS too low, RCMM protocol disabled (should be at least 19000)
 #  undef IRMP_SUPPORT_RCMM_PROTOCOL
 #  define IRMP_SUPPORT_RCMM_PROTOCOL            0
 #endif
@@ -316,7 +321,7 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #endif
 
 #if F_INTERRUPTS > 20000
-#error F_INTERRUPTS too high (should be not greater than 20000)
+# warning F_INTERRUPTS too high (should be not greater than 20000)
 #endif
 
 #include "irmpprotocols.h"
