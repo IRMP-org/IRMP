@@ -91,6 +91,8 @@ const char proto_rf_x10[]        PROGMEM = "RF_X10";
 const char proto_rf_medion[]     PROGMEM = "RF_MEDION";
 
 const char proto_melinera[]      PROGMEM = "MELINERA";
+const char proto_rc6a20[]        PROGMEM = "RC6A20";
+const char proto_rc6a28[]        PROGMEM = "RC6A28";
 
 /*
  * Must be in the same order as the Protocol numbers in irmpprotocols.h starting with IRMP_UNKNOWN_PROTOCOL = 0
@@ -160,7 +162,9 @@ irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM =
     proto_rf_x10,
     proto_rf_medion,
 
-    proto_melinera
+    proto_melinera,
+    proto_rc6a20,
+    proto_rc6a28
 };
 
 #endif // IRMP_PROTOCOLS_HPP

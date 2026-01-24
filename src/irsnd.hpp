@@ -828,7 +828,7 @@ irsnd_set_freq (IRSND_FREQ_TYPE freq)
         /* Set frequency */
         TIM_SetAutoreload(IRSND_TIMER, freq - 1);
         /* Set duty cycle */
-        TIM_SetCompare1(IRSND_TIMER, (freq + 1) / 2);
+        TIM_SetCompare1(IRSND_TIMER, freq / 2);
 
 #  elif defined (ARM_STM32_OPENCM3)                                                         // ARM_STM32_OPENCM3
         static uint32_t      TimeBaseFreq = 0;
@@ -861,7 +861,7 @@ irsnd_set_freq (IRSND_FREQ_TYPE freq)
         /* Set frequency */
         timer_set_period(IRSND_TIMER, freq - 1);
         /* Set duty cycle */
-        timer_set_oc_value(IRSND_TIMER, TIM_OC1, (freq + 1) / 2);
+        timer_set_oc_value(IRSND_TIMER, TIM_OC1, freq / 2);
 
 #  elif defined (ARM_STM32_HAL)                                                            // STM32 with Hal Library
 

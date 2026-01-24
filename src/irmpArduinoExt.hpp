@@ -327,6 +327,12 @@ const uint8_t irmp_used_protocol_index[] PROGMEM =
 #if IRMP_SUPPORT_MELINERA_PROTOCOL == 1
     IRMP_MELINERA_PROTOCOL
 #endif
+#if IRMP_SUPPORT_RC6A20_PROTOCOL == 1
+    IRMP_RC6A20_PROTOCOL
+#endif
+#if IRMP_SUPPORT_RC6A28_PROTOCOL == 1
+    IRMP_RC6A28_PROTOCOL
+#endif
 };
 
 const char * const irmp_used_protocol_names[] PROGMEM =
@@ -507,6 +513,12 @@ const char * const irmp_used_protocol_names[] PROGMEM =
 #endif
 #if IRMP_SUPPORT_MELINERA_PROTOCOL == 1
     proto_melinera
+#endif
+#if IRMP_SUPPORT_RC6A20_PROTOCOL == 1
+    proto_rc6a20
+#endif
+#if IRMP_SUPPORT_RC6A28_PROTOCOL == 1
+    proto_rc6a28
 #endif
 };
 
