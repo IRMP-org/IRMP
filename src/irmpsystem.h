@@ -110,6 +110,10 @@
 #  include "hal.h"
 
 #elif defined(PICO_RP2040)                                                          // rp2040 with the pico-sdk
+#  include "hardware/clocks.h"
+#  include "hardware/pwm.h"
+#  include "pico/stdlib.h"
+#  define F_CPU (clock_get_hz(clk_sys))
 
 #else
 #  define ATMEL_AVR                                                                 // ATMEL AVR
