@@ -2544,6 +2544,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 }
                 tReturnCode = TRUE;
                 break;
+#endif
 
 #if IRMP_SUPPORT_VINCENT_PROTOCOL == 1
             case IRMP_VINCENT_PROTOCOL:
