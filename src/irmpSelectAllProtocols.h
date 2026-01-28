@@ -85,8 +85,8 @@
 #define IRMP_SUPPORT_S100_PROTOCOL              0       // S100                 >= 10000                 ~250 bytes     conflicts with RC5
 #define IRMP_SUPPORT_ACP24_PROTOCOL             0       // ACP24                >= 10000                 ~250 bytes     conflicts with DENON
 #define IRMP_SUPPORT_TECHNICS_PROTOCOL          1       // TECHNICS             >= 10000                 ~250 bytes
-#define IRMP_SUPPORT_PANASONIC_PROTOCOL         0       // PANASONIC Beamer     >= 10000                 ~250 bytes     conflicts with KASEIKYO
-#define IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL       0       // Mitsubishi Aircond   >= 10000                 ~250 bytes     conflicts with KASEIKYO
+#define IRMP_SUPPORT_PANASONIC_PROTOCOL         0       // PANASONIC Beamer     >= 10000                 ~250 bytes     Panasonic is Kaseikyo with vendor code 0x2002 and you cannot distinguish it by start bit timing.
+#define IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL       0       // Mitsubishi Aircond   >= 10000                 ~250 bytes     Mitsubishi is Kaseikyo with vendor code 0xCB23 and you cannot distinguish it by start bit timing.
 #define IRMP_SUPPORT_VINCENT_PROTOCOL           1       // VINCENT              >= 10000                 ~250 bytes
 #define IRMP_SUPPORT_SAMSUNGAH_PROTOCOL         1       // SAMSUNG AH           >= 10000                 ~250 bytes
 #define IRMP_SUPPORT_IRMP16_PROTOCOL            0       // IRMP specific        >= 15000                 ~250 bytes
