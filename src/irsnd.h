@@ -76,6 +76,9 @@
 #    error IRSND_TIMER_NUMBER not valid.
 #  endif
 
+#elif defined (ARDUINO_ARCH_RP2040)               // ARDUINO_ARCH_RP2040
+#  define IRSND_BIT                             IRSND_BIT_NUMBER
+
 #elif defined(PIC_C18)
 
 # if defined(__12F1840)
@@ -142,8 +145,8 @@
 #  define IRSND_SUPPORT_RECS80EXT_PROTOCOL      0
 #endif
 
-#if IRSND_SUPPORT_LEGO_PROTOCOL == 1 && F_INTERRUPTS < 20000
-#  warning F_INTERRUPTS too low, LEGO protocol disabled (should be at least 20000)
+#if IRSND_SUPPORT_LEGO_PROTOCOL == 1 && F_INTERRUPTS < 19000
+#  warning F_INTERRUPTS too low, LEGO protocol disabled (should be at least 19000)
 #  undef IRSND_SUPPORT_LEGO_PROTOCOL
 #  define IRSND_SUPPORT_LEGO_PROTOCOL           0
 #endif
