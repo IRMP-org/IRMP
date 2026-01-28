@@ -353,6 +353,13 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 <br/>
 
 # Revision History
+### Version 3.7.0 - Major content contribution by Jörg Riechert
+- Support RC6A20 and RC6A28.
+- Sending S100 is not supported.
+- Enable repetition for IR60.
+- Fix for sending on STM32 with standard peripheral library.
+- Includes and initialization for RP2040
+
 ### Version 3.6.4
 - Support for ESP32 core 3.x.
 - Improved code for MegaTinyCore.

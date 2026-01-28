@@ -1,6 +1,6 @@
 {
   "name": "IRMP",
-  "version": "3.6.4",
+  "version": "3.7.0",
   "keywords": "infrared, ir, remote",
   "description": "Receive and Send infrared signals from your remote.",
   "homepage": "https://github.com/IRMP-org/IRMP",
@@ -11,8 +11,8 @@
   "authors":  [
     {
       "name": "Armin Joachimsmeyer",
-    "email": "armin.arduino@gmail.com",
-    "maintainer": true
+      "email": "armin.arduino@gmail.com",
+      "maintainer": true
     },
     {
       "name": "Frank Meyer",
