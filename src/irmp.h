@@ -326,6 +326,7 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 
 #include "irmpprotocols.h"
 
+#define IRMP_FLAG_NEW                   0x00
 #define IRMP_FLAG_REPETITION            0x01
 #define IRMP_FLAG_RELEASE               0x02                                    // see IRMP_ENABLE_RELEASE_DETECTION in irmpconfig.h
 

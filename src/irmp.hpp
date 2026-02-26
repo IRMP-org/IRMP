@@ -3258,7 +3258,7 @@ uint_fast8_t irmp_ISR(void)
                         {
                             irmp_address        = last_irmp_address;
                             irmp_command        = last_irmp_command;
-                            irmp_flags          = 0x02;
+                            irmp_flags          = IRMP_FLAG_RELEASE;
                             irmp_ir_detected    = TRUE;
                             key_released        = TRUE;
                         }
