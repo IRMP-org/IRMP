@@ -2352,7 +2352,7 @@ static volatile uint_fast8_t                    previous_irmp_protocol = 0;
 volatile uint_fast8_t                           same_key = 0;
 volatile uint_fast8_t                           keep_same_key = 0;
 volatile uint_fast8_t                           timeout = 1;
-volatile uint_fast8_t                           upper_border = 176;
+volatile uint_fast8_t                           upper_border = 176;     // repeatrate plus jitter (threshold for timeout)
 #endif
 
 #if defined(__MBED__)
