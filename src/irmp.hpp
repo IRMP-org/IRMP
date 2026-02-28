@@ -3315,7 +3315,7 @@ uint_fast8_t irmp_ISR(void)
                         key_repetition_len++;
 
 #if IRMP_ENABLE_RELEASE_DETECTION == 1
-#ifndef IRMP_AUTODETECT_REPEATRATE
+#if !IRMP_AUTODETECT_REPEATRATE
                         if (! key_released && key_repetition_len > IRMP_KEY_RELEASE_LEN)
                         {
                             irmp_address        = last_irmp_address;
