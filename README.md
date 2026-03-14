@@ -6,7 +6,7 @@ Supports 50 different protocols.
 
 [![Badge License: GPLv3](https://img.shields.io/badge/License-GPLv3-brightgreen.svg)](https://www.gnu.org/licenses/gpl-3.0)
  &nbsp; &nbsp; 
-[![Badge Version](https://img.shields.io/github/v/release/IRMP-org/IRMP?include_prereleases&color=yellow&logo=DocuSign&logoColor=white)](https://github.com/IRMP-org/IRMP/releases/latest)
+[![Badge Version](https://img.shields.io/github/v/release/IRMP-org/IRMP?color=yellow&logo=DocuSign&logoColor=white)](https://github.com/IRMP-org/IRMP/releases/latest)
  &nbsp; &nbsp; 
 [![Badge Commits since latest](https://img.shields.io/github/commits-since/IRMP-org/IRMP/latest?color=yellow)](https://github.com/IRMP-org/IRMP/commits/master)
  &nbsp; &nbsp; 
@@ -355,6 +355,10 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 <br/>
 
 # Revision History
+### Version 3.8.0 - Major content contribution by Jörg Riechardt
+- Autodetect repeatrate for precise detection of repetition and release.
+- Improve RC5 recognition.
+
 ### Version 3.7.0 - Major content contribution by Jörg Riechardt
 - Support RC6A20 and RC6A28.
 - Sending S100 is not supported.
@@ -414,7 +418,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 - Improved Apollo3 and MegaCore support.
 
 ### Version 3.3.4
-- Removed convenience function `irmp_tone()`, since it statically allocates the tone interrupt vector.
+- Removed convenience function `irmp_tone()`, since it statically allocates the tone interrupt vector 7.
 
 ### Version 3.3.3
 - Added ATmega8 support.

@@ -2,7 +2,6 @@
  * IRTimer.hpp
  *
  *  Copyright (C) 2020  Armin Joachimsmeyer
- *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *

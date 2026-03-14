@@ -1194,7 +1194,7 @@ static uint16_t bitsrevervse(uint16_t x, uint8_t len)
 static uint8_t  sircs_additional_bitlen;
 #endif // IRSND_SUPPORT_SIRCS_PROTOCOL == 1
 
-/*
+/**
  * @param  do_wait - true: Wait for last command to have ended sending its trailing space before start of new sending.
  *                   For Arduino: Additionally wait for sent command to have ended (including trailing gap).
  *                   false: Return directly and do sending in background.

@@ -5,7 +5,6 @@
  *  This example additionally filters commands from a remote control named WM010 sending NEC commands
  *
  *  Copyright (C) 2019-2022  Armin Joachimsmeyer
- *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
@@ -113,13 +112,10 @@ void loop()
  * In order to enable other interrupts you can call sei() (enable interrupt again) after evaluating/copying data.
  * Good practice, but somewhat more complex, is to copy relevant data and signal receiving to main loop.
  */
-#if defined(ESP8266)
-void ICACHE_RAM_ATTR handleReceivedIRData()
-#elif defined(ESP32)
-void IRAM_ATTR handleReceivedIRData()
-#else
-void handleReceivedIRData()
+#if defined(ESP8266) || defined(ESP32)
+IRAM_ATTR
 #endif
+void handleReceivedIRData()
 {
     irmp_get_data(&irmp_data);
 #if !defined(ARDUINO_ARCH_MBED)

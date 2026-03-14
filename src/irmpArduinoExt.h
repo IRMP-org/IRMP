@@ -2,7 +2,6 @@
  * irmpArduinoExt.h  Arduino extensions to the original irmp.h
  *
  *  Copyright (C) 2020  Armin Joachimsmeyer
- *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
@@ -120,8 +119,6 @@ void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin);
 void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aIrmpFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow);
 
 bool irmp_IsBusy();
-
-void irmp_tone(uint8_t _pin, unsigned int frequency, unsigned long duration);
 
 extern uint32_t irmp_last_change_micros;
 

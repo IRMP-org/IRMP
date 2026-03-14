@@ -1,0 +1,50 @@
+START ../src/SendAllProtocols.cpp from Mar 17 2026
+Using library version 3.7.0
+Send sample frequency=19000 Hz
+Send IR signals at pin 3
+Protocol=SIRCS  Address=0x1 Command=0x1
+Protocol=NEC  Address=0x2 Command=0x2
+Protocol=SAMSUNG  Address=0x3 Command=0x3
+Protocol=MATSUSH  Address=0x4 Command=0x4
+Protocol=KASEIKYO  Address=0x5 Command=0x5
+Protocol=RECS80  Address=0x6 Command=0x6
+Protocol=RC5  Address=0x7 Command=0x7
+Protocol=DENON  Address=0x8 Command=0x8
+Protocol=RC6  Address=0x9 Command=0x9
+Protocol=SAMSG32  Address=0xA Command=0xA
+Protocol=APPLE  Address=0xB Command=0xB
+Protocol=RECS80EX  Address=0xC Command=0xC
+Protocol=NUBERT  Address=0xD Command=0xD
+Protocol=GRUNDIG  Address=0xE Command=0xE
+Protocol=NOKIA  Address=0xF Command=0xF
+Protocol=SIEMENS  Address=0x10 Command=0x10
+Protocol=FDC  Address=0x11 Command=0x11
+Protocol=RCCAR  Address=0x12 Command=0x12
+Protocol=JVC  Address=0x13 Command=0x13
+Protocol=RC6A  Address=0x14 Command=0x14
+Protocol=NIKON  Address=0x15 Command=0x15
+Protocol=RUWIDO  Address=0x16 Command=0x16
+Protocol=NEC16  Address=0x17 Command=0x17
+Protocol=NEC42  Address=0x18 Command=0x18
+Protocol=LEGO  Address=0x19 Command=0x19
+Protocol=THOMSON  Address=0x1A Command=0x1A
+Protocol=BOSE  Address=0x1B Command=0x1B
+Protocol=A1TVBOX  Address=0x1C Command=0x1C
+Protocol=TELEFUNKEN  Address=0x1D Command=0x1D
+Protocol=ROOMBA  Address=0x1E Command=0x1E
+Protocol=SPEAKER  Address=0x1F Command=0x1F
+Protocol=LGAIR  Address=0x20 Command=0x20
+Protocol=SAMSG48  Address=0x21 Command=0x21
+Protocol=PENTAX  Address=0x22 Command=0x22
+Protocol=FAN  Address=0x23 Command=0x23
+Protocol=ACP24  Address=0x24 Command=0x24
+Protocol=TECHNICS  Address=0x25 Command=0x25
+Protocol=PANASONIC  Address=0x26 Command=0x26
+Protocol=MITSU_HEAVY  Address=0x27 Command=0x27
+
+
+Now sending all with number of repeats=1
+Protocol=SIRCS  Address=0x40 Command=0x40 Repeats=1
+Protocol=NEC  Address=0x41 Command=0x41 Repeats=1
+Protocol=SAMSUNG  Address=0x42 Command=0x42 Repeats=1
+Protocol=MATSUSH  Address=0x43 Command=0x43 Repeats=1

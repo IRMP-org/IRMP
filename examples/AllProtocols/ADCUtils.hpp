@@ -4,7 +4,6 @@
  * ADC utility functions. Conversion time is defined as 0.104 milliseconds for 16 MHz Arduinos in ADCUtils.h.
  *
  *  Copyright (C) 2016-2023  Armin Joachimsmeyer
- *  Email: armin.joachimsmeyer@gmail.com
  *
  *  This file is part of Arduino-Utils https://github.com/ArminJo/Arduino-Utils.
  *
@@ -41,9 +40,10 @@
 /*
  * By replacing this value with the voltage you measured a the AREF pin after a conversion
  * with INTERNAL you can calibrate your ADC readout. For my Nanos I measured e.g. 1060 mV and 1093 mV.
+ * If value > real AREF voltage, measured values are > real values
  */
 #if !defined(ADC_INTERNAL_REFERENCE_MILLIVOLT)
-#define ADC_INTERNAL_REFERENCE_MILLIVOLT    1100UL // Change to value measured at the AREF pin. If value > real AREF voltage, measured values are > real values
+#define ADC_INTERNAL_REFERENCE_MILLIVOLT    1100 // Change to value measured at the AREF pin.
 #endif
 
 // Union to speed up the combination of low and high bytes to a word
@@ -78,7 +78,7 @@ union WordUnionForADCUtils {
  * Persistent storage for VCC value
  */
 float sVCCVoltage;
-uint16_t sVCCVoltageMillivolt;
+uint16_t sVCCVoltageMillivolt; // Set by readVCCVoltageMillivoltSimple(), readVCCVoltageMillivolt()
 
 // for isVCCTooLowMultipleTimes()
 long sLastVCCCheckMillis;
@@ -542,7 +542,7 @@ float getVCCVoltageSimple(void) {
 uint16_t getVCCVoltageMillivoltSimple(void) {
     // use AVCC with external capacitor at AREF pin as reference
     uint16_t tVCC = readADCChannelMultiSamplesWithReference(ADC_1_1_VOLT_CHANNEL_MUX, DEFAULT, 4);
-    return ((READING_FOR_AREF * ADC_INTERNAL_REFERENCE_MILLIVOLT * 4) / tVCC);
+    return (((uint32_t)READING_FOR_AREF * ADC_INTERNAL_REFERENCE_MILLIVOLT * 4) / tVCC);
 }
 
 /*
@@ -554,7 +554,7 @@ uint16_t getVCCVoltageReadingFor1_1VoltReference(void) {
     /*
      * Do not switch back ADMUX to enable checkAndWaitForReferenceAndChannelToSwitch() to work correctly for the next measurement
      */
-    return ((READING_FOR_AREF * READING_FOR_AREF) / tVCC);
+    return (((uint32_t)READING_FOR_AREF * READING_FOR_AREF) / tVCC);
 }
 
 /*
@@ -578,7 +578,7 @@ uint16_t getVCCVoltageMillivolt(void) {
     /*
      * Do not switch back ADMUX to enable checkAndWaitForReferenceAndChannelToSwitch() to work correctly for the next measurement
      */
-    return ((READING_FOR_AREF * ADC_INTERNAL_REFERENCE_MILLIVOLT) / tVCC);
+    return (((uint32_t)READING_FOR_AREF * ADC_INTERNAL_REFERENCE_MILLIVOLT) / tVCC);
 }
 
 /*
@@ -617,7 +617,7 @@ void readVCCVoltageSimple(void) {
 void readVCCVoltageMillivoltSimple(void) {
     // use AVCC with external capacitor at AREF pin as reference
     uint16_t tVCCVoltageMillivoltRaw = readADCChannelMultiSamplesWithReference(ADC_1_1_VOLT_CHANNEL_MUX, DEFAULT, 4);
-    sVCCVoltageMillivolt = (READING_FOR_AREF * ADC_INTERNAL_REFERENCE_MILLIVOLT * 4) / tVCCVoltageMillivoltRaw;
+    sVCCVoltageMillivolt = ((uint32_t)READING_FOR_AREF * ADC_INTERNAL_REFERENCE_MILLIVOLT * 4) / tVCCVoltageMillivoltRaw;
 }
 
 /*
@@ -638,7 +638,7 @@ void readVCCVoltageMillivolt(void) {
     /*
      * Do not switch back ADMUX to enable checkAndWaitForReferenceAndChannelToSwitch() to work correctly for the next measurement
      */
-    sVCCVoltageMillivolt = (READING_FOR_AREF * ADC_INTERNAL_REFERENCE_MILLIVOLT) / tVCCVoltageMillivoltRaw;
+    sVCCVoltageMillivolt = ((uint32_t)READING_FOR_AREF * ADC_INTERNAL_REFERENCE_MILLIVOLT) / tVCCVoltageMillivoltRaw;
 }
 
 /*
@@ -700,7 +700,7 @@ bool isVCCUSBPowered(Print *aSerial) {
  */
 bool isVCCUndervoltageMultipleTimes() {
     /*
-     * Check VCC every VCC_CHECK_PERIOD_MILLIS (10) seconds
+     * Check VCC every VCC_CHECK_PERIOD_MILLIS - default is 10 seconds
      */
     if (millis() - sLastVCCCheckMillis >= VCC_CHECK_PERIOD_MILLIS) {
         sLastVCCCheckMillis = millis();

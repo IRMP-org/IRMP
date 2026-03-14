@@ -4,7 +4,6 @@
  *  Receives 2 RF protocol (433 MHz) data.
  *
  *  Copyright (C) 2019-2020  Armin Joachimsmeyer
- *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *

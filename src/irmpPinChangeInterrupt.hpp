@@ -5,7 +5,6 @@
  * Must be included after irmp_ISR to have all the internal variables of irmp_ISR declared
  *
  *  Copyright (C) 2020  Armin Joachimsmeyer
- *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
@@ -172,7 +171,7 @@ void enablePCIInterrupt() {
 #  if defined(ARDUINO_ARCH_SAMD) // see https://www.arduino.cc/reference/tr/language/functions/external-interrupts/attachinterrupt/ paragraph: Syntax
     attachInterrupt(IRMP_INPUT_PIN, irmp_PCI_ISR, CHANGE);
 #  else
-    attachInterrupt(digitalPinToInterrupt(IRMP_INPUT_PIN), irmp_PCI_ISR, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(IRMP_INPUT_PIN), irmp_PCI_ISR, CHANGE); // CHANGE can be an enum :-(
 #  endif
 
 #else

@@ -4,8 +4,7 @@
  *  Contains pin definitions for IRremote examples for various platforms
  *  as well as definitions for feedback LED and tone() and includes
  *
- *  Copyright (C) 2021-2023  Armin Joachimsmeyer
- *  armin.joachimsmeyer@gmail.com
+ *  Copyright (C) 2021-2026  Armin Joachimsmeyer
  *
  *  This file is part of IRremote https://github.com/Arduino-IRremote/Arduino-IRremote.
  *
@@ -44,6 +43,7 @@
  * ESP8266      14|D5       12|D6       %
  * ESP32        15          4          27
  * ESP32-C3     2           3           4
+ * ESP32-S3     2           3           4
  * BluePill     PA6         PA7       PA3
  * APOLLO3      11          12          5
  * RP2040       3|GPIO15    4|GPIO16    5|GPIO17
@@ -181,6 +181,7 @@
 #define TONE_PIN                42 // Dummy for examples using it#
 
 #elif defined(ARDUINO_NOLOGO_ESP32C3_SUPER_MINI)
+// ESP32 - C3 super mini
 #define FEEDBACK_LED_IS_ACTIVE_LOW // The LED on my board (D8) is active LOW
 #define IR_RECEIVE_PIN           2
 #define IR_SEND_PIN              3
@@ -188,11 +189,19 @@
 #define APPLICATION_PIN         10
 
 #elif defined(CONFIG_IDF_TARGET_ESP32C3) || defined(ARDUINO_ESP32C3_DEV)
+// ESP32 - C3 other
 #define NO_LED_FEEDBACK_CODE   // The  WS2812 on pin 8 of AI-C3 board crashes if used as receive feedback LED, other I/O pins are working...
 #define IR_RECEIVE_PIN           6
 #define IR_SEND_PIN              7
 #define TONE_PIN                 9
 #define APPLICATION_PIN         10
+
+#elif defined(CONFIG_IDF_TARGET_ESP32S3) || defined(ARDUINO_ESP32S3_DEV)
+// ESP32 - S3 - !!! NOT tested !!!
+#define IR_RECEIVE_PIN          15 // alternatively 13
+#define IR_SEND_PIN             16 // alternatively 14
+#define TONE_PIN                17
+#define APPLICATION_PIN         18
 
 #elif defined(ESP32)
 #include <Arduino.h>
@@ -331,7 +340,7 @@ void noTone(uint8_t aPinNumber){
 #define TONE_PIN           42 // Dummy for examples using it
 
 #else
-#warning Board and Core / CPU is not detected using pre-processor symbols -> using default values, which may not fit. Please extend PinDefinitionsAndMore.h.
+#warning Board and Core / CPU is not detected using pre-processor symbols -> using default values for IR_RECEIVE_PIN etc., which may not fit. Please extend PinDefinitionsAndMore.h.
 // Default valued for unidentified boards
 #define IR_RECEIVE_PIN      2
 #define IR_SEND_PIN         3
@@ -341,26 +350,17 @@ void noTone(uint8_t aPinNumber){
 #define _IR_TIMING_TEST_PIN 7
 #endif // defined(ESP8266)
 
-#if defined(ESP32) || defined(ARDUINO_ARCH_RP2040) || defined(PARTICLE) || defined(ARDUINO_ARCH_MBED)
-#define SEND_PWM_BY_TIMER // We do not have pin restrictions for this CPU's, so lets use the hardware PWM for send carrier signal generation
-#else
-# if defined(SEND_PWM_BY_TIMER)
+#if !(defined(ESP32) || defined(ARDUINO_ARCH_RP2040) || defined(PARTICLE) || defined(ARDUINO_ARCH_MBED)) && defined(SEND_PWM_BY_TIMER)
 #undef IR_SEND_PIN // SendPin is determined by timer! This avoids warnings in IRremote.hpp and IRTimer.hpp
-#  endif
 #endif
 
 #if !defined (FLASHEND)
 #define FLASHEND 0xFFFF // Dummy value for platforms where FLASHEND is not defined
 #endif
 
-#if !defined (RAMEND)
-#define RAMEND 0x0FFF // Dummy value for platforms where RAMEND is not defined
+#if !defined (RAMSIZE) && defined(RAMEND) && defined(RAMSTART)
+#define RAMSIZE (RAMEND - RAMSTART + 1) //
 #endif
-
-/*
- * Helper macro for getting a macro definition as string
- */
-#if !defined(STR_HELPER) && !defined(STR)
-#define STR_HELPER(x) #x
-#define STR(x) STR_HELPER(x)
+#if !defined (RAMSIZE)
+#define RAMSIZE 0x1000 // 4k Dummy value for platforms where RAMSIZE is not defined
 #endif

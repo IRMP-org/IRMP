@@ -7,7 +7,6 @@
  *  This serves as a Netflix-key emulation for my old Samsung H5273 TV.
  *
  *  Copyright (C) 2019-2020  Armin Joachimsmeyer
- *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *

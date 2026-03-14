@@ -25,7 +25,6 @@
  *  The exact names can be found in the library file irmpSelectAllProtocols.h (see Callback example).
  *
  *  Copyright (C) 2019  Armin Joachimsmeyer
- *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
