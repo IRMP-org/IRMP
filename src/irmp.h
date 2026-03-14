@@ -326,6 +326,7 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 
 #include "irmpprotocols.h"
 
+#define IRMP_FLAG_NEW                   0x00
 #define IRMP_FLAG_REPETITION            0x01
 #define IRMP_FLAG_RELEASE               0x02                                    // see IRMP_ENABLE_RELEASE_DETECTION in irmpconfig.h
 
@@ -341,6 +342,11 @@ extern bool                             irmp_ISR (void);
 #else
 extern uint_fast8_t                     irmp_get_data (IRMP_DATA *);
 extern uint_fast8_t                     irmp_ISR (void);
+#endif
+#if IRMP_AUTODETECT_REPEATRATE
+extern volatile uint_fast8_t            delta, min_delta, keep_same_key, timeout, upper_border;
+extern volatile uint_fast16_t           tmp_delta;
+extern volatile uint32_t                pass_on_delta_detection;
 #endif
 
 #if IRMP_PROTOCOL_NAMES == 1

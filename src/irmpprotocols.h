@@ -84,6 +84,7 @@
 #define RF_GEN24_PROTOCOL                       57              // RF Generic, 24 Bits (Pollin 550666, EAN 4049702006022 and many other similar RF remote controls))
 #define RF_X10_PROTOCOL                         58              // RF PC X10 Remote Control (Medion, Pollin 721815)
 #define RF_MEDION_PROTOCOL                      59              // RF PC Medion Remote Control (Medion)
+
 #define IRMP_MELINERA_PROTOCOL                  60
 #define IRMP_RC6A20_PROTOCOL                    61              // RC6A20, e.g. Sky+
 #define IRMP_RC6A28_PROTOCOL                    62              // RC6A28, e.g. Sky Q (Sky+ Pro)
