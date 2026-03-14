@@ -93,32 +93,32 @@ jobs:
 #
 # ATTinyCore
 #
-#          - arduino-boards-fqbn: ATTinyCore:avr:attinyx5micr:LTO=enable,sketchclock=8pll
-#            platform-url: http://drazzy.com/package_drazzy.com_index.json
-#            required-libraries: ATtinySerialOut
-#            sketches-exclude: AllProtocols,SendAllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
+          - arduino-boards-fqbn: ATTinyCore:avr:attinyx5micr:LTO=enable,sketchclock=8pll
+            platform-url: https://felias-fogg.github.io/downloads/package_debug_enabled_index.json
+            required-libraries: ATtinySerialOut
+            sketches-exclude: AllProtocols,SendAllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
 
-#          - arduino-boards-fqbn: ATTinyCore:avr:attinyx8micr:LTO=enable,sketchclock=16external,pinmapping=mhtiny,millis=enabled
-#            platform-url: http://drazzy.com/package_drazzy.com_index.json
-#            required-libraries: ATtinySerialOut
-#            sketches-exclude: AllProtocols,SendAllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
+          - arduino-boards-fqbn: ATTinyCore:avr:attinyx8micr:LTO=enable,sketchclock=16external,pinmapping=mhtiny,millis=enabled
+            platform-url: https://felias-fogg.github.io/downloads/package_debug_enabled_index.json
+            required-libraries: ATtinySerialOut
+            sketches-exclude: AllProtocols,SendAllProtocols,ReceiveAndSendDynamicPins # Does not fit in FLASH
 
-#          - arduino-boards-fqbn: ATTinyCore:avr:attinyx7micr:LTO=enable,sketchclock=16external,pinmapping=new,millis=enabled
-#            platform-url: http://drazzy.com/package_drazzy.com_index.json
-#            required-libraries: ATtinySerialOut
-#            sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # No Serial.available() function in ATtinySerialOut
+          - arduino-boards-fqbn: ATTinyCore:avr:attinyx7micr:LTO=enable,sketchclock=16external,pinmapping=new,millis=enabled
+            platform-url: https://felias-fogg.github.io/downloads/package_debug_enabled_index.json
+            required-libraries: ATtinySerialOut
+            sketches-exclude: AllProtocols,ReceiveAndSendDynamicPins # No Serial.available() function in ATtinySerialOut
 
 #
 # megaTinyCore
 #
 #          - arduino-boards-fqbn: megaTinyCore:megaavr:atxy6:chip=1616,clock=16internal
 #            arduino-platform: megaTinyCore:megaavr
-#            platform-url: http://drazzy.com/package_drazzy.com_index.json
+#            platform-url: https://felias-fogg.github.io/downloads/package_debug_enabled_index.json
 #            sketches-exclude: TinySender,TinyReceiver # PIN_PA6' was not declared etc.
 
 #          - arduino-boards-fqbn: megaTinyCore:megaavr:atxy7:chip=3217,clock=16internal
 #            arduino-platform: megaTinyCore:megaavr
-#            platform-url: http://drazzy.com/package_drazzy.com_index.json
+#            platform-url: https://felias-fogg.github.io/downloads/package_debug_enabled_index.json
 #            sketches-exclude: TinySender,TinyReceiver # PIN_PA6' was not declared etc.
 
 

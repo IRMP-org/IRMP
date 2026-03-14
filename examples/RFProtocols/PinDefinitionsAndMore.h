@@ -199,7 +199,7 @@ void noTone(uint8_t aPinNumber){
 //#define FEEDBACK_LED_IS_ACTIVE_LOW // The RX LED on the M0-Mini is active LOW
 
 #else
-#warning Board / CPU is not detected using pre-processor symbols -> using default values, which may not fit. Please extend PinDefinitionsAndMore.h.
+#warning Board / CPU is not detected using pre-processor symbols -> using default values for IRMP_INPUT_PIN etc., which may not fit. Please extend PinDefinitionsAndMore.h.
 // Default valued for unidentified boards
 #define IRMP_INPUT_PIN      2
 #define IRSND_OUTPUT_PIN    3

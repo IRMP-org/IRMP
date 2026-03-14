@@ -1,10 +1,26 @@
 /*
  * DemoIRCommandMapping.h
  *
- * IR remote button codes, strings, and functions to call
+ * Contains IR remote button codes, strings, and the mapping of codes to functions to call by the dispatcher
  *
- *  Copyright (C) 2019-2022  Armin Joachimsmeyer
+ *  Copyright (C) 2019-2026  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
+ *
+ *  This file is part of IRMP https://github.com/IRMP-org/IRMP.
+ *  This file is part of Arduino-IRremote https://github.com/Arduino-IRremote/Arduino-IRremote.
+ *
+ *  IRMP is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
  */
 
@@ -12,15 +28,16 @@
 #define _IR_COMMAND_MAPPING_H
 
 #include <Arduino.h>
-//#include "Commands.h" // includes all the commands used in the mapping arrays below
+
+#include "IRCommandDispatcher.h" // IRToCommandMappingStruct, IR_COMMAND_FLAG_BLOCKING etc. are defined here
 
 /*
  * !!! Choose your remote !!!
  */
-//#define USE_KEYES_REMOTE_CLONE With number pad and direction control switched, will be taken as default
+//#define USE_KEYES_REMOTE_CLONE With number pad and direction control swapped, will be taken as default
 //#define USE_KEYES_REMOTE
 #if !defined(USE_KEYES_REMOTE) && !defined(USE_KEYES_REMOTE_CLONE)
-#define USE_KEYES_REMOTE_CLONE // the one you can buy at aliexpress
+#define USE_KEYES_REMOTE_CLONE // the one you can buy at Aliexpress
 #endif
 
 #if (defined(USE_KEYES_REMOTE) && defined(USE_KEYES_REMOTE_CLONE))
@@ -30,11 +47,7 @@
 #if defined(USE_KEYES_REMOTE_CLONE)
 #define IR_REMOTE_NAME "KEYES_CLONE"
 // Codes for the KEYES CLONE remote control with 17 keys with number pad above direction control
-#if defined(USE_IRMP_LIBRARY)
-#define IR_ADDRESS 0xFF00 // IRMP interprets NEC addresses always as 16 bit
-#else
 #define IR_ADDRESS 0x00
-#endif
 
 #define IR_UP    0x18
 #define IR_DOWN  0x52
@@ -88,11 +101,7 @@
  * IR code to button mapping for better reading. IR codes should only referenced here.
  */
 // Codes for the KEYES remote control with 17 keys and direction control above number pad
-#if defined(USE_IRMP_LIBRARY)
-#define IR_ADDRESS 0xFF00 // IRMP interprets NEC addresses always as 16 bit
-#else
 #define IR_ADDRESS 0x00
-#endif
 
 #define IR_UP    0x46
 #define IR_DOWN  0x15
@@ -144,7 +153,7 @@
  * Main mapping of commands to C functions
  */
 
-// IR strings of functions for output
+// Strings of commands for Serial output
 static const char LEDon[] PROGMEM ="LED on";
 static const char LEDoff[] PROGMEM ="LED off";
 
@@ -161,33 +170,33 @@ static const char printMenu[] PROGMEM ="printMenu";
 static const char reset[] PROGMEM ="reset";
 static const char stop[] PROGMEM ="stop";
 
-// not used yet
-static const char test[] PROGMEM ="test";
-static const char pattern[] PROGMEM ="pattern";
-static const char unknown[] PROGMEM ="unknown";
-
 /*
  * Main mapping array of commands to C functions and command strings
+ * The macro COMMAND_STRING() removes the strings from memory, if USE_DISPATCHER_COMMAND_STRINGS is not enabled
  */
 const struct IRToCommandMappingStruct IRMapping[] = { /**/
-{ COMMAND_BLINK, IR_COMMAND_FLAG_BLOCKING, &doLedBlink20times, blink20times }, /**/
-{ COMMAND_STOP, IR_COMMAND_FLAG_BLOCKING, &doStop, stop },
+{ COMMAND_BLINK, IR_COMMAND_FLAG_BLOCKING | IR_COMMAND_FLAG_BEEP, &doLedBlink20times, COMMAND_STRING(blink20times) }, /**/
+{ COMMAND_STOP, IR_COMMAND_FLAG_BLOCKING, &doStop, COMMAND_STRING(stop) }, /* */
 
 /*
- * Short commands, which can be executed always
+ * Short commands that can always be executed, but must be able to terminate other blocking commands (only doLedBlink20times() in this example)
  */
-{ COMMAND_TONE1, IR_COMMAND_FLAG_BLOCKING, &doTone1800, tone1800 }, /**/
-{ COMMAND_TONE3, IR_COMMAND_FLAG_BLOCKING, &doPrintMenu, printMenu }, /**/
-{ COMMAND_ON, IR_COMMAND_FLAG_NON_BLOCKING, &doLedOn, LEDon }, /**/
-{ COMMAND_OFF, IR_COMMAND_FLAG_NON_BLOCKING, &doLedOff, LEDoff }, /**/
-{ COMMAND_START, IR_COMMAND_FLAG_NON_BLOCKING, &doLedBlinkStart, blinkStart }, /**/
-{ COMMAND_RESET, IR_COMMAND_FLAG_NON_BLOCKING, &doResetBlinkFrequency, reset },
+{ COMMAND_START, IR_COMMAND_FLAG_BLOCKING, &doLedBlinkStart, COMMAND_STRING(blinkStart) }, /**/
+{ COMMAND_ON, IR_COMMAND_FLAG_BLOCKING, &doLedOn, COMMAND_STRING(LEDon) }, /**/
+{ COMMAND_OFF, IR_COMMAND_FLAG_BLOCKING, &doLedOff, COMMAND_STRING(LEDoff) }, /**/
+
+/*
+ * Short commands that can always be executed
+ */
+{ COMMAND_TONE1, IR_COMMAND_FLAG_NON_BLOCKING, &doTone1800, COMMAND_STRING(tone1800) }, /* Lasts 200 ms and blocks receiving of repeats. tone() requires interrupts enabled */
+{ COMMAND_TONE3, IR_COMMAND_FLAG_NON_BLOCKING, &doPrintMenu, COMMAND_STRING(printMenu) }, /**/
+{ COMMAND_RESET, IR_COMMAND_FLAG_NON_BLOCKING, &doResetBlinkFrequency, COMMAND_STRING(reset) },
 
 /*
  * Repeatable short commands
  */
-{ COMMAND_TONE2, IR_COMMAND_FLAG_REPEATABLE_NON_BLOCKING, &doTone2200, tone2200 }, /**/
-{ COMMAND_INCREASE_BLINK, IR_COMMAND_FLAG_REPEATABLE_NON_BLOCKING, &doIncreaseBlinkFrequency, increaseBlink }, /**/
-{ COMMAND_DECREASE_BLINK, IR_COMMAND_FLAG_REPEATABLE_NON_BLOCKING, &doDecreaseBlinkFrequency, decreaseBlink } };
+{ COMMAND_TONE2, IR_COMMAND_FLAG_REPEATABLE_NON_BLOCKING, &doTone2200, COMMAND_STRING(tone2200) }, /* Lasts 50 ms and allows receiving of repeats */
+{ COMMAND_INCREASE_BLINK, IR_COMMAND_FLAG_REPEATABLE_NON_BLOCKING, &doIncreaseBlinkFrequency, COMMAND_STRING(increaseBlink) }, /**/
+{ COMMAND_DECREASE_BLINK, IR_COMMAND_FLAG_REPEATABLE_NON_BLOCKING, &doDecreaseBlinkFrequency, COMMAND_STRING(decreaseBlink) } };
 
 #endif // _IR_COMMAND_MAPPING_H

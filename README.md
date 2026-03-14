@@ -414,7 +414,7 @@ The **tone library (using timer 2) is still available**. You can use it alternat
 - Improved Apollo3 and MegaCore support.
 
 ### Version 3.3.4
-- Removed convenience function `irmp_tone()`, since it statically allocates the tone interrupt vector.
+- Removed convenience function `irmp_tone()`, since it statically allocates the tone interrupt vector 7.
 
 ### Version 3.3.3
 - Added ATmega8 support.

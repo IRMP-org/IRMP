@@ -522,6 +522,9 @@ const char * const irmp_used_protocol_names[] PROGMEM =
 #endif
 };
 
+/*
+ * No newline after printing
+ */
 void irmp_print_active_protocols(Print *aSerial)
 {
 // skip protocol 0 = UNKNOWN

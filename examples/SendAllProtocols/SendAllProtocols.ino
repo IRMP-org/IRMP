@@ -75,9 +75,13 @@ void setup()
 
 void loop()
 {
-    static uint8_t sAddress = 1;
-    static uint8_t sCommand = 1;
+    static uint16_t sAddress = 0x201;
+    static uint16_t sCommand = 0x201;
     static uint8_t sRepeats = 0;
+
+    Serial.print(F("Now sending all with "));
+    Serial.print(sRepeats);
+    Serial.println(F(" repeats"));
 
     for (uint_fast8_t i = 0; i < sizeof(irsnd_used_protocol_index); ++i)
     {
@@ -94,9 +98,9 @@ void loop()
 
         irsnd_data_print(&Serial, &irsnd_data);
 
-        sAddress++;
-        sCommand++;
-        delay(2000);
+        sAddress += 0x101;
+        sCommand += 0x101;
+        delay(1000);
     }
     Serial.println();
     Serial.println();
@@ -106,6 +110,6 @@ void loop()
     // we have 0x27 protocols now start with next number range
     sAddress = (sAddress & 0xC0) + 0x40;
     sCommand = sAddress;
-    Serial.print(F("Now sending all with number of repeats="));
-    Serial.println(sRepeats);
+
+    delay(2000);
 }

@@ -39,7 +39,7 @@ void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed);          // set the mode
 #  if defined(LED_BUILTIN)
 #define IRMP_FEEDBACK_LED_PIN LED_BUILTIN
 #  else
-#warning IRMP_FEEDBACK_LED_PIN and LED_BUILTIN  not defined. Pin 5 is used for feedback output if enabled. You can change this in IRFeedbackLED.h.
+#warning IRMP_FEEDBACK_LED_PIN and LED_BUILTIN  not defined. Pin 5 is used for feedback output if feedback is enabled. You can change this in IRFeedbackLED.h.
 #define IRMP_FEEDBACK_LED_PIN 5 // choose an arbitrary pin
 #  endif
 #endif
