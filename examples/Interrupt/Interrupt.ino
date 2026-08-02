@@ -10,7 +10,6 @@
  *  The exact names can be found in the library file irmpSelectAllProtocols.h (see Callback example).
  *
  *  Copyright (C) 2019-2022  Armin Joachimsmeyer
- *  armin.joachimsmeyer@gmail.com
  *
  *  This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
@@ -131,12 +130,12 @@ void evaluateIRCommand(uint16_t aAddress, uint16_t aCommand, uint8_t aFlags)
         /*
          * Skip repetitions of command
          */
-        if (!(aAddress & IRMP_FLAG_REPETITION))
+        if (!(aFlags & IRMP_FLAG_REPETITION))
         {
             /*
              * Evaluation of IR command
              */
-            switch (aAddress)
+            switch (aCommand)
             {
             case 0x48:
                 digitalWrite(LED_BUILTIN, HIGH);
