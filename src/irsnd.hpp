@@ -1315,7 +1315,7 @@ irsnd_send_data(IRMP_DATA *irmp_data_p, uint8_t do_wait)
                 command = bitsrevervse (irmp_data_p->command, NEC_COMMAND_LEN);
 
                 irsnd_buffer[0] = (address & 0xFF00) >> 8;                                              // AAAAAAAA
-                irsnd_buffer[1] = (address & 0x00FF);                                                   // AAAAAAAA
+                irsnd_buffer[1] = ~((address & 0xFF00) >> 8);                                           // aaaaaaaa
                 irsnd_buffer[2] = (command & 0xFF00) >> 8;                                              // CCCCCCCC
                 irsnd_buffer[3] = ~((command & 0xFF00) >> 8);                                           // cccccccc
             }
