@@ -3398,7 +3398,7 @@ irsnd_ISR(void)
                 // cleanup for ending transmission
                 n_repeat_frames = 0;
                 repeat_counter = 0;
-                repeat_frame_pause_len = 0;
+                //repeat_frame_pause_len = 0; // this is wrong for only/last frame
             }
         }
     }
