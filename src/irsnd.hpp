@@ -1944,8 +1944,8 @@ irsnd_ISR(void)
     static uint8_t              new_frame                       = TRUE;
     static uint8_t              complete_data_len               = 0;
     static uint8_t              n_repeat_frames                 = 0;        // number of repetition frames
-    static uint8_t              n_auto_repetitions              = 0;        // number of frames inclusive auto_repetition frames
-    static uint8_t              auto_repetition_counter         = 0;        // auto_repetition counter
+    static uint16_t             n_auto_repetitions              = 0;                                // number of frames inclusive auto_repetition frames
+    static uint16_t             auto_repetition_counter         = 0;                                // auto_repetition counter
     static uint16_t             auto_repetition_pause_len       = 0;        // pause before auto_repetition, uint16_t!
     static uint16_t             auto_repetition_pause_counter   = 0;        // pause before auto_repetition, uint16_t!
     static uint8_t              repeat_counter                  = 0;        // repeat counter
@@ -3196,7 +3196,7 @@ irsnd_ISR(void)
 
                                 if (repeat_counter < n_repeat_frames)       // tricky: repeat n info frames per auto repetition before sending last stop frame
                                 {
-                                    n_auto_repetitions++;                   // increment number of auto repetitions
+                                    n_auto_repetitions++;                   // increment number of auto repetitions, uint16_t!
                                     repeat_counter++;
                                 }
                                 else if (auto_repetition_counter == n_auto_repetitions)
