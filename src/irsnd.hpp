@@ -2628,10 +2628,10 @@ irsnd_ISR(void)
 #if IRSND_SUPPORT_SIEMENS_PROTOCOL == 1
                     case IRMP_SIEMENS_PROTOCOL:
                     {
-                        startbit_pulse_len          = IRSND_SIEMENS_BIT_LEN;
-                        startbit_pause_len          = IRSND_SIEMENS_BIT_LEN;
-                        pulse_len                   = IRSND_SIEMENS_BIT_LEN;
-                        pause_len                   = IRSND_SIEMENS_BIT_LEN;
+                        startbit_pulse_len          = IRSND_SIEMENS_START_BIT_PULSE_LEN;
+                        startbit_pause_len          = IRSND_SIEMENS_START_BIT_PAUSE_LEN;
+                        pulse_len                   = IRSND_SIEMENS_BIT_PULSE_LEN;
+                        pause_len                   = IRSND_SIEMENS_BIT_PAUSE_LEN;
                         has_stop_bit                = SIEMENS_OR_RUWIDO_STOP_BIT;
                         complete_data_len           = SIEMENS_COMPLETE_DATA_LEN;
                         n_auto_repetitions          = 1;                                                    // 1 frame
