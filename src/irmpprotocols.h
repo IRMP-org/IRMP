@@ -168,13 +168,13 @@ extern const char proto_rc6a28[]        PROGMEM;
 #if IRMP_SUPPORT_NIKON_PROTOCOL == 1
 #  define IRMP_TIMEOUT_NIKON_TIME               29500.0e-6                  // 2nd timeout after 29.5 ms darkness (only for NIKON!)
 #  define IRMP_TIMEOUT_NIKON_TIME_MS            29500L                      // 2nd timeout after 29.5 ms darkness
-typedef uint16_t    PAUSE_LEN;
+typedef uint_fast16_t    PAUSE_LEN;
 #  define IRMP_TIMEOUT_NIKON_LEN                (PAUSE_LEN)(F_INTERRUPTS * IRMP_TIMEOUT_NIKON_TIME + 0.5)
 #else
 #  if (F_INTERRUPTS * IRMP_TIMEOUT_TIME_MS) / 1000000 >= 254
-typedef uint16_t    PAUSE_LEN;
+typedef uint_fast16_t    PAUSE_LEN;
 #  else
-typedef uint8_t     PAUSE_LEN;
+typedef uint_fast8_t     PAUSE_LEN;
 #  endif
 #endif
 
