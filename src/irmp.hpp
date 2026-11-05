@@ -2355,6 +2355,10 @@ volatile uint_fast8_t                           timeout = 1;
 volatile uint32_t                               upper_border = F_INTERRUPTS * 170 / 1000 * (100 + JITTER_COMPENSATION) / 100;     // repeatrate plus jitter (threshold for timeout)
 #endif
 
+#if IRMP_ENABLE_RELEASE_DETECTION == 1
+volatile uint_fast8_t                           release_pending = FALSE;
+#endif
+
 #if defined(__MBED__)
 // DigitalIn inputPin(IRMP_PIN, PullUp);                                // this requires mbed.h and source to be compiled as cpp
 gpio_t                                          gpioIRin;               // use low level c function instead
@@ -2789,6 +2793,17 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 }
                 keep_same_key = same_key;
                 same_key = 0;
+            }
+#endif
+
+#if IRMP_ENABLE_RELEASE_DETECTION == 1
+            if (irmp_flags & IRMP_FLAG_RELEASE) {
+                release_pending = FALSE;
+            }
+            else if ((irmp_flags & IRMP_FLAG_REPETITION) == IRMP_FLAG_NEW) {
+                if (release_pending)
+                    irmp_flags |= IRMP_FLAG_FORCE_RELEASE;
+                release_pending = TRUE;
             }
 #endif
 
