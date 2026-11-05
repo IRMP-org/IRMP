@@ -2620,7 +2620,7 @@ irsnd_ISR(void)
                         pause_len                   = IRSND_GRUNDIG_NOKIA_IR60_BIT_LEN;
                         has_stop_bit                = GRUNDIG_NOKIA_IR60_STOP_BIT;
                         complete_data_len           = NOKIA_COMPLETE_DATA_LEN;
-                        n_auto_repetitions          = NOKIA_FRAMES;                                         // 2 frames
+                        n_auto_repetitions          = NOKIA_FRAMES;                                         // 3 frames
                         auto_repetition_pause_len   = IRSND_NOKIA_AUTO_REPETITION_PAUSE_LEN;                // 20 msec pause
                         repeat_frame_pause_len      = IRSND_GRUNDIG_NOKIA_IR60_FRAME_REPEAT_PAUSE_LEN;      // 117 msec pause
                         irsnd_set_freq (IRSND_FREQ_38_KHZ);
