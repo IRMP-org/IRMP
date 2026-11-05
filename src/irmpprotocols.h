@@ -575,7 +575,7 @@ typedef uint_fast8_t     PAUSE_LEN;
 #define NUBERT_0_PAUSE_TIME                     1300.0e-6                       // 1300 usec pause
 #define NUBERT_FRAMES                           2                               // Nubert sends 2 frames
 #define NUBERT_AUTO_REPETITION_PAUSE_TIME         35.0e-3                       // auto repetition after 35ms
-#define NUBERT_FRAME_REPEAT_PAUSE_TIME            35.0e-3                       // frame repeat after 45ms
+#define NUBERT_FRAME_REPEAT_PAUSE_TIME            35.0e-3                       // frame repeat after 35ms
 #define NUBERT_ADDRESS_OFFSET                   0                               // skip 0 bits
 #define NUBERT_ADDRESS_LEN                      0                               // read 0 address bits
 #define NUBERT_COMMAND_OFFSET                   0                               // skip 0 bits
@@ -623,7 +623,7 @@ typedef uint_fast8_t     PAUSE_LEN;
 #define SPEAKER_0_PAUSE_TIME                    1250.0e-6                       // 1250 usec pause
 #define SPEAKER_FRAMES                          2                               // SPEAKER sends 2 frames
 #define SPEAKER_AUTO_REPETITION_PAUSE_TIME        35.0e-3                       // auto repetition after 35ms
-#define SPEAKER_FRAME_REPEAT_PAUSE_TIME           35.0e-3                       // frame repeat after 45ms
+#define SPEAKER_FRAME_REPEAT_PAUSE_TIME           35.0e-3                       // frame repeat after 35ms
 #define SPEAKER_ADDRESS_OFFSET                  0                               // skip 0 bits
 #define SPEAKER_ADDRESS_LEN                     0                               // read 0 address bits
 #define SPEAKER_COMMAND_OFFSET                  0                               // skip 0 bits
