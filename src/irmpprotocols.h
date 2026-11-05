@@ -184,6 +184,12 @@ typedef uint_fast8_t     PAUSE_LEN;
 #define IRMP_KEY_RELEASE_TIME                   25.0e-3                  // key release timeout detection after 25.0 ms darkness
 #define IRMP_KEY_RELEASE_LEN                    (uint16_t)(F_INTERRUPTS * IRMP_KEY_RELEASE_TIME + 0.5)
 
+#  if F_INTERRUPTS > 25000
+typedef uint_fast16_t    LEN_T;
+#  else
+typedef uint_fast8_t     LEN_T;
+#  endif
+
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * flags of struct IRMP_PARAMETER:
  *---------------------------------------------------------------------------------------------------------------------------------------------------
