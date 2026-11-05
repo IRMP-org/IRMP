@@ -1178,7 +1178,6 @@ typedef uint_fast8_t     PAUSE_LEN;
 #define RF_X10_LSB                               0                               // MSB...LSB
 #define RF_X10_FLAGS                             0                               // flags
 
-
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * RF MEDION PC remote control (MEDION)
  *
@@ -1201,7 +1200,6 @@ typedef uint_fast8_t     PAUSE_LEN;
 #define RF_MEDION_STOP_BIT                       1                               // has stop bit
 #define RF_MEDION_LSB                            0                               // MSB...LSB
 #define RF_MEDION_FLAGS                          0                               // flags
-
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Frame Repetitions:
