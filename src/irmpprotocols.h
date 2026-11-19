@@ -84,6 +84,7 @@
 #define RF_GEN24_PROTOCOL                       57              // RF Generic, 24 Bits (Pollin 550666, EAN 4049702006022 and many other similar RF remote controls))
 #define RF_X10_PROTOCOL                         58              // RF PC X10 Remote Control (Medion, Pollin 721815)
 #define RF_MEDION_PROTOCOL                      59              // RF PC Medion Remote Control (Medion)
+
 #define IRMP_MELINERA_PROTOCOL                  60
 #define IRMP_RC6A20_PROTOCOL                    61              // RC6A20, e.g. Sky+
 #define IRMP_RC6A28_PROTOCOL                    62              // RC6A28, e.g. Sky Q (Sky+ Pro)
@@ -168,13 +169,13 @@ extern const char proto_rc6a28[]        PROGMEM;
 #if IRMP_SUPPORT_NIKON_PROTOCOL == 1
 #  define IRMP_TIMEOUT_NIKON_TIME               29500.0e-6                  // 2nd timeout after 29.5 ms darkness (only for NIKON!)
 #  define IRMP_TIMEOUT_NIKON_TIME_MS            29500L                      // 2nd timeout after 29.5 ms darkness
-typedef uint16_t    PAUSE_LEN;
+typedef uint_fast16_t    PAUSE_LEN;
 #  define IRMP_TIMEOUT_NIKON_LEN                (PAUSE_LEN)(F_INTERRUPTS * IRMP_TIMEOUT_NIKON_TIME + 0.5)
 #else
 #  if (F_INTERRUPTS * IRMP_TIMEOUT_TIME_MS) / 1000000 >= 254
-typedef uint16_t    PAUSE_LEN;
+typedef uint_fast16_t    PAUSE_LEN;
 #  else
-typedef uint8_t     PAUSE_LEN;
+typedef uint_fast8_t     PAUSE_LEN;
 #  endif
 #endif
 
@@ -182,6 +183,12 @@ typedef uint8_t     PAUSE_LEN;
 
 #define IRMP_KEY_RELEASE_TIME                   25.0e-3                  // key release timeout detection after 25.0 ms darkness
 #define IRMP_KEY_RELEASE_LEN                    (uint16_t)(F_INTERRUPTS * IRMP_KEY_RELEASE_TIME + 0.5)
+
+#  if F_INTERRUPTS > 25000
+typedef uint_fast16_t    LEN_T;
+#  else
+typedef uint_fast8_t     LEN_T;
+#  endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * flags of struct IRMP_PARAMETER:
@@ -575,7 +582,7 @@ typedef uint8_t     PAUSE_LEN;
 #define NUBERT_0_PAUSE_TIME                     1300.0e-6                       // 1300 usec pause
 #define NUBERT_FRAMES                           2                               // Nubert sends 2 frames
 #define NUBERT_AUTO_REPETITION_PAUSE_TIME         35.0e-3                       // auto repetition after 35ms
-#define NUBERT_FRAME_REPEAT_PAUSE_TIME            35.0e-3                       // frame repeat after 45ms
+#define NUBERT_FRAME_REPEAT_PAUSE_TIME            35.0e-3                       // frame repeat after 35ms
 #define NUBERT_ADDRESS_OFFSET                   0                               // skip 0 bits
 #define NUBERT_ADDRESS_LEN                      0                               // read 0 address bits
 #define NUBERT_COMMAND_OFFSET                   0                               // skip 0 bits
@@ -623,7 +630,7 @@ typedef uint8_t     PAUSE_LEN;
 #define SPEAKER_0_PAUSE_TIME                    1250.0e-6                       // 1250 usec pause
 #define SPEAKER_FRAMES                          2                               // SPEAKER sends 2 frames
 #define SPEAKER_AUTO_REPETITION_PAUSE_TIME        35.0e-3                       // auto repetition after 35ms
-#define SPEAKER_FRAME_REPEAT_PAUSE_TIME           35.0e-3                       // frame repeat after 45ms
+#define SPEAKER_FRAME_REPEAT_PAUSE_TIME           35.0e-3                       // frame repeat after 35ms
 #define SPEAKER_ADDRESS_OFFSET                  0                               // skip 0 bits
 #define SPEAKER_ADDRESS_LEN                     0                               // read 0 address bits
 #define SPEAKER_COMMAND_OFFSET                  0                               // skip 0 bits
@@ -1178,7 +1185,6 @@ typedef uint8_t     PAUSE_LEN;
 #define RF_X10_LSB                               0                               // MSB...LSB
 #define RF_X10_FLAGS                             0                               // flags
 
-
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * RF MEDION PC remote control (MEDION)
  *
@@ -1201,7 +1207,6 @@ typedef uint8_t     PAUSE_LEN;
 #define RF_MEDION_STOP_BIT                       1                               // has stop bit
 #define RF_MEDION_LSB                            0                               // MSB...LSB
 #define RF_MEDION_FLAGS                          0                               // flags
-
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Frame Repetitions:

@@ -329,6 +329,7 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #define IRMP_FLAG_NEW                   0x00
 #define IRMP_FLAG_REPETITION            0x01
 #define IRMP_FLAG_RELEASE               0x02                                    // see IRMP_ENABLE_RELEASE_DETECTION in irmpconfig.h
+#define IRMP_FLAG_FORCE_RELEASE         0x04                                    // new IRData were received, before a release for the old IRData was sent
 
 #ifdef __cplusplus
 extern "C"
@@ -346,6 +347,10 @@ extern uint_fast8_t                     irmp_ISR (void);
 #if IRMP_AUTODETECT_REPEATRATE
 extern volatile uint_fast8_t            keep_same_key, timeout;
 extern volatile uint32_t                delta, min_delta, max_delta, upper_border;
+#endif
+
+#if IRMP_ENABLE_RELEASE_DETECTION == 1
+extern volatile uint_fast8_t            release_pending;
 #endif
 
 #if IRMP_PROTOCOL_NAMES == 1
