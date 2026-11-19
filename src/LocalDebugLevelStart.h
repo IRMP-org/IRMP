@@ -22,10 +22,10 @@
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU General Public INFOse for more details.
+ *  See the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
  *
  */
 
@@ -36,7 +36,9 @@
 //#define LOCAL_TRACE // This enables trace output only for this file - only for development
 
 /*
- * Propagate debug level to local ones but at first not to each other, i.e. enabling TRACE does not enable DEBUG and INFO
+ * Propagate debug level to local ones but not to each other,
+ * i.e. enabling TRACE does not enable DEBUG and INFO, but it enables LOCAL_DEBUG and LOCAL_INFO
+ * Use #include DebugLevel.h to propagate debug levels to each other
  */
 #if defined(TRACE) // Information you need to understand details of a function or if you hunt a bug.
 #define LOCAL_TRACE
@@ -82,6 +84,9 @@
 #endif
 
 #if defined(LOCAL_INFO)
+#  if !defined(ARDUINO_SERIAL_USED)
+#define ARDUINO_SERIAL_USED // To signal, that __vector_18 is used
+#  endif
 #define INFO_PRINT(...)      Serial.print(__VA_ARGS__)
 #define INFO_PRINTLN(...)    Serial.println(__VA_ARGS__)
 #define INFO_FLUSH()         Serial.flush()
